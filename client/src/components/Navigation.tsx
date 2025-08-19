@@ -1,0 +1,164 @@
+import { Link, useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { 
+  Shield, 
+  Globe, 
+  Brain, 
+  BarChart3, 
+  Settings, 
+  Users, 
+  FileText, 
+  AlertTriangle,
+  Activity,
+  Database,
+  Lock,
+  Eye
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const navigationItems = [
+  {
+    name: "Neural Dashboard",
+    href: "/",
+    icon: Shield,
+    description: "Main control center"
+  },
+  {
+    name: "Platform Manager",
+    href: "/platforms",
+    icon: Globe,
+    description: "Manage all Fanz platforms"
+  },
+  {
+    name: "AI Analysis Engine",
+    href: "/ai-analysis",
+    icon: Brain,
+    description: "ChatGPT-4o content analysis"
+  },
+  {
+    name: "Content Review",
+    href: "/content-review",
+    icon: Eye,
+    description: "Manual approval workflows"
+  },
+  {
+    name: "Live Monitoring",
+    href: "/live-monitoring",
+    icon: Activity,
+    description: "Real-time stream monitoring"
+  },
+  {
+    name: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
+    description: "Performance metrics"
+  },
+  {
+    name: "User Management",
+    href: "/users",
+    icon: Users,
+    description: "Admin and moderator accounts"
+  },
+  {
+    name: "Security Vault",
+    href: "/vault",
+    icon: Lock,
+    description: "Encrypted content storage"
+  },
+  {
+    name: "Audit Logs",
+    href: "/audit",
+    icon: FileText,
+    description: "Complete action history"
+  },
+  {
+    name: "Threat Center",
+    href: "/threats",
+    icon: AlertTriangle,
+    description: "Security monitoring"
+  },
+  {
+    name: "Data Management",
+    href: "/data",
+    icon: Database,
+    description: "Database operations"
+  },
+  {
+    name: "System Settings",
+    href: "/settings",
+    icon: Settings,
+    description: "Platform configuration"
+  }
+];
+
+export function Navigation() {
+  const [location] = useLocation();
+
+  return (
+    <nav className="w-64 min-h-screen bg-black/90 border-r border-primary/20 backdrop-blur-xl cyber-border">
+      <div className="p-6">
+        {/* Logo */}
+        <div className="flex items-center space-x-3 mb-8">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center cyber-pulse">
+            <Shield className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold cyber-text-glow">FanzMod</h1>
+            <p className="text-xs text-muted-foreground">Neural Control Center</p>
+          </div>
+        </div>
+
+        {/* Navigation Items */}
+        <div className="space-y-2">
+          {navigationItems.map((item) => {
+            const isActive = location === item.href;
+            const Icon = item.icon;
+            
+            return (
+              <Link key={item.href} href={item.href}>
+                <Button
+                  variant={isActive ? "default" : "ghost"}
+                  className={cn(
+                    "w-full justify-start h-12 text-left group transition-all duration-300",
+                    isActive 
+                      ? "bg-primary/20 text-primary border border-primary/30 cyber-border cyber-text-glow" 
+                      : "hover:bg-primary/10 hover:text-primary hover:border-primary/20"
+                  )}
+                  data-testid={`nav-${item.href.slice(1) || 'dashboard'}`}
+                >
+                  <Icon className={cn(
+                    "w-5 h-5 mr-3 transition-all duration-300",
+                    isActive ? "cyber-pulse" : "group-hover:cyber-pulse"
+                  )} />
+                  <div className="flex-1">
+                    <div className="font-medium">{item.name}</div>
+                    <div className="text-xs text-muted-foreground">{item.description}</div>
+                  </div>
+                </Button>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* System Status */}
+        <div className="mt-8 p-4 cyber-card">
+          <h3 className="text-sm font-medium mb-3 cyber-text-glow">System Status</h3>
+          <div className="space-y-2 text-xs">
+            <div className="flex justify-between">
+              <span>AI Engine</span>
+              <span className="text-green-400">OPTIMAL</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Platforms</span>
+              <span className="text-green-400">3 ACTIVE</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Security</span>
+              <span className="text-yellow-400">MEDIUM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
