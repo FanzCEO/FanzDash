@@ -1,66 +1,145 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { apiRequest } from "@/lib/queryClient";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import type { ContentItem } from "@/types/moderation";
+import { apiRequest } from "@/lib/queryClient";
+import { 
+  CheckCircle, 
+  XCircle, 
+  Clock, 
+  Eye, 
+  AlertTriangle, 
+  User,
+  Calendar,
+  FileText,
+  Shield,
+  Edit3
+} from "lucide-react";
+
+interface ContentItem {
+  id: string;
+  type: "image" | "video" | "text" | "live_stream";
+  contentUrl?: string;
+  textContent?: string;
+  status: "pending" | "approved" | "rejected" | "needs_editing";
+  riskScore: number;
+  uploadedBy: string;
+  uploadedAt: string;
+  moderatorNotes?: string;
+  lastReviewedBy?: string;
+  lastReviewedAt?: string;
+}
+
+interface ModerationAction {
+  contentId: string;
+  action: "approve" | "reject" | "hold" | "request_edit";
+  reason: string;
+  moderatorNotes?: string;
+}
 
 export function ReviewQueue() {
+  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
+  const [actionReason, setActionReason] = useState("");
+  const [moderatorNotes, setModeratorNotes] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("pending");
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: content = [], isLoading } = useQuery({
+  const { data: pendingContent = [], isLoading } = useQuery<ContentItem[]>({
     queryKey: ["/api/content/pending"],
+    refetchInterval: 3000,
   });
 
-  const moderateContentMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      await apiRequest("PUT", `/api/content/${id}/status`, { 
-        status, 
-        moderatorId: "mod_123" // In real app, get from auth context
+  const { data: allContent = [] } = useQuery<ContentItem[]>({
+    queryKey: ["/api/content/all"],
+  });
+
+  const moderationMutation = useMutation({
+    mutationFn: async (action: ModerationAction) => {
+      return apiRequest(`/api/content/${action.contentId}/moderate`, {
+        method: "POST",
+        body: JSON.stringify(action),
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/content/pending"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/content/all"] });
       toast({
-        title: "Content moderated",
-        description: "The content status has been updated successfully.",
+        title: "Action Completed",
+        description: "Content moderation action has been recorded.",
       });
+      setSelectedContent(null);
+      setActionReason("");
+      setModeratorNotes("");
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: "Failed to moderate content. Please try again.",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
 
-  const handleApprove = (id: string) => {
-    moderateContentMutation.mutate({ id, status: "approved" });
+  const handleModerationAction = (action: "approve" | "reject" | "hold" | "request_edit") => {
+    if (!selectedContent || !actionReason.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide a reason for this action.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    moderationMutation.mutate({
+      contentId: selectedContent.id,
+      action,
+      reason: actionReason,
+      moderatorNotes: moderatorNotes.trim() || undefined,
+    });
   };
 
-  const handleReject = (id: string) => {
-    moderateContentMutation.mutate({ id, status: "rejected" });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "approved": return "bg-secondary text-secondary-foreground";
+      case "rejected": return "bg-destructive text-destructive-foreground";
+      case "pending": return "bg-accent text-accent-foreground";
+      case "needs_editing": return "bg-primary text-primary-foreground";
+      default: return "bg-muted text-muted-foreground";
+    }
   };
+
+  const getRiskColor = (score: number) => {
+    if (score >= 0.8) return "text-destructive";
+    if (score >= 0.6) return "text-accent";
+    if (score >= 0.4) return "text-primary";
+    return "text-secondary";
+  };
+
+  const displayContent = filterStatus === "all" ? allContent : 
+    allContent.filter(item => item.status === filterStatus);
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="cyber-card">
         <CardHeader>
-          <CardTitle>Priority Review Queue</CardTitle>
+          <CardTitle className="flex items-center space-x-2">
+            <Eye className="w-5 h-5" />
+            <span>Review Queue</span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="animate-pulse space-y-4">
+          <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-start space-x-3 p-4">
-                <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                </div>
+              <div key={i} className="p-4 border border-border/30 rounded-lg animate-pulse">
+                <div className="h-4 bg-muted/30 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-muted/20 rounded w-1/2"></div>
               </div>
             ))}
           </div>
@@ -70,86 +149,217 @@ export function ReviewQueue() {
   }
 
   return (
-    <Card>
+    <Card className="cyber-card neural-network">
       <CardHeader>
-        <CardTitle>Priority Review Queue</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center space-x-2">
+            <Eye className="w-5 h-5 text-primary cyber-pulse" />
+            <span className="cyber-text-glow">REVIEW QUEUE</span>
+          </CardTitle>
+          <div className="flex items-center space-x-2">
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-40 glass-effect">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="needs_editing">Needs Editing</SelectItem>
+                <SelectItem value="all">All Content</SelectItem>
+              </SelectContent>
+            </Select>
+            <Badge variant="outline" className="font-mono">
+              {displayContent.length} items
+            </Badge>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="divide-y divide-gray-200">
-          {content.map((item: ContentItem) => (
-            <div key={item.id} className="p-4 hover:bg-gray-50" data-testid={`review-item-${item.id}`}>
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="w-16 h-16 bg-gray-200 rounded-lg relative overflow-hidden">
-                    {item.type === "image" || item.type === "video" ? (
-                      <>
-                        <div className="absolute inset-0 bg-gradient-to-br from-pink-300 to-purple-400 opacity-60 blur-sm"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <i className="fas fa-eye-slash text-gray-600 text-lg"></i>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                        <i className="fas fa-comment text-gray-500"></i>
+      <CardContent>
+        <div className="space-y-4 max-h-96 overflow-y-auto">
+          {displayContent.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Shield className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>No content matching current filter</p>
+            </div>
+          ) : (
+            displayContent.map((item) => (
+              <div
+                key={item.id}
+                className="p-4 border border-border/30 rounded-lg glass-effect hover:bg-primary/5 transition-all duration-300"
+                data-testid={`content-item-${item.id}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0">
+                      {item.type === "image" && <FileText className="w-5 h-5 text-primary" />}
+                      {item.type === "video" && <FileText className="w-5 h-5 text-secondary" />}
+                      {item.type === "text" && <FileText className="w-5 h-5 text-accent" />}
+                      {item.type === "live_stream" && <FileText className="w-5 h-5 text-destructive" />}
+                    </div>
+                    <div>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="font-mono text-sm">ID: {item.id}</span>
+                        <Badge className={getStatusColor(item.status)}>
+                          {item.status.replace("_", " ").toUpperCase()}
+                        </Badge>
                       </div>
-                    )}
+                      <div className="text-xs text-muted-foreground">
+                        Risk Score: <span className={getRiskColor(item.riskScore)}>{(item.riskScore * 100).toFixed(1)}%</span>
+                        {" • "}
+                        <User className="w-3 h-3 inline mr-1" />
+                        {item.uploadedBy}
+                        {" • "}
+                        <Calendar className="w-3 h-3 inline mr-1" />
+                        {new Date(item.uploadedAt).toLocaleDateString()}
+                      </div>
+                      {item.lastReviewedBy && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Last reviewed by {item.lastReviewedBy} on{" "}
+                          {new Date(item.lastReviewedAt!).toLocaleDateString()}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <Badge variant={item.type === "text" ? "default" : "secondary"}>
-                      {item.type.toUpperCase()}
-                    </Badge>
-                    <span className="text-xs text-gray-500">
-                      {item.createdAt ? new Date(item.createdAt).toLocaleString() : "Recently"}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-900 mt-1">
-                    {item.type === "text" ? "Toxicity detected" : `${item.type === "image" ? "NudeNet" : "Content"} analysis needed`}
-                    {item.riskScore && ` - Risk: ${parseFloat(item.riskScore).toFixed(2)}`}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {item.type === "text" && item.content ? 
-                      `"${item.content.slice(0, 60)}..."` : 
-                      `User: ${item.userId || "Unknown"}`
-                    }
-                  </p>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Button 
-                      size="sm" 
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => handleApprove(item.id)}
-                      disabled={moderateContentMutation.isPending}
-                      data-testid={`approve-${item.id}`}
-                    >
-                      Approve
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="destructive"
-                      onClick={() => handleReject(item.id)}
-                      disabled={moderateContentMutation.isPending}
-                      data-testid={`reject-${item.id}`}
-                    >
-                      Reject
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      data-testid={`details-${item.id}`}
-                    >
-                      Details
-                    </Button>
-                  </div>
+                  
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedContent(item)}
+                        className="neon-button"
+                        data-testid={`review-button-${item.id}`}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Review
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl cyber-card">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center space-x-2 cyber-text-glow">
+                          <Shield className="w-5 h-5 text-primary" />
+                          <span>Content Review - {selectedContent?.id}</span>
+                        </DialogTitle>
+                      </DialogHeader>
+                      
+                      {selectedContent && (
+                        <div className="space-y-6">
+                          {/* Content Preview */}
+                          <div className="space-y-3">
+                            <h4 className="font-semibold">Content Preview</h4>
+                            <div className="p-4 bg-muted/20 rounded-lg">
+                              {selectedContent.type === "text" ? (
+                                <p className="whitespace-pre-wrap">{selectedContent.textContent}</p>
+                              ) : (
+                                <div className="text-center py-8 text-muted-foreground">
+                                  <FileText className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                                  <p>{selectedContent.type.toUpperCase()} Content</p>
+                                  {selectedContent.contentUrl && (
+                                    <p className="text-xs font-mono mt-1">{selectedContent.contentUrl}</p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Content Details */}
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-sm font-medium">Risk Score</label>
+                              <div className={`text-lg font-bold ${getRiskColor(selectedContent.riskScore)}`}>
+                                {(selectedContent.riskScore * 100).toFixed(1)}%
+                              </div>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium">Content Type</label>
+                              <div className="text-lg font-semibold capitalize">
+                                {selectedContent.type.replace("_", " ")}
+                              </div>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium">Uploaded By</label>
+                              <div className="font-mono">{selectedContent.uploadedBy}</div>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium">Upload Date</label>
+                              <div>{new Date(selectedContent.uploadedAt).toLocaleString()}</div>
+                            </div>
+                          </div>
+
+                          {/* Action Reason */}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Action Reason *</label>
+                            <Textarea
+                              value={actionReason}
+                              onChange={(e) => setActionReason(e.target.value)}
+                              placeholder="Provide a detailed reason for your moderation decision..."
+                              className="min-h-20"
+                              data-testid="action-reason-input"
+                            />
+                          </div>
+
+                          {/* Moderator Notes */}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Additional Notes</label>
+                            <Textarea
+                              value={moderatorNotes}
+                              onChange={(e) => setModeratorNotes(e.target.value)}
+                              placeholder="Optional: Add any additional notes or instructions..."
+                              className="min-h-16"
+                              data-testid="moderator-notes-input"
+                            />
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex justify-end space-x-3 pt-4 border-t border-border/30">
+                            <Button
+                              variant="outline"
+                              onClick={() => handleModerationAction("hold")}
+                              disabled={moderationMutation.isPending}
+                              className="glass-effect"
+                              data-testid="button-hold"
+                            >
+                              <Clock className="w-4 h-4 mr-2" />
+                              Hold for Review
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => handleModerationAction("request_edit")}
+                              disabled={moderationMutation.isPending}
+                              className="glass-effect"
+                              data-testid="button-request-edit"
+                            >
+                              <Edit3 className="w-4 h-4 mr-2" />
+                              Request Edit
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              onClick={() => handleModerationAction("reject")}
+                              disabled={moderationMutation.isPending}
+                              data-testid="button-reject"
+                            >
+                              <XCircle className="w-4 h-4 mr-2" />
+                              Reject
+                            </Button>
+                            <Button
+                              onClick={() => handleModerationAction("approve")}
+                              disabled={moderationMutation.isPending}
+                              className="neon-button"
+                              data-testid="button-approve"
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Approve
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-        <div className="px-6 py-3 border-t border-gray-200 bg-gray-50">
-          <Button variant="ghost" className="w-full text-primary hover:text-primary/80">
-            View All Pending Items
-          </Button>
+            ))
+          )}
         </div>
       </CardContent>
     </Card>

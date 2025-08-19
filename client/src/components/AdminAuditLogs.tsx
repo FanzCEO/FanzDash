@@ -1,403 +1,415 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, User, Clock, MapPin, Shield, AlertTriangle, Database, Terminal, Eye, Settings } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { 
+  Shield, 
+  User, 
+  Clock, 
+  MapPin, 
+  Monitor, 
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Eye,
+  Search,
+  Calendar,
+  Activity,
+  FileText
+} from "lucide-react";
+
+interface SessionLog {
+  id: string;
+  adminId: string;
+  adminName: string;
+  sessionType: "login" | "logout" | "timeout";
+  ipAddress: string;
+  userAgent: string;
+  location: {
+    city: string;
+    country: string;
+  };
+  suspicious: boolean;
+  createdAt: string;
+}
+
+interface ActionLog {
+  id: string;
+  adminId: string;
+  adminName: string;
+  action: "approve" | "reject" | "hold" | "request_edit" | "delete" | "restore";
+  targetType: "content_item" | "user_account" | "system_setting";
+  targetId: string;
+  previousStatus?: string;
+  newStatus?: string;
+  reason: string;
+  ipAddress: string;
+  moderatorNotes?: string;
+  createdAt: string;
+}
+
+interface AuditStats {
+  totalActions: number;
+  approvals: number;
+  rejections: number;
+  suspicious: number;
+  topModerators: Array<{
+    adminId: string;
+    adminName: string;
+    actionCount: number;
+  }>;
+}
 
 export function AdminAuditLogs() {
-  const [timeRange, setTimeRange] = useState("24h");
-  const [selectedAdmin, setSelectedAdmin] = useState("");
-  const [actionFilter, setActionFilter] = useState("");
-  
-  const { data: sessionLogs } = useQuery({
-    queryKey: ["/api/admin/session-logs", timeRange],
+  const [activeTab, setActiveTab] = useState<"sessions" | "actions">("actions");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterAction, setFilterAction] = useState<string>("all");
+  const [filterTimeRange, setFilterTimeRange] = useState<string>("24h");
+  const [selectedLog, setSelectedLog] = useState<ActionLog | SessionLog | null>(null);
+
+  const { data: sessionLogs = [] } = useQuery<SessionLog[]>({
+    queryKey: ["/api/admin/session-logs"],
+    refetchInterval: 30000,
   });
 
-  const { data: actionLogs } = useQuery({
-    queryKey: ["/api/admin/action-logs", { timeRange, admin: selectedAdmin, action: actionFilter }],
+  const { data: actionLogs = [] } = useQuery<ActionLog[]>({
+    queryKey: ["/api/admin/action-logs"],
+    refetchInterval: 10000,
   });
 
-  const { data: auditStats } = useQuery({
+  const { data: auditStats } = useQuery<AuditStats>({
     queryKey: ["/api/admin/audit-stats"],
+    refetchInterval: 60000,
+  });
+
+  const getActionIcon = (action: string) => {
+    switch (action) {
+      case "approve": return <CheckCircle className="w-4 h-4 text-secondary" />;
+      case "reject": return <XCircle className="w-4 h-4 text-destructive" />;
+      case "hold": return <Clock className="w-4 h-4 text-accent" />;
+      case "request_edit": return <FileText className="w-4 h-4 text-primary" />;
+      case "delete": return <XCircle className="w-4 h-4 text-destructive" />;
+      case "restore": return <CheckCircle className="w-4 h-4 text-secondary" />;
+      default: return <Activity className="w-4 h-4 text-muted-foreground" />;
+    }
+  };
+
+  const getActionColor = (action: string) => {
+    switch (action) {
+      case "approve": return "bg-secondary text-secondary-foreground";
+      case "reject": return "bg-destructive text-destructive-foreground";
+      case "hold": return "bg-accent text-accent-foreground";
+      case "request_edit": return "bg-primary text-primary-foreground";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const filteredActionLogs = actionLogs.filter(log => {
+    const matchesSearch = searchTerm === "" || 
+      log.adminName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.targetId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.reason.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesAction = filterAction === "all" || log.action === filterAction;
+    
+    return matchesSearch && matchesAction;
+  });
+
+  const filteredSessionLogs = sessionLogs.filter(log => {
+    const matchesSearch = searchTerm === "" || 
+      log.adminName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.ipAddress.includes(searchTerm);
+    
+    return matchesSearch;
   });
 
   return (
     <div className="space-y-6">
-      {/* Real-time Monitoring Header */}
-      <Card className="cyber-card bg-gradient-to-r from-primary/10 via-secondary/5 to-accent/10 border-primary/30">
+      {/* Audit Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="cyber-card">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-primary cyber-text-glow">
+              {auditStats?.totalActions || 0}
+            </div>
+            <div className="text-sm text-muted-foreground">Total Actions</div>
+          </CardContent>
+        </Card>
+        <Card className="cyber-card">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-secondary cyber-text-glow">
+              {auditStats?.approvals || 0}
+            </div>
+            <div className="text-sm text-muted-foreground">Approvals</div>
+          </CardContent>
+        </Card>
+        <Card className="cyber-card">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-destructive cyber-text-glow">
+              {auditStats?.rejections || 0}
+            </div>
+            <div className="text-sm text-muted-foreground">Rejections</div>
+          </CardContent>
+        </Card>
+        <Card className="cyber-card">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-accent cyber-text-glow">
+              {auditStats?.suspicious || 0}
+            </div>
+            <div className="text-sm text-muted-foreground">Suspicious</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Audit Logs */}
+      <Card className="cyber-card neural-network">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-3 rounded-lg bg-primary/20 border border-primary/50">
-                <Shield className="w-6 h-6 text-primary cyber-pulse" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold cyber-text-glow">ADMIN SURVEILLANCE CENTER</h2>
-                <p className="text-muted-foreground">Real-time monitoring • Full audit trail • Behavioral analysis</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <div className="text-sm text-muted-foreground">Active Sessions</div>
-                <div className="text-2xl font-bold text-secondary cyber-text-glow">12</div>
-              </div>
-              <div className="w-3 h-3 bg-secondary rounded-full cyber-pulse"></div>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary cyber-text-glow">{auditStats?.totalActions || 1247}</div>
-              <div className="text-sm text-muted-foreground">Total Actions Today</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-accent cyber-text-glow">{auditStats?.approvals || 89}</div>
-              <div className="text-sm text-muted-foreground">Approvals</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-destructive cyber-text-glow">{auditStats?.rejections || 156}</div>
-              <div className="text-sm text-muted-foreground">Rejections</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-secondary cyber-text-glow">{auditStats?.suspicious || 3}</div>
-              <div className="text-sm text-muted-foreground">Suspicious Activity</div>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center space-x-2">
+              <Shield className="w-5 h-5 text-primary cyber-pulse" />
+              <span className="cyber-text-glow">ADMIN AUDIT LOGS</span>
+            </CardTitle>
+            <div className="flex space-x-2">
+              <Button
+                variant={activeTab === "actions" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveTab("actions")}
+                className={activeTab === "actions" ? "neon-button" : "glass-effect"}
+                data-testid="tab-actions"
+              >
+                <Activity className="w-4 h-4 mr-2" />
+                Actions
+              </Button>
+              <Button
+                variant={activeTab === "sessions" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveTab("sessions")}
+                className={activeTab === "sessions" ? "neon-button" : "glass-effect"}
+                data-testid="tab-sessions"
+              >
+                <Monitor className="w-4 h-4 mr-2" />
+                Sessions
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Control Panel */}
-      <Card className="cyber-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Terminal className="w-5 h-5 text-accent" />
-            <span>Monitoring Controls</span>
-          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="neon-border">
-                <SelectValue placeholder="Time Range" />
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4 mb-6">
+            <div className="flex-1 min-w-64">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder={activeTab === "actions" ? "Search actions, admins, targets..." : "Search sessions, admins, IPs..."}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 glass-effect"
+                  data-testid="search-input"
+                />
+              </div>
+            </div>
+            
+            {activeTab === "actions" && (
+              <Select value={filterAction} onValueChange={setFilterAction}>
+                <SelectTrigger className="w-40 glass-effect">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Actions</SelectItem>
+                  <SelectItem value="approve">Approve</SelectItem>
+                  <SelectItem value="reject">Reject</SelectItem>
+                  <SelectItem value="hold">Hold</SelectItem>
+                  <SelectItem value="request_edit">Request Edit</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+
+            <Select value={filterTimeRange} onValueChange={setFilterTimeRange}>
+              <SelectTrigger className="w-32 glass-effect">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="1h">Last Hour</SelectItem>
-                <SelectItem value="24h">Last 24 Hours</SelectItem>
-                <SelectItem value="7d">Last 7 Days</SelectItem>
-                <SelectItem value="30d">Last 30 Days</SelectItem>
+                <SelectItem value="24h">Last 24h</SelectItem>
+                <SelectItem value="7d">Last 7 days</SelectItem>
+                <SelectItem value="30d">Last 30 days</SelectItem>
               </SelectContent>
             </Select>
-
-            <Select value={selectedAdmin} onValueChange={setSelectedAdmin}>
-              <SelectTrigger className="neon-border">
-                <SelectValue placeholder="All Admins" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">All Admins</SelectItem>
-                <SelectItem value="admin-001">Admin-001 (Sarah Chen)</SelectItem>
-                <SelectItem value="admin-002">Admin-002 (Mike Rodriguez)</SelectItem>
-                <SelectItem value="executive-001">Executive-001 (David Kim)</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={actionFilter} onValueChange={setActionFilter}>
-              <SelectTrigger className="neon-border">
-                <SelectValue placeholder="All Actions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">All Actions</SelectItem>
-                <SelectItem value="approve">Approvals</SelectItem>
-                <SelectItem value="reject">Rejections</SelectItem>
-                <SelectItem value="vault">Vault Actions</SelectItem>
-                <SelectItem value="login">Login Events</SelectItem>
-                <SelectItem value="logout">Logout Events</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button className="neon-button" data-testid="button-export-logs">
-              <Database className="w-4 h-4 mr-2" />
-              Export Logs
-            </Button>
           </div>
-        </CardContent>
-      </Card>
 
-      <Tabs defaultValue="sessions" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 bg-card/50 border border-border/30">
-          <TabsTrigger value="sessions" className="data-[state=active]:bg-primary/20">Session Logs</TabsTrigger>
-          <TabsTrigger value="actions" className="data-[state=active]:bg-secondary/20">Action Logs</TabsTrigger>
-          <TabsTrigger value="realtime" className="data-[state=active]:bg-accent/20">Real-time Feed</TabsTrigger>
-        </TabsList>
+          {/* Action Logs */}
+          {activeTab === "actions" && (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {filteredActionLogs.map((log) => (
+                <div
+                  key={log.id}
+                  className="p-4 border border-border/30 rounded-lg glass-effect hover:bg-primary/5 transition-all duration-300"
+                  data-testid={`action-log-${log.id}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      {getActionIcon(log.action)}
+                      <div>
+                        <div className="flex items-center space-x-2 mb-1">
+                          <Badge className={getActionColor(log.action)}>
+                            {log.action.replace("_", " ").toUpperCase()}
+                          </Badge>
+                          <span className="font-mono text-sm text-muted-foreground">
+                            {log.targetType}: {log.targetId}
+                          </span>
+                        </div>
+                        <div className="text-sm">
+                          <User className="w-3 h-3 inline mr-1" />
+                          <span className="font-medium">{log.adminName}</span>
+                          {" • "}
+                          <span className="text-muted-foreground">{log.reason}</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          <Calendar className="w-3 h-3 inline mr-1" />
+                          {new Date(log.createdAt).toLocaleString()}
+                          {" • "}
+                          <MapPin className="w-3 h-3 inline mr-1" />
+                          {log.ipAddress}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedLog(log)}
+                          className="glass-effect"
+                          data-testid={`view-log-${log.id}`}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="cyber-card">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center space-x-2 cyber-text-glow">
+                            <Shield className="w-5 h-5 text-primary" />
+                            <span>Action Details - {selectedLog?.id}</span>
+                          </DialogTitle>
+                        </DialogHeader>
+                        
+                        {selectedLog && "action" in selectedLog && (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium">Admin</label>
+                                <div className="font-mono">{selectedLog.adminName}</div>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium">Action</label>
+                                <Badge className={getActionColor(selectedLog.action)}>
+                                  {selectedLog.action.replace("_", " ").toUpperCase()}
+                                </Badge>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium">Target</label>
+                                <div className="font-mono text-sm">
+                                  {selectedLog.targetType}: {selectedLog.targetId}
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium">IP Address</label>
+                                <div className="font-mono">{selectedLog.ipAddress}</div>
+                              </div>
+                            </div>
+                            
+                            {selectedLog.previousStatus && (
+                              <div>
+                                <label className="text-sm font-medium">Status Change</label>
+                                <div className="text-sm">
+                                  {selectedLog.previousStatus} → {selectedLog.newStatus}
+                                </div>
+                              </div>
+                            )}
 
-        <TabsContent value="sessions" className="space-y-4">
-          <Card className="cyber-card">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="w-5 h-5 text-secondary" />
-                <span>Admin Session Activity</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  {
-                    id: "session-001",
-                    admin: "admin-001",
-                    name: "Sarah Chen",
-                    action: "Login",
-                    timestamp: "2024-01-15 15:23:07",
-                    ip: "192.168.1.101",
-                    location: "San Francisco, CA",
-                    device: "Chrome on Windows 11",
-                    suspicious: false,
-                    duration: "2h 15m"
-                  },
-                  {
-                    id: "session-002", 
-                    admin: "admin-002",
-                    name: "Mike Rodriguez",
-                    action: "Active Session",
-                    timestamp: "2024-01-15 13:45:22", 
-                    ip: "10.0.0.55",
-                    location: "New York, NY",
-                    device: "Firefox on macOS",
-                    suspicious: false,
-                    duration: "4h 38m"
-                  },
-                  {
-                    id: "session-003",
-                    admin: "unknown",
-                    name: "Unknown User",
-                    action: "Failed Login",
-                    timestamp: "2024-01-15 14:12:33",
-                    ip: "203.0.113.42",
-                    location: "Unknown Location",
-                    device: "Unknown Browser",
-                    suspicious: true,
-                    duration: "0m"
-                  }
-                ].map((session) => (
-                  <div 
-                    key={session.id} 
-                    className={`p-4 rounded-lg border ${session.suspicious ? 'border-destructive/50 bg-destructive/5' : 'border-border/30 bg-card/30'}`}
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
-                      <div className="flex items-center space-x-3">
-                        <div className={`p-2 rounded ${session.suspicious ? 'bg-destructive/20' : 'bg-secondary/20'}`}>
-                          {session.suspicious ? (
-                            <AlertTriangle className="w-4 h-4 text-destructive" />
-                          ) : (
-                            <User className="w-4 h-4 text-secondary" />
+                            <div>
+                              <label className="text-sm font-medium">Reason</label>
+                              <div className="p-3 bg-muted/20 rounded text-sm">
+                                {selectedLog.reason}
+                              </div>
+                            </div>
+
+                            {selectedLog.moderatorNotes && (
+                              <div>
+                                <label className="text-sm font-medium">Moderator Notes</label>
+                                <div className="p-3 bg-muted/20 rounded text-sm">
+                                  {selectedLog.moderatorNotes}
+                                </div>
+                              </div>
+                            )}
+
+                            <div>
+                              <label className="text-sm font-medium">Timestamp</label>
+                              <div className="font-mono text-sm">
+                                {new Date(selectedLog.createdAt).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Session Logs */}
+          {activeTab === "sessions" && (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {filteredSessionLogs.map((log) => (
+                <div
+                  key={log.id}
+                  className="p-4 border border-border/30 rounded-lg glass-effect hover:bg-primary/5 transition-all duration-300"
+                  data-testid={`session-log-${log.id}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Monitor className="w-5 h-5 text-secondary" />
+                      <div>
+                        <div className="flex items-center space-x-2 mb-1">
+                          <Badge variant={log.sessionType === "login" ? "default" : "outline"}>
+                            {log.sessionType.toUpperCase()}
+                          </Badge>
+                          {log.suspicious && (
+                            <Badge variant="destructive">
+                              <AlertTriangle className="w-3 h-3 mr-1" />
+                              SUSPICIOUS
+                            </Badge>
                           )}
                         </div>
-                        <div>
-                          <div className="font-semibold">{session.name}</div>
-                          <div className="text-xs font-mono text-muted-foreground">{session.admin}</div>
+                        <div className="text-sm">
+                          <User className="w-3 h-3 inline mr-1" />
+                          <span className="font-medium">{log.adminName}</span>
+                          {" • "}
+                          <MapPin className="w-3 h-3 inline mr-1" />
+                          {log.location.city}, {log.location.country}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          <Calendar className="w-3 h-3 inline mr-1" />
+                          {new Date(log.createdAt).toLocaleString()}
+                          {" • "}
+                          IP: {log.ipAddress}
                         </div>
                       </div>
-
-                      <div>
-                        <Badge 
-                          variant={
-                            session.action === "Login" ? "secondary" :
-                            session.action === "Active Session" ? "default" :
-                            "destructive"
-                          }
-                          className="font-mono"
-                        >
-                          {session.action}
-                        </Badge>
-                      </div>
-
-                      <div className="text-sm">
-                        <div className="font-mono">{session.timestamp}</div>
-                        <div className="text-muted-foreground">Duration: {session.duration}</div>
-                      </div>
-
-                      <div className="text-sm">
-                        <div className="font-mono">{session.ip}</div>
-                        <div className="text-muted-foreground">{session.location}</div>
-                      </div>
-
-                      <div className="text-sm text-muted-foreground">
-                        {session.device}
-                      </div>
-
-                      <div className="flex justify-end">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="neon-button"
-                          data-testid={`button-details-${session.id}`}
-                        >
-                          <Eye className="w-4 h-4 mr-1" />
-                          Details
-                        </Button>
-                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="actions" className="space-y-4">
-          <Card className="cyber-card">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Activity className="w-5 h-5 text-accent" />
-                <span>Admin Action History</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  {
-                    id: "action-001",
-                    admin: "admin-001",
-                    action: "APPROVE",
-                    target: "Content Item #12847",
-                    reason: "Compliant with community guidelines",
-                    timestamp: "2024-01-15 15:23:07",
-                    ip: "192.168.1.101",
-                    severity: "normal"
-                  },
-                  {
-                    id: "action-002", 
-                    admin: "admin-002",
-                    action: "REJECT",
-                    target: "Content Item #12848",
-                    reason: "Contains inappropriate sexual content",
-                    timestamp: "2024-01-15 15:20:15",
-                    ip: "10.0.0.55", 
-                    severity: "normal"
-                  },
-                  {
-                    id: "action-003",
-                    admin: "executive-001", 
-                    action: "VAULT",
-                    target: "Content Item #12849",
-                    reason: "Suspected illegal content - escalated to vault",
-                    timestamp: "2024-01-15 14:55:33",
-                    ip: "172.16.0.10",
-                    severity: "critical"
-                  },
-                  {
-                    id: "action-004",
-                    admin: "admin-001",
-                    action: "ESCALATE",
-                    target: "Live Stream #5634", 
-                    reason: "Borderline content requiring executive review",
-                    timestamp: "2024-01-15 14:42:22",
-                    ip: "192.168.1.101",
-                    severity: "high"
-                  }
-                ].map((action) => (
-                  <div 
-                    key={action.id}
-                    className={`p-4 rounded-lg border font-mono text-sm ${
-                      action.severity === 'critical' ? 'border-destructive/50 bg-destructive/5' :
-                      action.severity === 'high' ? 'border-accent/50 bg-accent/5' :
-                      'border-border/30 bg-card/30'
-                    }`}
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-                      <div>
-                        <div className="font-semibold">{action.timestamp}</div>
-                        <div className="text-muted-foreground">{action.admin}</div>
-                      </div>
-
-                      <div>
-                        <Badge 
-                          variant={
-                            action.action === "APPROVE" ? "secondary" :
-                            action.action === "REJECT" ? "destructive" :
-                            action.action === "VAULT" ? "destructive" :
-                            "default"
-                          }
-                          className="font-bold"
-                        >
-                          {action.action}
-                        </Badge>
-                      </div>
-
-                      <div>
-                        <div className="font-medium">{action.target}</div>
-                        <div className="text-muted-foreground text-xs">{action.ip}</div>
-                      </div>
-
-                      <div className="text-muted-foreground">
-                        {action.reason}
-                      </div>
-
-                      <div className="flex justify-end">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          className="neon-button"
-                          data-testid={`button-audit-${action.id}`}
-                        >
-                          Full Audit
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="realtime" className="space-y-4">
-          <Card className="cyber-card bg-gradient-to-br from-background to-muted/10">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-secondary rounded-full cyber-pulse"></div>
-                <span>Live Activity Feed</span>
-                <Badge variant="secondary" className="ml-auto">LIVE</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 font-mono text-sm max-h-96 overflow-y-auto">
-                <div className="flex items-center justify-between py-2 border-b border-border/20">
-                  <span className="text-muted-foreground">15:23:07.245</span>
-                  <span className="text-secondary">admin-001</span>
-                  <span className="text-primary">CONTENT_APPROVE</span>
-                  <span className="text-accent">item-12847</span>
-                  <span className="text-muted-foreground">192.168.1.101</span>
                 </div>
-                <div className="flex items-center justify-between py-2 border-b border-border/20">
-                  <span className="text-muted-foreground">15:22:58.891</span>
-                  <span className="text-secondary">admin-002</span>
-                  <span className="text-destructive">CONTENT_REJECT</span>
-                  <span className="text-accent">item-12848</span>
-                  <span className="text-muted-foreground">10.0.0.55</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-border/20">
-                  <span className="text-muted-foreground">15:22:45.123</span>
-                  <span className="text-secondary">system</span>
-                  <span className="text-primary">AUTO_BLOCK</span>
-                  <span className="text-accent">item-12849</span>
-                  <span className="text-muted-foreground">automated</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-border/20">
-                  <span className="text-muted-foreground">15:22:33.456</span>
-                  <span className="text-secondary">admin-001</span>
-                  <span className="text-accent">SESSION_START</span>
-                  <span className="text-accent">dashboard</span>
-                  <span className="text-muted-foreground">192.168.1.101</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

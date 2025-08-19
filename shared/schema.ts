@@ -145,6 +145,48 @@ export const auditTrail = pgTable("audit_trail", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Multi-platform management tables
+export const platforms = pgTable("platforms", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  domain: varchar("domain").notNull().unique(),
+  niche: varchar("niche").notNull(),
+  status: varchar("status").notNull().default("active"), // active, inactive, maintenance, error
+  apiEndpoint: varchar("api_endpoint").notNull(),
+  apiKey: varchar("api_key"),
+  webhookUrl: varchar("webhook_url").notNull(),
+  moderationRules: jsonb("moderation_rules").notNull(),
+  stats: jsonb("stats").notNull().default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  lastActive: timestamp("last_active").defaultNow(),
+});
+
+// Platform connections tracking
+export const platformConnections = pgTable("platform_connections", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  platformId: varchar("platform_id").notNull().references(() => platforms.id),
+  connectionType: varchar("connection_type").notNull(), // webhook, api, direct
+  status: varchar("status").notNull().default("connected"), // connected, disconnected, error
+  lastHeartbeat: timestamp("last_heartbeat").defaultNow(),
+  latency: integer("latency").default(0),
+  errorCount: integer("error_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// AI Analysis results for content (enhanced)
+export const aiAnalysisResults = pgTable("ai_analysis_results", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id").notNull().references(() => contentItems.id),
+  analysisType: varchar("analysis_type").notNull(), // nudenet, chatgpt-4o, perspective, detoxify, pdq-hash
+  confidence: decimal("confidence", { precision: 5, scale: 4 }).notNull(),
+  result: jsonb("result").notNull(),
+  processingTime: integer("processing_time").notNull(), // in milliseconds
+  modelVersion: varchar("model_version").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -205,6 +247,23 @@ export const insertAuditTrailSchema = createInsertSchema(auditTrail).omit({
   createdAt: true,
 });
 
+export const insertPlatformSchema = createInsertSchema(platforms).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPlatformConnectionSchema = createInsertSchema(platformConnections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAIAnalysisResultSchema = createInsertSchema(aiAnalysisResults).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -228,3 +287,11 @@ export type ContentFilter = typeof contentFilters.$inferSelect;
 export type InsertContentFilter = z.infer<typeof insertContentFilterSchema>;
 export type AuditTrail = typeof auditTrail.$inferSelect;
 export type InsertAuditTrail = z.infer<typeof insertAuditTrailSchema>;
+
+// Multi-platform types
+export type Platform = typeof platforms.$inferSelect;
+export type InsertPlatform = z.infer<typeof insertPlatformSchema>;
+export type PlatformConnection = typeof platformConnections.$inferSelect;
+export type InsertPlatformConnection = z.infer<typeof insertPlatformConnectionSchema>;
+export type AIAnalysisResult = typeof aiAnalysisResults.$inferSelect;
+export type InsertAIAnalysisResult = z.infer<typeof insertAIAnalysisResultSchema>;

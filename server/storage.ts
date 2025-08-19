@@ -58,6 +58,16 @@ export interface IStorage {
     pendingReview: number;
     liveStreams: number;
   }>;
+
+  // Multi-platform operations
+  getAllPlatforms(): Promise<any[]>;
+  createPlatform(platformData: any): Promise<any>;
+  updatePlatform(id: string, updates: any): Promise<any>;
+  testPlatformConnection(platformId: string): Promise<any>;
+  getPlatformConnections(): Promise<any[]>;
+  getPlatformStats(): Promise<any>;
+  getRecentAnalysis(limit: number): Promise<any[]>;
+  processContentAnalysis(request: any): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -242,6 +252,208 @@ export class DatabaseStorage implements IStorage {
       autoBlocked: autoBlocked.count,
       pendingReview: pendingReview.count,
       liveStreams: activeStreams.count,
+    };
+  }
+
+  // Multi-platform operations (temporary mock implementation)
+  async getAllPlatforms(): Promise<any[]> {
+    return [
+      {
+        id: "platform-1",
+        name: "FanzMain Adult",
+        domain: "main.fanz.com",
+        niche: "adult_content",
+        status: "active",
+        apiEndpoint: "https://api.main.fanz.com/v1",
+        webhookUrl: "https://webhooks.main.fanz.com/moderation",
+        moderationRules: {
+          autoBlock: true,
+          riskThreshold: 0.7,
+          requireManualReview: false,
+          allowedContentTypes: ["image", "video", "text"],
+          blockedKeywords: [],
+          customRules: []
+        },
+        stats: {
+          totalContent: 15847,
+          dailyContent: 234,
+          blockedContent: 89,
+          flaggedContent: 23,
+          lastSync: new Date().toISOString()
+        },
+        createdAt: "2024-01-10T10:00:00Z",
+        lastActive: new Date().toISOString()
+      },
+      {
+        id: "platform-2", 
+        name: "FanzLive Streaming",
+        domain: "live.fanz.com",
+        niche: "live_streaming",
+        status: "active",
+        apiEndpoint: "https://api.live.fanz.com/v1",
+        webhookUrl: "https://webhooks.live.fanz.com/moderation",
+        moderationRules: {
+          autoBlock: false,
+          riskThreshold: 0.8,
+          requireManualReview: true,
+          allowedContentTypes: ["live_stream", "video"],
+          blockedKeywords: [],
+          customRules: []
+        },
+        stats: {
+          totalContent: 8934,
+          dailyContent: 167,
+          blockedContent: 34,
+          flaggedContent: 12,
+          lastSync: new Date().toISOString()
+        },
+        createdAt: "2024-01-12T14:00:00Z",
+        lastActive: new Date().toISOString()
+      },
+      {
+        id: "platform-3",
+        name: "FanzSocial Community",
+        domain: "social.fanz.com", 
+        niche: "social_media",
+        status: "active",
+        apiEndpoint: "https://api.social.fanz.com/v1",
+        webhookUrl: "https://webhooks.social.fanz.com/moderation",
+        moderationRules: {
+          autoBlock: true,
+          riskThreshold: 0.6,
+          requireManualReview: false,
+          allowedContentTypes: ["text", "image"],
+          blockedKeywords: ["spam", "harassment"],
+          customRules: []
+        },
+        stats: {
+          totalContent: 32156,
+          dailyContent: 456,
+          blockedContent: 123,
+          flaggedContent: 67,
+          lastSync: new Date().toISOString()
+        },
+        createdAt: "2024-01-08T09:00:00Z",
+        lastActive: new Date().toISOString()
+      }
+    ];
+  }
+
+  async createPlatform(platformData: any): Promise<any> {
+    const platform = {
+      id: `platform-${Date.now()}`,
+      ...platformData,
+      status: "active",
+      moderationRules: {
+        autoBlock: platformData.autoBlock || false,
+        riskThreshold: platformData.riskThreshold || 0.7,
+        requireManualReview: platformData.requireManualReview || false,
+        allowedContentTypes: ["image", "video", "text", "live_stream"],
+        blockedKeywords: [],
+        customRules: []
+      },
+      stats: {
+        totalContent: 0,
+        dailyContent: 0,
+        blockedContent: 0,
+        flaggedContent: 0,
+        lastSync: new Date().toISOString()
+      },
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString()
+    };
+    return platform;
+  }
+
+  async updatePlatform(id: string, updates: any): Promise<any> {
+    return { id, ...updates, updatedAt: new Date().toISOString() };
+  }
+
+  async testPlatformConnection(platformId: string): Promise<any> {
+    const latency = Math.floor(Math.random() * 200) + 50;
+    const success = Math.random() > 0.1;
+    
+    return {
+      success,
+      latency,
+      timestamp: new Date().toISOString(),
+      error: success ? undefined : "Connection timeout"
+    };
+  }
+
+  async getPlatformConnections(): Promise<any[]> {
+    return [
+      {
+        id: "conn-1",
+        platformId: "platform-1",
+        connectionType: "webhook",
+        status: "connected",
+        lastHeartbeat: new Date().toISOString(),
+        latency: 145,
+        errorCount: 0
+      },
+      {
+        id: "conn-2",
+        platformId: "platform-2",
+        connectionType: "api",
+        status: "connected",
+        lastHeartbeat: new Date().toISOString(),
+        latency: 89,
+        errorCount: 0
+      },
+      {
+        id: "conn-3",
+        platformId: "platform-3",
+        connectionType: "webhook",
+        status: "connected",
+        lastHeartbeat: new Date().toISOString(),
+        latency: 67,
+        errorCount: 0
+      }
+    ];
+  }
+
+  async getPlatformStats(): Promise<any> {
+    return {
+      totalPlatforms: 3,
+      activePlatforms: 3,
+      totalContent: 56937,
+      flaggedContent: 102,
+      avgResponseTime: 134,
+      uptime: 99.9
+    };
+  }
+
+  async getRecentAnalysis(limit: number = 50): Promise<any[]> {
+    return Array.from({ length: Math.min(limit, 20) }, (_, i) => ({
+      id: `analysis-${i}`,
+      contentId: `content-${i}`,
+      analysisType: "chatgpt-4o",
+      confidence: (Math.random() * 0.4 + 0.6).toFixed(4),
+      result: {
+        riskScore: Math.random(),
+        flaggedContent: Math.random() > 0.7 ? ["explicit_content"] : [],
+        recommendations: Math.random() > 0.7 ? ["Block content"] : ["Approve content"]
+      },
+      processingTime: Math.floor(Math.random() * 2000) + 500,
+      modelVersion: "gpt-4o",
+      createdAt: new Date(Date.now() - i * 60000).toISOString(),
+      platformName: ["FanzMain Adult", "FanzLive Streaming", "FanzSocial Community"][i % 3],
+      contentType: ["image", "video", "text", "live_stream"][i % 4]
+    }));
+  }
+
+  async processContentAnalysis(request: any): Promise<any> {
+    const riskScore = Math.random();
+    const confidence = Math.random() * 0.4 + 0.6;
+
+    return {
+      analysisId: `analysis-${Date.now()}`,
+      riskScore,
+      confidence,
+      recommendations: riskScore > 0.7 ? ["Block content"] : ["Approve content"],
+      processingTime: Math.floor(Math.random() * 2000) + 500,
+      flaggedContent: riskScore > 0.7 ? ["explicit_content"] : []
     };
   }
 }
