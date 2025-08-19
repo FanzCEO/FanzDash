@@ -3,99 +3,106 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(210 25% 7.8431%);
-  --card: hsl(180 6.6667% 97.0588%);
-  --card-foreground: hsl(210 25% 7.8431%);
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(210 25% 7.8431%);
-  --primary: hsl(203.8863 88.2845% 53.1373%);
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(210 25% 7.8431%);
-  --secondary-foreground: hsl(0 0% 100%);
-  --muted: hsl(240 1.9608% 90%);
-  --muted-foreground: hsl(210 25% 7.8431%);
-  --accent: hsl(211.5789 51.3514% 92.7451%);
-  --accent-foreground: hsl(203.8863 88.2845% 53.1373%);
-  --destructive: hsl(356.3033 90.5579% 54.3137%);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(201.4286 30.4348% 90.9804%);
-  --input: hsl(200 23.0769% 97.4510%);
-  --ring: hsl(202.8169 89.1213% 53.1373%);
-  --chart-1: hsl(203.8863 88.2845% 53.1373%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: hsl(180 6.6667% 97.0588%);
-  --sidebar-foreground: hsl(210 25% 7.8431%);
-  --sidebar-primary: hsl(203.8863 88.2845% 53.1373%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(211.5789 51.3514% 92.7451%);
-  --sidebar-accent-foreground: hsl(203.8863 88.2845% 53.1373%);
-  --sidebar-border: hsl(205.0000 25.0000% 90.5882%);
-  --sidebar-ring: hsl(202.8169 89.1213% 53.1373%);
-  --font-sans: Open Sans, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
-  --radius: 1.3rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  /* Cyberpunk/Futurism Dark Theme - Default to dark mode */
+  --background: hsl(215 39% 7%);
+  --foreground: hsl(180 100% 90%);
+  --card: hsl(216 34% 9%);
+  --card-foreground: hsl(180 100% 90%);
+  --popover: hsl(216 34% 9%);
+  --popover-foreground: hsl(180 100% 90%);
+  --primary: hsl(310 100% 69%);
+  --primary-foreground: hsl(216 34% 9%);
+  --secondary: hsl(193 100% 50%);
+  --secondary-foreground: hsl(216 34% 9%);
+  --muted: hsl(217 32% 17%);
+  --muted-foreground: hsl(180 8% 60%);
+  --accent: hsl(60 100% 50%);
+  --accent-foreground: hsl(216 34% 9%);
+  --destructive: hsl(340 82% 52%);
+  --destructive-foreground: hsl(180 100% 90%);
+  --border: hsl(217 32% 20%);
+  --input: hsl(217 32% 15%);
+  --ring: hsl(310 100% 69%);
+  --chart-1: hsl(310 100% 69%);
+  --chart-2: hsl(193 100% 50%);
+  --chart-3: hsl(340 82% 52%);
+  --chart-4: hsl(60 100% 50%);
+  --chart-5: hsl(150 100% 50%);
+  
+  /* Sidebar with cyberpunk theme */
+  --sidebar: hsl(215 39% 5%);
+  --sidebar-foreground: hsl(180 100% 90%);
+  --sidebar-primary: hsl(310 100% 69%);
+  --sidebar-primary-foreground: hsl(215 39% 5%);
+  --sidebar-accent: hsl(217 32% 12%);
+  --sidebar-accent-foreground: hsl(193 100% 50%);
+  --sidebar-border: hsl(217 32% 15%);
+  --sidebar-ring: hsl(310 100% 69%);
+  
+  /* Cyberpunk specific colors */
+  --neon-cyan: hsl(193 100% 50%);
+  --neon-pink: hsl(340 82% 52%);
+  --neon-purple: hsl(310 100% 69%);
+  --neon-yellow: hsl(60 100% 50%);
+  --electric-blue: hsl(195 100% 50%);
+  --acid-green: hsl(150 100% 50%);
+  --deep-black: hsl(0 0% 0%);
+  --dark-navy: hsl(215 39% 7%);
+  --cyber-gray: hsl(217 32% 17%);
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'Georgia', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --radius: 0.75rem;
+  
+  /* Cyberpunk shadows with neon glow */
+  --shadow-2xs: 0px 2px 4px 0px hsl(310 100% 69% / 0.1);
+  --shadow-xs: 0px 2px 4px 0px hsl(310 100% 69% / 0.15);
+  --shadow-sm: 0px 4px 8px 0px hsl(310 100% 69% / 0.2), 0px 2px 4px -1px hsl(193 100% 50% / 0.1);
+  --shadow: 0px 6px 12px 0px hsl(310 100% 69% / 0.25), 0px 2px 4px -1px hsl(193 100% 50% / 0.15);
+  --shadow-md: 0px 8px 16px 0px hsl(310 100% 69% / 0.3), 0px 4px 8px -1px hsl(193 100% 50% / 0.2);
+  --shadow-lg: 0px 12px 24px 0px hsl(310 100% 69% / 0.35), 0px 6px 12px -1px hsl(193 100% 50% / 0.25);
+  --shadow-xl: 0px 16px 32px 0px hsl(310 100% 69% / 0.4), 0px 8px 16px -1px hsl(193 100% 50% / 0.3);
+  --shadow-2xl: 0px 24px 48px 0px hsl(310 100% 69% / 0.45);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 }
 
 .dark {
-  --background: hsl(0 0% 0%);
-  --foreground: hsl(200 6.6667% 91.1765%);
-  --card: hsl(228 9.8039% 10%);
-  --card-foreground: hsl(0 0% 85.0980%);
-  --popover: hsl(0 0% 0%);
-  --popover-foreground: hsl(200 6.6667% 91.1765%);
-  --primary: hsl(203.7736 87.6033% 52.5490%);
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(195.0000 15.3846% 94.9020%);
-  --secondary-foreground: hsl(210 25% 7.8431%);
-  --muted: hsl(0 0% 9.4118%);
-  --muted-foreground: hsl(210 3.3898% 46.2745%);
-  --accent: hsl(205.7143 70% 7.8431%);
-  --accent-foreground: hsl(203.7736 87.6033% 52.5490%);
-  --destructive: hsl(356.3033 90.5579% 54.3137%);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(210 5.2632% 14.9020%);
-  --input: hsl(207.6923 27.6596% 18.4314%);
-  --ring: hsl(202.8169 89.1213% 53.1373%);
-  --chart-1: hsl(203.8863 88.2845% 53.1373%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: hsl(228 9.8039% 10%);
-  --sidebar-foreground: hsl(0 0% 85.0980%);
-  --sidebar-primary: hsl(202.8169 89.1213% 53.1373%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(205.7143 70% 7.8431%);
-  --sidebar-accent-foreground: hsl(203.7736 87.6033% 52.5490%);
-  --sidebar-border: hsl(205.7143 15.7895% 26.0784%);
-  --sidebar-ring: hsl(202.8169 89.1213% 53.1373%);
-  --font-sans: Open Sans, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
-  --radius: 1.3rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  /* Enhanced dark mode with deeper cyberpunk aesthetics */
+  --background: hsl(215 39% 5%);
+  --foreground: hsl(180 100% 95%);
+  --card: hsl(216 34% 7%);
+  --card-foreground: hsl(180 100% 95%);
+  --popover: hsl(216 34% 7%);
+  --popover-foreground: hsl(180 100% 95%);
+  --primary: hsl(310 100% 75%);
+  --primary-foreground: hsl(216 34% 7%);
+  --secondary: hsl(193 100% 60%);
+  --secondary-foreground: hsl(216 34% 7%);
+  --muted: hsl(217 32% 12%);
+  --muted-foreground: hsl(180 8% 70%);
+  --accent: hsl(60 100% 60%);
+  --accent-foreground: hsl(216 34% 7%);
+  --destructive: hsl(340 82% 60%);
+  --destructive-foreground: hsl(180 100% 95%);
+  --border: hsl(217 32% 15%);
+  --input: hsl(217 32% 10%);
+  --ring: hsl(310 100% 75%);
+  --chart-1: hsl(310 100% 75%);
+  --chart-2: hsl(193 100% 60%);
+  --chart-3: hsl(340 82% 60%);
+  --chart-4: hsl(60 100% 60%);
+  --chart-5: hsl(150 100% 60%);
+  
+  --sidebar: hsl(215 39% 3%);
+  --sidebar-foreground: hsl(180 100% 95%);
+  --sidebar-primary: hsl(310 100% 75%);
+  --sidebar-primary-foreground: hsl(215 39% 3%);
+  --sidebar-accent: hsl(217 32% 8%);
+  --sidebar-accent-foreground: hsl(193 100% 60%);
+  --sidebar-border: hsl(217 32% 10%);
+  --sidebar-ring: hsl(310 100% 75%);
 }
 
 @layer base {
@@ -105,5 +112,179 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)));
+  }
+  
+  /* Cyberpunk gradient backgrounds */
+  .cyber-gradient {
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)), hsl(var(--secondary) / 0.1));
+  }
+  
+  .neon-border {
+    border: 1px solid hsl(var(--secondary));
+    box-shadow: 0 0 10px hsl(var(--secondary) / 0.3), inset 0 0 10px hsl(var(--secondary) / 0.1);
+  }
+  
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Glowing text effects */
+  .neon-text {
+    color: hsl(var(--secondary));
+    text-shadow: 0 0 10px hsl(var(--secondary)), 0 0 20px hsl(var(--secondary)), 0 0 30px hsl(var(--secondary));
+  }
+  
+  .cyber-text-glow {
+    text-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary));
+  }
+  
+  /* Animated pulses */
+  @keyframes cyber-pulse {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.5);
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--secondary) / 0.4);
+    }
+  }
+  
+  .cyber-pulse {
+    animation: cyber-pulse 2s infinite;
+  }
+  
+  /* Scanning line animation */
+  @keyframes scan-line {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(300%);
+      opacity: 0;
+    }
+  }
+  
+  .scan-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--secondary)), transparent);
+    animation: scan-line 3s infinite;
+    pointer-events: none;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, hsl(var(--secondary)), hsl(var(--primary)));
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--destructive)));
+  }
+}
+
+/* Utility classes for cyberpunk effects */
+@layer utilities {
+  .cyber-card {
+    @apply bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg relative overflow-hidden;
+    background: linear-gradient(135deg, hsl(var(--card) / 0.8), hsl(var(--muted) / 0.4));
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 
+                0 0 0 1px hsl(var(--border) / 0.5),
+                inset 0 1px 0 hsl(var(--foreground) / 0.1);
+  }
+  
+  .cyber-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(var(--secondary) / 0.1), transparent);
+    transition: left 0.5s;
+  }
+  
+  .cyber-card:hover::before {
+    left: 100%;
+  }
+  
+  .neon-button {
+    @apply relative overflow-hidden;
+    background: linear-gradient(45deg, hsl(var(--primary) / 0.2), hsl(var(--secondary) / 0.1));
+    border: 1px solid hsl(var(--primary) / 0.5);
+    color: hsl(var(--primary));
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.3);
+  }
+  
+  .neon-button:hover {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.6), 0 0 40px hsl(var(--primary) / 0.4);
+    transform: translateY(-1px);
+  }
+  
+  .neon-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.1), transparent);
+    transition: left 0.3s;
+  }
+  
+  .neon-button:hover::before {
+    left: 100%;
+  }
+  
+  .cyber-grid {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .hologram-effect {
+    position: relative;
+    background: linear-gradient(45deg, transparent, hsl(var(--secondary) / 0.05), transparent);
+  }
+  
+  .hologram-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(var(--secondary) / 0.03) 2px,
+      hsl(var(--secondary) / 0.03) 4px
+    );
+    pointer-events: none;
   }
 }
