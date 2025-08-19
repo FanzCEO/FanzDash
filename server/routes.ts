@@ -191,6 +191,154 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Advanced Security & Audit API endpoints
+  app.get('/api/threat-level', async (req, res) => {
+    try {
+      res.json({ 
+        level: "MEDIUM", 
+        score: 73.2, 
+        lastUpdated: new Date().toISOString(),
+        trends: {
+          increasing: true,
+          reason: "Increased suspicious activity detected"
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch threat level" });
+    }
+  });
+
+  app.get('/api/filters', async (req, res) => {
+    try {
+      res.json([
+        {
+          id: "filter-001",
+          name: "High Risk Content",
+          description: "Detects potentially illegal content with 95%+ confidence",
+          filterCriteria: { riskScoreMin: 0.95, contentType: ["image", "video"] },
+          createdBy: "admin-001",
+          isShared: true,
+          usageCount: 847,
+          createdAt: "2024-01-10T10:00:00Z"
+        },
+        {
+          id: "filter-002", 
+          name: "CSAM Detection",
+          description: "Specialized filter for child exploitation material",
+          filterCriteria: { keywords: ["csam"], severity: ["critical"] },
+          createdBy: "executive-001",
+          isShared: false,
+          usageCount: 23,
+          createdAt: "2024-01-15T14:30:00Z"
+        }
+      ]);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch filters" });
+    }
+  });
+
+  app.get('/api/content/filtered', async (req, res) => {
+    try {
+      res.json([
+        {
+          id: "content-001",
+          type: "image",
+          status: "auto_blocked",
+          riskScore: 0.97,
+          createdAt: "2024-01-15T15:23:07Z"
+        }
+      ]);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch filtered content" });
+    }
+  });
+
+  app.get('/api/admin/session-logs', async (req, res) => {
+    try {
+      res.json([
+        {
+          id: "session-001",
+          adminId: "admin-001",
+          sessionType: "login",
+          ipAddress: "192.168.1.101",
+          userAgent: "Chrome/120.0 Windows",
+          location: { city: "San Francisco", country: "US" },
+          suspicious: false,
+          createdAt: "2024-01-15T15:23:07Z"
+        }
+      ]);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch session logs" });
+    }
+  });
+
+  app.get('/api/admin/action-logs', async (req, res) => {
+    try {
+      res.json([
+        {
+          id: "action-001",
+          adminId: "admin-001",
+          action: "approve",
+          targetType: "content_item",
+          targetId: "content-12847",
+          previousStatus: "pending",
+          newStatus: "approved",
+          reason: "Content complies with guidelines",
+          ipAddress: "192.168.1.101",
+          createdAt: "2024-01-15T15:23:07Z"
+        }
+      ]);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch action logs" });
+    }
+  });
+
+  app.get('/api/admin/audit-stats', async (req, res) => {
+    try {
+      res.json({
+        totalActions: 1247,
+        approvals: 847,
+        rejections: 234,
+        suspicious: 3
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch audit stats" });
+    }
+  });
+
+  // Vault and security endpoints
+  app.post('/api/vault/unlock', async (req, res) => {
+    try {
+      const { masterPassword } = req.body;
+      // In production, this would verify against encrypted master password
+      if (masterPassword === "EXECUTIVE_MASTER_2024") {
+        res.json({ success: true, message: "Vault unlocked successfully" });
+      } else {
+        res.status(401).json({ success: false, message: "Invalid master password" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to process vault unlock" });
+    }
+  });
+
+  app.get('/api/vault/contents', async (req, res) => {
+    try {
+      res.json([
+        {
+          id: "vault-001",
+          contentId: "content-99847",
+          vaultReason: "csam",
+          severity: "critical",
+          encryptionKey: "encrypted_key_hash",
+          createdBy: "admin-001",
+          createdAt: "2024-01-15T10:30:00Z"
+        }
+      ]);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch vault contents" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   // WebSocket setup for real-time updates

@@ -203,14 +203,416 @@
   }
 }
 
-/* Utility classes for cyberpunk effects */
+/* Advanced Cyberpunk Effects */
 @layer utilities {
   .cyber-card {
-    @apply bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(var(--card) / 0.8), hsl(var(--muted) / 0.4));
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 
-                0 0 0 1px hsl(var(--border) / 0.5),
-                inset 0 1px 0 hsl(var(--foreground) / 0.1);
+    @apply backdrop-blur-sm border rounded-xl relative overflow-hidden;
+    background: 
+      linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--muted) / 0.8)),
+      radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(var(--secondary) / 0.1) 0%, transparent 50%),
+      linear-gradient(0deg, transparent 24%, hsl(var(--accent) / 0.05) 25%, hsl(var(--accent) / 0.05) 26%, transparent 27%, transparent 74%, hsl(var(--accent) / 0.05) 75%, hsl(var(--accent) / 0.05) 76%, transparent 77%);
+    border: 1px solid;
+    border-image: linear-gradient(45deg, hsl(var(--primary) / 0.5), hsl(var(--secondary) / 0.3), hsl(var(--accent) / 0.4)) 1;
+    box-shadow: 
+      0 0 20px hsl(var(--primary) / 0.2),
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 hsl(var(--foreground) / 0.1),
+      inset 0 -1px 0 hsl(var(--primary) / 0.2);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cyber-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .cyber-card:hover::before {
+    left: 100%;
+  }
+
+  .cyber-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 0 30px hsl(var(--primary) / 0.4),
+      0 12px 48px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 hsl(var(--foreground) / 0.2),
+      inset 0 -1px 0 hsl(var(--primary) / 0.3);
+  }
+
+  .hologram-effect {
+    position: relative;
+  }
+
+  .hologram-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        hsl(var(--primary) / 0.03) 2px,
+        hsl(var(--primary) / 0.03) 4px
+      );
+    pointer-events: none;
+    animation: hologram-scan 3s linear infinite;
+  }
+
+  @keyframes hologram-scan {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(100%); }
+  }
+
+  .cyber-pulse {
+    animation: cyber-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes cyber-pulse {
+    0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
+    50% { opacity: 0.7; filter: drop-shadow(0 0 16px currentColor); }
+  }
+
+  .cyber-text-glow {
+    text-shadow: 
+      0 0 10px hsl(var(--foreground) / 0.5),
+      0 0 20px hsl(var(--primary) / 0.3),
+      0 0 30px hsl(var(--primary) / 0.1);
+  }
+
+  .neon-text {
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .neon-border {
+    border: 1px solid hsl(var(--primary) / 0.5);
+    box-shadow: 
+      0 0 10px hsl(var(--primary) / 0.2),
+      inset 0 0 10px hsl(var(--primary) / 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .neon-border:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: 
+      0 0 20px hsl(var(--primary) / 0.4),
+      inset 0 0 15px hsl(var(--primary) / 0.1);
+    outline: none;
+  }
+
+  .neon-button {
+    position: relative;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.8), hsl(var(--secondary) / 0.6));
+    border: 1px solid hsl(var(--primary) / 0.7);
+    box-shadow: 
+      0 0 15px hsl(var(--primary) / 0.3),
+      inset 0 1px 0 hsl(var(--foreground) / 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .neon-button:hover {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary) / 0.8));
+    box-shadow: 
+      0 0 25px hsl(var(--primary) / 0.5),
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 hsl(var(--foreground) / 0.2);
+    transform: translateY(-1px);
+  }
+
+  .data-grid {
+    background: 
+      linear-gradient(90deg, hsl(var(--muted) / 0.3) 50%, transparent 50%),
+      linear-gradient(hsl(var(--muted) / 0.3) 50%, transparent 50%);
+    background-size: 20px 20px;
+  }
+
+  .neural-network {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .neural-network::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 25% 25%, hsl(var(--primary) / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 25%, hsl(var(--secondary) / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 25% 75%, hsl(var(--accent) / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, hsl(var(--primary) / 0.1) 0%, transparent 50%);
+    animation: neural-pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes neural-pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+  }
+
+  .matrix-rain {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .matrix-rain::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background: 
+      linear-gradient(
+        transparent 0%,
+        hsl(var(--primary) / 0.05) 50%,
+        transparent 100%
+      );
+    animation: matrix-fall 3s linear infinite;
+  }
+
+  @keyframes matrix-fall {
+    0% { top: -100%; }
+    100% { top: 100%; }
+  }
+
+  /* Revolutionary Cyberpunk Particle Effects */
+  .particle-field {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: hsl(var(--primary));
+    border-radius: 50%;
+    animation: float-particle 8s linear infinite;
+    filter: blur(0.5px);
+  }
+
+  @keyframes float-particle {
+    0% {
+      transform: translateY(100vh) translateX(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100vh) translateX(50px);
+      opacity: 0;
+    }
+  }
+
+  /* Advanced Scan Lines Effect */
+  .scan-lines {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-lines::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(var(--primary) / 0.03) 2px,
+      hsl(var(--primary) / 0.03) 4px
+    );
+    animation: scan-lines-move 2s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes scan-lines-move {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  /* Quantum Grid Background */
+  .quantum-grid {
+    background-image:
+      linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: -1px -1px;
+    animation: grid-shift 20s linear infinite;
+  }
+
+  @keyframes grid-shift {
+    0% { background-position: -1px -1px; }
+    100% { background-position: 49px 49px; }
+  }
+
+  /* Holographic Interference */
+  .holo-interference {
+    position: relative;
+  }
+
+  .holo-interference::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 1px,
+        hsl(var(--secondary) / 0.02) 1px,
+        hsl(var(--secondary) / 0.02) 2px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 1px,
+        hsl(var(--accent) / 0.02) 1px,
+        hsl(var(--accent) / 0.02) 2px
+      );
+    animation: holo-shift 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes holo-shift {
+    0%, 100% { opacity: 0.3; transform: translateX(0); }
+    50% { opacity: 0.6; transform: translateX(2px); }
+  }
+
+  /* Energy Pulse Animation */
+  .energy-pulse {
+    position: relative;
+  }
+
+  .energy-pulse::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, hsl(var(--primary) / 0.8), transparent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: energy-pulse-expand 2s ease-out infinite;
+  }
+
+  @keyframes energy-pulse-expand {
+    0% {
+      width: 20px;
+      height: 20px;
+      opacity: 1;
+    }
+    100% {
+      width: 200px;
+      height: 200px;
+      opacity: 0;
+    }
+  }
+
+  /* Data Stream Animation */
+  .data-stream {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .data-stream::before {
+    content: '01010110 11000011 10101001 01110100 11001010 01010110 11000011 10101001';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    line-height: 20px;
+    color: hsl(var(--primary) / 0.3);
+    white-space: nowrap;
+    animation: data-flow 15s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes data-flow {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* Electromagnetic Field Effect */
+  .em-field {
+    position: relative;
+  }
+
+  .em-field::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background: conic-gradient(
+      from 0deg,
+      transparent,
+      hsl(var(--primary) / 0.1),
+      transparent,
+      hsl(var(--secondary) / 0.1),
+      transparent
+    );
+    animation: em-rotate 10s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes em-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Terminal Flicker Effect */
+  .terminal-flicker {
+    animation: terminal-flicker 0.15s ease-in-out infinite alternate;
+  }
+
+  @keyframes terminal-flicker {
+    0% {
+      opacity: 1;
+      text-shadow: 0 0 5px hsl(var(--primary) / 0.8);
+    }
+    100% {
+      opacity: 0.98;
+      text-shadow: 0 0 8px hsl(var(--primary) / 0.6);
+    }
   }
   
   .cyber-card::before {

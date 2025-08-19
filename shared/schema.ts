@@ -7,6 +7,12 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  role: varchar("role").notNull().default("moderator"), // 'moderator', 'admin', 'executive', 'super_admin'
+  clearanceLevel: integer("clearance_level").notNull().default(1), // 1-5, higher = more access
+  vaultAccess: boolean("vault_access").default(false),
+  lastLoginAt: timestamp("last_login_at"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const contentItems = pgTable("content_items", {
@@ -68,6 +74,77 @@ export const appealRequests = pgTable("appeal_requests", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Encrypted vault for storing illegal/sensitive content evidence
+export const encryptedVault = pgTable("encrypted_vault", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id").references(() => contentItems.id).notNull(),
+  encryptedData: text("encrypted_data").notNull(), // AES encrypted content
+  encryptionKey: text("encryption_key").notNull(), // RSA encrypted key
+  vaultReason: varchar("vault_reason").notNull(), // 'illegal_content', 'csam', 'terrorism', 'evidence'
+  severity: varchar("severity").notNull(), // 'low', 'medium', 'high', 'critical'
+  executiveAccess: boolean("executive_access").notNull().default(true),
+  accessLog: jsonb("access_log").default([]), // track who accessed when
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Admin action logs - tracks every admin approval/rejection
+export const adminActionLogs = pgTable("admin_action_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  adminId: varchar("admin_id").references(() => users.id).notNull(),
+  action: varchar("action").notNull(), // 'approve', 'reject', 'escalate', 'vault', 'unvault'
+  targetType: varchar("target_type").notNull(), // 'content_item', 'live_stream', 'appeal_request', 'user'
+  targetId: varchar("target_id").notNull(),
+  previousStatus: varchar("previous_status"),
+  newStatus: varchar("new_status"),
+  reason: text("reason"),
+  metadata: jsonb("metadata"), // additional action context
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Admin session logs - tracks every login/logout
+export const adminSessionLogs = pgTable("admin_session_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  adminId: varchar("admin_id").references(() => users.id).notNull(),
+  sessionType: varchar("session_type").notNull(), // 'login', 'logout', 'timeout', 'forced_logout'
+  ipAddress: varchar("ip_address").notNull(),
+  userAgent: text("user_agent"),
+  location: jsonb("location"), // geolocation data
+  deviceFingerprint: text("device_fingerprint"),
+  sessionDuration: integer("session_duration"), // in seconds, for logout events
+  suspicious: boolean("suspicious").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Advanced filtering and search capabilities
+export const contentFilters = pgTable("content_filters", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  filterCriteria: jsonb("filter_criteria").notNull(), // complex filter rules
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  isShared: boolean("is_shared").default(false),
+  usageCount: integer("usage_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Audit trail for all system changes
+export const auditTrail = pgTable("audit_trail", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  action: varchar("action").notNull(),
+  resource: varchar("resource").notNull(),
+  resourceId: varchar("resource_id"),
+  oldValues: jsonb("old_values"),
+  newValues: jsonb("new_values"),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -102,6 +179,32 @@ export const insertAppealRequestSchema = createInsertSchema(appealRequests).omit
   updatedAt: true,
 });
 
+export const insertEncryptedVaultSchema = createInsertSchema(encryptedVault).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAdminActionLogSchema = createInsertSchema(adminActionLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAdminSessionLogSchema = createInsertSchema(adminSessionLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertContentFilterSchema = createInsertSchema(contentFilters).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAuditTrailSchema = createInsertSchema(auditTrail).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -115,3 +218,13 @@ export type ModerationSettings = typeof moderationSettings.$inferSelect;
 export type InsertModerationSettings = z.infer<typeof insertModerationSettingsSchema>;
 export type AppealRequest = typeof appealRequests.$inferSelect;
 export type InsertAppealRequest = z.infer<typeof insertAppealRequestSchema>;
+export type EncryptedVault = typeof encryptedVault.$inferSelect;
+export type InsertEncryptedVault = z.infer<typeof insertEncryptedVaultSchema>;
+export type AdminActionLog = typeof adminActionLogs.$inferSelect;
+export type InsertAdminActionLog = z.infer<typeof insertAdminActionLogSchema>;
+export type AdminSessionLog = typeof adminSessionLogs.$inferSelect;
+export type InsertAdminSessionLog = z.infer<typeof insertAdminSessionLogSchema>;
+export type ContentFilter = typeof contentFilters.$inferSelect;
+export type InsertContentFilter = z.infer<typeof insertContentFilterSchema>;
+export type AuditTrail = typeof auditTrail.$inferSelect;
+export type InsertAuditTrail = z.infer<typeof insertAuditTrailSchema>;
