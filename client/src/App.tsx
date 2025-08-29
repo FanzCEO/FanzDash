@@ -17,6 +17,10 @@ import CrisisManagementPage from "@/pages/crisis-management";
 import AdvancedAnalyticsPage from "@/pages/advanced-analytics";
 import PredictiveAnalyticsPage from "@/pages/predictive-analytics";
 import ComplianceReportingPage from "@/pages/compliance-reporting";
+import VaultPage from "@/pages/vault";
+import AuditPage from "@/pages/audit";
+import ThreatsPage from "@/pages/threats";
+import DataPage from "@/pages/data";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -37,6 +41,10 @@ function Router() {
           <Route path="/advanced-analytics" component={AdvancedAnalyticsPage} />
           <Route path="/predictive-analytics" component={PredictiveAnalyticsPage} />
           <Route path="/compliance-reporting" component={ComplianceReportingPage} />
+          <Route path="/vault" component={VaultPage} />
+          <Route path="/audit" component={AuditPage} />
+          <Route path="/threats" component={ThreatsPage} />
+          <Route path="/data" component={DataPage} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>
