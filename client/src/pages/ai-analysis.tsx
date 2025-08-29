@@ -27,7 +27,11 @@ export default function AIAnalysisPage() {
       await apiRequest("/api/ai/analyze", "POST", {
         contentType: "batch",
         analysisTypes: ["chatgpt-4o"],
-        priority: "high"
+        priority: "high",
+        contentBatch: [
+          { type: "image", url: "https://example.com/test-image.jpg", context: "Test analysis" },
+          { type: "text", content: "Sample text for analysis", context: "Test content" }
+        ]
       });
       toast({
         title: "Analysis Started",
@@ -85,19 +89,19 @@ export default function AIAnalysisPage() {
 
         {/* Model Performance Stats */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {modelStats && Object.entries(modelStats as Record<string, any>).map(([model, stats]: [string, any]) => (
+          {modelStats && Object.entries(modelStats).map(([model, stats]: [string, any]) => (
             <Card key={model} className="cyber-card">
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold cyber-text-glow">
-                  {stats.accuracy}%
+                  {stats?.accuracy || 0}%
                 </div>
                 <div className="text-sm text-muted-foreground uppercase">{model}</div>
-                <div className="text-xs text-primary">{stats.speed}</div>
+                <div className="text-xs text-primary">{stats?.speed || '0ms'}</div>
                 <Badge 
-                  variant={stats.status === 'optimal' ? 'default' : 'secondary'}
+                  variant={stats?.status === 'optimal' ? 'default' : 'secondary'}
                   className="mt-2"
                 >
-                  {stats.status}
+                  {stats?.status || 'unknown'}
                 </Badge>
               </CardContent>
             </Card>

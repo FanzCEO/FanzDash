@@ -68,6 +68,18 @@ export interface IStorage {
   getPlatformStats(): Promise<any>;
   getRecentAnalysis(limit: number): Promise<any[]>;
   processContentAnalysis(request: any): Promise<any>;
+  
+  // AI Analysis operations
+  createAnalysisResult(data: {
+    contentUrl: string;
+    contentType: string;
+    result: any;
+    analysisType: string;
+    confidence: number;
+    processingTime: number;
+  }): Promise<any>;
+  getRecentAnalysisResults(limit: number): Promise<any[]>;
+  calculateModelPerformanceStats(analyses: any[]): any;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -455,6 +467,86 @@ export class DatabaseStorage implements IStorage {
       processingTime: Math.floor(Math.random() * 2000) + 500,
       flaggedContent: riskScore > 0.7 ? ["explicit_content"] : []
     };
+  }
+
+  // AI Analysis operations implementation
+  async createAnalysisResult(data: {
+    contentUrl: string;
+    contentType: string;
+    result: any;
+    analysisType: string;
+    confidence: number;
+    processingTime: number;
+  }): Promise<any> {
+    // In a real implementation, this would save to aiAnalysisResults table
+    // For now, we'll simulate storing and return the created record
+    const analysisResult = {
+      id: `analysis-${Date.now()}`,
+      ...data,
+      createdAt: new Date().toISOString()
+    };
+    
+    return analysisResult;
+  }
+
+  async getRecentAnalysisResults(limit: number = 50): Promise<any[]> {
+    // This would query the aiAnalysisResults table in real implementation
+    return Array.from({ length: Math.min(limit, 20) }, (_, i) => ({
+      id: `analysis-${i}`,
+      contentUrl: `https://example.com/content-${i}`,
+      contentType: ["image", "text", "video"][i % 3],
+      analysisType: ["chatgpt-4o", "chatgpt-5", "nudenet"][i % 3],
+      confidence: (Math.random() * 0.4 + 0.6),
+      result: {
+        riskScore: Math.random(),
+        recommendation: Math.random() > 0.7 ? "block" : "approve",
+        reasoning: "AI analysis completed",
+        categories: Math.random() > 0.5 ? ["explicit_content"] : ["safe_content"],
+        severity: Math.random() > 0.8 ? "high" : Math.random() > 0.5 ? "medium" : "low"
+      },
+      processingTime: Math.floor(Math.random() * 2000) + 100,
+      modelVersion: "4.0",
+      createdAt: new Date(Date.now() - i * 60000).toISOString()
+    }));
+  }
+
+  calculateModelPerformanceStats(analyses: any[]): any {
+    if (!analyses || analyses.length === 0) {
+      return {};
+    }
+
+    const modelGroups = analyses.reduce((acc, analysis) => {
+      const modelType = analysis.analysisType;
+      if (!acc[modelType]) {
+        acc[modelType] = [];
+      }
+      acc[modelType].push(analysis);
+      return acc;
+    }, {} as Record<string, any[]>);
+
+    const stats: Record<string, any> = {};
+
+    Object.entries(modelGroups).forEach(([modelType, modelAnalyses]) => {
+      const totalAnalyses = modelAnalyses.length;
+      const avgSpeed = Math.round(
+        modelAnalyses.reduce((sum, a) => sum + a.processingTime, 0) / totalAnalyses
+      );
+      
+      // Calculate accuracy based on confidence scores
+      const avgConfidence = modelAnalyses.reduce((sum, a) => sum + a.confidence, 0) / totalAnalyses;
+      const accuracy = Math.round(avgConfidence * 100);
+      
+      const status = accuracy > 95 ? "optimal" : accuracy > 90 ? "excellent" : accuracy > 85 ? "good" : "needs_review";
+
+      stats[modelType.replace('-', '')] = {
+        accuracy,
+        avgSpeed,
+        status,
+        count: totalAnalyses
+      };
+    });
+
+    return stats;
   }
 }
 

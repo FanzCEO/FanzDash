@@ -1,231 +1,340 @@
 import OpenAI from "openai";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-export interface ContentAnalysisRequest {
-  contentType: "image" | "video" | "text" | "live_stream";
-  contentData: string;
-  analysisTypes: string[];
-  priority: "low" | "medium" | "high" | "critical";
-  platformId?: string;
-  userId?: string;
-}
+// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY 
+});
 
 export interface ContentAnalysisResult {
-  analysisId: string;
-  contentType: string;
   riskScore: number;
   confidence: number;
-  flaggedContent: string[];
-  recommendations: string[];
+  recommendation: 'approve' | 'review' | 'block';
+  reasoning: string;
+  categories: string[];
+  severity: 'low' | 'medium' | 'high' | 'critical';
   processingTime: number;
-  modelVersion: string;
-  rawResults: any;
 }
 
-export class OpenAIContentAnalyzer {
-  private model = "gpt-4o"; // Using the latest and most advanced model
+export interface ImageAnalysisResult extends ContentAnalysisResult {
+  detectedObjects: Array<{
+    label: string;
+    confidence: number;
+    location?: { x: number; y: number; width: number; height: number };
+  }>;
+  explicitContent: boolean;
+  violatesPolicy: boolean;
+}
 
-  async analyzeContent(request: ContentAnalysisRequest): Promise<ContentAnalysisResult> {
+export interface TextAnalysisResult extends ContentAnalysisResult {
+  toxicityScore: number;
+  hateSpeech: boolean;
+  harassment: boolean;
+  threats: boolean;
+  sexualContent: boolean;
+}
+
+export class OpenAIContentModerationService {
+  
+  async analyzeImage(imageUrl: string, contentContext?: string): Promise<ImageAnalysisResult> {
     const startTime = Date.now();
     
     try {
-      let prompt = this.buildAnalysisPrompt(request);
-      let messages: any[] = [
-        {
-          role: "system",
-          content: `You are an advanced content moderation AI system powered by ChatGPT-4o. 
-          You analyze content for adult platforms with enterprise-grade compliance requirements.
-          
-          Your analysis must be:
-          1. EXTREMELY ACCURATE - Lives and platform reputation depend on this
-          2. FAST - Process at social media speed (sub-2 second response)
-          3. COMPLIANT - Follow all legal and platform-specific guidelines
-          4. DETAILED - Provide comprehensive risk assessment with confidence scores
-          
-          Always respond with a JSON object containing:
-          {
-            "riskScore": number (0.0-1.0),
-            "confidence": number (0.0-1.0),
-            "flaggedContent": string[],
-            "recommendations": string[],
-            "categories": {
-              "nudity": number,
-              "violence": number,
-              "harassment": number,
-              "hate_speech": number,
-              "illegal_content": number,
-              "spam": number,
-              "copyright": number
-            },
-            "reasoning": string,
-            "action_required": "approve" | "review" | "block" | "escalate"
-          }`
-        }
-      ];
-
-      // Handle different content types
-      if (request.contentType === "text") {
-        messages.push({
-          role: "user",
-          content: `Analyze this text content for moderation:\n\n"${request.contentData}"\n\n${prompt}`
-        });
-      } else if (request.contentType === "image") {
-        // For image analysis, we'd need the actual image data
-        messages.push({
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Analyze this image for content moderation. ${prompt}`
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: request.contentData // Assuming this is a URL or base64 encoded image
-              }
-            }
-          ]
-        });
-      } else {
-        messages.push({
-          role: "user",
-          content: `Analyze this ${request.contentType} content: ${request.contentData}\n\n${prompt}`
-        });
-      }
-
       const response = await openai.chat.completions.create({
-        model: this.model,
-        messages,
+        model: "gpt-4o", // Using GPT-4o for vision capabilities
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert content moderator for adult platforms. Analyze images for policy violations, explicit content, and safety risks. 
+
+Evaluate:
+- Explicit sexual content and nudity
+- Violence, gore, or disturbing imagery  
+- Illegal content (CSAM, non-consensual, etc.)
+- Harmful or dangerous activities
+- Terms of service violations
+
+Provide risk assessment from 0.0 (safe) to 1.0 (critical violation).
+
+Respond in JSON format:
+{
+  "riskScore": 0.0-1.0,
+  "confidence": 0.0-1.0,
+  "recommendation": "approve|review|block",
+  "reasoning": "Brief explanation",
+  "categories": ["category1", "category2"],
+  "severity": "low|medium|high|critical",
+  "detectedObjects": [{"label": "object", "confidence": 0.0-1.0}],
+  "explicitContent": boolean,
+  "violatesPolicy": boolean
+}`
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Analyze this image for content moderation. Context: ${contentContext || 'Adult platform content'}`
+              },
+              {
+                type: "image_url",
+                image_url: { url: imageUrl }
+              }
+            ]
+          }
+        ],
         response_format: { type: "json_object" },
-        temperature: 0.1, // Low temperature for consistent, reliable results
-        max_tokens: 1000,
+        max_tokens: 1000
       });
 
-      const analysis = JSON.parse(response.choices[0].message.content || "{}");
+      const analysis = JSON.parse(response.choices[0].message.content || '{}');
       const processingTime = Date.now() - startTime;
 
       return {
-        analysisId: `openai_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-        contentType: request.contentType,
-        riskScore: analysis.riskScore || 0,
-        confidence: analysis.confidence || 0,
-        flaggedContent: analysis.flaggedContent || [],
-        recommendations: analysis.recommendations || [],
-        processingTime,
-        modelVersion: this.model,
-        rawResults: analysis
+        ...analysis,
+        processingTime
       };
-
     } catch (error) {
-      console.error("OpenAI Analysis Error:", error);
-      
-      // Return a safe fallback result
+      console.error('Error analyzing image with OpenAI:', error);
       return {
-        analysisId: `error_${Date.now()}`,
-        contentType: request.contentType,
-        riskScore: 0.5, // Medium risk when analysis fails
-        confidence: 0.1, // Low confidence
-        flaggedContent: ["analysis_error"],
-        recommendations: ["Manual review required due to analysis error"],
-        processingTime: Date.now() - startTime,
-        modelVersion: this.model,
-        rawResults: { error: error.message }
+        riskScore: 0.5,
+        confidence: 0.1,
+        recommendation: 'review',
+        reasoning: 'Analysis failed - manual review required',
+        categories: ['error'],
+        severity: 'medium',
+        detectedObjects: [],
+        explicitContent: false,
+        violatesPolicy: false,
+        processingTime: Date.now() - startTime
       };
     }
   }
 
-  private buildAnalysisPrompt(request: ContentAnalysisRequest): string {
-    let prompt = `Platform Context: Multi-platform adult content moderation system
-Content Priority: ${request.priority}
-Analysis Types Requested: ${request.analysisTypes.join(", ")}
-
-CRITICAL ANALYSIS REQUIREMENTS:
-1. Detect NSFW/Adult content with high accuracy
-2. Identify potential illegal content (CSAM, revenge porn, etc.)
-3. Flag harassment, hate speech, and threats
-4. Detect spam and promotional content
-5. Identify copyright violations
-6. Check for platform policy violations
-
-PLATFORM-SPECIFIC RULES:
-- Adult content is generally ALLOWED but must be properly categorized
-- Illegal content must be IMMEDIATELY flagged for blocking and reporting
-- Harassment and hate speech should be flagged for review
-- Content involving minors must be IMMEDIATELY blocked and escalated
-
-RESPONSE REQUIREMENTS:
-- Provide confidence score (0.0 = not confident, 1.0 = highly confident)
-- Risk score (0.0 = safe, 1.0 = extremely risky/illegal)
-- Specific flagged categories with individual scores
-- Clear action recommendation
-- Detailed reasoning for decision`;
-
-    // Add platform-specific context if available
-    if (request.platformId) {
-      prompt += `\n\nPlatform ID: ${request.platformId}`;
-    }
-
-    return prompt;
-  }
-
-  async batchAnalyze(requests: ContentAnalysisRequest[]): Promise<ContentAnalysisResult[]> {
-    // Process high-priority requests first
-    const sortedRequests = requests.sort((a, b) => {
-      const priorityOrder = { "critical": 0, "high": 1, "medium": 2, "low": 3 };
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    });
-
-    // Process in parallel with concurrency limit
-    const results: ContentAnalysisResult[] = [];
-    const batchSize = 5; // Limit concurrent requests to avoid rate limits
+  async analyzeText(text: string, contentContext?: string): Promise<TextAnalysisResult> {
+    const startTime = Date.now();
     
-    for (let i = 0; i < sortedRequests.length; i += batchSize) {
-      const batch = sortedRequests.slice(i, i + batchSize);
-      const batchResults = await Promise.all(
-        batch.map(request => this.analyzeContent(request))
-      );
-      results.push(...batchResults);
-    }
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-5", // Using latest GPT-5 for text analysis
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert content moderator for adult platforms. Analyze text content for policy violations, toxicity, and safety risks.
 
-    return results;
+Evaluate:
+- Hate speech and harassment
+- Threats and violence
+- Sexual content involving minors
+- Non-consensual activities
+- Spam or scam content
+- Toxicity and harmful language
+
+Provide risk assessment from 0.0 (safe) to 1.0 (critical violation).
+
+Respond in JSON format:
+{
+  "riskScore": 0.0-1.0,
+  "confidence": 0.0-1.0,
+  "recommendation": "approve|review|block",
+  "reasoning": "Brief explanation",
+  "categories": ["category1", "category2"],
+  "severity": "low|medium|high|critical",
+  "toxicityScore": 0.0-1.0,
+  "hateSpeech": boolean,
+  "harassment": boolean,
+  "threats": boolean,
+  "sexualContent": boolean
+}`
+          },
+          {
+            role: "user",
+            content: `Analyze this text for content moderation. Context: ${contentContext || 'Adult platform content'}
+
+Text to analyze:
+"${text}"`
+          }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 800
+      });
+
+      const analysis = JSON.parse(response.choices[0].message.content || '{}');
+      const processingTime = Date.now() - startTime;
+
+      return {
+        ...analysis,
+        processingTime
+      };
+    } catch (error) {
+      console.error('Error analyzing text with OpenAI:', error);
+      return {
+        riskScore: 0.5,
+        confidence: 0.1,
+        recommendation: 'review',
+        reasoning: 'Analysis failed - manual review required',
+        categories: ['error'],
+        severity: 'medium',
+        toxicityScore: 0.5,
+        hateSpeech: false,
+        harassment: false,
+        threats: false,
+        sexualContent: false,
+        processingTime: Date.now() - startTime
+      };
+    }
   }
 
-  async generateModerationReport(analyses: ContentAnalysisResult[]): Promise<string> {
-    const reportData = {
-      totalAnalyzed: analyses.length,
-      highRisk: analyses.filter(a => a.riskScore > 0.7).length,
-      mediumRisk: analyses.filter(a => a.riskScore > 0.4 && a.riskScore <= 0.7).length,
-      lowRisk: analyses.filter(a => a.riskScore <= 0.4).length,
-      avgProcessingTime: analyses.reduce((sum, a) => sum + a.processingTime, 0) / analyses.length,
-      flaggedCategories: analyses.flatMap(a => a.flaggedContent),
-      recommendations: analyses.flatMap(a => a.recommendations)
+  async analyzeLiveStreamFrame(frameImageUrl: string, streamContext?: string): Promise<ImageAnalysisResult> {
+    const startTime = Date.now();
+    
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system", 
+            content: `You are monitoring live streams for adult platforms. Analyze video frames for real-time policy violations and safety risks.
+
+Focus on:
+- Illegal activities in progress
+- Violent or dangerous situations  
+- Non-consensual content
+- Age verification concerns
+- Platform policy violations
+- Emergency situations requiring immediate intervention
+
+Provide fast, accurate risk assessment for real-time moderation.
+
+Respond in JSON format:
+{
+  "riskScore": 0.0-1.0,
+  "confidence": 0.0-1.0,
+  "recommendation": "approve|review|block",
+  "reasoning": "Brief explanation",
+  "categories": ["category1", "category2"],
+  "severity": "low|medium|high|critical",
+  "detectedObjects": [{"label": "object", "confidence": 0.0-1.0}],
+  "explicitContent": boolean,
+  "violatesPolicy": boolean
+}`
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Analyze this live stream frame. Context: ${streamContext || 'Live adult content stream'}`
+              },
+              {
+                type: "image_url",
+                image_url: { url: frameImageUrl }
+              }
+            ]
+          }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 600
+      });
+
+      const analysis = JSON.parse(response.choices[0].message.content || '{}');
+      const processingTime = Date.now() - startTime;
+
+      return {
+        ...analysis,
+        processingTime
+      };
+    } catch (error) {
+      console.error('Error analyzing live stream frame:', error);
+      return {
+        riskScore: 0.3,
+        confidence: 0.1,
+        recommendation: 'review',
+        reasoning: 'Frame analysis failed - continue monitoring',
+        categories: ['error'],
+        severity: 'medium',
+        detectedObjects: [],
+        explicitContent: false,
+        violatesPolicy: false,
+        processingTime: Date.now() - startTime
+      };
+    }
+  }
+
+  async generateModerationReport(analysisResults: ContentAnalysisResult[]): Promise<string> {
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-5",
+        messages: [
+          {
+            role: "system",
+            content: "You are generating executive moderation reports. Create a concise, professional summary of content analysis results for platform administrators."
+          },
+          {
+            role: "user", 
+            content: `Generate a moderation report based on these analysis results: ${JSON.stringify(analysisResults)}`
+          }
+        ],
+        max_tokens: 500
+      });
+
+      return response.choices[0].message.content || 'Report generation failed';
+    } catch (error) {
+      console.error('Error generating moderation report:', error);
+      return 'Unable to generate report - please review analysis results manually.';
+    }
+  }
+
+  async assessThreatLevel(recentAnalyses: ContentAnalysisResult[]): Promise<{
+    level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    score: number;
+    trends: {
+      increasing: boolean;
+      reason: string;
     };
+    recommendations: string[];
+  }> {
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-5",
+        messages: [
+          {
+            role: "system",
+            content: `You are a security analyst for adult platform moderation. Assess overall threat level based on recent content analysis patterns.
 
-    const prompt = `Generate a comprehensive moderation report based on this analysis data:
-    ${JSON.stringify(reportData, null, 2)}
-    
-    Create a professional executive summary suitable for platform administrators and compliance teams.`;
+Respond in JSON format:
+{
+  "level": "LOW|MEDIUM|HIGH|CRITICAL",
+  "score": 0-100,
+  "trends": {
+    "increasing": boolean,
+    "reason": "explanation"
+  },
+  "recommendations": ["rec1", "rec2"]
+}`
+          },
+          {
+            role: "user",
+            content: `Assess threat level from recent analyses: ${JSON.stringify(recentAnalyses.slice(0, 50))}`
+          }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 400
+      });
 
-    const response = await openai.chat.completions.create({
-      model: this.model,
-      messages: [
-        {
-          role: "system",
-          content: "You are a content moderation specialist creating executive reports for adult platform administrators."
+      return JSON.parse(response.choices[0].message.content || '{}');
+    } catch (error) {
+      console.error('Error assessing threat level:', error);
+      return {
+        level: 'MEDIUM',
+        score: 50,
+        trends: {
+          increasing: false,
+          reason: 'Analysis unavailable'
         },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.3,
-      max_tokens: 1500,
-    });
-
-    return response.choices[0].message.content || "Report generation failed";
+        recommendations: ['Continue monitoring', 'Review analysis settings']
+      };
+    }
   }
 }
 
-export const contentAnalyzer = new OpenAIContentAnalyzer();
+export const aiModerationService = new OpenAIContentModerationService();
