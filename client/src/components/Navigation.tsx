@@ -103,6 +103,18 @@ const navigationItems = [
     description: "Deep insights & predictions"
   },
   {
+    name: "Predictive Analytics",
+    href: "/predictive-analytics",
+    icon: Brain,
+    description: "AI-powered threat forecasting"
+  },
+  {
+    name: "Compliance Reporting",
+    href: "/compliance-reporting",
+    icon: FileText,
+    description: "Regulatory compliance & audit trails"
+  },
+  {
     name: "System Settings",
     href: "/settings",
     icon: Settings,

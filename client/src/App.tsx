@@ -15,6 +15,8 @@ import UsersPage from "@/pages/users";
 import RiskManagementPage from "@/pages/risk-management";
 import CrisisManagementPage from "@/pages/crisis-management";
 import AdvancedAnalyticsPage from "@/pages/advanced-analytics";
+import PredictiveAnalyticsPage from "@/pages/predictive-analytics";
+import ComplianceReportingPage from "@/pages/compliance-reporting";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -33,6 +35,8 @@ function Router() {
           <Route path="/risk-management" component={RiskManagementPage} />
           <Route path="/crisis-management" component={CrisisManagementPage} />
           <Route path="/advanced-analytics" component={AdvancedAnalyticsPage} />
+          <Route path="/predictive-analytics" component={PredictiveAnalyticsPage} />
+          <Route path="/compliance-reporting" component={ComplianceReportingPage} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

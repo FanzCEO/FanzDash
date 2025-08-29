@@ -515,7 +515,7 @@ export class DatabaseStorage implements IStorage {
       return {};
     }
 
-    const modelGroups = analyses.reduce((acc, analysis) => {
+    const modelGroups = analyses.reduce((acc: Record<string, any[]>, analysis: any) => {
       const modelType = analysis.analysisType;
       if (!acc[modelType]) {
         acc[modelType] = [];
@@ -526,14 +526,14 @@ export class DatabaseStorage implements IStorage {
 
     const stats: Record<string, any> = {};
 
-    Object.entries(modelGroups).forEach(([modelType, modelAnalyses]) => {
+    Object.entries(modelGroups).forEach(([modelType, modelAnalyses]: [string, any[]]) => {
       const totalAnalyses = modelAnalyses.length;
       const avgSpeed = Math.round(
-        modelAnalyses.reduce((sum, a) => sum + a.processingTime, 0) / totalAnalyses
+        modelAnalyses.reduce((sum: number, a: any) => sum + (a.processingTime || 0), 0) / totalAnalyses
       );
       
       // Calculate accuracy based on confidence scores
-      const avgConfidence = modelAnalyses.reduce((sum, a) => sum + a.confidence, 0) / totalAnalyses;
+      const avgConfidence = modelAnalyses.reduce((sum: number, a: any) => sum + (a.confidence || 0), 0) / totalAnalyses;
       const accuracy = Math.round(avgConfidence * 100);
       
       const status = accuracy > 95 ? "optimal" : accuracy > 90 ? "excellent" : accuracy > 85 ? "good" : "needs_review";

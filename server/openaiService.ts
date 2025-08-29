@@ -83,7 +83,7 @@ Respond in JSON format:
           }
         ],
         response_format: { type: "json_object" },
-        max_tokens: 1000
+        max_completion_tokens: 1000
       });
 
       const analysis = JSON.parse(response.choices[0].message.content || '{}');
@@ -155,7 +155,7 @@ Text to analyze:
           }
         ],
         response_format: { type: "json_object" },
-        max_tokens: 800
+        max_completion_tokens: 800
       });
 
       const analysis = JSON.parse(response.choices[0].message.content || '{}');
@@ -233,7 +233,7 @@ Respond in JSON format:
           }
         ],
         response_format: { type: "json_object" },
-        max_tokens: 600
+        max_completion_tokens: 600
       });
 
       const analysis = JSON.parse(response.choices[0].message.content || '{}');
@@ -274,7 +274,7 @@ Respond in JSON format:
             content: `Generate a moderation report based on these analysis results: ${JSON.stringify(analysisResults)}`
           }
         ],
-        max_tokens: 500
+        max_completion_tokens: 500
       });
 
       return response.choices[0].message.content || 'Report generation failed';
@@ -318,7 +318,7 @@ Respond in JSON format:
           }
         ],
         response_format: { type: "json_object" },
-        max_tokens: 400
+        max_completion_tokens: 400
       });
 
       return JSON.parse(response.choices[0].message.content || '{}');
