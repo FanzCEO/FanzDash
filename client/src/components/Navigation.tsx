@@ -12,7 +12,8 @@ import {
   Activity,
   Database,
   Lock,
-  Eye
+  Eye,
+  Zap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -82,6 +83,24 @@ const navigationItems = [
     href: "/data",
     icon: Database,
     description: "Database operations"
+  },
+  {
+    name: "Risk Management",
+    href: "/risk-management", 
+    icon: AlertTriangle,
+    description: "Threat assessment & mitigation"
+  },
+  {
+    name: "Crisis Management",
+    href: "/crisis-management",
+    icon: Zap,
+    description: "Emergency response center"
+  },
+  {
+    name: "Advanced Analytics",
+    href: "/advanced-analytics",
+    icon: BarChart3,
+    description: "Deep insights & predictions"
   },
   {
     name: "System Settings",

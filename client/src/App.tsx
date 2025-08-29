@@ -12,6 +12,9 @@ import LiveMonitoringPage from "@/pages/live-monitoring";
 import AnalyticsPage from "@/pages/analytics";
 import SettingsPage from "@/pages/settings";
 import UsersPage from "@/pages/users";
+import RiskManagementPage from "@/pages/risk-management";
+import CrisisManagementPage from "@/pages/crisis-management";
+import AdvancedAnalyticsPage from "@/pages/advanced-analytics";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +30,9 @@ function Router() {
           <Route path="/live-monitoring" component={LiveMonitoringPage} />
           <Route path="/analytics" component={AnalyticsPage} />
           <Route path="/users" component={UsersPage} />
+          <Route path="/risk-management" component={RiskManagementPage} />
+          <Route path="/crisis-management" component={CrisisManagementPage} />
+          <Route path="/advanced-analytics" component={AdvancedAnalyticsPage} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

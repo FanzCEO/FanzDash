@@ -1,6 +1,8 @@
 # Overview
 
-This is a comprehensive content moderation platform designed for adult platforms, implementing a hybrid multi-signal moderation stack. The system provides real-time monitoring and moderation of images, videos, text content, and live streams using a combination of machine learning models and human review workflows. The platform features automated content analysis, risk scoring, and a dashboard for human moderators to review flagged content.
+FanzMod is a comprehensive multi-platform content moderation system that connects to all Fanz platforms through one unified control panel. The system features advanced AI-powered analysis using ChatGPT-4o, manual approval workflows, enterprise-grade compliance, risk management, crisis management, advanced analytics, and a premium cyberpunk UI that processes content at social media speed while maintaining robust audit trails.
+
+The platform implements a hybrid multi-signal moderation stack providing real-time monitoring and moderation of images, videos, text content, and live streams using a combination of machine learning models and human review workflows. Enhanced with comprehensive risk assessment, crisis response capabilities, predictive analytics, and user management systems for enterprise-grade operations.
 
 # User Preferences
 
@@ -9,7 +11,19 @@ Preferred communication style: Simple, everyday language.
 # System Architecture
 
 ## Frontend Architecture
-The client is built with React and TypeScript using Vite as the build tool. The UI leverages Radix UI components with shadcn/ui styling and Tailwind CSS for a modern, accessible interface. The frontend uses wouter for client-side routing and TanStack Query for server state management. Real-time updates are handled through WebSocket connections for live moderation alerts.
+The client is built with React and TypeScript using Vite as the build tool. The UI leverages Radix UI components with shadcn/ui styling and Tailwind CSS for a premium cyberpunk aesthetic. The frontend uses wouter for client-side routing and TanStack Query for server state management. Real-time updates are handled through WebSocket connections for live moderation alerts.
+
+The platform features a comprehensive navigation system with 12+ functional pages including:
+- Neural Dashboard with real-time threat monitoring
+- Platform Manager for multi-site connectivity 
+- AI Analysis Engine with ChatGPT-4o integration
+- Content Review workflows with manual approval
+- Live Stream monitoring and surveillance
+- Risk Management with threat assessment
+- Crisis Management with emergency response protocols
+- Advanced Analytics with predictive intelligence
+- User Management for admin/moderator accounts
+- System Settings and configuration
 
 ## Backend Architecture
 The server is an Express.js application with TypeScript, providing RESTful APIs for content management and moderation operations. The architecture follows a storage abstraction pattern with dedicated modules for database operations, routing, and WebSocket handling. The server implements middleware for request logging and error handling.
@@ -19,11 +33,14 @@ The system uses PostgreSQL with Drizzle ORM for type-safe database operations. T
 
 ## Content Moderation Pipeline
 The moderation system implements a multi-layered approach:
+- **AI Analysis Engine**: ChatGPT-4o as primary analysis model with social media processing speed
 - **Image/Video Analysis**: Uses NudeNet for object detection and region identification, with automatic blurring capabilities
 - **Text Moderation**: Integrates Detoxify for toxicity detection and Perspective API as a secondary check
 - **Live Stream Monitoring**: Real-time frame sampling with automated risk assessment and blur functionality
 - **PDQ Hashing**: Perceptual hashing for duplicate content detection and blocking
 - **Risk Scoring**: Weighted confidence scoring from multiple ML models with configurable thresholds
+- **Crisis Management**: Emergency response protocols with automatic escalation and notifications
+- **Predictive Analytics**: AI-powered risk forecasting and trend detection for proactive threat mitigation
 
 ## Real-time Processing
 WebSocket connections enable real-time communication between the moderation system and dashboard, broadcasting new content alerts and status updates to connected moderators. Live streams are monitored through frame sampling and audio transcription for continuous risk assessment.
