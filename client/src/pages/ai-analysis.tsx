@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Brain, Zap, Clock, CheckCircle, AlertTriangle, Play } from "lucide-react";
+import { InteractiveAnalysisForm } from "@/components/InteractiveAnalysisForm";
 
 export default function AIAnalysisPage() {
   const [analysisRunning, setAnalysisRunning] = useState(false);
@@ -232,6 +233,12 @@ export default function AIAnalysisPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Interactive Analysis Testing */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-6 text-cyan-400">Interactive Content Analysis</h2>
+        <InteractiveAnalysisForm />
       </div>
     </div>
   );
