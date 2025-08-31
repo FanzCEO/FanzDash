@@ -4,11 +4,11 @@
 
 :root {
   /* Cyberpunk/Futurism Dark Theme - Default to dark mode */
-  --background: hsl(215 39% 7%);
+  --background: hsl(0 0% 0%);
   --foreground: hsl(180 100% 90%);
-  --card: hsl(216 34% 9%);
+  --card: hsl(0 0% 5%);
   --card-foreground: hsl(180 100% 90%);
-  --popover: hsl(216 34% 9%);
+  --popover: hsl(0 0% 5%);
   --popover-foreground: hsl(180 100% 90%);
   --primary: hsl(310 100% 69%);
   --primary-foreground: hsl(216 34% 9%);
@@ -30,7 +30,7 @@
   --chart-5: hsl(150 100% 50%);
   
   /* Sidebar with cyberpunk theme */
-  --sidebar: hsl(215 39% 5%);
+  --sidebar: hsl(0 0% 0%);
   --sidebar-foreground: hsl(180 100% 90%);
   --sidebar-primary: hsl(310 100% 69%);
   --sidebar-primary-foreground: hsl(215 39% 5%);
@@ -47,7 +47,7 @@
   --electric-blue: hsl(195 100% 50%);
   --acid-green: hsl(150 100% 50%);
   --deep-black: hsl(0 0% 0%);
-  --dark-navy: hsl(215 39% 7%);
+  --dark-navy: hsl(0 0% 0%);
   --cyber-gray: hsl(217 32% 17%);
   
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -70,9 +70,9 @@
 
 .dark {
   /* Enhanced dark mode with deeper cyberpunk aesthetics */
-  --background: hsl(215 39% 5%);
+  --background: hsl(0 0% 0%);
   --foreground: hsl(180 100% 95%);
-  --card: hsl(216 34% 7%);
+  --card: hsl(0 0% 3%);
   --card-foreground: hsl(180 100% 95%);
   --popover: hsl(216 34% 7%);
   --popover-foreground: hsl(180 100% 95%);
@@ -110,9 +110,14 @@
     @apply border-border;
   }
 
-  body {
-    @apply font-sans antialiased bg-background text-foreground;
-    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)));
+  html, body {
+    @apply font-sans antialiased text-foreground;
+    background: hsl(0 0% 0%) !important;
+  }
+
+  /* Ensure all page containers have black background */
+  .min-h-screen, .cyber-bg, [class*="bg-"] {
+    background: hsl(0 0% 0%) !important;
   }
   
   /* Cyberpunk gradient backgrounds */
