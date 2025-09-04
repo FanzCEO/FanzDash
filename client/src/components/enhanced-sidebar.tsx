@@ -17,7 +17,7 @@ import {
   Bookmark,
   Store,
   Verified,
-  Reel
+  Film
 } from "lucide-react";
 
 interface User {

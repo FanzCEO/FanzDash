@@ -19,8 +19,9 @@ import {
   DollarSign,
   Clock,
   Eye,
-  EyeSlash,
-  ArrowUpRight
+  EyeOff,
+  ArrowUpRight,
+  RefreshCw
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -146,7 +147,7 @@ export function MessagingChat({
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                     Unlocking...
                   </>
                 ) : (
@@ -387,7 +388,7 @@ export function MessagingChat({
           >
             {isLoading ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                 Loading...
               </>
             ) : (
@@ -458,7 +459,7 @@ export function MessagingChat({
                     {message.isPaid ? (
                       <Eye className="h-3 w-3 text-blue-500" />
                     ) : (
-                      <EyeSlash className="h-3 w-3" />
+                      <EyeOff className="h-3 w-3" />
                     )}
                   </div>
                 )}
