@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, decimal, jsonb, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, decimal, jsonb, boolean, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -1493,3 +1493,98 @@ export type CronJob = typeof cronJobs.$inferSelect;
 export type InsertCronJob = z.infer<typeof insertCronJobSchema>;
 export type CronJobLog = typeof cronJobLogs.$inferSelect;
 export type InsertCronJobLog = z.infer<typeof insertCronJobLogSchema>;
+
+// Additional Sponzy v6.8 Features - Unique Definitions Only
+
+// Live Streaming Private Requests (from live-streaming-private-requests.blade)
+export const liveStreamingPrivateRequests = pgTable("live_streaming_private_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  buyerId: varchar("buyer_id").references(() => users.id).notNull(),
+  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  minutes: integer("minutes").notNull(),
+  pricePerMinute: decimal("price_per_minute", { precision: 10, scale: 2 }).notNull(),
+  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
+  status: varchar("status").default("pending"), // 'pending', 'accepted', 'rejected', 'completed'
+  message: text("message"),
+  streamUrl: varchar("stream_url"),
+  startedAt: timestamp("started_at"),
+  endedAt: timestamp("ended_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Enhanced Member Management (from members.blade)
+export const memberProfiles = pgTable("member_profiles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  biography: text("biography"),
+  website: varchar("website"),
+  location: varchar("location"),
+  birthDate: timestamp("birth_date"),
+  isVerified: boolean("is_verified").default(false),
+  verificationStatus: varchar("verification_status").default("pending"), // 'pending', 'approved', 'rejected'
+  verificationDocuments: text("verification_documents").array(),
+  socialLinks: jsonb("social_links").default('{}'),
+  earnings: decimal("earnings", { precision: 12, scale: 2 }).default("0.00"),
+  accountStatus: varchar("account_status").default("active"), // 'active', 'suspended', 'banned'
+  lastActivity: timestamp("last_activity"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Platform Messages System (from messages.blade)
+export const platformMessages = pgTable("platform_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  senderId: varchar("sender_id").references(() => users.id),
+  receiverId: varchar("receiver_id").references(() => users.id),
+  subject: varchar("subject"),
+  message: text("message").notNull(),
+  messageType: varchar("message_type").default("direct"), // 'direct', 'broadcast', 'system'
+  isRead: boolean("is_read").default(false),
+  isArchived: boolean("is_archived").default(false),
+  priority: varchar("priority").default("normal"), // 'low', 'normal', 'high', 'urgent'
+  attachments: jsonb("attachments").default('[]'),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Payment Processor Specific Settings
+export const paymentProcessorSettings = pgTable("payment_processor_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  processorName: varchar("processor_name").notNull(), // 'flutterwave', 'instamojo', 'mercadopago', 'mollie', 'nowpayments'
+  isEnabled: boolean("is_enabled").default(false),
+  fee: decimal("fee", { precision: 5, scale: 2 }).default("0.00"),
+  feeCents: decimal("fee_cents", { precision: 5, scale: 2 }).default("0.00"),
+  isSandbox: boolean("is_sandbox").default(true),
+  
+  // Common fields
+  publicKey: varchar("public_key"),
+  secretKey: varchar("secret_key"),
+  apiKey: varchar("api_key"),
+  authToken: varchar("auth_token"),
+  accessToken: varchar("access_token"),
+  ipnSecret: varchar("ipn_secret"),
+  
+  // Processor-specific settings
+  projectId: varchar("project_id"), // For processors that need it
+  environment: varchar("environment").default("sandbox"), // 'sandbox', 'production'
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// System Limits Configuration (from limits.blade)
+export const systemLimits = pgTable("system_limits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  limitType: varchar("limit_type").notNull(), // 'upload_size', 'daily_posts', 'followers', etc.
+  limitName: varchar("limit_name").notNull(),
+  limitValue: integer("limit_value").notNull(),
+  unitType: varchar("unit_type").default("count"), // 'count', 'mb', 'gb', 'minutes'
+  appliesToRole: varchar("applies_to_role").default("all"), // 'all', 'creator', 'user'
+  isActive: boolean("is_active").default(true),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type SystemLimit = typeof systemLimits.$inferSelect;
+export type InsertSystemLimit = z.infer<typeof insertSystemLimitSchema>;
+

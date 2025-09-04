@@ -41,6 +41,14 @@ import {
   cronJobLogs,
   states,
   languages,
+  // apiIntegrations,
+  // liveStreamingPrivateRequests,
+  // maintenanceMode,
+  // memberProfiles,
+  moderationSettings,
+  // platformMessages,
+  // paymentProcessorSettings,
+  // systemLimits,
   type User, 
   type InsertUser,
   type ContentItem,
@@ -268,6 +276,59 @@ export interface IStorage {
   getCronJobLogs(jobId?: string): Promise<CronJobLog[]>;
   createCronJobLog(log: InsertCronJobLog): Promise<CronJobLog>;
   deleteCronJobLogs(jobId: string): Promise<void>;
+
+  // API Integrations Management
+  getApiIntegrations(): Promise<ApiIntegration[]>;
+  getApiIntegrationByService(serviceName: string): Promise<ApiIntegration | undefined>;
+  createApiIntegration(data: InsertApiIntegration): Promise<ApiIntegration>;
+  updateApiIntegration(id: string, updates: Partial<ApiIntegration>): Promise<void>;
+  deleteApiIntegration(id: string): Promise<void>;
+  
+  // Live Streaming Private Requests
+  getPrivateStreamRequests(): Promise<LiveStreamingPrivateRequest[]>;
+  getPrivateStreamRequest(id: string): Promise<LiveStreamingPrivateRequest | undefined>;
+  createPrivateStreamRequest(data: InsertLiveStreamingPrivateRequest): Promise<LiveStreamingPrivateRequest>;
+  updatePrivateStreamRequest(id: string, updates: Partial<LiveStreamingPrivateRequest>): Promise<void>;
+  deletePrivateStreamRequest(id: string): Promise<void>;
+  
+  // Maintenance Mode Management
+  getMaintenanceMode(): Promise<MaintenanceMode | undefined>;
+  updateMaintenanceMode(data: Partial<MaintenanceMode>): Promise<void>;
+  
+  // Enhanced Member Management
+  getMemberProfiles(): Promise<MemberProfile[]>;
+  getMemberProfile(id: string): Promise<MemberProfile | undefined>;
+  getMemberProfileByUserId(userId: string): Promise<MemberProfile | undefined>;
+  createMemberProfile(data: InsertMemberProfile): Promise<MemberProfile>;
+  updateMemberProfile(id: string, updates: Partial<MemberProfile>): Promise<void>;
+  deleteMemberProfile(id: string): Promise<void>;
+  
+  // Content Moderation Settings
+  getModerationSettings(): Promise<ModerationSettings | undefined>;
+  updateModerationSettings(data: Partial<ModerationSettings>): Promise<void>;
+  
+  // Platform Messages System
+  getPlatformMessages(): Promise<PlatformMessage[]>;
+  getPlatformMessage(id: string): Promise<PlatformMessage | undefined>;
+  createPlatformMessage(data: InsertPlatformMessage): Promise<PlatformMessage>;
+  updatePlatformMessage(id: string, updates: Partial<PlatformMessage>): Promise<void>;
+  deletePlatformMessage(id: string): Promise<void>;
+  markMessageAsRead(id: string): Promise<void>;
+  
+  // Payment Processor Settings
+  getPaymentProcessorSettings(): Promise<PaymentProcessorSettings[]>;
+  getPaymentProcessorSetting(id: string): Promise<PaymentProcessorSettings | undefined>;
+  getPaymentProcessorByName(processorName: string): Promise<PaymentProcessorSettings | undefined>;
+  createPaymentProcessorSettings(data: InsertPaymentProcessorSettings): Promise<PaymentProcessorSettings>;
+  updatePaymentProcessorSettings(id: string, updates: Partial<PaymentProcessorSettings>): Promise<void>;
+  deletePaymentProcessorSettings(id: string): Promise<void>;
+  
+  // System Limits Configuration
+  getSystemLimits(): Promise<SystemLimit[]>;
+  getSystemLimit(id: string): Promise<SystemLimit | undefined>;
+  createSystemLimit(data: InsertSystemLimit): Promise<SystemLimit>;
+  updateSystemLimit(id: string, updates: Partial<SystemLimit>): Promise<void>;
+  deleteSystemLimit(id: string): Promise<void>;
   
   // RBAC System
   getRoles(): Promise<Role[]>;
@@ -1558,6 +1619,286 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(cronJobLogs)
       .where(eq(cronJobLogs.jobId, jobId));
+  }
+
+  // API Integrations implementation
+  async getApiIntegrations(): Promise<ApiIntegration[]> {
+    return await db.select().from(apiIntegrations).orderBy(apiIntegrations.serviceName);
+  }
+
+  async getApiIntegrationByService(serviceName: string): Promise<ApiIntegration | undefined> {
+    const [result] = await db
+      .select()
+      .from(apiIntegrations)
+      .where(eq(apiIntegrations.serviceName, serviceName))
+      .limit(1);
+    return result;
+  }
+
+  async createApiIntegration(data: InsertApiIntegration): Promise<ApiIntegration> {
+    const [result] = await db
+      .insert(apiIntegrations)
+      .values(data)
+      .returning();
+    return result;
+  }
+
+  async updateApiIntegration(id: string, updates: Partial<ApiIntegration>): Promise<void> {
+    await db
+      .update(apiIntegrations)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(apiIntegrations.id, id));
+  }
+
+  async deleteApiIntegration(id: string): Promise<void> {
+    await db.delete(apiIntegrations).where(eq(apiIntegrations.id, id));
+  }
+
+  // Live Streaming Private Requests implementation
+  async getPrivateStreamRequests(): Promise<LiveStreamingPrivateRequest[]> {
+    return await db
+      .select()
+      .from(liveStreamingPrivateRequests)
+      .orderBy(desc(liveStreamingPrivateRequests.createdAt));
+  }
+
+  async getPrivateStreamRequest(id: string): Promise<LiveStreamingPrivateRequest | undefined> {
+    const [result] = await db
+      .select()
+      .from(liveStreamingPrivateRequests)
+      .where(eq(liveStreamingPrivateRequests.id, id))
+      .limit(1);
+    return result;
+  }
+
+  async createPrivateStreamRequest(data: InsertLiveStreamingPrivateRequest): Promise<LiveStreamingPrivateRequest> {
+    const [result] = await db
+      .insert(liveStreamingPrivateRequests)
+      .values(data)
+      .returning();
+    return result;
+  }
+
+  async updatePrivateStreamRequest(id: string, updates: Partial<LiveStreamingPrivateRequest>): Promise<void> {
+    await db
+      .update(liveStreamingPrivateRequests)
+      .set(updates)
+      .where(eq(liveStreamingPrivateRequests.id, id));
+  }
+
+  async deletePrivateStreamRequest(id: string): Promise<void> {
+    await db.delete(liveStreamingPrivateRequests).where(eq(liveStreamingPrivateRequests.id, id));
+  }
+
+  // Maintenance Mode implementation
+  async getMaintenanceMode(): Promise<MaintenanceMode | undefined> {
+    const [result] = await db
+      .select()
+      .from(maintenanceMode)
+      .limit(1);
+    return result;
+  }
+
+  async updateMaintenanceMode(data: Partial<MaintenanceMode>): Promise<void> {
+    const existing = await this.getMaintenanceMode();
+    if (existing) {
+      await db
+        .update(maintenanceMode)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(maintenanceMode.id, existing.id));
+    } else {
+      await db.insert(maintenanceMode).values(data as InsertMaintenanceMode);
+    }
+  }
+
+  // Enhanced Member Management implementation
+  async getMemberProfiles(): Promise<MemberProfile[]> {
+    return await db
+      .select()
+      .from(memberProfiles)
+      .orderBy(desc(memberProfiles.createdAt));
+  }
+
+  async getMemberProfile(id: string): Promise<MemberProfile | undefined> {
+    const [result] = await db
+      .select()
+      .from(memberProfiles)
+      .where(eq(memberProfiles.id, id))
+      .limit(1);
+    return result;
+  }
+
+  async getMemberProfileByUserId(userId: string): Promise<MemberProfile | undefined> {
+    const [result] = await db
+      .select()
+      .from(memberProfiles)
+      .where(eq(memberProfiles.userId, userId))
+      .limit(1);
+    return result;
+  }
+
+  async createMemberProfile(data: InsertMemberProfile): Promise<MemberProfile> {
+    const [result] = await db
+      .insert(memberProfiles)
+      .values(data)
+      .returning();
+    return result;
+  }
+
+  async updateMemberProfile(id: string, updates: Partial<MemberProfile>): Promise<void> {
+    await db
+      .update(memberProfiles)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(memberProfiles.id, id));
+  }
+
+  async deleteMemberProfile(id: string): Promise<void> {
+    await db.delete(memberProfiles).where(eq(memberProfiles.id, id));
+  }
+
+  // Content Moderation Settings implementation
+  async getModerationSettings(): Promise<ModerationSettings | undefined> {
+    const [result] = await db
+      .select()
+      .from(moderationSettings)
+      .limit(1);
+    return result;
+  }
+
+  async updateModerationSettings(data: Partial<ModerationSettings>): Promise<void> {
+    const existing = await this.getModerationSettings();
+    if (existing) {
+      await db
+        .update(moderationSettings)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(moderationSettings.id, existing.id));
+    } else {
+      await db.insert(moderationSettings).values(data as InsertModerationSettings);
+    }
+  }
+
+  // Platform Messages implementation
+  async getPlatformMessages(): Promise<PlatformMessage[]> {
+    return await db
+      .select()
+      .from(platformMessages)
+      .orderBy(desc(platformMessages.createdAt));
+  }
+
+  async getPlatformMessage(id: string): Promise<PlatformMessage | undefined> {
+    const [result] = await db
+      .select()
+      .from(platformMessages)
+      .where(eq(platformMessages.id, id))
+      .limit(1);
+    return result;
+  }
+
+  async createPlatformMessage(data: InsertPlatformMessage): Promise<PlatformMessage> {
+    const [result] = await db
+      .insert(platformMessages)
+      .values(data)
+      .returning();
+    return result;
+  }
+
+  async updatePlatformMessage(id: string, updates: Partial<PlatformMessage>): Promise<void> {
+    await db
+      .update(platformMessages)
+      .set(updates)
+      .where(eq(platformMessages.id, id));
+  }
+
+  async deletePlatformMessage(id: string): Promise<void> {
+    await db.delete(platformMessages).where(eq(platformMessages.id, id));
+  }
+
+  async markMessageAsRead(id: string): Promise<void> {
+    await db
+      .update(platformMessages)
+      .set({ isRead: true })
+      .where(eq(platformMessages.id, id));
+  }
+
+  // Payment Processor Settings implementation
+  async getPaymentProcessorSettings(): Promise<PaymentProcessorSettings[]> {
+    return await db
+      .select()
+      .from(paymentProcessorSettings)
+      .orderBy(paymentProcessorSettings.processorName);
+  }
+
+  async getPaymentProcessorSetting(id: string): Promise<PaymentProcessorSettings | undefined> {
+    const [result] = await db
+      .select()
+      .from(paymentProcessorSettings)
+      .where(eq(paymentProcessorSettings.id, id))
+      .limit(1);
+    return result;
+  }
+
+  async getPaymentProcessorByName(processorName: string): Promise<PaymentProcessorSettings | undefined> {
+    const [result] = await db
+      .select()
+      .from(paymentProcessorSettings)
+      .where(eq(paymentProcessorSettings.processorName, processorName))
+      .limit(1);
+    return result;
+  }
+
+  async createPaymentProcessorSettings(data: InsertPaymentProcessorSettings): Promise<PaymentProcessorSettings> {
+    const [result] = await db
+      .insert(paymentProcessorSettings)
+      .values(data)
+      .returning();
+    return result;
+  }
+
+  async updatePaymentProcessorSettings(id: string, updates: Partial<PaymentProcessorSettings>): Promise<void> {
+    await db
+      .update(paymentProcessorSettings)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(paymentProcessorSettings.id, id));
+  }
+
+  async deletePaymentProcessorSettings(id: string): Promise<void> {
+    await db.delete(paymentProcessorSettings).where(eq(paymentProcessorSettings.id, id));
+  }
+
+  // System Limits implementation
+  async getSystemLimits(): Promise<SystemLimit[]> {
+    return await db
+      .select()
+      .from(systemLimits)
+      .orderBy(systemLimits.limitType, systemLimits.limitName);
+  }
+
+  async getSystemLimit(id: string): Promise<SystemLimit | undefined> {
+    const [result] = await db
+      .select()
+      .from(systemLimits)
+      .where(eq(systemLimits.id, id))
+      .limit(1);
+    return result;
+  }
+
+  async createSystemLimit(data: InsertSystemLimit): Promise<SystemLimit> {
+    const [result] = await db
+      .insert(systemLimits)
+      .values(data)
+      .returning();
+    return result;
+  }
+
+  async updateSystemLimit(id: string, updates: Partial<SystemLimit>): Promise<void> {
+    await db
+      .update(systemLimits)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(systemLimits.id, id));
+  }
+
+  async deleteSystemLimit(id: string): Promise<void> {
+    await db.delete(systemLimits).where(eq(systemLimits.id, id));
   }
 }
 
