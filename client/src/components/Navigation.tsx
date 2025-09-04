@@ -34,7 +34,12 @@ import {
   Mail,
   Sparkles,
   Radio,
-  Mic
+  Mic,
+  Bot,
+  Puzzle,
+  Webhook,
+  CheckCircle2,
+  Siren
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -152,6 +157,36 @@ const navigationItems = [
     href: "/podcast-management", 
     icon: Mic,
     description: "Podcast hosting & analytics platform"
+  },
+  {
+    name: "Content Moderation Hub",
+    href: "/content-moderation-hub",
+    icon: Shield,
+    description: "AI-powered content moderation"
+  },
+  {
+    name: "Plugin Management",
+    href: "/plugin-management",
+    icon: Puzzle,
+    description: "FanzOS plugins and integrations"
+  },
+  {
+    name: "API Integration Management",
+    href: "/api-integration-management",
+    icon: Webhook,
+    description: "External API connections"
+  },
+  {
+    name: "Platform-Specific Moderation",
+    href: "/platform-moderation",
+    icon: Globe2,
+    description: "Per-platform moderation settings"
+  },
+  {
+    name: "Compliance Monitoring",
+    href: "/compliance-monitoring",
+    icon: CheckCircle2,
+    description: "2257, GDPR, CCPA compliance"
   },
   {
     name: "Blog Management",

@@ -67,6 +67,11 @@ import Maintenance503 from "@/pages/error/503";
 import ProfileDisabled from "@/pages/error/profile-disabled";
 import DemoUIShowcase from "@/pages/demo-ui-showcase";
 import NotFound from "@/pages/not-found";
+import ContentModerationHub from "@/pages/content-moderation-hub";
+import PluginManagement from "@/pages/plugin-management";
+import APIIntegrationManagement from "@/pages/api-integration-management";
+import PlatformModeration from "@/pages/platform-moderation";
+import ComplianceMonitoring from "@/pages/compliance-monitoring";
 
 function Router() {
   return (
@@ -101,6 +106,11 @@ function Router() {
           <Route path="/audio-calls" component={AudioCallSettings} />
           <Route path="/radio-broadcasting" component={RadioBroadcastingPage} />
           <Route path="/podcast-management" component={PodcastManagementPage} />
+          <Route path="/content-moderation-hub" component={ContentModerationHub} />
+          <Route path="/plugin-management" component={PluginManagement} />
+          <Route path="/api-integration-management" component={APIIntegrationManagement} />
+          <Route path="/platform-moderation" component={PlatformModeration} />
+          <Route path="/compliance-monitoring" component={ComplianceMonitoring} />
           <Route path="/blog" component={BlogManagement} />
           <Route path="/blog/create" component={BlogCreate} />
           <Route path="/blog/edit/:id" component={BlogEdit} />
