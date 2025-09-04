@@ -107,6 +107,70 @@ export default function EmailManagement() {
     },
     {
       id: "3",
+      templateName: "Email Verification",
+      subject: "Verify Your Email Address - {{site_name}}",
+      htmlContent: `
+        <h1>Verify Your Email Address</h1>
+        <p>Welcome to {{site_name}}!</p>
+        <p>Please click the link below to verify your email address:</p>
+        <a href="{{verification_url}}" style="background: #3869D4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+        <p>Or copy and paste this URL: {{verification_url}}</p>
+      `,
+      variables: ["site_name", "verification_url"],
+      isActive: true,
+      category: "auth",
+      createdAt: "2025-01-10T10:00:00Z",
+      updatedAt: "2025-01-15T14:30:00Z"
+    },
+    {
+      id: "4",
+      templateName: "Withdrawal Processed",
+      subject: "Your withdrawal has been processed",
+      htmlContent: `
+        <h1>Hello {{user_name}}</h1>
+        <p>Your withdrawal request for <strong>{{amount}}</strong> has been successfully processed and sent to your account.</p>
+        <p>Thank you for using our platform!</p>
+      `,
+      variables: ["user_name", "amount"],
+      isActive: true,
+      category: "notification",
+      createdAt: "2025-01-12T15:00:00Z",
+      updatedAt: "2025-01-12T15:00:00Z"
+    },
+    {
+      id: "5",
+      templateName: "Withdrawal Rejected",
+      subject: "Your withdrawal has been rejected",
+      htmlContent: `
+        <h1>Hello {{user_name}}</h1>
+        <p>Unfortunately, your withdrawal request has been rejected for the following reason:</p>
+        <p><em>{{rejection_reason}}</em></p>
+        <p>Please review the reason and contact support if you need assistance.</p>
+      `,
+      variables: ["user_name", "rejection_reason"],
+      isActive: true,
+      category: "notification",
+      createdAt: "2025-01-12T15:00:00Z",
+      updatedAt: "2025-01-12T15:00:00Z"
+    },
+    {
+      id: "6",
+      templateName: "Transfer Verification",
+      subject: "Transfer Verification Required",
+      htmlContent: `
+        <h1>Hello {{user_name}}</h1>
+        <p>{{message_body}}</p>
+        <p>{{action_link}}</p>
+        <p>If you need assistance, please contact our support team.</p>
+      `,
+      variables: ["user_name", "message_body", "action_link"],
+      isActive: true,
+      category: "system",
+      createdAt: "2025-01-12T15:00:00Z",
+      updatedAt: "2025-01-12T15:00:00Z"
+    },
+    {
+      id: "7",
       templateName: "New Subscriber Notification",
       subject: "You have a new subscriber!",
       htmlContent: `

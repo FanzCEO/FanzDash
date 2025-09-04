@@ -47,9 +47,14 @@ import WithdrawalManagement from "@/pages/withdrawal-management";
 import WithdrawalView from "@/pages/withdrawal-view";
 import EmailManagement from "@/pages/email-management";
 import UserManagement from "@/pages/user-management";
+import ContactManagement from "@/pages/contact-management";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import PasswordReset from "@/pages/auth/password-reset";
+import NotFound404 from "@/pages/error/404";
+import ServerError500 from "@/pages/error/500";
+import Maintenance503 from "@/pages/error/503";
+import ProfileDisabled from "@/pages/error/profile-disabled";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -100,9 +105,14 @@ function Router() {
           <Route path="/withdrawal-view/:id" component={WithdrawalView} />
           <Route path="/email-management" component={EmailManagement} />
           <Route path="/user-management" component={UserManagement} />
+          <Route path="/contact-management" component={ContactManagement} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/password/reset" component={PasswordReset} />
+          <Route path="/error/404" component={NotFound404} />
+          <Route path="/error/500" component={ServerError500} />
+          <Route path="/error/503" component={Maintenance503} />
+          <Route path="/error/profile-disabled" component={ProfileDisabled} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

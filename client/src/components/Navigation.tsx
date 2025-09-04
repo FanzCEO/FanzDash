@@ -253,6 +253,12 @@ const navigationItems = [
     description: "User accounts, verification & activity"
   },
   {
+    name: "Contact Management",
+    href: "/contact-management",
+    icon: UserCheck,
+    description: "Support messages & customer service"
+  },
+  {
     name: "System Settings",
     href: "/settings",
     icon: Settings,
