@@ -34,24 +34,24 @@ export default function AuditPage() {
       {
         id: "audit-001",
         timestamp: "2025-08-29T18:23:45Z",
-        user: "admin@fanzmod.com",
+        user: "admin@fanzdash.com",
         action: "Content Blocked",
         target: "content-id-12345",
         result: "SUCCESS",
         details: "High-risk content automatically blocked by AI system",
         ipAddress: "192.168.1.100",
-        userAgent: "FanzMod Admin Panel v2.1"
+        userAgent: "FanzDash Admin Panel v2.1"
       },
       {
         id: "audit-002",
         timestamp: "2025-08-29T18:22:10Z", 
-        user: "moderator@fanzmod.com",
+        user: "moderator@fanzdash.com",
         action: "Appeal Reviewed",
         target: "appeal-789",
         result: "SUCCESS",
         details: "User appeal approved, content reinstated",
         ipAddress: "192.168.1.101",
-        userAgent: "FanzMod Moderator v2.1"
+        userAgent: "FanzDash Moderator v2.1"
       },
       {
         id: "audit-003",
@@ -62,18 +62,18 @@ export default function AuditPage() {
         result: "WARNING",
         details: "Elevated risk detected on FanzMain platform",
         ipAddress: "127.0.0.1",
-        userAgent: "FanzMod System v2.1"
+        userAgent: "FanzDash System v2.1"
       },
       {
         id: "audit-004",
         timestamp: "2025-08-29T18:18:15Z",
-        user: "admin@fanzmod.com", 
+        user: "admin@fanzdash.com", 
         action: "Settings Modified",
         target: "moderation-threshold",
         result: "SUCCESS",
         details: "Auto-block threshold changed from 0.8 to 0.75",
         ipAddress: "192.168.1.100",
-        userAgent: "FanzMod Admin Panel v2.1"
+        userAgent: "FanzDash Admin Panel v2.1"
       },
       {
         id: "audit-005",
@@ -84,7 +84,7 @@ export default function AuditPage() {
         result: "SUCCESS", 
         details: "Daily encrypted backup completed successfully",
         ipAddress: "127.0.0.1",
-        userAgent: "FanzMod Backup Service v2.1"
+        userAgent: "FanzDash Backup Service v2.1"
       }
     ]
   };

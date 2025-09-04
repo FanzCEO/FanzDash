@@ -25,7 +25,7 @@ export function Sidebar() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center mr-3">
                 <i className="fas fa-shield-alt text-white text-lg"></i>
               </div>
-              <h1 className="text-xl font-bold text-white">FanzMod</h1>
+              <h1 className="text-xl font-bold text-white">FanzDash</h1>
             </div>
           </div>
 

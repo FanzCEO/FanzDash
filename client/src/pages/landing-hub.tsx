@@ -293,11 +293,11 @@ export default function LandingHub() {
             // Mock data for initial display
             [
               { id: "fanz-main", name: "FanzUnlimited.com", domain: "fanzunlimited.com", status: "online", users: 15234567, uptime: 99.8 },
-              { id: "fanz-premium", name: "Fanz Premium", domain: "premium.fanz.com", status: "online", users: 3456789, uptime: 99.9 },
-              { id: "fanz-creator", name: "Fanz Creator Portal", domain: "creator.fanz.com", status: "online", users: 234567, uptime: 98.7 },
-              { id: "fanz-mobile", name: "Fanz Mobile API", domain: "api.fanz.com", status: "maintenance", users: 8765432, uptime: 97.5 },
-              { id: "fanz-media", name: "Media Brain", domain: "media.fanz.com", status: "online", users: 0, uptime: 99.6 },
-              { id: "fanz-people", name: "People Brain", domain: "people.fanz.com", status: "online", users: 0, uptime: 99.4 }
+              { id: "fanz-premium", name: "FanzDash Premium", domain: "premium.fanzdash.com", status: "online", users: 3456789, uptime: 99.9 },
+              { id: "fanz-creator", name: "FanzDash Creator Portal", domain: "creator.fanzdash.com", status: "online", users: 234567, uptime: 98.7 },
+              { id: "fanz-mobile", name: "FanzDash Mobile API", domain: "api.fanzdash.com", status: "maintenance", users: 8765432, uptime: 97.5 },
+              { id: "fanz-media", name: "FanzDash Media Brain", domain: "media.fanzdash.com", status: "online", users: 0, uptime: 99.6 },
+              { id: "fanz-people", name: "FanzDash People Brain", domain: "people.fanzdash.com", status: "online", users: 0, uptime: 99.4 }
             ].map((platform) => (
               <Card key={platform.id} className="bg-gray-900/50 border-gray-700">
                 <CardContent className="p-4">

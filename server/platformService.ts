@@ -143,7 +143,7 @@ export class PlatformManagementService {
 
 export const platformService = new PlatformManagementService();
 
-// Auto-connect to predefined Fanz platforms
+// Auto-connect to predefined FanzDash platforms
 const fanzPlatforms: PlatformConfiguration[] = [
   {
     id: 'fanz-main',
@@ -151,7 +151,7 @@ const fanzPlatforms: PlatformConfiguration[] = [
     domain: 'fanzmain.com',
     niche: 'adult_entertainment',
     apiEndpoint: 'https://api.fanzmain.com/v1',
-    webhookUrl: 'https://moderation.fanzmod.com/webhooks/fanz-main',
+    webhookUrl: 'https://moderation.fanzdash.com/webhooks/fanz-main',
     moderationRules: {
       autoBlockThreshold: 0.8,
       reviewThreshold: 0.5,
@@ -170,7 +170,7 @@ const fanzPlatforms: PlatformConfiguration[] = [
     domain: 'fanzlive.com',
     niche: 'live_streaming',
     apiEndpoint: 'https://api.fanzlive.com/v1',
-    webhookUrl: 'https://moderation.fanzmod.com/webhooks/fanz-live',
+    webhookUrl: 'https://moderation.fanzdash.com/webhooks/fanz-live',
     moderationRules: {
       autoBlockThreshold: 0.75,
       reviewThreshold: 0.4,
@@ -189,7 +189,7 @@ const fanzPlatforms: PlatformConfiguration[] = [
     domain: 'fanzsocial.com',
     niche: 'social_networking',
     apiEndpoint: 'https://api.fanzsocial.com/v1',
-    webhookUrl: 'https://moderation.fanzmod.com/webhooks/fanz-social',
+    webhookUrl: 'https://moderation.fanzdash.com/webhooks/fanz-social',
     moderationRules: {
       autoBlockThreshold: 0.7,
       reviewThreshold: 0.3,

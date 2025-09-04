@@ -85,7 +85,7 @@ export default function UsersPage() {
     {
       id: "user-001",
       username: "admin_sarah",
-      email: "sarah@fanzmod.com",
+      email: "sarah@fanzdash.com",
       role: "admin",
       status: "active",
       lastActive: new Date().toISOString(),
@@ -95,7 +95,7 @@ export default function UsersPage() {
     {
       id: "user-002",
       username: "mod_alex",
-      email: "alex@fanzmod.com", 
+      email: "alex@fanzdash.com", 
       role: "moderator",
       status: "active",
       lastActive: new Date(Date.now() - 300000).toISOString(),
@@ -105,7 +105,7 @@ export default function UsersPage() {
     {
       id: "user-003",
       username: "mod_jordan",
-      email: "jordan@fanzmod.com",
+      email: "jordan@fanzdash.com",
       role: "moderator", 
       status: "active",
       lastActive: new Date(Date.now() - 600000).toISOString(),
@@ -115,7 +115,7 @@ export default function UsersPage() {
     {
       id: "user-004",
       username: "analyst_mike",
-      email: "mike@fanzmod.com",
+      email: "mike@fanzdash.com",
       role: "analyst",
       status: "inactive",
       lastActive: new Date(Date.now() - 86400000).toISOString(),

@@ -46,7 +46,7 @@ const navigationItems = [
     name: "Platform Manager",
     href: "/platforms",
     icon: Globe,
-    description: "Manage all Fanz platforms"
+    description: "Manage all FanzDash platforms"
   },
   {
     name: "AI Analysis Engine",
@@ -284,8 +284,8 @@ export function Navigation() {
             <Shield className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold cyber-text-glow">FanzMod</h1>
-            <p className="text-xs text-muted-foreground">Neural Control Center</p>
+            <h1 className="text-xl font-bold cyber-text-glow">FanzDash</h1>
+            <p className="text-xs text-muted-foreground">Enterprise Creator Platform</p>
           </div>
         </div>
 

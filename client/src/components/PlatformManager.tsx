@@ -277,7 +277,7 @@ export function PlatformManager() {
                       <Input
                         value={newPlatform.name}
                         onChange={(e) => setNewPlatform({...newPlatform, name: e.target.value})}
-                        placeholder="e.g., FanzPlatform Main"
+                        placeholder="e.g., FanzDash Platform Main"
                         className="glass-effect"
                       />
                     </div>
