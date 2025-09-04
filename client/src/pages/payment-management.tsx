@@ -245,22 +245,49 @@ export default function PaymentManagement() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Input
-                  placeholder="Processor name (CCBill, Segpay, etc.)"
-                  value={newProcessorName}
-                  onChange={(e) => setNewProcessorName(e.target.value)}
-                  className="bg-gray-800 border-gray-700"
-                  data-testid="input-processor-name"
-                />
+                <Select value={newProcessorName} onValueChange={setNewProcessorName}>
+                  <SelectTrigger className="bg-gray-800 border-gray-700" data-testid="select-processor-name">
+                    <SelectValue placeholder="Select adult-friendly processor" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[400px] overflow-y-auto">
+                    <SelectItem value="CCBill">CCBill - Global adult IPSP; ~5–12% fees</SelectItem>
+                    <SelectItem value="Segpay">Segpay - Adult specialist; ~4–6% + fee</SelectItem>
+                    <SelectItem value="Epoch">Epoch - Adult subscription billing pioneer; ~15% small-volume</SelectItem>
+                    <SelectItem value="Verotel">Verotel - Netherlands-based; ~15% low-volume</SelectItem>
+                    <SelectItem value="Vendo">Vendo - EU focus; ~5–10%</SelectItem>
+                    <SelectItem value="Netbilling">Netbilling - US gateway; ~2.5–5% + $0.25</SelectItem>
+                    <SelectItem value="PaymentCloud">PaymentCloud - US-based; ~3–4% + $0.30</SelectItem>
+                    <SelectItem value="PayKings">PayKings - High-risk network; ~3–5%</SelectItem>
+                    <SelectItem value="Durango Merchant Services">Durango Merchant Services - Offshore; ~4%+</SelectItem>
+                    <SelectItem value="Corepay">Corepay - Adult specialists; ~3–5%</SelectItem>
+                    <SelectItem value="Instabill">Instabill - Offshore-friendly; ~4–6%</SelectItem>
+                    <SelectItem value="Host Merchant Services">Host Merchant Services - US high-risk accounts</SelectItem>
+                    <SelectItem value="Payment Nerds">Payment Nerds - No monthly fees; flat ~3.5%</SelectItem>
+                    <SelectItem value="SensaPay">SensaPay - Global; ~2.95–5%</SelectItem>
+                    <SelectItem value="Tower Payments">Tower Payments - US-based; adult e-commerce focus</SelectItem>
+                    <SelectItem value="Zen Payments">Zen Payments - US; ~3%+; OnlyFans-style platforms</SelectItem>
+                    <SelectItem value="Easy Pay Direct">Easy Pay Direct - US gateway; $49/mo + ~3–5%</SelectItem>
+                    <SelectItem value="eMerchantBroker (EMB)">eMerchantBroker (EMB) - High-risk specialists; 4%+</SelectItem>
+                    <SelectItem value="NOWPayments">NOWPayments - Adult-friendly; 100+ cryptos; 0.5% fee</SelectItem>
+                    <SelectItem value="CoinPayments">CoinPayments - 75+ cryptos; 0.5–1% fees</SelectItem>
+                    <SelectItem value="CoinGate">CoinGate - 1% fee; Bitcoin/Ethereum/etc.</SelectItem>
+                    <SelectItem value="BTCPay Server">BTCPay Server - Open-source, self-hosted; 0% fee</SelectItem>
+                    <SelectItem value="PayRam">PayRam - Non-custodial; 0% fee</SelectItem>
+                    <SelectItem value="Confirmo">Confirmo - EU-based; ~1% fee</SelectItem>
+                    <SelectItem value="Paxum Bank">Paxum Bank (Dominica) - Offshore bank for adult industry</SelectItem>
+                    <SelectItem value="Yoursafe/Bitsafe">Yoursafe/Bitsafe - Dutch EMI offering IBANs/cards</SelectItem>
+                  </SelectContent>
+                </Select>
 
                 <Select value={newProcessorType} onValueChange={setNewProcessorType}>
                   <SelectTrigger className="bg-gray-800 border-gray-700">
-                    <SelectValue placeholder="Processor type" />
+                    <SelectValue placeholder="Processor category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="adult_friendly">Adult-Friendly</SelectItem>
-                    <SelectItem value="crypto">Cryptocurrency</SelectItem>
-                    <SelectItem value="international">International</SelectItem>
+                    <SelectItem value="adult_friendly">Payment Processors & Merchant Accounts</SelectItem>
+                    <SelectItem value="crypto">Crypto Payment Solutions</SelectItem>
+                    <SelectItem value="bank">Banks & Financial Institutions</SelectItem>
+                    <SelectItem value="international">International High-Risk</SelectItem>
                   </SelectContent>
                 </Select>
 
