@@ -1,0 +1,98 @@
+Some issues need review, and may require choosing
+a different dependency.
+~/workspace$ npm update
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: vite@7.1.4
+npm error Found: @types/node@20.16.11
+npm error node_modules/@types/node
+npm error   dev @types/node@"20.16.11" from the root project
+npm error   @types/node@"*" from @types/jsonwebtoken@9.0.10
+npm error   node_modules/@types/jsonwebtoken
+npm error     @types/jsonwebtoken@"^9.0.10" from the root project
+npm error   13 more (@types/nodemailer, @types/qrcode, @types/speakeasy, ...)
+npm error
+npm error Could not resolve dependency:
+npm error peerOptional @types/node@"^20.19.0 || >=22.12.0" from vite@7.1.4
+npm error node_modules/vite
+npm error   dev vite@"^7.1.4" from the root project
+npm error   peer vite@"^5.2.0 || ^6 || ^7" from @tailwindcss/vite@4.1.13
+npm error   node_modules/@tailwindcss/vite
+npm error     dev @tailwindcss/vite@"^4.1.3" from the root project
+npm error   1 more (@vitejs/plugin-react)
+npm error
+npm error Conflicting peer dependency: @types/node@24.3.1
+npm error node_modules/@types/node
+npm error   peerOptional @types/node@"^20.19.0 || >=22.12.0" from vite@7.1.4
+npm error   node_modules/vite
+npm error     dev vite@"^7.1.4" from the root project
+npm error     peer vite@"^5.2.0 || ^6 || ^7" from @tailwindcss/vite@4.1.13
+npm error     node_modules/@tailwindcss/vite
+npm error       dev @tailwindcss/vite@"^4.1.3" from the root project
+npm error     1 more (@vitejs/plugin-react)
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /home/runner/.npm/_logs/2025-09-04T22_25_17_162Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-09-04T22_25_17_162Z-debug-0.log
+~/workspace$ npm install package-name --legacy-peer-deps
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'package-name@0.1.0',
+npm warn EBADENGINE   required: { node: '~0.6.10 || 0.8 || 0.9' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'auto-reload-brunch@1.4.0',
+npm warn EBADENGINE   required: { node: '~0.6.10 || 0.8 || 0.9' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'coffeelint-brunch@1.4.4',
+npm warn EBADENGINE   required: { node: '~0.6.10 || 0.8 || 0.9' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'emblem-brunch@0.1.1',
+npm warn EBADENGINE   required: { node: '~0.6.10 || 0.8 || 0.9' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated har-validator@5.1.5: this library is no longer supported
+npm warn deprecated mkdirp@0.3.5: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
+npm warn deprecated javascript-brunch@1.5.1: Deprecated
+npm warn deprecated css-brunch@1.5.1: Deprecated
+npm warn deprecated stylus-brunch@1.5.1: Deprecated
+npm warn deprecated coffee-script-brunch@1.5.1: Deprecated
+npm warn deprecated uglify-js-brunch@1.5.1: Deprecated
+npm warn deprecated clean-css-brunch@1.5.1: Deprecated
+npm warn deprecated auto-reload-brunch@1.4.0: Deprecated
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated coffeelint-brunch@1.4.4: Deprecated
+npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+npm warn deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+npm warn deprecated coffee-script@1.4.0: CoffeeScript on NPM has moved to "coffeescript" (no hyphen)
+npm warn deprecated coffee-script@1.3.3: CoffeeScript on NPM has moved to "coffeescript" (no hyphen)
+
+added 104 packages, and audited 969 packages in 10s
+
+105 packages are looking for funding
+  run `npm fund` for details
+
+21 vulnerabilities (2 low, 9 moderate, 4 high, 6 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+~/workspace$ 
