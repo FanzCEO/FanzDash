@@ -1699,10 +1699,6 @@ export type Form2257Verification = typeof form2257Verifications.$inferSelect;
 export type InsertForm2257Verification = z.infer<
   typeof insertForm2257VerificationSchema
 >;
-export type ChatRoom = typeof chatRooms.$inferSelect;
-export type InsertChatRoom = z.infer<typeof insertChatRoomSchema>;
-export type ChatMessage = typeof chatMessages.$inferSelect;
-export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type EmailAccount = typeof emailAccounts.$inferSelect;
 export type InsertEmailAccount = z.infer<typeof insertEmailAccountSchema>;
 export type EmailMessage = typeof emailMessages.$inferSelect;
@@ -1929,6 +1925,13 @@ export const systemLimits = pgTable("system_limits", {
 });
 
 export type SystemLimit = typeof systemLimits.$inferSelect;
+
+export const insertSystemLimitSchema = createInsertSchema(systemLimits).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type InsertSystemLimit = z.infer<typeof insertSystemLimitSchema>;
 
 // === ADDITIONAL SPONZY v6.8 FEATURES ===
