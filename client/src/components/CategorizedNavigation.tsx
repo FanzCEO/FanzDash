@@ -42,7 +42,8 @@ import {
   CheckCircle2,
   Siren,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -275,6 +276,18 @@ const navigationCategories: NavigationCategory[] = [
         href: "/analytics",
         icon: BarChart3,
         description: "Performance metrics & compliance reporting"
+      },
+      {
+        name: "SEO Configuration",
+        href: "/seo-configuration",
+        icon: Search,
+        description: "Search engine optimization settings"
+      },
+      {
+        name: "AEO Configuration", 
+        href: "/aeo-configuration",
+        icon: Brain,
+        description: "Answer Engine Optimization for AI platforms"
       },
       {
         name: "System Settings",

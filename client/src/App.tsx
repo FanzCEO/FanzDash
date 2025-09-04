@@ -48,6 +48,7 @@ import WithdrawalView from "@/pages/withdrawal-view";
 import EmailManagement from "@/pages/email-management";
 import UserManagement from "@/pages/user-management";
 import SEOConfiguration from "@/pages/seo-configuration";
+import AEOConfiguration from "@/pages/aeo-configuration";
 import ContactManagement from "@/pages/contact-management";
 import VideoEncodingPage from "@/pages/video-encoding";
 import StickersManagementPage from "@/pages/stickers-management";
@@ -147,6 +148,7 @@ function Router() {
           <Route path="/error/profile-disabled" component={ProfileDisabled} />
           <Route path="/demo-ui" component={DemoUIShowcase} />
           <Route path="/seo-configuration" component={SEOConfiguration} />
+          <Route path="/aeo-configuration" component={AEOConfiguration} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>
