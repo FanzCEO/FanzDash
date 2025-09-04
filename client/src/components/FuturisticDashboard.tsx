@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { 
   Shield, 
   Zap, 
@@ -21,7 +23,13 @@ import {
   TrendingDown,
   Users,
   Clock,
-  Layers
+  Layers,
+  DollarSign,
+  CreditCard,
+  Wallet,
+  PieChart as PieChartIcon,
+  BarChart3,
+  Receipt
 } from "lucide-react";
 
 interface DashboardStats {
@@ -33,6 +41,38 @@ interface DashboardStats {
   accuracy: number;
   vaultedItems: number;
   activeStreams: number;
+  // Revenue metrics
+  totalRevenue: number;
+  dailyRevenue: number;
+  monthlyRevenue: number;
+  totalDeposits: number;
+  activeCreators: number;
+  totalPayouts: number;
+  conversionRate: number;
+  avgOrderValue: number;
+}
+
+interface RevenueData {
+  date: string;
+  revenue: number;
+  deposits: number;
+  payouts: number;
+  profit: number;
+}
+
+interface PaymentMethodData {
+  name: string;
+  value: number;
+  percentage: number;
+  color: string;
+}
+
+interface CreatorEarningsData {
+  name: string;
+  earnings: number;
+  tips: number;
+  subscriptions: number;
+  content: number;
 }
 
 export function FuturisticDashboard() {
@@ -47,6 +87,32 @@ export function FuturisticDashboard() {
     queryKey: ["/api/threat-level"],
     refetchInterval: 2000,
   });
+
+  // Mock revenue data for demonstration
+  const mockRevenueData: RevenueData[] = [
+    { date: "Jan", revenue: 125000, deposits: 150000, payouts: 112500, profit: 12500 },
+    { date: "Feb", revenue: 138000, deposits: 165000, payouts: 124200, profit: 13800 },
+    { date: "Mar", revenue: 142000, deposits: 170000, payouts: 127800, profit: 14200 },
+    { date: "Apr", revenue: 156000, deposits: 185000, payouts: 140400, profit: 15600 },
+    { date: "May", revenue: 169000, deposits: 195000, payouts: 152100, profit: 16900 },
+    { date: "Jun", revenue: 178000, deposits: 210000, payouts: 160200, profit: 17800 },
+    { date: "Jul", revenue: 192000, deposits: 225000, payouts: 172800, profit: 19200 },
+  ];
+
+  const mockPaymentMethods: PaymentMethodData[] = [
+    { name: "CCBill", value: 45, percentage: 45, color: "#8b5cf6" },
+    { name: "Segpay", value: 28, percentage: 28, color: "#06b6d4" },
+    { name: "Epoch", value: 15, percentage: 15, color: "#10b981" },
+    { name: "Crypto", value: 8, percentage: 8, color: "#f59e0b" },
+    { name: "Bank Transfer", value: 4, percentage: 4, color: "#ef4444" },
+  ];
+
+  const mockCreatorEarnings: CreatorEarningsData[] = [
+    { name: "VIP Creators", earnings: 45000, tips: 15000, subscriptions: 25000, content: 5000 },
+    { name: "Premium", earnings: 32000, tips: 12000, subscriptions: 18000, content: 2000 },
+    { name: "Standard", earnings: 18000, tips: 8000, subscriptions: 8000, content: 2000 },
+    { name: "New", earnings: 8000, tips: 3000, subscriptions: 4000, content: 1000 },
+  ];
 
   // Simulate real-time data stream
   useEffect(() => {
@@ -100,42 +166,64 @@ export function FuturisticDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Command Center Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            {
-              title: "Neural Processing",
-              value: stats?.totalContent || 0,
-              change: "+12.5%",
-              icon: Brain,
-              color: "text-primary",
-              trend: "up"
-            },
-            {
-              title: "Threat Detection",
-              value: stats?.autoBlocked || 0,
-              change: "-8.3%",
-              icon: Shield,
-              color: "text-destructive", 
-              trend: "down"
-            },
-            {
-              title: "Active Surveillance",
-              value: stats?.activeStreams || 0,
-              change: "+23.1%",
-              icon: Eye,
-              color: "text-secondary",
-              trend: "up"
-            },
-            {
-              title: "Vault Security",
-              value: stats?.vaultedItems || 0,
-              change: "+5.7%",
-              icon: Lock,
-              color: "text-accent",
-              trend: "up"
-            }
-          ].map((metric, index) => {
+        {/* Enhanced Dashboard Tabs */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 cyber-card">
+            <TabsTrigger value="overview" className="flex items-center space-x-2">
+              <Shield className="w-4 h-4" />
+              <span>Security Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="revenue" className="flex items-center space-x-2">
+              <DollarSign className="w-4 h-4" />
+              <span>Revenue Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="creators" className="flex items-center space-x-2">
+              <Users className="w-4 h-4" />
+              <span>Creator Earnings</span>
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center space-x-2">
+              <CreditCard className="w-4 h-4" />
+              <span>Payment Systems</span>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Security Overview Tab */}
+          <TabsContent value="overview">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  title: "Neural Processing",
+                  value: stats?.totalContent || 0,
+                  change: "+12.5%",
+                  icon: Brain,
+                  color: "text-primary",
+                  trend: "up"
+                },
+                {
+                  title: "Threat Detection",
+                  value: stats?.autoBlocked || 0,
+                  change: "-8.3%",
+                  icon: Shield,
+                  color: "text-destructive", 
+                  trend: "down"
+                },
+                {
+                  title: "Active Surveillance",
+                  value: stats?.activeStreams || 0,
+                  change: "+23.1%",
+                  icon: Eye,
+                  color: "text-secondary",
+                  trend: "up"
+                },
+                {
+                  title: "Vault Security",
+                  value: stats?.vaultedItems || 0,
+                  change: "+5.7%",
+                  icon: Lock,
+                  color: "text-accent",
+                  trend: "up"
+                }
+              ].map((metric, index) => {
             const IconComponent = metric.icon;
             const TrendIcon = metric.trend === "up" ? TrendingUp : TrendingDown;
             
@@ -368,6 +456,292 @@ export function FuturisticDashboard() {
             </CardContent>
           </Card>
         </div>
+      </TabsContent>
+
+      {/* Revenue Analytics Tab */}
+      <TabsContent value="revenue">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {[
+            {
+              title: "Total Revenue",
+              value: `$${(stats?.totalRevenue || 1920000).toLocaleString()}`,
+              change: "+18.2%",
+              icon: DollarSign,
+              color: "text-green-500",
+              trend: "up"
+            },
+            {
+              title: "Daily Revenue",
+              value: `$${(stats?.dailyRevenue || 24500).toLocaleString()}`,
+              change: "+12.7%",
+              icon: Receipt,
+              color: "text-blue-500",
+              trend: "up"
+            },
+            {
+              title: "Active Creators",
+              value: (stats?.activeCreators || 15420).toLocaleString(),
+              change: "+8.9%",
+              icon: Users,
+              color: "text-purple-500",
+              trend: "up"
+            },
+            {
+              title: "Conversion Rate",
+              value: `${stats?.conversionRate || 4.2}%`,
+              change: "+0.8%",
+              icon: TrendingUp,
+              color: "text-orange-500",
+              trend: "up"
+            }
+          ].map((metric, index) => {
+            const IconComponent = metric.icon;
+            const TrendIcon = metric.trend === "up" ? TrendingUp : TrendingDown;
+            
+            return (
+              <Card key={index} className="cyber-card hologram-effect neural-network">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 rounded-xl glass-effect border border-primary/30">
+                      <IconComponent className={`w-8 h-8 ${metric.color} cyber-pulse`} />
+                    </div>
+                    <Badge variant="outline" className="neon-text">
+                      <TrendIcon className="w-3 h-3 mr-1" />
+                      {metric.change}
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      {metric.title}
+                    </div>
+                    <div className="text-3xl font-bold cyber-text-glow">
+                      {metric.value}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Revenue Trends Chart */}
+          <Card className="cyber-card neural-network">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-3">
+                <BarChart3 className="w-6 h-6 text-primary cyber-pulse" />
+                <span className="cyber-text-glow">REVENUE TRENDS</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={mockRevenueData}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-background/90 backdrop-blur border border-border/50 rounded-lg p-3">
+                            <p className="font-medium">{label}</p>
+                            {payload.map((entry, index) => (
+                              <p key={index} style={{ color: entry.color }}>
+                                {entry.dataKey}: ${entry.value?.toLocaleString()}
+                              </p>
+                            ))}
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stackId="1"
+                    stroke="#8b5cf6"
+                    fill="#8b5cf6"
+                    fillOpacity={0.6}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="profit"
+                    stackId="2"
+                    stroke="#10b981"
+                    fill="#10b981"
+                    fillOpacity={0.8}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Payment Methods Distribution */}
+          <Card className="cyber-card neural-network">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-3">
+                <PieChartIcon className="w-6 h-6 text-secondary cyber-pulse" />
+                <span className="cyber-text-glow">PAYMENT METHODS</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={mockPaymentMethods}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {mockPaymentMethods.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="mt-4 space-y-2">
+                {mockPaymentMethods.map((method, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: method.color }}
+                      ></div>
+                      <span className="text-sm">{method.name}</span>
+                    </div>
+                    <span className="text-sm font-mono">{method.percentage}%</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      {/* Creator Earnings Tab */}
+      <TabsContent value="creators">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="cyber-card neural-network">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-3">
+                <Wallet className="w-6 h-6 text-accent cyber-pulse" />
+                <span className="cyber-text-glow">CREATOR EARNINGS</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={mockCreatorEarnings}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="tips" stackId="a" fill="#f59e0b" />
+                  <Bar dataKey="subscriptions" stackId="a" fill="#8b5cf6" />
+                  <Bar dataKey="content" stackId="a" fill="#06b6d4" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="cyber-card neural-network">
+            <CardHeader>
+              <CardTitle>Top Performers</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {mockCreatorEarnings.map((creator, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-background/50">
+                    <div>
+                      <p className="font-medium">{creator.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Total: ${creator.earnings.toLocaleString()}
+                      </p>
+                    </div>
+                    <Badge variant="outline">${creator.earnings.toLocaleString()}</Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      {/* Payment Systems Tab */}
+      <TabsContent value="payments">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="cyber-card neural-network">
+            <CardHeader>
+              <CardTitle>CCBill Integration</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Status</span>
+                  <Badge className="bg-green-500">Active</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Processing</span>
+                  <span className="font-mono">45%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Revenue</span>
+                  <span className="font-mono">$864K</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="cyber-card neural-network">
+            <CardHeader>
+              <CardTitle>Segpay Integration</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Status</span>
+                  <Badge className="bg-green-500">Active</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Processing</span>
+                  <span className="font-mono">28%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Revenue</span>
+                  <span className="font-mono">$538K</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="cyber-card neural-network">
+            <CardHeader>
+              <CardTitle>Crypto Payments</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Status</span>
+                  <Badge className="bg-blue-500">Beta</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Processing</span>
+                  <span className="font-mono">8%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Revenue</span>
+                  <span className="font-mono">$154K</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+    </Tabs>
       </div>
     </div>
   );

@@ -915,6 +915,28 @@ export const countries = pgTable("countries", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// States/Regions Management (from edit-state.blade.php)
+export const states = pgTable("states", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  countryId: varchar("country_id").references(() => countries.id).notNull(),
+  stateCode: varchar("state_code").notNull(),
+  stateName: varchar("state_name").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Languages Management (from edit-languages.blade.php)
+export const languages = pgTable("languages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  languageName: varchar("language_name").notNull(),
+  languageCode: varchar("language_code").notNull().unique(), // ISO 639-1 code
+  isActive: boolean("is_active").default(true),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Comments System (from comments.blade.php)
 export const userComments = pgTable("user_comments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -925,6 +947,46 @@ export const userComments = pgTable("user_comments", {
   moderatorId: varchar("moderator_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Cron Jobs Management System
+export const cronJobs = pgTable("cron_jobs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  command: text("command").notNull(),
+  schedule: varchar("schedule").notNull(), // Cron expression
+  isActive: boolean("is_active").default(true),
+  isRunning: boolean("is_running").default(false),
+  lastRunAt: timestamp("last_run_at"),
+  nextRunAt: timestamp("next_run_at"),
+  lastResult: varchar("last_result"), // 'success', 'failed', 'timeout'
+  lastOutput: text("last_output"),
+  lastError: text("last_error"),
+  timeout: integer("timeout").default(300), // seconds
+  retryCount: integer("retry_count").default(0),
+  maxRetries: integer("max_retries").default(3),
+  priority: varchar("priority").default("normal"), // 'low', 'normal', 'high', 'critical'
+  category: varchar("category").notNull(), // 'maintenance', 'analytics', 'payments', 'content', 'backup'
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Cron Job Execution Logs
+export const cronJobLogs = pgTable("cron_job_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  jobId: varchar("job_id").references(() => cronJobs.id).notNull(),
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  status: varchar("status").notNull(), // 'running', 'success', 'failed', 'timeout', 'cancelled'
+  exitCode: integer("exit_code"),
+  output: text("output"),
+  errorOutput: text("error_output"),
+  duration: integer("duration"), // milliseconds
+  memoryUsage: integer("memory_usage"), // bytes
+  cpuUsage: decimal("cpu_usage", { precision: 5, scale: 2 }), // percentage
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Insert schemas (defined after all tables)
@@ -1268,10 +1330,40 @@ export const insertCountrySchema = createInsertSchema(countries).omit({
   updatedAt: true,
 });
 
+export const insertStateSchema = createInsertSchema(states).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertLanguageSchema = createInsertSchema(languages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertUserCommentSchema = createInsertSchema(userComments).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+});
+
+export const insertCronJobSchema = createInsertSchema(cronJobs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  isRunning: true,
+  lastRunAt: true,
+  nextRunAt: true,
+  lastResult: true,
+  lastOutput: true,
+  lastError: true,
+  retryCount: true,
+});
+
+export const insertCronJobLogSchema = createInsertSchema(cronJobLogs).omit({
+  id: true,
+  createdAt: true,
 });
 
 // All type definitions (consolidated)
@@ -1391,5 +1483,13 @@ export type ContentCategory = typeof contentCategories.$inferSelect;
 export type InsertContentCategory = z.infer<typeof insertContentCategorySchema>;
 export type Country = typeof countries.$inferSelect;
 export type InsertCountry = z.infer<typeof insertCountrySchema>;
+export type State = typeof states.$inferSelect;
+export type InsertState = z.infer<typeof insertStateSchema>;
+export type Language = typeof languages.$inferSelect;
+export type InsertLanguage = z.infer<typeof insertLanguageSchema>;
 export type UserComment = typeof userComments.$inferSelect;
 export type InsertUserComment = z.infer<typeof insertUserCommentSchema>;
+export type CronJob = typeof cronJobs.$inferSelect;
+export type InsertCronJob = z.infer<typeof insertCronJobSchema>;
+export type CronJobLog = typeof cronJobLogs.$inferSelect;
+export type InsertCronJobLog = z.infer<typeof insertCronJobLogSchema>;

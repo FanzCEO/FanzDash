@@ -30,6 +30,13 @@ import PaymentProcessorManagement from "@/pages/payment-processor-management";
 import TaxManagement from "@/pages/tax-management";
 import AdvertisingManagement from "@/pages/advertising-management";
 import AudioCallSettings from "@/pages/audio-call-settings";
+import BlogManagement from "@/pages/blog-management";
+import BlogCreate from "@/pages/blog-create";
+import BlogEdit from "@/pages/blog-edit";
+import DepositsManagement from "@/pages/deposits-management";
+import DepositView from "@/pages/deposit-view";
+import LocationManagement from "@/pages/location-management";
+import CronManagement from "@/pages/cron-management";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -63,6 +70,13 @@ function Router() {
           <Route path="/tax-management" component={TaxManagement} />
           <Route path="/advertising" component={AdvertisingManagement} />
           <Route path="/audio-calls" component={AudioCallSettings} />
+          <Route path="/blog" component={BlogManagement} />
+          <Route path="/blog/create" component={BlogCreate} />
+          <Route path="/blog/edit/:id" component={BlogEdit} />
+          <Route path="/deposits" component={DepositsManagement} />
+          <Route path="/deposits/:id" component={DepositView} />
+          <Route path="/locations" component={LocationManagement} />
+          <Route path="/cron-jobs" component={CronManagement} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

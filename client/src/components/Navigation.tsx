@@ -13,7 +13,11 @@ import {
   Database,
   Lock,
   Eye,
-  Zap
+  Zap,
+  BookOpen,
+  CreditCard,
+  Globe2,
+  Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -119,6 +123,30 @@ const navigationItems = [
     href: "/audio-calls",
     icon: Settings,
     description: "Agora WebRTC & pricing controls"
+  },
+  {
+    name: "Blog Management",
+    href: "/blog",
+    icon: BookOpen,
+    description: "Manage blog posts and articles"
+  },
+  {
+    name: "Deposits Management",
+    href: "/deposits",
+    icon: CreditCard,
+    description: "Review and approve user deposits"
+  },
+  {
+    name: "Location Management",
+    href: "/locations",
+    icon: Globe2,
+    description: "Manage countries, states, and languages"
+  },
+  {
+    name: "Cron Job Management",
+    href: "/cron-jobs",
+    icon: Clock,
+    description: "Automated task scheduling & monitoring"
   },
   {
     name: "System Settings",

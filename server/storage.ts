@@ -15,6 +15,32 @@ import {
   webrtcRooms,
   geoCollaborations,
   audioCallSettings,
+  taxRates,
+  adCampaigns,
+  liveStreamSessions,
+  privateShowRequests,
+  giftCatalog,
+  giftTransactions,
+  userDeposits,
+  roles,
+  userRoles,
+  announcements,
+  cmsPages,
+  platformLimits,
+  reservedNames,
+  systemSettings,
+  audioCalls,
+  extendedPaymentProcessors,
+  companyBilling,
+  systemAnnouncements,
+  blogPosts,
+  contentCategories,
+  countries,
+  userComments,
+  cronJobs,
+  cronJobLogs,
+  states,
+  languages,
   type User, 
   type InsertUser,
   type ContentItem,
@@ -44,7 +70,51 @@ import {
   type WebRTCRoom,
   type InsertWebRTCRoom,
   type GeoCollaboration,
-  type InsertGeoCollaboration
+  type InsertGeoCollaboration,
+  type TaxRate,
+  type InsertTaxRate,
+  type AdCampaign,
+  type InsertAdCampaign,
+  type LiveStreamSession,
+  type InsertLiveStreamSession,
+  type PrivateShowRequest,
+  type InsertPrivateShowRequest,
+  type GiftCatalog,
+  type InsertGiftCatalog,
+  type GiftTransaction,
+  type InsertGiftTransaction,
+  type UserDeposit,
+  type InsertUserDeposit,
+  type Role,
+  type InsertRole,
+  type UserRole,
+  type InsertUserRole,
+  type Announcement,
+  type InsertAnnouncement,
+  type CmsPage,
+  type InsertCmsPage,
+  type PlatformLimit,
+  type InsertPlatformLimit,
+  type ReservedName,
+  type SystemSetting,
+  type AudioCall,
+  type InsertAudioCall,
+  type ExtendedPaymentProcessor,
+  type InsertExtendedPaymentProcessor,
+  type BlogPost,
+  type InsertBlogPost,
+  type Country,
+  type InsertCountry,
+  type State,
+  type InsertState,
+  type Language,
+  type InsertLanguage,
+  type UserComment,
+  type InsertUserComment,
+  type CronJob,
+  type InsertCronJob,
+  type CronJobLog,
+  type InsertCronJobLog
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, count, and, or, sql } from "drizzle-orm";
@@ -163,6 +233,41 @@ export interface IStorage {
   // User Deposits
   getUserDeposits(userId: string): Promise<UserDeposit[]>;
   createUserDeposit(deposit: InsertUserDeposit): Promise<UserDeposit>;
+  
+  // Countries Management
+  getCountries(): Promise<Country[]>;
+  getCountry(id: string): Promise<Country | undefined>;
+  createCountry(country: InsertCountry): Promise<Country>;
+  updateCountry(id: string, updates: Partial<Country>): Promise<void>;
+  deleteCountry(id: string): Promise<void>;
+  
+  // States Management
+  getStates(countryId?: string): Promise<State[]>;
+  getState(id: string): Promise<State | undefined>;
+  createState(state: InsertState): Promise<State>;
+  updateState(id: string, updates: Partial<State>): Promise<void>;
+  deleteState(id: string): Promise<void>;
+  
+  // Languages Management
+  getLanguages(): Promise<Language[]>;
+  getLanguage(id: string): Promise<Language | undefined>;
+  createLanguage(language: InsertLanguage): Promise<Language>;
+  updateLanguage(id: string, updates: Partial<Language>): Promise<void>;
+  deleteLanguage(id: string): Promise<void>;
+  
+  // Cron Jobs Management
+  getCronJobs(): Promise<CronJob[]>;
+  getCronJob(id: string): Promise<CronJob | undefined>;
+  createCronJob(cronJob: InsertCronJob): Promise<CronJob>;
+  updateCronJob(id: string, updates: Partial<CronJob>): Promise<void>;
+  deleteCronJob(id: string): Promise<void>;
+  toggleCronJob(id: string, isActive: boolean): Promise<void>;
+  runCronJob(id: string): Promise<void>;
+  
+  // Cron Job Logs
+  getCronJobLogs(jobId?: string): Promise<CronJobLog[]>;
+  createCronJobLog(log: InsertCronJobLog): Promise<CronJobLog>;
+  deleteCronJobLogs(jobId: string): Promise<void>;
   
   // RBAC System
   getRoles(): Promise<Role[]>;
@@ -970,15 +1075,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  // User Deposits implementation
-  async getUserDeposits(userId: string): Promise<UserDeposit[]> {
-    return await db
-      .select()
-      .from(userDeposits)
-      .where(eq(userDeposits.userId, userId))
-      .orderBy(desc(userDeposits.createdAt));
-  }
-
+  // User Deposits implementation (initial)
   async createUserDeposit(deposit: InsertUserDeposit): Promise<UserDeposit> {
     const [result] = await db
       .insert(userDeposits)
@@ -1148,6 +1245,208 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(audioCalls.createdAt));
   }
 
+  // Blog Posts implementation
+  async getBlogPosts(): Promise<BlogPost[]> {
+    return await db
+      .select()
+      .from(blogPosts)
+      .orderBy(desc(blogPosts.createdAt));
+  }
+
+  async getBlogPost(id: string): Promise<BlogPost | undefined> {
+    const [post] = await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.id, id))
+      .limit(1);
+    return post || undefined;
+  }
+
+  async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
+    const [result] = await db
+      .insert(blogPosts)
+      .values(post)
+      .returning();
+    return result;
+  }
+
+  async updateBlogPost(id: string, updates: Partial<BlogPost>): Promise<void> {
+    await db
+      .update(blogPosts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(blogPosts.id, id));
+  }
+
+  async deleteBlogPost(id: string): Promise<void> {
+    await db
+      .delete(blogPosts)
+      .where(eq(blogPosts.id, id));
+  }
+
+  // User Deposits implementation
+  async getUserDeposits(searchQuery?: string): Promise<UserDeposit[]> {
+    if (searchQuery) {
+      return await db
+        .select()
+        .from(userDeposits)
+        .where(
+          or(
+            sql`${userDeposits.transactionId} ILIKE ${`%${searchQuery}%`}`,
+            sql`${userDeposits.id} ILIKE ${`%${searchQuery}%`}`
+          )
+        )
+        .orderBy(desc(userDeposits.createdAt));
+    }
+
+    return await db
+      .select()
+      .from(userDeposits)
+      .orderBy(desc(userDeposits.createdAt));
+  }
+
+  async getUserDeposit(id: string): Promise<UserDeposit | undefined> {
+    const [deposit] = await db
+      .select()
+      .from(userDeposits)
+      .where(eq(userDeposits.id, id))
+      .limit(1);
+    return deposit || undefined;
+  }
+
+  async approveUserDeposit(id: string): Promise<void> {
+    await db
+      .update(userDeposits)
+      .set({ status: "completed", updatedAt: new Date() })
+      .where(eq(userDeposits.id, id));
+  }
+
+  async deleteUserDeposit(id: string): Promise<void> {
+    await db
+      .delete(userDeposits)
+      .where(eq(userDeposits.id, id));
+  }
+
+  // Countries implementation
+  async getCountries(): Promise<Country[]> {
+    return await db
+      .select()
+      .from(countries)
+      .orderBy(countries.countryName);
+  }
+
+  async createCountry(country: InsertCountry): Promise<Country> {
+    const [result] = await db
+      .insert(countries)
+      .values(country)
+      .returning();
+    return result;
+  }
+
+  async updateCountry(id: string, updates: Partial<Country>): Promise<void> {
+    await db
+      .update(countries)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(countries.id, id));
+  }
+
+  async getCountry(id: string): Promise<Country | undefined> {
+    const [country] = await db
+      .select()
+      .from(countries)
+      .where(eq(countries.id, id))
+      .limit(1);
+    return country || undefined;
+  }
+
+  async deleteCountry(id: string): Promise<void> {
+    await db
+      .delete(countries)
+      .where(eq(countries.id, id));
+  }
+
+  // States implementation
+  async getStates(countryId?: string): Promise<State[]> {
+    if (countryId) {
+      return await db
+        .select()
+        .from(states)
+        .where(eq(states.countryId, countryId))
+        .orderBy(states.stateName);
+    }
+    return await db
+      .select()
+      .from(states)
+      .orderBy(states.stateName);
+  }
+
+  async getState(id: string): Promise<State | undefined> {
+    const [state] = await db
+      .select()
+      .from(states)
+      .where(eq(states.id, id))
+      .limit(1);
+    return state || undefined;
+  }
+
+  async createState(state: InsertState): Promise<State> {
+    const [result] = await db
+      .insert(states)
+      .values(state)
+      .returning();
+    return result;
+  }
+
+  async updateState(id: string, updates: Partial<State>): Promise<void> {
+    await db
+      .update(states)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(states.id, id));
+  }
+
+  async deleteState(id: string): Promise<void> {
+    await db
+      .delete(states)
+      .where(eq(states.id, id));
+  }
+
+  // Languages implementation
+  async getLanguages(): Promise<Language[]> {
+    return await db
+      .select()
+      .from(languages)
+      .orderBy(languages.languageName);
+  }
+
+  async getLanguage(id: string): Promise<Language | undefined> {
+    const [language] = await db
+      .select()
+      .from(languages)
+      .where(eq(languages.id, id))
+      .limit(1);
+    return language || undefined;
+  }
+
+  async createLanguage(language: InsertLanguage): Promise<Language> {
+    const [result] = await db
+      .insert(languages)
+      .values(language)
+      .returning();
+    return result;
+  }
+
+  async updateLanguage(id: string, updates: Partial<Language>): Promise<void> {
+    await db
+      .update(languages)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(languages.id, id));
+  }
+
+  async deleteLanguage(id: string): Promise<void> {
+    await db
+      .delete(languages)
+      .where(eq(languages.id, id));
+  }
+
   // Extended Payment Processors implementation
   async getExtendedPaymentProcessors(): Promise<ExtendedPaymentProcessor[]> {
     return await db
@@ -1166,6 +1465,99 @@ export class DatabaseStorage implements IStorage {
       .values(processor)
       .returning();
     return result;
+  }
+
+  // Cron Jobs implementation
+  async getCronJobs(): Promise<CronJob[]> {
+    return await db
+      .select()
+      .from(cronJobs)
+      .orderBy(cronJobs.name);
+  }
+
+  async getCronJob(id: string): Promise<CronJob | undefined> {
+    const [job] = await db
+      .select()
+      .from(cronJobs)
+      .where(eq(cronJobs.id, id))
+      .limit(1);
+    return job || undefined;
+  }
+
+  async createCronJob(cronJob: InsertCronJob): Promise<CronJob> {
+    const [result] = await db
+      .insert(cronJobs)
+      .values(cronJob)
+      .returning();
+    return result;
+  }
+
+  async updateCronJob(id: string, updates: Partial<CronJob>): Promise<void> {
+    await db
+      .update(cronJobs)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(cronJobs.id, id));
+  }
+
+  async deleteCronJob(id: string): Promise<void> {
+    // Delete associated logs first
+    await db
+      .delete(cronJobLogs)
+      .where(eq(cronJobLogs.jobId, id));
+    
+    // Delete the job
+    await db
+      .delete(cronJobs)
+      .where(eq(cronJobs.id, id));
+  }
+
+  async toggleCronJob(id: string, isActive: boolean): Promise<void> {
+    await db
+      .update(cronJobs)
+      .set({ isActive, updatedAt: new Date() })
+      .where(eq(cronJobs.id, id));
+  }
+
+  async runCronJob(id: string): Promise<void> {
+    // Update running status and last run time
+    await db
+      .update(cronJobs)
+      .set({ 
+        isRunning: true, 
+        lastRunAt: new Date(),
+        retryCount: 0,
+        updatedAt: new Date() 
+      })
+      .where(eq(cronJobs.id, id));
+  }
+
+  // Cron Job Logs implementation
+  async getCronJobLogs(jobId?: string): Promise<CronJobLog[]> {
+    const query = db
+      .select()
+      .from(cronJobLogs)
+      .orderBy(desc(cronJobLogs.startedAt))
+      .limit(100);
+
+    if (jobId) {
+      return await query.where(eq(cronJobLogs.jobId, jobId));
+    }
+    
+    return await query;
+  }
+
+  async createCronJobLog(log: InsertCronJobLog): Promise<CronJobLog> {
+    const [result] = await db
+      .insert(cronJobLogs)
+      .values(log)
+      .returning();
+    return result;
+  }
+
+  async deleteCronJobLogs(jobId: string): Promise<void> {
+    await db
+      .delete(cronJobLogs)
+      .where(eq(cronJobLogs.jobId, jobId));
   }
 }
 

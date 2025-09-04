@@ -15,7 +15,9 @@ import {
   insertAICompanionSchema,
   insertVRSessionSchema,
   insertWebRTCRoomSchema,
-  insertGeoCollaborationSchema
+  insertGeoCollaborationSchema,
+  insertCronJobSchema,
+  insertCronJobLogSchema
 } from "@shared/schema";
 import { aiModerationService } from "./openaiService";
 
@@ -291,7 +293,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         adultContentBlocked: true,
         personalInfoProtection: true,
         toxicityFilter: true,
-        ...(data.safetyFilters || {})
+        ...(data.safetyFilters as Record<string, any> || {})
       };
       
       const companion = await storage.createAICompanion({
@@ -1554,6 +1556,543 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Compliance report error:", error);
       res.status(500).json({ message: "Failed to generate compliance report" });
+    }
+  });
+
+  // Blog Management API
+  app.get("/api/blog/posts", async (req, res) => {
+    try {
+      const posts = await storage.getBlogPosts();
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching blog posts:", error);
+      res.status(500).json({ message: "Failed to fetch blog posts" });
+    }
+  });
+
+  app.get("/api/blog/posts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const post = await storage.getBlogPost(id);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching blog post:", error);
+      res.status(500).json({ message: "Failed to fetch blog post" });
+    }
+  });
+
+  app.post("/api/blog/posts", async (req, res) => {
+    try {
+      const { title, content, tags, thumbnail, authorId, isPublished } = req.body;
+      
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      
+      const post = await storage.createBlogPost({
+        title,
+        content: content || "",
+        featuredImage: thumbnail || "",
+        slug,
+        authorId: authorId || "system",
+        isPublished: isPublished || false
+      });
+      
+      res.json(post);
+    } catch (error) {
+      console.error("Error creating blog post:", error);
+      res.status(500).json({ message: "Failed to create blog post" });
+    }
+  });
+
+  app.put("/api/blog/posts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, content, thumbnail, isPublished } = req.body;
+      
+      const updates: any = {};
+      if (title) {
+        updates.title = title;
+        updates.slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+      if (content !== undefined) updates.content = content;
+      if (thumbnail !== undefined) updates.featuredImage = thumbnail;
+      if (isPublished !== undefined) {
+        updates.isPublished = isPublished;
+        if (isPublished && !updates.publishedAt) {
+          updates.publishedAt = new Date();
+        }
+      }
+      
+      await storage.updateBlogPost(id, updates);
+      
+      const updatedPost = await storage.getBlogPost(id);
+      res.json(updatedPost);
+    } catch (error) {
+      console.error("Error updating blog post:", error);
+      res.status(500).json({ message: "Failed to update blog post" });
+    }
+  });
+
+  app.delete("/api/blog/posts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteBlogPost(id);
+      res.json({ message: "Blog post deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting blog post:", error);
+      res.status(500).json({ message: "Failed to delete blog post" });
+    }
+  });
+
+  // Deposits Management API
+  app.get("/api/deposits", async (req, res) => {
+    try {
+      const { q } = req.query;
+      const deposits = await storage.getUserDeposits(q as string);
+      res.json(deposits);
+    } catch (error) {
+      console.error("Error fetching deposits:", error);
+      res.status(500).json({ message: "Failed to fetch deposits" });
+    }
+  });
+
+  app.get("/api/deposits/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deposit = await storage.getUserDeposit(id);
+      
+      if (!deposit) {
+        return res.status(404).json({ message: "Deposit not found" });
+      }
+      
+      res.json(deposit);
+    } catch (error) {
+      console.error("Error fetching deposit:", error);
+      res.status(500).json({ message: "Failed to fetch deposit" });
+    }
+  });
+
+  app.post("/api/deposits/:id/approve", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.approveUserDeposit(id);
+      res.json({ message: "Deposit approved successfully" });
+    } catch (error) {
+      console.error("Error approving deposit:", error);
+      res.status(500).json({ message: "Failed to approve deposit" });
+    }
+  });
+
+  app.delete("/api/deposits/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteUserDeposit(id);
+      res.json({ message: "Deposit deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting deposit:", error);
+      res.status(500).json({ message: "Failed to delete deposit" });
+    }
+  });
+
+  // Countries Management API
+  app.get("/api/countries", async (req, res) => {
+    try {
+      const countries = await storage.getCountries();
+      res.json(countries);
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+      res.status(500).json({ message: "Failed to fetch countries" });
+    }
+  });
+
+  app.get("/api/countries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const country = await storage.getCountry(id);
+      
+      if (!country) {
+        return res.status(404).json({ message: "Country not found" });
+      }
+      
+      res.json(country);
+    } catch (error) {
+      console.error("Error fetching country:", error);
+      res.status(500).json({ message: "Failed to fetch country" });
+    }
+  });
+
+  app.post("/api/countries", async (req, res) => {
+    try {
+      const data = insertCountrySchema.parse(req.body);
+      const country = await storage.createCountry(data);
+      res.status(201).json(country);
+    } catch (error) {
+      console.error("Error creating country:", error);
+      res.status(500).json({ message: "Failed to create country" });
+    }
+  });
+
+  app.put("/api/countries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      await storage.updateCountry(id, updates);
+      res.json({ message: "Country updated successfully" });
+    } catch (error) {
+      console.error("Error updating country:", error);
+      res.status(500).json({ message: "Failed to update country" });
+    }
+  });
+
+  app.delete("/api/countries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteCountry(id);
+      res.json({ message: "Country deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting country:", error);
+      res.status(500).json({ message: "Failed to delete country" });
+    }
+  });
+
+  // States Management API
+  app.get("/api/states", async (req, res) => {
+    try {
+      const { countryId } = req.query;
+      const states = await storage.getStates(countryId as string);
+      res.json(states);
+    } catch (error) {
+      console.error("Error fetching states:", error);
+      res.status(500).json({ message: "Failed to fetch states" });
+    }
+  });
+
+  app.get("/api/states/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const state = await storage.getState(id);
+      
+      if (!state) {
+        return res.status(404).json({ message: "State not found" });
+      }
+      
+      res.json(state);
+    } catch (error) {
+      console.error("Error fetching state:", error);
+      res.status(500).json({ message: "Failed to fetch state" });
+    }
+  });
+
+  app.post("/api/states", async (req, res) => {
+    try {
+      const data = insertStateSchema.parse(req.body);
+      const state = await storage.createState(data);
+      res.status(201).json(state);
+    } catch (error) {
+      console.error("Error creating state:", error);
+      res.status(500).json({ message: "Failed to create state" });
+    }
+  });
+
+  app.put("/api/states/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      await storage.updateState(id, updates);
+      res.json({ message: "State updated successfully" });
+    } catch (error) {
+      console.error("Error updating state:", error);
+      res.status(500).json({ message: "Failed to update state" });
+    }
+  });
+
+  app.delete("/api/states/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteState(id);
+      res.json({ message: "State deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting state:", error);
+      res.status(500).json({ message: "Failed to delete state" });
+    }
+  });
+
+  // Languages Management API
+  app.get("/api/languages", async (req, res) => {
+    try {
+      const languages = await storage.getLanguages();
+      res.json(languages);
+    } catch (error) {
+      console.error("Error fetching languages:", error);
+      res.status(500).json({ message: "Failed to fetch languages" });
+    }
+  });
+
+  app.get("/api/languages/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const language = await storage.getLanguage(id);
+      
+      if (!language) {
+        return res.status(404).json({ message: "Language not found" });
+      }
+      
+      res.json(language);
+    } catch (error) {
+      console.error("Error fetching language:", error);
+      res.status(500).json({ message: "Failed to fetch language" });
+    }
+  });
+
+  app.post("/api/languages", async (req, res) => {
+    try {
+      const data = insertLanguageSchema.parse(req.body);
+      const language = await storage.createLanguage(data);
+      res.status(201).json(language);
+    } catch (error) {
+      console.error("Error creating language:", error);
+      res.status(500).json({ message: "Failed to create language" });
+    }
+  });
+
+  app.put("/api/languages/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      await storage.updateLanguage(id, updates);
+      res.json({ message: "Language updated successfully" });
+    } catch (error) {
+      console.error("Error updating language:", error);
+      res.status(500).json({ message: "Failed to update language" });
+    }
+  });
+
+  app.delete("/api/languages/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteLanguage(id);
+      res.json({ message: "Language deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting language:", error);
+      res.status(500).json({ message: "Failed to delete language" });
+    }
+  });
+
+  // System Settings API
+  app.get("/api/system/settings", async (req, res) => {
+    try {
+      const settings = await storage.getSystemSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching system settings:", error);
+      res.status(500).json({ message: "Failed to fetch system settings" });
+    }
+  });
+
+  app.post("/api/system/settings", async (req, res) => {
+    try {
+      const { customCss, customJs, emailSettings, ffmpegPath } = req.body;
+      
+      // Update CSS/JS settings
+      if (customCss !== undefined) {
+        await storage.updateSystemSetting("custom_css", customCss);
+      }
+      if (customJs !== undefined) {
+        await storage.updateSystemSetting("custom_js", customJs);
+      }
+      
+      // Update email settings
+      if (emailSettings) {
+        for (const [key, value] of Object.entries(emailSettings)) {
+          await storage.updateSystemSetting(`email_${key}`, value as string);
+        }
+      }
+      
+      if (ffmpegPath !== undefined) {
+        await storage.updateSystemSetting("ffmpeg_path", ffmpegPath);
+      }
+      
+      res.json({ message: "Settings updated successfully" });
+    } catch (error) {
+      console.error("Error updating system settings:", error);
+      res.status(500).json({ message: "Failed to update system settings" });
+    }
+  });
+
+  // Countries, States, Languages API
+  app.get("/api/countries", async (req, res) => {
+    try {
+      const countries = await storage.getCountries();
+      res.json(countries);
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+      res.status(500).json({ message: "Failed to fetch countries" });
+    }
+  });
+
+  app.post("/api/countries", async (req, res) => {
+    try {
+      const { countryName, countryCode, isActive } = req.body;
+      const country = await storage.createCountry({
+        countryName,
+        countryCode,
+        isActive: isActive || true
+      });
+      res.json(country);
+    } catch (error) {
+      console.error("Error creating country:", error);
+      res.status(500).json({ message: "Failed to create country" });
+    }
+  });
+
+  app.put("/api/countries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { countryName, countryCode, isActive } = req.body;
+      
+      await storage.updateCountry(id, {
+        countryName,
+        countryCode,
+        isActive
+      });
+      
+      res.json({ message: "Country updated successfully" });
+    } catch (error) {
+      console.error("Error updating country:", error);
+      res.status(500).json({ message: "Failed to update country" });
+    }
+  });
+
+  // Cron Jobs Management API
+  app.get("/api/cron-jobs", async (req, res) => {
+    try {
+      const cronJobs = await storage.getCronJobs();
+      res.json(cronJobs);
+    } catch (error) {
+      console.error("Error fetching cron jobs:", error);
+      res.status(500).json({ message: "Failed to fetch cron jobs" });
+    }
+  });
+
+  app.get("/api/cron-jobs/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const cronJob = await storage.getCronJob(id);
+      
+      if (!cronJob) {
+        return res.status(404).json({ message: "Cron job not found" });
+      }
+      
+      res.json(cronJob);
+    } catch (error) {
+      console.error("Error fetching cron job:", error);
+      res.status(500).json({ message: "Failed to fetch cron job" });
+    }
+  });
+
+  app.post("/api/cron-jobs", async (req, res) => {
+    try {
+      const validatedData = insertCronJobSchema.parse(req.body);
+      const cronJob = await storage.createCronJob(validatedData);
+      res.json(cronJob);
+    } catch (error) {
+      console.error("Error creating cron job:", error);
+      res.status(500).json({ message: "Failed to create cron job" });
+    }
+  });
+
+  app.put("/api/cron-jobs/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertCronJobSchema.partial().parse(req.body);
+      
+      await storage.updateCronJob(id, validatedData);
+      res.json({ message: "Cron job updated successfully" });
+    } catch (error) {
+      console.error("Error updating cron job:", error);
+      res.status(500).json({ message: "Failed to update cron job" });
+    }
+  });
+
+  app.delete("/api/cron-jobs/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteCronJob(id);
+      res.json({ message: "Cron job deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting cron job:", error);
+      res.status(500).json({ message: "Failed to delete cron job" });
+    }
+  });
+
+  app.post("/api/cron-jobs/:id/toggle", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { isActive } = req.body;
+      
+      await storage.toggleCronJob(id, isActive);
+      res.json({ message: `Cron job ${isActive ? 'enabled' : 'disabled'} successfully` });
+    } catch (error) {
+      console.error("Error toggling cron job:", error);
+      res.status(500).json({ message: "Failed to toggle cron job" });
+    }
+  });
+
+  app.post("/api/cron-jobs/:id/run", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Start the cron job execution
+      await storage.runCronJob(id);
+      
+      // Create log entry for the run
+      await storage.createCronJobLog({
+        jobId: id,
+        status: 'running',
+        startedAt: new Date()
+      });
+      
+      res.json({ message: "Cron job started successfully" });
+    } catch (error) {
+      console.error("Error running cron job:", error);
+      res.status(500).json({ message: "Failed to run cron job" });
+    }
+  });
+
+  // Cron Job Logs API
+  app.get("/api/cron-jobs/:id/logs", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const logs = await storage.getCronJobLogs(id);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching cron job logs:", error);
+      res.status(500).json({ message: "Failed to fetch cron job logs" });
+    }
+  });
+
+  app.get("/api/cron-job-logs", async (req, res) => {
+    try {
+      const logs = await storage.getCronJobLogs();
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching all cron job logs:", error);
+      res.status(500).json({ message: "Failed to fetch cron job logs" });
+    }
+  });
+
+  app.delete("/api/cron-jobs/:id/logs", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteCronJobLogs(id);
+      res.json({ message: "Cron job logs deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting cron job logs:", error);
+      res.status(500).json({ message: "Failed to delete cron job logs" });
     }
   });
 
