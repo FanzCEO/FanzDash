@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Navigation } from "@/components/Navigation";
+import { CategorizedNavigation } from "@/components/CategorizedNavigation";
 import Dashboard from "@/pages/dashboard";
 import PlatformsPage from "@/pages/platforms";
 import AIAnalysisPage from "@/pages/ai-analysis";
@@ -72,11 +72,12 @@ import PluginManagement from "@/pages/plugin-management";
 import APIIntegrationManagement from "@/pages/api-integration-management";
 import PlatformModeration from "@/pages/platform-moderation";
 import ComplianceMonitoring from "@/pages/compliance-monitoring";
+import IntelligentModerationPage from "@/pages/intelligent-moderation";
 
 function Router() {
   return (
     <div className="flex min-h-screen cyber-bg">
-      <Navigation />
+      <CategorizedNavigation />
       <main className="flex-1">
         <Switch>
           <Route path="/" component={LandingHub} />
@@ -111,6 +112,7 @@ function Router() {
           <Route path="/api-integration-management" component={APIIntegrationManagement} />
           <Route path="/platform-moderation" component={PlatformModeration} />
           <Route path="/compliance-monitoring" component={ComplianceMonitoring} />
+          <Route path="/intelligent-moderation" component={IntelligentModerationPage} />
           <Route path="/blog" component={BlogManagement} />
           <Route path="/blog/create" component={BlogCreate} />
           <Route path="/blog/edit/:id" component={BlogEdit} />
