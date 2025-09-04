@@ -33,6 +33,11 @@ import { systemMonitoring } from "./systemMonitoring";
 import { mediaHub } from "./mediaHub";
 import { vrRenderingEngine } from "./vrRenderingEngine";
 import { futureTechManager } from "./futureTechManager";
+import { aiFinanceCopilot } from "./aiFinanceCopilot";
+import { aiPredictiveAnalytics } from "./aiPredictiveAnalytics";
+import { aiContentModerationService } from "./aiContentModeration";
+import { creatorAutomationSystem } from "./creatorAutomation";
+import { ecosystemMaintenance } from "./ecosystemMaintenance";
 
 // Store connected WebSocket clients
 let connectedModerators: Set<WebSocket> = new Set();
@@ -548,8 +553,381 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============= AI CFO & FINANCE COPILOT ROUTES =============
+  
+  // Generate CFO Brief
+  app.post('/api/ai-cfo/brief', isAuthenticated, async (req: any, res) => {
+    try {
+      const { period } = req.body;
+      const brief = await aiFinanceCopilot.generateCFOBrief(period || 'weekly');
+      res.json({ brief });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to generate CFO brief' });
+    }
+  });
+
+  // Get latest CFO brief
+  app.get('/api/ai-cfo/brief/latest', isAuthenticated, async (req, res) => {
+    try {
+      const period = req.query.period as string;
+      const brief = await aiFinanceCopilot.getLatestCFOBrief(period as any);
+      res.json({ brief });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get CFO brief' });
+    }
+  });
+
+  // Analyze financial data
+  app.post('/api/ai-cfo/analyze', isAuthenticated, async (req: any, res) => {
+    try {
+      const insights = await aiFinanceCopilot.analyzeFinancialData(req.body);
+      res.json({ insights });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to analyze financial data' });
+    }
+  });
+
+  // Generate revenue forecast
+  app.post('/api/ai-cfo/forecast', isAuthenticated, async (req: any, res) => {
+    try {
+      const { model, timeHorizon } = req.body;
+      const forecast = await aiFinanceCopilot.generateRevenueForcast(model, timeHorizon || 30);
+      res.json({ forecast });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to generate forecast' });
+    }
+  });
+
+  // Run scenario analysis
+  app.post('/api/ai-cfo/scenario', isAuthenticated, async (req: any, res) => {
+    try {
+      const { scenarioName, parameters } = req.body;
+      const scenario = await aiFinanceCopilot.runScenarioAnalysis(scenarioName, parameters);
+      res.json({ scenario });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to run scenario analysis' });
+    }
+  });
+
+  // Get active insights
+  app.get('/api/ai-cfo/insights', isAuthenticated, (req, res) => {
+    try {
+      const severity = req.query.severity as string;
+      const insights = aiFinanceCopilot.getActiveInsights(severity);
+      res.json({ insights });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get insights' });
+    }
+  });
+
+  // Get financial summary
+  app.get('/api/ai-cfo/summary', isAuthenticated, (req, res) => {
+    try {
+      const summary = aiFinanceCopilot.getFinancialSummary();
+      res.json(summary);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get financial summary' });
+    }
+  });
+
+  // ============= AI PREDICTIVE ANALYTICS ROUTES =============
+
+  // Generate revenue forecast
+  app.post('/api/ai-analytics/revenue-forecast', isAuthenticated, async (req: any, res) => {
+    try {
+      const { timeframe, data } = req.body;
+      const forecast = await aiPredictiveAnalytics.generateRevenueForecast(timeframe, data);
+      res.json({ forecast });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to generate revenue forecast' });
+    }
+  });
+
+  // Predict content performance
+  app.post('/api/ai-analytics/content-prediction', isAuthenticated, async (req: any, res) => {
+    try {
+      const prediction = await aiPredictiveAnalytics.predictContentPerformance(req.body);
+      res.json({ prediction });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to predict content performance' });
+    }
+  });
+
+  // Predict fan churn
+  app.post('/api/ai-analytics/churn-prediction', isAuthenticated, async (req: any, res) => {
+    try {
+      const prediction = await aiPredictiveAnalytics.predictFanChurn(req.body);
+      res.json({ prediction });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to predict fan churn' });
+    }
+  });
+
+  // Get market intelligence
+  app.get('/api/ai-analytics/market-intelligence', isAuthenticated, async (req, res) => {
+    try {
+      const intelligence = await aiPredictiveAnalytics.analyzeMarketIntelligence();
+      res.json({ intelligence });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get market intelligence' });
+    }
+  });
+
+  // Optimize pricing
+  app.post('/api/ai-analytics/pricing-optimization', isAuthenticated, async (req: any, res) => {
+    try {
+      const optimization = await aiPredictiveAnalytics.optimizePricing(req.body.currentPricing);
+      res.json({ optimization });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to optimize pricing' });
+    }
+  });
+
+  // Get analytics summary
+  app.get('/api/ai-analytics/summary', isAuthenticated, (req, res) => {
+    try {
+      const summary = aiPredictiveAnalytics.getAnalyticsSummary();
+      res.json(summary);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get analytics summary' });
+    }
+  });
+
+  // ============= AI CONTENT MODERATION ROUTES =============
+
+  // Scan content
+  app.post('/api/ai-moderation/scan', isAuthenticated, async (req: any, res) => {
+    try {
+      const { contentId, contentType, contentUrl } = req.body;
+      const result = await aiContentModerationService.scanContent(contentId, contentType, contentUrl);
+      res.json({ result });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to scan content' });
+    }
+  });
+
+  // Analyze transaction for fraud
+  app.post('/api/ai-moderation/fraud-analysis', isAuthenticated, async (req: any, res) => {
+    try {
+      const { transactionId, transactionData } = req.body;
+      const analysis = await aiContentModerationService.analyzeTransaction(transactionId, transactionData);
+      res.json({ analysis });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to analyze transaction' });
+    }
+  });
+
+  // Generate content recommendations
+  app.post('/api/ai-moderation/recommendations', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId, userProfile } = req.body;
+      const recommendations = await aiContentModerationService.generateRecommendations(userId, userProfile);
+      res.json({ recommendations });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to generate recommendations' });
+    }
+  });
+
+  // Analyze sentiment
+  app.post('/api/ai-moderation/sentiment', isAuthenticated, async (req: any, res) => {
+    try {
+      const { contentId, contentType, text } = req.body;
+      const analysis = await aiContentModerationService.analyzeSentiment(contentId, contentType, text);
+      res.json({ analysis });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to analyze sentiment' });
+    }
+  });
+
+  // Get moderation metrics
+  app.get('/api/ai-moderation/metrics', isAuthenticated, (req, res) => {
+    try {
+      const metrics = aiContentModerationService.getModerationMetrics();
+      res.json(metrics);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get moderation metrics' });
+    }
+  });
+
+  // Get system health
+  app.get('/api/ai-moderation/health', isAuthenticated, (req, res) => {
+    try {
+      const health = aiContentModerationService.getSystemHealth();
+      res.json(health);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get system health' });
+    }
+  });
+
+  // ============= CREATOR AUTOMATION ROUTES =============
+
+  // Create automation workflow
+  app.post('/api/creator-automation/workflows', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { name, type, config } = req.body;
+      const workflow = await creatorAutomationSystem.createWorkflow(userId, name, type, config);
+      res.json({ workflow });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to create workflow' });
+    }
+  });
+
+  // Generate content
+  app.post('/api/creator-automation/content', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { type, input } = req.body;
+      const content = await creatorAutomationSystem.generateContent(userId, type, input);
+      res.json({ content });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to generate content' });
+    }
+  });
+
+  // Analyze scheduling patterns
+  app.post('/api/creator-automation/scheduling', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { platform } = req.body;
+      const intelligence = await creatorAutomationSystem.analyzeSchedulingPatterns(userId, platform);
+      res.json({ intelligence });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to analyze scheduling patterns' });
+    }
+  });
+
+  // Configure engagement automation
+  app.post('/api/creator-automation/engagement', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const automation = await creatorAutomationSystem.configureEngagementAutomation(userId, req.body);
+      res.json({ automation });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to configure engagement automation' });
+    }
+  });
+
+  // Trigger workflow
+  app.post('/api/creator-automation/trigger/:workflowId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { workflowId } = req.params;
+      const success = await creatorAutomationSystem.triggerWorkflow(workflowId, req.body);
+      res.json({ success });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to trigger workflow' });
+    }
+  });
+
+  // Get automation metrics
+  app.get('/api/creator-automation/metrics', isAuthenticated, (req, res) => {
+    try {
+      const metrics = creatorAutomationSystem.getAutomationMetrics();
+      res.json(metrics);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get automation metrics' });
+    }
+  });
+
+  // ============= ECOSYSTEM MAINTENANCE ROUTES =============
+
+  // Get system health
+  app.get('/api/ecosystem/health', isAuthenticated, (req, res) => {
+    try {
+      const health = ecosystemMaintenance.getLatestSystemHealth();
+      res.json({ health });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get system health' });
+    }
+  });
+
+  // Get system health history
+  app.get('/api/ecosystem/health/history', isAuthenticated, (req, res) => {
+    try {
+      const hours = parseInt(req.query.hours as string) || 24;
+      const history = ecosystemMaintenance.getSystemHealthHistory(hours);
+      res.json({ history });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get health history' });
+    }
+  });
+
+  // Get active healing operations
+  app.get('/api/ecosystem/healing', isAuthenticated, (req, res) => {
+    try {
+      const operations = ecosystemMaintenance.getActiveHealingOperations();
+      res.json({ operations });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get healing operations' });
+    }
+  });
+
+  // Get healing history
+  app.get('/api/ecosystem/healing/history', isAuthenticated, (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const history = ecosystemMaintenance.getHealingHistory(limit);
+      res.json({ history });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get healing history' });
+    }
+  });
+
+  // Get maintenance schedule
+  app.get('/api/ecosystem/maintenance', isAuthenticated, (req, res) => {
+    try {
+      const schedule = ecosystemMaintenance.getMaintenanceSchedule();
+      res.json({ schedule });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get maintenance schedule' });
+    }
+  });
+
+  // Get upcoming maintenance
+  app.get('/api/ecosystem/maintenance/upcoming', isAuthenticated, (req, res) => {
+    try {
+      const hours = parseInt(req.query.hours as string) || 168;
+      const maintenance = ecosystemMaintenance.getUpcomingMaintenance(hours);
+      res.json({ maintenance });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get upcoming maintenance' });
+    }
+  });
+
+  // Get security scans
+  app.get('/api/ecosystem/security/scans', isAuthenticated, (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const scans = ecosystemMaintenance.getRecentSecurityScans(limit);
+      res.json({ scans });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get security scans' });
+    }
+  });
+
+  // Get auto-scaling configs
+  app.get('/api/ecosystem/autoscaling', isAuthenticated, (req, res) => {
+    try {
+      const configs = ecosystemMaintenance.getAutoScalingConfigs();
+      res.json({ configs });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get auto-scaling configs' });
+    }
+  });
+
+  // Get ecosystem summary
+  app.get('/api/ecosystem/summary', isAuthenticated, (req, res) => {
+    try {
+      const summary = ecosystemMaintenance.getSystemSummary();
+      res.json(summary);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get ecosystem summary' });
+    }
+  });
+
   // Start all monitoring systems
   systemMonitoring.startMonitoring();
+  ecosystemMaintenance.startMonitoring();
 
   // Setup WebSocket for streaming
   const httpServer = createServer(app);
