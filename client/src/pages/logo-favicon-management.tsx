@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+import { SEOHeadTags, SEOBreadcrumbs } from "@/components/SEOHeadTags";
+import { adminPageSEO, generatePageTitle, generateAdminBreadcrumbs } from "@/lib/seo-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +51,8 @@ interface LogoPreview {
 }
 
 export default function LogoFaviconManagement() {
+  const seoData = adminPageSEO.logoFaviconManagement;
+  const breadcrumbs = generateAdminBreadcrumbs("logo-favicon-management");
   const [config, setConfig] = useState<LogoConfig>({
     mainLogo: "/assets/logo.png",
     darkLogo: "/assets/logo-dark.png", 
@@ -332,7 +336,17 @@ export default function LogoFaviconManagement() {
   );
 
   return (
-    <div className="space-y-6">
+    <>
+      <SEOHeadTags
+        title={generatePageTitle(seoData.title)}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        canonicalUrl="https://fanzdash.com/logo-favicon-management"
+        schema={seoData.structuredData}
+      />
+      
+      <div className="space-y-6">
+        <SEOBreadcrumbs items={breadcrumbs} className="mb-6" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -540,6 +554,7 @@ export default function LogoFaviconManagement() {
         accept="image/*"
         className="hidden"
       />
-    </div>
+      </div>
+    </>
   );
 }

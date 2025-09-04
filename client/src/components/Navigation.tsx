@@ -259,6 +259,12 @@ const navigationItems = [
     description: "Support messages & customer service"
   },
   {
+    name: "SEO Configuration",
+    href: "/seo-configuration",
+    icon: Globe2,
+    description: "Search engine optimization settings"
+  },
+  {
     name: "System Settings",
     href: "/settings",
     icon: Settings,

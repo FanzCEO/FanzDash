@@ -47,6 +47,7 @@ import WithdrawalManagement from "@/pages/withdrawal-management";
 import WithdrawalView from "@/pages/withdrawal-view";
 import EmailManagement from "@/pages/email-management";
 import UserManagement from "@/pages/user-management";
+import SEOConfiguration from "@/pages/seo-configuration";
 import ContactManagement from "@/pages/contact-management";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
@@ -115,6 +116,7 @@ function Router() {
           <Route path="/error/503" component={Maintenance503} />
           <Route path="/error/profile-disabled" component={ProfileDisabled} />
           <Route path="/demo-ui" component={DemoUIShowcase} />
+          <Route path="/seo-configuration" component={SEOConfiguration} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

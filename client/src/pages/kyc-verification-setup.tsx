@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { SEOHeadTags, SEOBreadcrumbs } from "@/components/SEOHeadTags";
+import { adminPageSEO, generatePageTitle, generateAdminBreadcrumbs } from "@/lib/seo-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,6 +101,8 @@ interface KYCTemplate {
 }
 
 export default function KYCVerificationSetup() {
+  const seoData = adminPageSEO.kycVerificationSetup;
+  const breadcrumbs = generateAdminBreadcrumbs("kyc-verification-setup");
   const [activeTab, setActiveTab] = useState("overview");
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -392,7 +396,17 @@ export default function KYCVerificationSetup() {
   );
 
   return (
-    <div className="space-y-6">
+    <>
+      <SEOHeadTags
+        title={generatePageTitle(seoData.title)}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        canonicalUrl="https://fanzdash.com/kyc-verification-setup"
+        schema={seoData.structuredData}
+      />
+      
+      <div className="space-y-6">
+        <SEOBreadcrumbs items={breadcrumbs} className="mb-6" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -815,6 +829,7 @@ export default function KYCVerificationSetup() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </>
   );
 }

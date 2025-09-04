@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { SEOHeadTags, SEOBreadcrumbs } from "@/components/SEOHeadTags";
+import { adminPageSEO, generatePageTitle, generateAdminBreadcrumbs } from "@/lib/seo-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,6 +150,8 @@ interface SystemConfig {
 }
 
 export default function SystemConfiguration() {
+  const seoData = adminPageSEO.systemConfiguration;
+  const breadcrumbs = generateAdminBreadcrumbs("system-configuration");
   const [activeTab, setActiveTab] = useState("general");
   const [config, setConfig] = useState<SystemConfig>({
     // General Settings
@@ -281,7 +285,17 @@ export default function SystemConfiguration() {
   };
 
   return (
-    <div className="space-y-6">
+    <>
+      <SEOHeadTags
+        title={generatePageTitle(seoData.title)}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        canonicalUrl="https://fanzdash.com/system-configuration"
+        schema={seoData.structuredData}
+      />
+      
+      <div className="space-y-6">
+        <SEOBreadcrumbs items={breadcrumbs} className="mb-6" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -1008,6 +1022,7 @@ export default function SystemConfiguration() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </>
   );
 }
