@@ -24,7 +24,7 @@ export const users = pgTable("users", {
   country: varchar("country"),
   postalCode: varchar("postal_code"),
   verificationStatus: varchar("verification_status").default("pending"), // 'verified', 'declined', 'pending'
-  createdBy: varchar("created_by").references(() => users.id),
+  createdBy: varchar("created_by"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -357,36 +357,25 @@ export const platformStats = pgTable("platform_stats", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Types
-export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type Form2257Verification = typeof form2257Verifications.$inferSelect;
-export type ChatRoom = typeof chatRooms.$inferSelect;
-export type ChatMessage = typeof chatMessages.$inferSelect;
-export type EmailAccount = typeof emailAccounts.$inferSelect;
-export type EmailMessage = typeof emailMessages.$inferSelect;
-export type UserAnalytics = typeof userAnalytics.$inferSelect;
-export type MediaAsset = typeof mediaAssets.$inferSelect;
-export type SystemNotification = typeof systemNotifications.$inferSelect;
-export type PlatformStats = typeof platformStats.$inferSelect;
-
-// Additional insert types
-export type InsertForm2257Verification = z.infer<typeof insertForm2257VerificationSchema>;
-export type InsertChatRoom = z.infer<typeof insertChatRoomSchema>;
-export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
-export type InsertEmailAccount = z.infer<typeof insertEmailAccountSchema>;
+// First set of types (keeping these, removing duplicates below)
 // Insert schemas (defined after all tables)
-export const insertUserSchema = createInsertSchema(users).extend({
-  fanzId: z.string().optional(),
-  email: z.string().email(),
-}).pick({
-  username: true,
-  password: true,
-  email: true,
-  firstName: true,
-  lastName: true,
-  fanzId: true,
-  role: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastLoginAt: true,
+  createdBy: true,
+  clearanceLevel: true,
+  vaultAccess: true,
+  modulePermissions: true,
+  isActive: true,
+  profileImageUrl: true,
+  phoneNumber: true,
+  address: true,
+  city: true,
+  country: true,
+  postalCode: true,
+  verificationStatus: true,
 });
 
 export const insertContentItemSchema = createInsertSchema(contentItems).omit({
@@ -510,7 +499,7 @@ export const insertPlatformStatsSchema = createInsertSchema(platformStats).omit(
   createdAt: true,
 });
 
-// All type definitions
+// All type definitions (consolidated)
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type ContentItem = typeof contentItems.$inferSelect;

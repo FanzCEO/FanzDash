@@ -920,18 +920,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/users", async (req, res) => {
     try {
-      const { email, role, permissions } = req.body;
+      const { email, role, username, password } = req.body;
       
-      const user = {
-        id: `user-${Date.now()}`,
+      const userData = {
+        username: username || `user_${Date.now()}`,
+        password: password || 'temp_password',
         email,
-        role,
-        permissions: permissions || [],
-        createdAt: new Date().toISOString(),
-        status: "active"
+        fanzId: `fanz_${Date.now()}`,
+        role: role || 'moderator'
       };
       
-      await storage.createUser(user);
+      const user = await storage.createUser(userData);
       res.json(user);
     } catch (error) {
       console.error("User creation error:", error);
