@@ -1957,3 +1957,163 @@ export type InsertWithdrawalRequest = z.infer<typeof insertWithdrawalRequestSche
 export type WithdrawalSettings = typeof withdrawalSettings.$inferSelect;
 export type InsertWithdrawalSettings = z.infer<typeof insertWithdrawalSettingsSchema>;
 
+// Authentication & Email Management System
+export const emailTemplates = pgTable("email_templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  templateName: varchar("template_name").notNull().unique(),
+  subject: varchar("subject").notNull(),
+  htmlContent: text("html_content").notNull(),
+  textContent: text("text_content"),
+  variables: jsonb("variables").default('[]'), // Available template variables
+  isActive: boolean("is_active").default(true),
+  category: varchar("category").default("general"), // 'auth', 'notification', 'marketing', 'system'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const emailLogs = pgTable("email_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  recipientEmail: varchar("recipient_email").notNull(),
+  recipientName: varchar("recipient_name"),
+  templateId: varchar("template_id").references(() => emailTemplates.id),
+  subject: varchar("subject").notNull(),
+  status: varchar("status").default("pending"), // 'pending', 'sent', 'delivered', 'failed', 'bounced'
+  provider: varchar("provider").default("sendgrid"), // 'sendgrid', 'mailgun', 'smtp'
+  externalId: varchar("external_id"), // Provider message ID
+  errorMessage: text("error_message"),
+  sentAt: timestamp("sent_at"),
+  deliveredAt: timestamp("delivered_at"),
+  openedAt: timestamp("opened_at"),
+  clickedAt: timestamp("clicked_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const socialLogins = pgTable("social_logins", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  provider: varchar("provider").notNull(), // 'facebook', 'google', 'twitter', 'apple'
+  providerId: varchar("provider_id").notNull(), // Social platform user ID
+  providerEmail: varchar("provider_email"),
+  providerName: varchar("provider_name"),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  tokenExpiresAt: timestamp("token_expires_at"),
+  lastLoginAt: timestamp("last_login_at"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userVerifications = pgTable("user_verifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  verificationType: varchar("verification_type").notNull(), // 'email', 'phone', 'identity', 'address'
+  verificationValue: varchar("verification_value").notNull(), // email, phone, etc.
+  token: varchar("token"), // Verification token
+  code: varchar("code"), // Verification code (SMS, email)
+  status: varchar("status").default("pending"), // 'pending', 'verified', 'expired', 'failed'
+  attempts: integer("attempts").default(0),
+  maxAttempts: integer("max_attempts").default(3),
+  expiresAt: timestamp("expires_at"),
+  verifiedAt: timestamp("verified_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userSessions = pgTable("user_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  sessionToken: varchar("session_token").notNull().unique(),
+  deviceInfo: jsonb("device_info"), // Browser, OS, device details
+  ipAddress: varchar("ip_address"),
+  location: varchar("location"), // Geographic location
+  isActive: boolean("is_active").default(true),
+  lastActivityAt: timestamp("last_activity_at").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userActivity = pgTable("user_activity", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  activityType: varchar("activity_type").notNull(), // 'login', 'logout', 'profile_update', 'content_upload'
+  description: text("description"),
+  metadata: jsonb("metadata"), // Additional activity data
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const contactMessages = pgTable("contact_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  email: varchar("email").notNull(),
+  subject: varchar("subject").notNull(),
+  message: text("message").notNull(),
+  status: varchar("status").default("new"), // 'new', 'read', 'replied', 'resolved', 'archived'
+  priority: varchar("priority").default("normal"), // 'low', 'normal', 'high', 'urgent'
+  assignedTo: varchar("assigned_to").references(() => users.id),
+  responseMessage: text("response_message"),
+  respondedAt: timestamp("responded_at"),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert Schemas for authentication tables
+export const insertEmailTemplateSchema = createInsertSchema(emailTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertEmailLogSchema = createInsertSchema(emailLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSocialLoginSchema = createInsertSchema(socialLogins).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserVerificationSchema = createInsertSchema(userVerifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserSessionSchema = createInsertSchema(userSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserActivitySchema = createInsertSchema(userActivity).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Type definitions for authentication tables
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type InsertEmailTemplate = z.infer<typeof insertEmailTemplateSchema>;
+export type EmailLog = typeof emailLogs.$inferSelect;
+export type InsertEmailLog = z.infer<typeof insertEmailLogSchema>;
+export type SocialLogin = typeof socialLogins.$inferSelect;
+export type InsertSocialLogin = z.infer<typeof insertSocialLoginSchema>;
+export type UserVerification = typeof userVerifications.$inferSelect;
+export type InsertUserVerification = z.infer<typeof insertUserVerificationSchema>;
+export type UserSession = typeof userSessions.$inferSelect;
+export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
+export type UserActivity = typeof userActivity.$inferSelect;
+export type InsertUserActivity = z.infer<typeof insertUserActivitySchema>;
+export type ContactMessage = typeof contactMessages.$inferSelect;
+export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+

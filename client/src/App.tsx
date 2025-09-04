@@ -45,6 +45,11 @@ import TaxRateManagement from "@/pages/tax-rate-management";
 import ThemeSettings from "@/pages/theme-settings";
 import WithdrawalManagement from "@/pages/withdrawal-management";
 import WithdrawalView from "@/pages/withdrawal-view";
+import EmailManagement from "@/pages/email-management";
+import UserManagement from "@/pages/user-management";
+import Login from "@/pages/auth/login";
+import Register from "@/pages/auth/register";
+import PasswordReset from "@/pages/auth/password-reset";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -93,6 +98,11 @@ function Router() {
           <Route path="/theme-settings" component={ThemeSettings} />
           <Route path="/withdrawal-management" component={WithdrawalManagement} />
           <Route path="/withdrawal-view/:id" component={WithdrawalView} />
+          <Route path="/email-management" component={EmailManagement} />
+          <Route path="/user-management" component={UserManagement} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/password/reset" component={PasswordReset} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

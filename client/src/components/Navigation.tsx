@@ -30,7 +30,8 @@ import {
   ShoppingCart,
   FileCheck,
   Receipt,
-  UserCheck
+  UserCheck,
+  Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -238,6 +239,18 @@ const navigationItems = [
     href: "/withdrawal-management",
     icon: Receipt,
     description: "Creator withdrawal requests & payouts"
+  },
+  {
+    name: "Email Management",
+    href: "/email-management",
+    icon: Mail,
+    description: "Email templates & notification system"
+  },
+  {
+    name: "User Management",
+    href: "/user-management",
+    icon: Users,
+    description: "User accounts, verification & activity"
   },
   {
     name: "System Settings",
