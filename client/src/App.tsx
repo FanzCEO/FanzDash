@@ -79,6 +79,7 @@ import VRRenderingEngine from "@/pages/VRRenderingEngine";
 import FutureTechManager from "@/pages/FutureTechManager";
 import AICFODashboard from "@/pages/AICFODashboard";
 import ComplianceCenter from "@/pages/ComplianceCenter";
+import LegalLibrary from "@/pages/legal-library";
 
 function Router() {
   return (
@@ -145,6 +146,7 @@ function Router() {
           <Route path="/ai-cfo" component={AICFODashboard} />
           <Route path="/starz-studio" component={StarzStudioAdmin} />
           <Route path="/compliance-center" component={ComplianceCenter} />
+          <Route path="/legal-library" component={LegalLibrary} />
           <Route path="/blog" component={BlogManagement} />
           <Route path="/blog/create" component={BlogCreate} />
           <Route path="/blog/edit/:id" component={BlogEdit} />

@@ -151,6 +151,14 @@ const navigationCategories: NavigationCategory[] = [
         requiresSuperAdmin: true,
       },
       {
+        name: "Legal Library",
+        href: "/legal-library",
+        icon: BookOpen,
+        description: "Comprehensive legal framework & compliance documentation",
+        requiresCompliance: true,
+        complianceLevel: "COMPLIANCE_OFFICER",
+      },
+      {
         name: "Legal Hold Management",
         href: "/legal-holds",
         icon: Lock,
