@@ -5,6 +5,15 @@ import {
   liveStreams, 
   moderationSettings,
   appealRequests,
+  streamTokens,
+  streamChannels,
+  encodingJobs,
+  paymentProcessors,
+  paymentTransactions,
+  aiCompanions,
+  vrSessions,
+  webrtcRooms,
+  geoCollaborations,
   type User, 
   type InsertUser,
   type ContentItem,
@@ -16,7 +25,25 @@ import {
   type ModerationSettings,
   type InsertModerationSettings,
   type AppealRequest,
-  type InsertAppealRequest
+  type InsertAppealRequest,
+  type StreamToken,
+  type InsertStreamToken,
+  type StreamChannel,
+  type InsertStreamChannel,
+  type EncodingJob,
+  type InsertEncodingJob,
+  type PaymentProcessor,
+  type InsertPaymentProcessor,
+  type PaymentTransaction,
+  type InsertPaymentTransaction,
+  type AICompanion,
+  type InsertAICompanion,
+  type VRSession,
+  type InsertVRSession,
+  type WebRTCRoom,
+  type InsertWebRTCRoom,
+  type GeoCollaboration,
+  type InsertGeoCollaboration
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, count, and, or, sql } from "drizzle-orm";
@@ -80,6 +107,32 @@ export interface IStorage {
   }): Promise<any>;
   
   getRecentAnalysisResults(limit: number): Promise<any[]>;
+  
+  // Payment Processor operations
+  getPaymentProcessors(): Promise<PaymentProcessor[]>;
+  createPaymentProcessor(processor: InsertPaymentProcessor): Promise<PaymentProcessor>;
+  createPaymentTransaction(transaction: InsertPaymentTransaction): Promise<PaymentTransaction>;
+  
+  // GetStream operations
+  createStreamToken(token: InsertStreamToken): Promise<StreamToken>;
+  createStreamChannel(channel: InsertStreamChannel): Promise<StreamChannel>;
+  
+  // Coconut Encoding operations
+  createEncodingJob(job: InsertEncodingJob): Promise<EncodingJob>;
+  getEncodingJob(id: string): Promise<EncodingJob | undefined>;
+  updateEncodingJobStatus(jobId: string, updates: any): Promise<void>;
+  
+  // AI Companion operations
+  createAICompanion(companion: InsertAICompanion): Promise<AICompanion>;
+  getAICompanion(id: string): Promise<AICompanion | undefined>;
+  
+  // VR/WebXR operations
+  createVRSession(session: InsertVRSession): Promise<VRSession>;
+  createWebRTCRoom(room: InsertWebRTCRoom): Promise<WebRTCRoom>;
+  
+  // Geo-Collaboration operations
+  createGeoCollaboration(collaboration: InsertGeoCollaboration): Promise<GeoCollaboration>;
+  getNearbyCollaborations(lat: number, lng: number, radius: number): Promise<GeoCollaboration[]>;
   
   // Interactive functionality
   addPlatformConnection(connection: any): Promise<any>;
@@ -588,6 +641,125 @@ export class DatabaseStorage implements IStorage {
         timestamp: new Date().toISOString()
       }
     ];
+  }
+
+  // Payment Processor operations
+  async getPaymentProcessors(): Promise<PaymentProcessor[]> {
+    return await db
+      .select()
+      .from(paymentProcessors)
+      .where(eq(paymentProcessors.isBanned, false))
+      .orderBy(paymentProcessors.name);
+  }
+
+  async createPaymentProcessor(processor: InsertPaymentProcessor): Promise<PaymentProcessor> {
+    const [result] = await db
+      .insert(paymentProcessors)
+      .values(processor)
+      .returning();
+    return result;
+  }
+
+  async createPaymentTransaction(transaction: InsertPaymentTransaction): Promise<PaymentTransaction> {
+    const [result] = await db
+      .insert(paymentTransactions)
+      .values(transaction)
+      .returning();
+    return result;
+  }
+
+  // GetStream operations
+  async createStreamToken(token: InsertStreamToken): Promise<StreamToken> {
+    const [result] = await db
+      .insert(streamTokens)
+      .values(token)
+      .returning();
+    return result;
+  }
+
+  async createStreamChannel(channel: InsertStreamChannel): Promise<StreamChannel> {
+    const [result] = await db
+      .insert(streamChannels)
+      .values(channel)
+      .returning();
+    return result;
+  }
+
+  // Coconut Encoding operations
+  async createEncodingJob(job: InsertEncodingJob): Promise<EncodingJob> {
+    const [result] = await db
+      .insert(encodingJobs)
+      .values(job)
+      .returning();
+    return result;
+  }
+
+  async getEncodingJob(id: string): Promise<EncodingJob | undefined> {
+    const [job] = await db
+      .select()
+      .from(encodingJobs)
+      .where(eq(encodingJobs.id, id));
+    return job || undefined;
+  }
+
+  async updateEncodingJobStatus(jobId: string, updates: any): Promise<void> {
+    await db
+      .update(encodingJobs)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(encodingJobs.coconutJobId, jobId));
+  }
+
+  // AI Companion operations
+  async createAICompanion(companion: InsertAICompanion): Promise<AICompanion> {
+    const [result] = await db
+      .insert(aiCompanions)
+      .values(companion)
+      .returning();
+    return result;
+  }
+
+  async getAICompanion(id: string): Promise<AICompanion | undefined> {
+    const [companion] = await db
+      .select()
+      .from(aiCompanions)
+      .where(eq(aiCompanions.id, id));
+    return companion || undefined;
+  }
+
+  // VR/WebXR operations
+  async createVRSession(session: InsertVRSession): Promise<VRSession> {
+    const [result] = await db
+      .insert(vrSessions)
+      .values(session)
+      .returning();
+    return result;
+  }
+
+  async createWebRTCRoom(room: InsertWebRTCRoom): Promise<WebRTCRoom> {
+    const [result] = await db
+      .insert(webrtcRooms)
+      .values(room)
+      .returning();
+    return result;
+  }
+
+  // Geo-Collaboration operations
+  async createGeoCollaboration(collaboration: InsertGeoCollaboration): Promise<GeoCollaboration> {
+    const [result] = await db
+      .insert(geoCollaborations)
+      .values(collaboration)
+      .returning();
+    return result;
+  }
+
+  async getNearbyCollaborations(lat: number, lng: number, radius: number): Promise<GeoCollaboration[]> {
+    // For now, return all collaborations (in production, use PostGIS for geo queries)
+    return await db
+      .select()
+      .from(geoCollaborations)
+      .where(eq(geoCollaborations.status, 'open'))
+      .orderBy(desc(geoCollaborations.createdAt))
+      .limit(50);
   }
 }
 

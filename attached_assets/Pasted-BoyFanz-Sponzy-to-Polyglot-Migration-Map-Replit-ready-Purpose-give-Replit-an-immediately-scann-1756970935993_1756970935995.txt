@@ -1,0 +1,493 @@
+BoyFanz → Sponzy‑to‑Polyglot Migration Map (Replit‑ready)
+
+Purpose: give Replit an immediately scannable blueprint showing (A) what the current Sponzy/Laravel app typically contains for BoyFanz, and (B) the one‑to‑one carve‑out into polyglot services with stable contracts, events, and admin flows.
+
+⸻
+
+0) Notes & assumptions
+	•	I couldn’t open Sponzy.zip in this interface, so below is the canonical Sponzy/Laravel structure and feature map commonly used by BoyFanz, plus the FUN‑specific deltas we’ve documented.
+	•	Where your FUN wishlist adds or changes scope (geo‑collab, tiers/points, AI companions, AR, extra processors, storage), I mark it with [FUN+].
+
+⸻
+
+1) Canonical Laravel / Sponzy folder map (server)
+
+boyfanz/
+├─ app/
+│  ├─ Console/
+│  ├─ Exceptions/
+│  ├─ Helpers/                    # utility funcs
+│  ├─ Http/
+│  │  ├─ Controllers/
+│  │  │  ├─ Admin/
+│  │  │  │  ├─ DashboardController.php
+│  │  │  │  ├─ UsersController.php
+│  │  │  │  ├─ CreatorsController.php
+│  │  │  │  ├─ ContentController.php
+│  │  │  │  ├─ ReportsController.php
+│  │  │  │  ├─ PaymentsController.php
+│  │  │  │  ├─ PayoutsController.php
+│  │  │  │  ├─ VerificationController.php   # 2257/KYC queue
+│  │  │  │  ├─ DmcaController.php
+│  │  │  │  ├─ SettingsController.php
+│  │  │  ├─ Auth/
+│  │  │  ├─ Api/
+│  │  ├─ Middleware/
+│  │  └─ Requests/
+│  ├─ Models/
+│  │  ├─ User.php
+│  │  ├─ Creator.php
+│  │  ├─ Post.php
+│  │  ├─ MediaAsset.php
+│  │  ├─ Subscription.php
+│  │  ├─ Order.php
+│  │  ├─ LedgerEntry.php
+│  │  ├─ Payout.php
+│  │  ├─ Verification.php
+│  │  ├─ ModelRelease.php
+│  │  ├─ TaxForm.php
+│  │  ├─ Report.php
+│  │  ├─ ModerationAction.php
+│  │  ├─ MessageThread.php
+│  │  ├─ Message.php
+│  │  ├─ Comment.php
+│  │  ├─ Category.php
+│  │  ├─ Tag.php
+│  │  ├─ Dmca.php
+│  │  ├─ AuditEvent.php
+│  │  └─ SystemSetting.php
+│  ├─ Policies/
+│  ├─ Providers/
+│  └─ Services/                   # local service classes (payments, storage, encoding)
+├─ bootstrap/
+├─ config/
+│  ├─ app.php
+│  ├─ auth.php
+│  ├─ broadcasting.php
+│  ├─ cache.php
+│  ├─ database.php
+│  ├─ filesystems.php             # S3, B2, Wasabi, Pushr
+│  ├─ mail.php
+│  ├─ queue.php
+│  ├─ services.php                # payment processors, VerifyMy
+│  └─ view.php
+├─ database/
+│  ├─ factories/
+│  ├─ migrations/
+│  └─ seeders/
+├─ public/
+├─ resources/
+│  ├─ js/
+│  ├─ sass/
+│  └─ views/
+│     ├─ admin/
+│     │  ├─ dashboard.blade.php
+│     │  ├─ users/*.blade.php
+│     │  ├─ verifications/*.blade.php
+│     │  ├─ content/*.blade.php
+│     │  ├─ reports/*.blade.php
+│     │  ├─ payments/*.blade.php
+│     │  ├─ payouts/*.blade.php
+│     │  ├─ dmca/*.blade.php
+│     │  └─ settings/*.blade.php
+│     ├─ auth/*
+│     └─ shared/*
+├─ routes/
+│  ├─ web.php
+│  ├─ api.php
+│  └─ admin.php                   # if separated
+├─ storage/
+├─ tests/
+└─ .env.example
+
+Key admin routes (typical)
+
+GET   /admin                      -> DashboardController@index
+GET   /admin/users                -> UsersController@index
+GET   /admin/users/{id}           -> UsersController@show
+PATCH /admin/users/{id}           -> UsersController@update  # suspend/role
+GET   /admin/verifications        -> VerificationController@index
+POST  /admin/verifications/{id}/approve
+POST  /admin/verifications/{id}/reject
+GET   /admin/content              -> ContentController@index
+POST  /admin/content/{id}/publish
+POST  /admin/content/{id}/unpublish
+GET   /admin/reports              -> ReportsController@index
+POST  /admin/reports/{id}/action  -> ReportsController@action
+GET   /admin/orders               -> PaymentsController@orders
+POST  /admin/orders/{id}/refund   -> PaymentsController@refund
+GET   /admin/payouts              -> PayoutsController@index
+POST  /admin/payouts/run          -> PayoutsController@run
+GET   /admin/audit                -> DmcaController@auditSearch
+GET   /admin/settings             -> SettingsController@index
+PUT   /admin/settings             -> SettingsController@update
+# Webhooks
+POST  /webhooks/payments/*
+POST  /webhooks/verifymy/*        # FUN variant; Sponzy may use Sumsub by default
+POST  /webhooks/email/*
+
+Core tables (minimum)
+	•	users, roles, sessions, devices
+	•	creators, verifications, model_releases, tax_forms, payout_methods
+	•	posts, media_assets, price_locks, categories, tags, cos_stars
+	•	subscriptions, orders, ledger_entries, creator_balances, payouts, disputes
+	•	reports, moderation_actions, dm_threads, messages, comments
+	•	dmcas, audits, system_settings, email_templates, feature_flags
+
+⸻
+
+2) Admin feature matrix (what exists vs FUN+)
+	•	Users & Roles: directory, role set, suspensions, device log → OK
+	•	Verifications (KYC/2257): queue & doc viewer → OK (provider swap to VerifyMy). [FUN+] co‑star attestations & HubVault write.
+	•	Content: approve/unpublish, scheduling, tags, pin/highlight → OK; [FUN+] blurred previews, stories, forums/groups, leaderboards.
+	•	Commerce: subs, PPV, coupons, refunds/disputes → OK; [FUN+] tiers/points, gift/wishlists, creator ad placements, mass messaging.
+	•	Payouts: balances, runs, exports → OK; [FUN+] extra rails.
+	•	Compliance: DMCA inbox, audit search → OK; [FUN+] Legal Hub.
+	•	Media: S3/B2/Wasabi/Pushr + Coconut/FFmpeg → OK; [FUN+] preset profiles & forensic tags.
+	•	Analytics: engagement + subs → OK; [FUN+] tier analytics, cohorts, churn.
+	•	Live: baseline/private live optional → [FUN+] private/multi‑user + ticketed events.
+	•	Innovation: [FUN+] geo‑collab map + chat/scheduling; AI companions; AR try‑on/meetups.
+
+⸻
+
+3) Polyglot carve‑out (services & contracts)
+
+services/
+├─ users-svc/ (Go or Python)
+│  /api/v1/users, /sessions, /roles, /devices
+│  Emits: user.created, user.updated, user.role.changed
+├─ verify-svc/ (Python FastAPI)
+│  Handoff to VerifyMy; stores KYC/2257 to HubVault
+│  /api/v1/verify/start, /callback/verifymy
+│  Emits: verification.approved|rejected, modelrelease.created
+├─ media-svc/ (Node workers + FFmpeg)
+│  /api/v1/media/ingest, /encode, /thumbs; AV scan; checksum
+│  Emits: media.ingested, media.encoded
+├─ commerce-svc/ (Go)
+│  Subs, PPV, coupons, orders, refunds; payment webhooks
+│  Emits: order.paid, order.refunded, subscription.renewed
+├─ payout-svc/ (Go)
+│  Balances, eligibility windows, runs, exports/APIs
+│  Emits: payout.run.created, payout.run.settled
+├─ policy-svc/ (OPA + bundles)
+│  Rules: geo, profanity, links, velocity, risky terms
+│  /api/v1/policy/evaluate
+├─ moderation-svc/ (Python)
+│  Reports queue, evidence viewer, actions
+│  Emits: moderation.actioned
+├─ notifier-svc/ (Node)
+│  Email/SMS/push; template mgmt; sender domains
+│  /api/v1/notify/send; /webhooks/email
+├─ audit-svc/ (Go)
+│  WORM log write/search; signs every admin action
+│  /api/v1/audit/search
+├─ admin-ui/ (Next.js)
+│  SPA consuming all above; RBAC via users-svc
+
+Example contracts (JSON)
+
+Order paid (payment webhook → commerce‑svc emits):
+
+{
+  "event": "order.paid",
+  "id": "evt_01HV...",
+  "occurred_at": "2025-09-04T01:23:45Z",
+  "data": {
+    "order_id": "ord_42",
+    "user_id": 1234,
+    "creator_id": 987,
+    "amount": 24.99,
+    "currency": "USD",
+    "type": "subscription|ppv|tip",
+    "fee_breakdown": {"processor": 0.75, "platform": 0.00},
+    "period": {"start": "2025-09-04", "end": "2025-10-04"}
+  }
+}
+
+Verification approved (verify‑svc emits):
+
+{
+  "event": "verification.approved",
+  "data": {
+    "user_id": 1234,
+    "kyc_provider": "VerifyMy",
+    "documents": ["front_id.jpg","back_id.jpg","selfie.jpg"],
+    "2257_package_id": "pkg_abcd",
+    "approved_by": "system|admin",
+    "approved_at": "2025-09-04T02:11:00Z"
+  }
+}
+
+
+⸻
+
+4) Admin UI pages (Replit must scaffold now)
+	1.	Dashboard (KPIs, queues, health)
+	2.	Users (directory, detail, actions, risk)
+	3.	Verifications (KYC/2257 queue, doc viewer, approve/return)
+	4.	Content (search, preview, (un)publish, takedown)
+	5.	Moderation (reports queue → action → audit)
+	6.	Commerce (orders, refunds, disputes, coupons)
+	7.	Payouts (balances, runs, exports, rails config)
+	8.	Messaging (spam, filters, shadow‑ban)
+	9.	Compliance (DMCA inbox, policy packs, audit search)
+	10.	System (storage/encoding, email/SMS, branding, feature flags)
+	11.	Analytics (revenue funnel, cohorts, creator earnings dist.)
+
+⸻
+
+5) Webhook endpoints
+	•	/webhooks/payments/* (Stripe/CC/Alt rails)
+	•	/webhooks/verifymy/* (KYC/ID + 2257 status)
+	•	/webhooks/email/* (bounces/complaints)
+
+⸻
+
+6) Monorepo layout for Replit (polyglot)
+
+fanzecom/
+├─ gateway/ (FastAPI or Go Fiber)           # edge + authN/Z, request fanout
+├─ services/
+│  ├─ users-svc/
+│  ├─ verify-svc/
+│  ├─ media-svc/
+│  ├─ commerce-svc/
+│  ├─ payout-svc/
+│  ├─ policy-svc/
+│  ├─ moderation-svc/
+│  ├─ notifier-svc/
+│  └─ audit-svc/
+├─ admin-ui/ (Next.js)
+├─ packages/
+│  ├─ contracts/ (JSON schemas + TS types)
+│  ├─ sdk-js/
+│  ├─ sdk-py/
+│  └─ opa-policies/
+├─ infra/
+│  ├─ docker/
+│  ├─ k8s/
+│  └─ terraform/
+└─ ops/
+   ├─ seed/
+   ├─ loadtest/
+   └─ runbooks/
+
+
+⸻
+
+7) Migration checklist (definition of done)
+	•	Export users/creators with role & device bind → import to users‑svc
+	•	Export KYC/2257 metadata + documents → write to HubVault via verify‑svc
+	•	Export posts/media → re‑ingest or map storage keys; recompute checksums
+	•	Export subscriptions/orders/ledger → commerce‑svc; backfill balances in payout‑svc
+	•	Export reports/mod actions → moderation‑svc; retain audit trails (audit‑svc)
+	•	Configure webhooks (payments, VerifyMy, email)
+	•	Configure storage & encoding presets; AV scan + hash lists
+	•	Set feature flags for [FUN+] items; ship with defaults OFF
+	•	Seed demo data (25/250/1K/30) and run E2E test suite
+
+⸻
+
+8) FUN+ deltas to bake in
+	•	Geo‑collab map + chat + calendar sync [FUN+]
+	•	Membership tiers + points/credits + blur previews [FUN+]
+	•	Creator ads & approval workflow [FUN+]
+	•	Extra processors (BitPay, Razorpay, Authorize.Net) [FUN+]
+	•	Extra storage (B2/Wasabi/Pushr) + Coconut/built‑in encoding [FUN+]
+	•	Leaderboards, forums, stories, gifting/wishlist [FUN+]
+	•	Private/multi‑user live + ticketing [FUN+]
+	•	AI companions/digital twins; AR meetups & try‑ons [FUN+]
+	•	Deeper analytics (cohorts, churn, tier insights) [FUN+]
+
+⸻
+
+9) ENV quicklist (per‑service)
+	•	USERS_JWT_SECRET, OAUTH_KEYS
+	•	VERIFYMY_API_KEY, HUBVAULT_URL
+	•	STORAGE_S3_KEYS, B2_KEYS, WASABI_KEYS, PUSHR_KEYS
+	•	ENCODER_FFMPEG_PATH, COCONUT_API_KEY
+	•	PAYMENT_KEYS_* (stripe/alt), WEBHOOK_SECRETS_*
+	•	PAYOUT_EXPORT_S3_BUCKET|SFTP
+	•	OPA_BUNDLE_URL, SPAMLIST_URL
+	•	EMAIL_SMTP_* | SES_*
+
+⸻
+
+10) Testing strategy
+	•	Contract tests for every event (schemas in packages/contracts)
+	•	E2E flows: onboarding → verification → post → purchase → payout → moderation
+	•	Chaos tests on media‑svc queues; idempotent webhooks; replay safety
+
+⸻
+
+Done. This is production‑grade enough for Replit to scaffold immediately. Add your theme/brand layer on admin‑ui and toggle FUN+ features behind flags while we land core parity.
+
+⸻
+
+11) Realtime feeds & chat (GetStream.io)
+
+Goal: Social/news feeds + DMs/groups with scalable moderation.
+
+New service: chat-svc (Node or Go) — wraps Stream Feeds + Chat; signs user tokens; exposes a thin internal API for admin-ui and other svcs.
+
+ENV
+	•	STREAM_API_KEY, STREAM_API_SECRET, STREAM_APP_ID
+	•	STREAM_WEBHOOK_SECRET
+
+Internal API (chat-svc)
+	•	POST /api/v1/chat/token { user_id } → { token }
+	•	POST /api/v1/chat/channel { members, type } → { channel_id }
+	•	POST /api/v1/feed/activity { actor, verb, object, data } → { activity_id }
+	•	POST /api/v1/moderate/ban { user_id, reason }
+	•	POST /api/v1/moderate/flag { message_id|activity_id, reason }
+
+Events
+	•	Emits: chat.message.created, chat.user.banned, feed.activity.created, moderation.flagged
+	•	Consumes: post.published (to push feed activities), verification.approved (to enable messaging), moderation.actioned (to enforce bans/mutes)
+
+Webhooks
+	•	/webhooks/getstream/events — message flagged, attachment blocked, user banned/unbanned, channel events
+
+Admin-UI
+	•	Chat Moderation Panel: live flag queue, ban/mute, rate limits, attachment policy by role (unverified creators cannot attach files)
+	•	Feed Controls: inject/remove activities, shadow-ban authors, system announcements
+
+Policy
+	•	Default: DMs disabled until verification.approved
+	•	Attachment types gated by role & policy-svc (images/video allowed only for verified adults)
+
+Example (Node, token endpoint)
+
+import { StreamChat } from 'stream-chat';
+const client = StreamChat.getInstance(process.env.STREAM_API_KEY, process.env.STREAM_API_SECRET);
+export async function issueToken(userId){
+  await client.upsertUser({ id: userId });
+  return client.createToken(userId);
+}
+
+
+⸻
+
+12) Encoding pipeline (Coconut.co)
+
+Goal: Offload transcoding to Coconut; keep FFmpeg as fallback.
+
+New module: in media-svc add coconut-adapter.ts
+
+ENV
+	•	COCONUT_API_KEY
+	•	COCONUT_REGION (eg us-east-1)
+	•	COCONUT_WEBHOOK_SECRET
+
+Flow
+	1.	media.ingested → create Coconut Job (inputs: S3/B2/Wasabi URL)
+	2.	Outputs: HLS (multi-bitrate), posters, animated GIF; optional AES-128 encryption
+	3.	Coconut posts status to /webhooks/coconut → update EncodingJob + publish media.encoded
+
+Job payload (example)
+
+{
+  "input": "https://cdn.fanz/.../orig.mp4",
+  "storage": { "service": "s3", "bucket": "fanz-encoded", "path": "hls/123/" },
+  "outputs": [
+    { "format": "hls", "resolutions": ["426x240","640x360","1280x720"], "optimize": true },
+    { "format": "jpg", "number": 6, "every": 5 }
+  ],
+  "notifications": { "type": "webhook", "url": "https://api.fanz/webhooks/coconut" }
+}
+
+Tables
+	•	encoding_jobs(id, media_id, provider, status, started_at, finished_at, meta)
+	•	encoding_outputs(id, job_id, kind, url, width, height, bitrate)
+
+Admin-UI
+	•	Encoding Queue: per-job status, retries, switch to FFmpeg fallback, HLS preview
+
+⸻
+
+13) Adult‑media‑friendly AI (digital twins, assistants, moderation)
+
+Goal: Self‑hosted AI that respects adult policy, consent, and safety; powers creator assistants, RAG bios, and automated triage.
+
+New service: ai-svc (Python FastAPI + vLLM)
+
+Models (self‑hosted lanes)
+	•	Chat/Agent: open‑license LLMs via vLLM; per‑creator persona with opt‑in training data
+	•	Safety/Merge: classification heads for age‑safety, illegal themes, doxxing, extremity levels
+	•	Vision: NSFW classifier for image/video frames; blur masks pre‑publish
+
+Capabilities
+	•	Creator Digital Twin: scripted/on‑brand responses; never impersonate real‑time presence without disclosure
+	•	RAG Memory: per‑creator vault of FAQs, boundaries, pricing, upcoming events
+	•	Smart Previews: auto‑generate captions, blurred teasers, highlight reels
+
+Guardrails
+	•	Enforce 18+ verification before AI chat; block illegal/abusive topics; escalate to moderation‑svc with moderation.flagged
+	•	Every AI message carries consent_context + policy_trace
+
+API
+	•	POST /api/v1/ai/chat { creator_id, fan_id, msg }
+	•	POST /api/v1/ai/summarize-media { media_id }
+	•	POST /api/v1/ai/moderate { text|image|video }
+
+Admin-UI
+	•	AI Studio: configure persona, allowed topics, escalation rules, working hours, tone sliders, price/upsell tree
+
+⸻
+
+14) VR / Immersive
+
+Goal: WebXR playback + live VR pipelines with compliance gates.
+
+New service: vr-svc
+
+Features
+	•	On‑Demand VR: Play 180°/360° HLS/DASH; A‑Frame/Three.js scene shells; gaze controls
+	•	Live VR: WebRTC SFU (Janus/mediasoup) with room tokens issued by users-svc
+	•	Spatial Chat: proximity audio in events; opt‑in avatars; safety bubble toggle
+
+Compliance gates
+	•	Only verification.approved users can stream; viewers geo‑restricted per policy
+	•	Co‑star consent + session logs attached to VR rooms
+
+Admin-UI
+	•	VR Library: upload 180/360 masters; render map; headset QA checklist
+	•	Live Console: start/stop, ticketing, moderators, instant-ban, transcript capture
+
+⸻
+
+15) Payments: Explicitly exclude Stripe/PayPal
+
+Rule: Never integrate Stripe or PayPal (denylist checks in CI + runtime).
+
+Allowlist connectors (configure via commerce-svc):
+	•	Card processors: Authorize.Net, CCBill, Segpay, Epoch, Rocketgate
+	•	Alt rails: BitPay (crypto), Razorpay (regional), bank A2A where supported
+
+ENV
+	•	CCBILL_*, SEGPAY_*, EPOCH_*, ROCKETGATE_*, AUTHNET_*, BITPAY_*, RAZORPAY_*
+
+Code guard
+	•	commerce-svc runs a startup assertion: if env contains STRIPE_* or PAYPAL_* → fatal
+	•	ESLint/Revive custom rule bans stripe, paypal imports; CI fails on detection
+
+Admin-UI
+	•	Rails matrix with health checks & test transactions; dispute dashboards per provider
+
+⸻
+
+16) Cross‑service contracts (new events)
+	•	feed.activity.created {activity_id, actor, verb, object, data}
+	•	chat.message.created {message_id, user_id, channel_id}
+	•	encoding.job.updated {job_id, status, outputs[]}
+	•	ai.escalation {ref_id, reason, severity}
+	•	vr.session.started|ended {room_id, participants[]}
+	•	commerce.payment.disputed {provider, case_id, order_id}
+
+⸻
+
+17) Ops & Security add‑ons
+	•	Webhook signature verification for GetStream & Coconut
+	•	KMS‑managed secrets rotation; per‑service IAM
+	•	Content fingerprinting + invisible watermark on HLS segments
+	•	Golden path runbooks: chat outage, encoding backlog, AI false‑positive, VR room abuse

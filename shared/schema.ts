@@ -357,6 +357,195 @@ export const platformStats = pgTable("platform_stats", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// GetStream Integration
+export const streamTokens = pgTable("stream_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  token: text("token").notNull(),
+  tokenType: varchar("token_type").notNull(), // 'chat', 'feeds', 'activity'
+  expiresAt: timestamp("expires_at").notNull(),
+  scopes: jsonb("scopes").default('[]'),
+  isRevoked: boolean("is_revoked").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const streamChannels = pgTable("stream_channels", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  streamChannelId: varchar("stream_channel_id").notNull().unique(),
+  channelType: varchar("channel_type").notNull(), // 'messaging', 'livestream', 'team'
+  members: jsonb("members").notNull(),
+  moderationRules: jsonb("moderation_rules").default('{}'),
+  customData: jsonb("custom_data").default('{}'),
+  isActive: boolean("is_active").default(true),
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Coconut Media Encoding
+export const encodingJobs = pgTable("encoding_jobs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coconutJobId: varchar("coconut_job_id").notNull().unique(),
+  mediaAssetId: varchar("media_asset_id").references(() => mediaAssets.id).notNull(),
+  sourceUrl: text("source_url").notNull(),
+  status: varchar("status").notNull().default("processing"), // 'processing', 'completed', 'failed'
+  progress: integer("progress").default(0),
+  outputs: jsonb("outputs").default('[]'), // HLS, DASH, MP4 variants
+  webhookData: jsonb("webhook_data"),
+  errorMessage: text("error_message"),
+  processingTimeMs: integer("processing_time_ms"),
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const encodingPresets = pgTable("encoding_presets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  preset: jsonb("preset").notNull(), // Coconut preset configuration
+  isDefault: boolean("is_default").default(false),
+  isActive: boolean("is_active").default(true),
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Payment Processor Management
+export const paymentProcessors = pgTable("payment_processors", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull().unique(),
+  processorType: varchar("processor_type").notNull(), // 'crypto', 'traditional', 'adult_friendly'
+  status: varchar("status").notNull().default("active"), // 'active', 'inactive', 'banned'
+  isBanned: boolean("is_banned").default(false),
+  banReason: text("ban_reason"),
+  supportedCurrencies: jsonb("supported_currencies").default('[]'),
+  fees: jsonb("fees"), // fee structure
+  adultFriendly: boolean("adult_friendly").notNull(),
+  geographicRestrictions: jsonb("geographic_restrictions").default('[]'),
+  integrationConfig: jsonb("integration_config"),
+  webhookEndpoints: jsonb("webhook_endpoints").default('[]'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const paymentTransactions = pgTable("payment_transactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  processorId: varchar("processor_id").references(() => paymentProcessors.id).notNull(),
+  externalTransactionId: varchar("external_transaction_id").notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency").notNull(),
+  status: varchar("status").notNull(), // 'pending', 'completed', 'failed', 'refunded'
+  transactionType: varchar("transaction_type").notNull(), // 'payment', 'refund', 'chargeback'
+  metadata: jsonb("metadata"),
+  webhookData: jsonb("webhook_data"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// AI Companions & Digital Twins
+export const aiCompanions = pgTable("ai_companions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  name: varchar("name").notNull(),
+  personality: jsonb("personality").notNull(), // personality traits, preferences
+  appearance: jsonb("appearance"), // avatar/model configuration
+  voiceConfig: jsonb("voice_config"), // voice synthesis settings
+  knowledgeBase: jsonb("knowledge_base"), // custom knowledge/memories
+  safetyFilters: jsonb("safety_filters").notNull(),
+  conversationHistory: jsonb("conversation_history").default('[]'),
+  isActive: boolean("is_active").default(true),
+  privacySettings: jsonb("privacy_settings").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const aiModels = pgTable("ai_models", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  modelType: varchar("model_type").notNull(), // 'llm', 'image', 'voice', 'safety'
+  version: varchar("version").notNull(),
+  endpoint: text("endpoint").notNull(),
+  apiKey: text("api_key"),
+  configuration: jsonb("configuration").notNull(),
+  safetyLevel: varchar("safety_level").notNull(), // 'strict', 'moderate', 'permissive'
+  contentFilters: jsonb("content_filters").notNull(),
+  isActive: boolean("is_active").default(true),
+  isDefault: boolean("is_default").default(false),
+  performanceMetrics: jsonb("performance_metrics"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// VR/WebXR Integration
+export const vrSessions = pgTable("vr_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  hostId: varchar("host_id").references(() => users.id).notNull(),
+  roomId: varchar("room_id").notNull().unique(),
+  sessionType: varchar("session_type").notNull(), // 'private', 'group', 'public', 'ticketed'
+  title: varchar("title").notNull(),
+  description: text("description"),
+  maxParticipants: integer("max_participants").default(10),
+  currentParticipants: integer("current_participants").default(0),
+  isRecording: boolean("is_recording").default(false),
+  recordingUrl: text("recording_url"),
+  vrEnvironment: jsonb("vr_environment").notNull(), // 3D scene configuration
+  accessSettings: jsonb("access_settings").default('{}'),
+  ticketPrice: decimal("ticket_price", { precision: 10, scale: 2 }),
+  status: varchar("status").notNull().default("scheduled"), // 'scheduled', 'live', 'ended'
+  startedAt: timestamp("started_at"),
+  endedAt: timestamp("ended_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const webrtcRooms = pgTable("webrtc_rooms", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  roomId: varchar("room_id").notNull().unique(),
+  sessionId: varchar("session_id").references(() => vrSessions.id),
+  roomType: varchar("room_type").notNull(), // 'video', 'audio', 'screen_share', 'vr'
+  participants: jsonb("participants").default('[]'),
+  mediaStreams: jsonb("media_streams").default('[]'),
+  isRecording: boolean("is_recording").default(false),
+  recordingConfig: jsonb("recording_config"),
+  bandwidth: jsonb("bandwidth").default('{}'), // bandwidth stats
+  qualitySettings: jsonb("quality_settings").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Geo-Collaboration Features
+export const geoLocations = pgTable("geo_locations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }).notNull(),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }).notNull(),
+  accuracy: integer("accuracy"), // GPS accuracy in meters
+  address: text("address"),
+  city: varchar("city"),
+  country: varchar("country"),
+  isPublic: boolean("is_public").default(false),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const geoCollaborations = pgTable("geo_collaborations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  organizerId: varchar("organizer_id").references(() => users.id).notNull(),
+  locationId: varchar("location_id").references(() => geoLocations.id).notNull(),
+  collaborationType: varchar("collaboration_type").notNull(), // 'meetup', 'photoshoot', 'event'
+  maxParticipants: integer("max_participants").default(10),
+  currentParticipants: integer("current_participants").default(0),
+  requirements: jsonb("requirements").default('{}'), // age, verification, etc.
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  duration: integer("duration"), // in minutes
+  status: varchar("status").notNull().default("open"), // 'open', 'full', 'cancelled', 'completed'
+  chatRoomId: varchar("chat_room_id").references(() => chatRooms.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // First set of types (keeping these, removing duplicates below)
 // Insert schemas (defined after all tables)
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -499,6 +688,75 @@ export const insertPlatformStatsSchema = createInsertSchema(platformStats).omit(
   createdAt: true,
 });
 
+export const insertStreamTokenSchema = createInsertSchema(streamTokens).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertStreamChannelSchema = createInsertSchema(streamChannels).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertEncodingJobSchema = createInsertSchema(encodingJobs).omit({
+  id: true,
+  createdAt: true,
+  completedAt: true,
+});
+
+export const insertEncodingPresetSchema = createInsertSchema(encodingPresets).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPaymentProcessorSchema = createInsertSchema(paymentProcessors).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPaymentTransactionSchema = createInsertSchema(paymentTransactions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAICompanionSchema = createInsertSchema(aiCompanions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAIModelSchema = createInsertSchema(aiModels).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertVRSessionSchema = createInsertSchema(vrSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWebRTCRoomSchema = createInsertSchema(webrtcRooms).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertGeoLocationSchema = createInsertSchema(geoLocations).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertGeoCollaborationSchema = createInsertSchema(geoCollaborations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // All type definitions (consolidated)
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -546,3 +804,27 @@ export type SystemNotification = typeof systemNotifications.$inferSelect;
 export type InsertSystemNotification = z.infer<typeof insertSystemNotificationSchema>;
 export type PlatformStats = typeof platformStats.$inferSelect;
 export type InsertPlatformStats = z.infer<typeof insertPlatformStatsSchema>;
+export type StreamToken = typeof streamTokens.$inferSelect;
+export type InsertStreamToken = z.infer<typeof insertStreamTokenSchema>;
+export type StreamChannel = typeof streamChannels.$inferSelect;
+export type InsertStreamChannel = z.infer<typeof insertStreamChannelSchema>;
+export type EncodingJob = typeof encodingJobs.$inferSelect;
+export type InsertEncodingJob = z.infer<typeof insertEncodingJobSchema>;
+export type EncodingPreset = typeof encodingPresets.$inferSelect;
+export type InsertEncodingPreset = z.infer<typeof insertEncodingPresetSchema>;
+export type PaymentProcessor = typeof paymentProcessors.$inferSelect;
+export type InsertPaymentProcessor = z.infer<typeof insertPaymentProcessorSchema>;
+export type PaymentTransaction = typeof paymentTransactions.$inferSelect;
+export type InsertPaymentTransaction = z.infer<typeof insertPaymentTransactionSchema>;
+export type AICompanion = typeof aiCompanions.$inferSelect;
+export type InsertAICompanion = z.infer<typeof insertAICompanionSchema>;
+export type AIModel = typeof aiModels.$inferSelect;
+export type InsertAIModel = z.infer<typeof insertAIModelSchema>;
+export type VRSession = typeof vrSessions.$inferSelect;
+export type InsertVRSession = z.infer<typeof insertVRSessionSchema>;
+export type WebRTCRoom = typeof webrtcRooms.$inferSelect;
+export type InsertWebRTCRoom = z.infer<typeof insertWebRTCRoomSchema>;
+export type GeoLocation = typeof geoLocations.$inferSelect;
+export type InsertGeoLocation = z.infer<typeof insertGeoLocationSchema>;
+export type GeoCollaboration = typeof geoCollaborations.$inferSelect;
+export type InsertGeoCollaboration = z.infer<typeof insertGeoCollaborationSchema>;

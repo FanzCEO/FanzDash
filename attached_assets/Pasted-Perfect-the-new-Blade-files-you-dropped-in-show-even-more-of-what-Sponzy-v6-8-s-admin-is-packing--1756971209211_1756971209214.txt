@@ -1,0 +1,77 @@
+Perfect — the new Blade files you dropped in show even more of what Sponzy v6.8’s admin is packing. Here’s the expanded capability map from these templates:
+
+⸻
+
+🛠️ New Admin Features in v6.8 (from uploaded blades)
+	•	Tax Management (add-tax.blade.php)
+	•	Admin can define tax rates (VAT, GST, etc.) for transactions.
+	•	Needed for global compliance and transparent creator payouts.
+	•	Advertising (advertising.blade.php)
+	•	Dedicated ad slots.
+	•	Campaign creation, scheduling, impressions/click metrics.
+	•	Tied to creator promotion or third-party ads.
+	•	Announcements (announcements.blade.php)
+	•	Global admin → user broadcast system.
+	•	Appears in dashboards / notification center.
+	•	Good for policy updates, events, compliance notices.
+	•	Atlos Settings (atlos-settings.blade.php)
+	•	Likely ties to a third-party AI or moderation provider (“Atlos”).
+	•	Suggests configurable integration for auto moderation or analytics.
+	•	Audio Call Settings (audio-call-settings.blade.php)
+	•	WebRTC / VoIP configuration.
+	•	One-on-one audio calls between fans & creators.
+	•	Admin can enable/disable, set pricing or restrictions.
+	•	Bank Settings (bank-settings.blade.php)
+	•	Admin config for payout rails.
+	•	Direct bank transfer options for creator withdrawals.
+	•	Billing (billing.blade.php)
+	•	Central billing history for admin.
+	•	Likely includes invoices, subscriptions, processor reconciliation.
+	•	Binance Settings (binance-settings.blade.php)
+	•	Crypto integration through Binance.
+	•	Supports deposits/payouts in BTC/ETH/BNB, etc.
+	•	Blog (blog.blade.php)
+	•	CMS module for admin-authored posts.
+	•	Likely used for SEO content, community updates, creator spotlights.
+	•	Cardinity Settings (cardinity-settings.blade.php)
+	•	Another processor integration (Cardinity, adult-friendly).
+	•	Enables credit card payments without Stripe/PayPal.
+
+⸻
+
+🔑 Implications for Polyglot Migration
+
+These v6.8 additions expand the scope we need to map into services:
+	1.	Tax → commerce-svc
+	•	Store rules in tax_rates.
+	•	Apply at order level (ledger_entries).
+	•	Emit order.tax_applied.
+	2.	Advertising → ads-svc (new)
+	•	Separate service for ad campaigns.
+	•	APIs for CRUD ads, approve/reject, track metrics.
+	•	Events: ad.campaign.created, ad.impression.logged.
+	3.	Announcements → notifier-svc
+	•	Broadcast channel with priority levels.
+	•	Events: announcement.published.
+	4.	Atlos → moderation-svc adapter
+	•	Wrap Atlos API for auto moderation.
+	•	Pipe flagged events to moderation.actioned.
+	5.	Audio Calls → calls-svc (new)
+	•	WebRTC signaling, per-minute billing.
+	•	Events: call.started, call.ended, call.charged.
+	6.	Bank/Billing/Processors (Binance, Cardinity) → payout-svc + commerce-svc
+	•	Expand allowlist beyond Stripe/PayPal (which we’re banning).
+	•	ENV: BINANCE_API_KEY, CARDINITY_*.
+	•	Events: payout.sent, crypto.txn.confirmed.
+	7.	Blog → cms-svc (new)
+	•	CRUD pages, posts, categories.
+	•	Admin-only editing.
+	•	Events: blog.post.published.
+
+⸻
+
+⚡ Bottom line: BoyFanz’s current stack has gone far beyond the original Sponzy. Ads, crypto, taxes, calls, and announcements are already integrated — so in the polyglot rebuild, we need to spin up at least three new microservices (ads-svc, calls-svc, cms-svc) and enrich commerce-svc, payout-svc, and moderation-svc with these extra integrations.
+
+⸻
+
+Do you want me to update the migration canvas doc now with these v6.8 modules slotted into the service map (ads, calls, tax, blog, Binance/Cardinity, announcements)? That way your Replit team sees exactly how these map into the polyglot architecture.

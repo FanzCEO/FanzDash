@@ -6,9 +6,121 @@ import {
   insertContentItemSchema, 
   insertModerationResultSchema,
   insertModerationSettingsSchema,
-  insertAppealRequestSchema
+  insertAppealRequestSchema,
+  insertStreamTokenSchema,
+  insertStreamChannelSchema,
+  insertEncodingJobSchema,
+  insertPaymentProcessorSchema,
+  insertPaymentTransactionSchema,
+  insertAICompanionSchema,
+  insertVRSessionSchema,
+  insertWebRTCRoomSchema,
+  insertGeoCollaborationSchema
 } from "@shared/schema";
 import { aiModerationService } from "./openaiService";
+
+// Service Helper Functions
+function generateStreamToken(userId: string, tokenType: string): string {
+  // In production, use Stream SDK to generate real tokens
+  // const streamClient = stream.connect(process.env.STREAM_API_KEY, process.env.STREAM_API_SECRET);
+  // return streamClient.createUserToken(userId);
+  
+  // Mock implementation for development
+  return `stream_token_${userId}_${tokenType}_${Date.now()}`;
+}
+
+async function handleStreamModeration(action: string, targetId: string, reason: string, moderatorId: string) {
+  // Implement Stream moderation API calls
+  // const streamClient = stream.connect(process.env.STREAM_API_KEY, process.env.STREAM_API_SECRET);
+  
+  const moderationAction = {
+    action,
+    targetId,
+    reason,
+    moderatorId,
+    timestamp: new Date().toISOString()
+  };
+  
+  // Mock response for development
+  return { success: true, action: moderationAction };
+}
+
+async function createCoconutJob(sourceUrl: string, mediaAssetId: string): Promise<string> {
+  // In production, use Coconut API
+  // const coconut = require('@coconut-cloud/node');
+  // const job = await coconut.job.create({
+  //   api_key: process.env.COCONUT_API_KEY,
+  //   source: sourceUrl,
+  //   webhook: `${process.env.BASE_URL}/api/encoding/webhook`,
+  //   outputs: {
+  //     'mp4:1080p': `s3://${process.env.S3_BUCKET}/encoded/mp4/${mediaAssetId}_1080p.mp4`,
+  //     'hls': `s3://${process.env.S3_BUCKET}/encoded/hls/${mediaAssetId}/playlist.m3u8`
+  //   }
+  // });
+  // return job.id;
+  
+  // Mock implementation for development
+  return `coconut_job_${Date.now()}_${mediaAssetId}`;
+}
+
+async function screenMessage(message: string, safetyFilters: any): Promise<boolean> {
+  // Implement AI safety screening
+  // Check for toxic content, personal info, etc.
+  const toxicKeywords = ['hate', 'harassment', 'violence', 'illegal'];
+  const messageWords = message.toLowerCase().split(' ');
+  
+  const hasToxicContent = toxicKeywords.some(keyword => 
+    messageWords.some(word => word.includes(keyword))
+  );
+  
+  return !hasToxicContent;
+}
+
+async function generateAIResponse(companion: any, message: string, userId: string): Promise<string> {
+  // In production, integrate with your AI models (vLLM, OpenAI, etc.)
+  // Apply safety filters and companion personality
+  
+  // Mock response for development
+  const responses = [
+    "That's an interesting thought. Tell me more about it.",
+    "I understand your perspective. What made you think about that?",
+    "That sounds important to you. How does it make you feel?",
+    "I appreciate you sharing that with me. What would you like to explore next?"
+  ];
+  
+  return responses[Math.floor(Math.random() * responses.length)];
+}
+
+function initializeWebRTCSignaling(roomId: string) {
+  // Initialize WebRTC signaling server for the room
+  console.log(`Initializing WebRTC signaling for room: ${roomId}`);
+  // In production, set up signaling server with Socket.IO or similar
+}
+
+// Payment Processor Banlist Enforcement
+function enforcePaymentBanlist() {
+  const bannedProcessors = [
+    'stripe', 'paypal', 'square', 'venmo', 'cashapp'
+  ];
+  
+  const envKeys = Object.keys(process.env);
+  const violatingKeys = envKeys.filter(key => 
+    bannedProcessors.some(banned => 
+      key.toLowerCase().includes(banned)
+    )
+  );
+  
+  if (violatingKeys.length > 0) {
+    console.error('🚫 PAYMENT PROCESSOR VIOLATION DETECTED!');
+    console.error('Banned payment processors found in environment:');
+    violatingKeys.forEach(key => console.error(`  - ${key}`));
+    console.error('Adult-friendly payment processors only. Exiting...');
+    process.exit(1);
+  }
+}
+
+// Run banlist check on startup
+enforcePaymentBanlist();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Dashboard stats
@@ -19,6 +131,288 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
       res.status(500).json({ message: "Failed to fetch dashboard stats" });
+    }
+  });
+
+  // Payment Processor Management (Adult-Friendly Only)
+  app.get("/api/payment/processors", async (req, res) => {
+    try {
+      const processors = await storage.getPaymentProcessors();
+      // Filter out banned processors (Stripe, PayPal)
+      const allowedProcessors = processors.filter(p => !p.isBanned && p.adultFriendly);
+      res.json(allowedProcessors);
+    } catch (error) {
+      console.error("Error fetching payment processors:", error);
+      res.status(500).json({ message: "Failed to fetch payment processors" });
+    }
+  });
+
+  app.post("/api/payment/processors", async (req, res) => {
+    try {
+      const data = insertPaymentProcessorSchema.parse(req.body);
+      
+      // Enforce banlist - reject Stripe/PayPal
+      const bannedProcessors = ['stripe', 'paypal', 'square'];
+      if (bannedProcessors.some(banned => data.name.toLowerCase().includes(banned))) {
+        return res.status(400).json({ 
+          message: "Payment processor not allowed. Adult-friendly processors only.",
+          bannedReason: "Policy violation: Non-adult-friendly processor"
+        });
+      }
+      
+      const processor = await storage.createPaymentProcessor(data);
+      res.json(processor);
+    } catch (error) {
+      console.error("Error creating payment processor:", error);
+      res.status(500).json({ message: "Failed to create payment processor" });
+    }
+  });
+
+  app.post("/api/payment/transactions", async (req, res) => {
+    try {
+      const data = insertPaymentTransactionSchema.parse(req.body);
+      const transaction = await storage.createPaymentTransaction(data);
+      res.json(transaction);
+    } catch (error) {
+      console.error("Error creating payment transaction:", error);
+      res.status(500).json({ message: "Failed to create payment transaction" });
+    }
+  });
+
+  // GetStream Integration
+  app.post("/api/stream/token", async (req, res) => {
+    try {
+      const { userId, tokenType = 'chat' } = req.body;
+      
+      // Generate Stream token using server-side SDK
+      const streamToken = generateStreamToken(userId, tokenType);
+      
+      const tokenData = {
+        userId,
+        token: streamToken,
+        tokenType,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+        scopes: ['chat:read', 'chat:write', 'feeds:read', 'feeds:write']
+      };
+      
+      const savedToken = await storage.createStreamToken(tokenData);
+      res.json({ token: streamToken, expiresAt: savedToken.expiresAt });
+    } catch (error) {
+      console.error("Error generating stream token:", error);
+      res.status(500).json({ message: "Failed to generate stream token" });
+    }
+  });
+
+  app.post("/api/stream/channel", async (req, res) => {
+    try {
+      const data = insertStreamChannelSchema.parse(req.body);
+      const channel = await storage.createStreamChannel(data);
+      res.json(channel);
+    } catch (error) {
+      console.error("Error creating stream channel:", error);
+      res.status(500).json({ message: "Failed to create stream channel" });
+    }
+  });
+
+  app.post("/api/stream/moderate", async (req, res) => {
+    try {
+      const { action, targetId, reason, moderatorId } = req.body;
+      
+      // Implement Stream moderation actions
+      const result = await handleStreamModeration(action, targetId, reason, moderatorId);
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error handling stream moderation:", error);
+      res.status(500).json({ message: "Failed to process moderation action" });
+    }
+  });
+
+  // Coconut Media Encoding
+  app.post("/api/encoding/jobs", async (req, res) => {
+    try {
+      const data = insertEncodingJobSchema.parse(req.body);
+      
+      // Create Coconut encoding job
+      const coconutJobId = await createCoconutJob(data.sourceUrl, data.mediaAssetId);
+      
+      const jobData = {
+        ...data,
+        coconutJobId,
+        status: 'processing'
+      };
+      
+      const job = await storage.createEncodingJob(jobData);
+      res.json(job);
+    } catch (error) {
+      console.error("Error creating encoding job:", error);
+      res.status(500).json({ message: "Failed to create encoding job" });
+    }
+  });
+
+  app.get("/api/encoding/jobs/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const job = await storage.getEncodingJob(id);
+      res.json(job);
+    } catch (error) {
+      console.error("Error fetching encoding job:", error);
+      res.status(500).json({ message: "Failed to fetch encoding job" });
+    }
+  });
+
+  app.post("/api/encoding/webhook", async (req, res) => {
+    try {
+      // Handle Coconut webhook
+      const { job_id, status, progress, outputs } = req.body;
+      
+      await storage.updateEncodingJobStatus(job_id, {
+        status,
+        progress,
+        outputs,
+        webhookData: req.body
+      });
+      
+      res.json({ received: true });
+    } catch (error) {
+      console.error("Error handling encoding webhook:", error);
+      res.status(500).json({ message: "Failed to process webhook" });
+    }
+  });
+
+  // AI Services with Safety Rails
+  app.post("/api/ai/companions", async (req, res) => {
+    try {
+      const data = insertAICompanionSchema.parse(req.body);
+      
+      // Apply mandatory safety filters
+      const safetyFilters = {
+        contentFilter: true,
+        adultContentBlocked: true,
+        personalInfoProtection: true,
+        toxicityFilter: true,
+        ...data.safetyFilters
+      };
+      
+      const companion = await storage.createAICompanion({
+        userId: data.userId,
+        name: data.name,
+        personality: data.personality,
+        appearance: data.appearance,
+        voiceConfig: data.voiceConfig,
+        knowledgeBase: data.knowledgeBase,
+        conversationHistory: data.conversationHistory,
+        isActive: data.isActive,
+        privacySettings: data.privacySettings,
+        safetyFilters
+      });
+      
+      res.json(companion);
+    } catch (error) {
+      console.error("Error creating AI companion:", error);
+      res.status(500).json({ message: "Failed to create AI companion" });
+    }
+  });
+
+  app.post("/api/ai/chat/:companionId", async (req, res) => {
+    try {
+      const { companionId } = req.params;
+      const { message, userId } = req.body;
+      
+      // Get companion with safety filters
+      const companion = await storage.getAICompanion(companionId);
+      
+      if (!companion) {
+        return res.status(404).json({ message: "AI companion not found" });
+      }
+      
+      // Apply safety screening
+      const isSafe = await screenMessage(message, companion.safetyFilters);
+      if (!isSafe) {
+        return res.status(400).json({ message: "Message violates safety guidelines" });
+      }
+      
+      // Generate AI response with safety rails
+      const response = await generateAIResponse(companion, message, userId);
+      
+      res.json({ response, safe: true });
+    } catch (error) {
+      console.error("Error processing AI chat:", error);
+      res.status(500).json({ message: "Failed to process AI chat" });
+    }
+  });
+
+  // VR/WebXR Services
+  app.post("/api/vr/sessions", async (req, res) => {
+    try {
+      const data = insertVRSessionSchema.parse(req.body);
+      
+      // Generate unique room ID
+      const roomId = `vr_room_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      
+      const sessionData = {
+        hostId: data.hostId,
+        title: data.title,
+        description: data.description,
+        maxParticipants: data.maxParticipants,
+        currentParticipants: data.currentParticipants,
+        isRecording: data.isRecording,
+        recordingUrl: data.recordingUrl,
+        vrEnvironment: data.vrEnvironment,
+        accessSettings: data.accessSettings,
+        ticketPrice: data.ticketPrice,
+        sessionType: data.sessionType,
+        status: data.status,
+        startedAt: data.startedAt,
+        endedAt: data.endedAt,
+        roomId
+      };
+      
+      const session = await storage.createVRSession(sessionData);
+      
+      res.json(session);
+    } catch (error) {
+      console.error("Error creating VR session:", error);
+      res.status(500).json({ message: "Failed to create VR session" });
+    }
+  });
+
+  app.post("/api/webrtc/rooms", async (req, res) => {
+    try {
+      const data = insertWebRTCRoomSchema.parse(req.body);
+      
+      const room = await storage.createWebRTCRoom(data);
+      
+      // Initialize WebRTC signaling for the room
+      initializeWebRTCSignaling(room.roomId);
+      
+      res.json(room);
+    } catch (error) {
+      console.error("Error creating WebRTC room:", error);
+      res.status(500).json({ message: "Failed to create WebRTC room" });
+    }
+  });
+
+  // Geo-Collaboration
+  app.post("/api/geo/collaborations", async (req, res) => {
+    try {
+      const data = insertGeoCollaborationSchema.parse(req.body);
+      const collaboration = await storage.createGeoCollaboration(data);
+      res.json(collaboration);
+    } catch (error) {
+      console.error("Error creating geo collaboration:", error);
+      res.status(500).json({ message: "Failed to create geo collaboration" });
+    }
+  });
+
+  app.get("/api/geo/nearby", async (req, res) => {
+    try {
+      const { lat, lng, radius = 10 } = req.query;
+      const collaborations = await storage.getNearbyCollaborations(Number(lat), Number(lng), Number(radius));
+      res.json(collaborations);
+    } catch (error) {
+      console.error("Error fetching nearby collaborations:", error);
+      res.status(500).json({ message: "Failed to fetch nearby collaborations" });
     }
   });
 

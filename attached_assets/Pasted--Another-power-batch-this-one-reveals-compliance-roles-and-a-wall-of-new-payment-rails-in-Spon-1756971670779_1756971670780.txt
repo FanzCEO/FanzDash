@@ -1,0 +1,66 @@
+🔥 Another power batch — this one reveals compliance, roles, and a wall of new payment rails in Sponzy v6.8. Here’s the breakdown:
+
+⸻
+
+🛠️ Features from this drop
+	•	Moderation Image/Video (moderation-image-video.blade.php)
+	•	Admin moderation panel for photos/videos.
+	•	Supports approve/reject, blur, takedown.
+	•	Key for 2257 + DMCA + adult safety.
+	•	Mollie Settings (mollie-settings.blade.php)
+	•	Adds Mollie as a payment processor (EU).
+	•	Names Reserved (names-reserved.blade.php)
+	•	Blocklist of reserved usernames (e.g., “admin”, “support”, “ceo”).
+	•	Prevent impersonation + brand hijacking.
+	•	NowPayments Settings (nowpayments-settings.blade.php)
+	•	Adds NowPayments crypto processor.
+	•	Supports BTC, ETH, USDT, many altcoins.
+	•	OpenPix Settings (openpix-settings.blade.php)
+	•	Adds OpenPix (Brazil/LatAm PIX payment system).
+	•	Pages (pages.blade.php)
+	•	List/manage CMS pages.
+	•	Works with edit-page.blade.php.
+	•	Payku Settings (payku-settings.blade.php)
+	•	Adds Payku processor (Chile/LatAm).
+	•	Payments Settings (payments-settings.blade.php)
+	•	Global payments dashboard.
+	•	Enable/disable gateways, set defaults, test modes.
+	•	Central admin control for all payment rails.
+	•	Paystack Settings (paystack-settings.blade.php)
+	•	Adds Paystack processor (Africa).
+	•	Role & Permissions Member (role-and-permissions-member.blade.php)
+	•	Admin tool to assign roles + granular permissions.
+	•	RBAC beyond just “admin/mod/creator/fan.”
+
+⸻
+
+🔑 Polyglot Migration Mapping
+	1.	Moderation (Images/Videos) → moderation-svc
+	•	Extend with video review, blur tools, takedowns.
+	•	Events: media.flagged, media.removed.
+	•	Should tie into ai-svc (vision classifiers).
+	2.	Reserved Names → users-svc
+	•	Store reserved list in policy config.
+	•	Enforced at signup/username change.
+	3.	Payments (Mollie, NowPayments, OpenPix, Payku, Paystack) → commerce-svc
+	•	Extend allowlist with ENV keys:
+	•	MOLLIE_*, NOWPAYMENTS_*, OPENPIX_*, PAYKU_*, PAYSTACK_*.
+	•	Events: order.paid, payment.failed, crypto.txn.confirmed.
+	•	Add to payments-settings for admin control.
+	4.	Payments Settings (global) → commerce-svc + admin-ui
+	•	One control panel to enable/disable/test rails.
+	•	Reflects in service discovery for commerce.
+	5.	Pages → cms-svc
+	•	CRUD for static pages.
+	•	Events: page.published, page.updated.
+	6.	Role & Permissions → users-svc
+	•	Extend RBAC to fine-grained permissions.
+	•	Events: role.assigned, permission.updated.
+
+⸻
+
+⚡ Bottom line: BoyFanz’s Sponzy v6.8 now has a compliance-grade moderation suite, RBAC system, and 10+ global payment processors beyond the usual suspects. In your polyglot OS, commerce-svc must become a multi-gateway orchestrator, and users-svc must enforce RBAC + reserved names.
+
+⸻
+
+Josh — do you want me to sync all of this (moderation, RBAC, payments expansion, reserved names) into the migration canvas doc so Replit has the fully updated service/service-event/payment blueprint? That’ll give you a single “master playbook” covering every feature up to Sponzy v6.8.

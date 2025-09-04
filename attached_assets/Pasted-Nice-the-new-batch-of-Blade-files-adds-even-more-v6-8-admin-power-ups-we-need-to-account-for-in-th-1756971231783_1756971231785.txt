@@ -1,0 +1,71 @@
+Nice — the new batch of Blade files adds even more v6.8 admin power-ups we need to account for in the rebuild. Here’s the breakdown:
+
+⸻
+
+🛠️ Additional Admin Features (from latest uploads)
+	•	Categories (categories.blade.php)
+	•	Admin CRUD for content categories.
+	•	Controls taxonomy for discoverability + filtering.
+	•	CCBill Settings (ccbill-settings.blade.php)
+	•	Adult-friendly processor integration.
+	•	Payment flows, subscription management, compliance logging.
+	•	Charts (charts.blade.php)
+	•	Dashboard analytics (GMV, creator earnings, top posts, churn).
+	•	Visual reports for admins.
+	•	Coinbase Settings (coinbase-settings.blade.php)
+	•	Crypto integration with Coinbase Commerce.
+	•	Allows fan payments in BTC, ETH, USDC, etc.
+	•	CoinPayments Settings (coinpayments-settings.blade.php)
+	•	Another crypto processor integration.
+	•	Supports multiple coins/tokens, auto conversion.
+	•	Comments (comments.blade.php)
+	•	Comment moderation system.
+	•	Approve, delete, shadow-ban, keyword filter.
+	•	Countries (countries.blade.php)
+	•	Geo database for country-level restrictions.
+	•	Key for compliance and geo-blocking features.
+	•	Create Blog (create-blog.blade.php)
+	•	Blog authoring interface.
+	•	Expands the CMS functionality spotted earlier.
+	•	Cron Job (cron-job.blade.php)
+	•	Admin page for scheduled tasks (renewals, payouts, cleanups).
+	•	Monitor job runs, failures, retry queue.
+	•	CSS-JS (css-js.blade.php)
+	•	Custom CSS/JS injector.
+	•	Lets admins or super-admins adjust UI/branding directly.
+
+⸻
+
+🔑 Migration / Polyglot Mapping
+	1.	Categories & Countries → policy-svc + content-svc.
+	•	Store categories for posts/shops.
+	•	Store countries for geo-block rules.
+	•	Emit policy.geo.updated.
+	2.	CCBill/Coinbase/CoinPayments → commerce-svc + payout-svc.
+	•	Extend allowlist of adult-friendly rails.
+	•	ENV: CCBILL_*, COINBASE_*, COINPAYMENTS_*.
+	•	Events: order.paid, crypto.txn.confirmed.
+	3.	Charts → analytics-svc (new).
+	•	Dedicated service for metrics, cohorts, churn.
+	•	Exposes APIs consumed by admin-ui.
+	4.	Comments → moderation-svc.
+	•	Queue + auto filters.
+	•	Events: comment.flagged, comment.removed.
+	5.	Blog & Create Blog → cms-svc.
+	•	Post creation & publishing.
+	•	Feeds into SEO/community layer.
+	6.	Cron Job → ops-svc (new).
+	•	Central scheduler & job monitor.
+	•	Can drive renewals, payouts, cleanup.
+	•	Events: job.failed, job.retry.
+	7.	CSS-JS Injector → system-svc.
+	•	Stores overrides safely.
+	•	Versioned + rollback.
+
+⸻
+
+⚡ Bottom line: Sponzy v6.8 isn’t just a Laravel script anymore — it’s evolved into a full creator economy control center, with ads, crypto, CCBill, comments, blogs, jobs, and analytics all baked in. For your polyglot rebuild, this means at least two new services (analytics-svc, ops-svc) and extending commerce-svc, policy-svc, and cms-svc.
+
+⸻
+
+Josh, do you want me to update the migration canvas doc with these new modules and service mappings (CCBill, Coinbase, CoinPayments, Charts, Cron, Comments, CSS-JS)? That way your Replit devs get the one-stop blueprint covering all v6.8 features.

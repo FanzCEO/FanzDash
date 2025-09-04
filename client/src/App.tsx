@@ -24,6 +24,8 @@ import DataPage from "@/pages/data";
 import LandingHub from "@/pages/landing-hub";
 import Verification2257 from "@/pages/verification-2257";
 import ChatSystem from "@/pages/chat-system";
+import StreamManagement from "@/pages/stream-management";
+import PaymentManagement from "@/pages/payment-management";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -51,6 +53,8 @@ function Router() {
           <Route path="/data" component={DataPage} />
           <Route path="/verification-2257" component={Verification2257} />
           <Route path="/chat-system" component={ChatSystem} />
+          <Route path="/stream-management" component={StreamManagement} />
+          <Route path="/payment-management" component={PaymentManagement} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>
