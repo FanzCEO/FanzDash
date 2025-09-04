@@ -14,6 +14,7 @@ import {
   vrSessions,
   webrtcRooms,
   geoCollaborations,
+  audioCallSettings,
   type User, 
   type InsertUser,
   type ContentItem,
@@ -72,6 +73,10 @@ export interface IStorage {
   // Settings
   getModerationSettings(): Promise<ModerationSettings[]>;
   updateModerationSettings(settings: InsertModerationSettings): Promise<void>;
+  
+  // Audio Call Settings
+  getAudioCallSettings(): Promise<any>;
+  updateAudioCallSettings(settings: any): Promise<void>;
 
   // Appeals
   getAppealRequests(): Promise<AppealRequest[]>;
@@ -319,6 +324,45 @@ export class DatabaseStorage implements IStorage {
     } else {
       await db
         .insert(moderationSettings)
+        .values(settings);
+    }
+  }
+
+  // Audio Call Settings
+  async getAudioCallSettings(): Promise<any> {
+    const settings = await db
+      .select()
+      .from(audioCallSettings)
+      .limit(1);
+    
+    if (settings.length > 0) {
+      return settings[0];
+    }
+    
+    // Return default settings if none exist
+    return {
+      audioCallStatus: false,
+      agoraAppId: null,
+      audioCallMinPrice: 1,
+      audioCallMaxPrice: 100,
+      audioCallMaxDuration: 60
+    };
+  }
+
+  async updateAudioCallSettings(settings: any): Promise<void> {
+    const existing = await db
+      .select()
+      .from(audioCallSettings)
+      .limit(1);
+
+    if (existing.length > 0) {
+      await db
+        .update(audioCallSettings)
+        .set({ ...settings, updatedAt: new Date() })
+        .where(eq(audioCallSettings.id, existing[0].id));
+    } else {
+      await db
+        .insert(audioCallSettings)
         .values(settings);
     }
   }

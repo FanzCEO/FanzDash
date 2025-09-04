@@ -115,6 +115,12 @@ const navigationItems = [
     description: "Regulatory compliance & audit trails"
   },
   {
+    name: "Audio Call Settings",
+    href: "/audio-calls",
+    icon: Settings,
+    description: "Agora WebRTC & pricing controls"
+  },
+  {
     name: "System Settings",
     href: "/settings",
     icon: Settings,

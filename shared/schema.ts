@@ -816,11 +816,117 @@ export const extendedPaymentProcessors = pgTable("extended_payment_processors", 
   minimumAmount: decimal("minimum_amount", { precision: 10, scale: 2 }),
   maximumAmount: decimal("maximum_amount", { precision: 10, scale: 2 }),
   processingTime: varchar("processing_time"), // '1-3 days', 'instant', etc.
+  // Enhanced configurations for specific processors
+  subscriptionSupport: boolean("subscription_support").default(false),
+  ccbillAccountNumber: varchar("ccbill_account_number"),
+  ccbillSubaccountSubscriptions: varchar("ccbill_subaccount_subscriptions"),
+  ccbillSubaccount: varchar("ccbill_subaccount"),
+  ccbillFlexId: varchar("ccbill_flex_id"),
+  ccbillSaltKey: varchar("ccbill_salt_key"),
+  ccbillDatalinkUsername: varchar("ccbill_datalink_username"),
+  ccbillDatalinkPassword: varchar("ccbill_datalink_password"),
+  ccbillSkipSubaccountCancellations: boolean("ccbill_skip_subaccount_cancellations").default(false),
+  // Cardinity specific
+  cardinityProjectId: varchar("cardinity_project_id"),
+  cardinityProjectSecret: varchar("cardinity_project_secret"),
+  // Crypto specific
+  cryptoCurrency: varchar("crypto_currency"), // For Binance, etc.
+  // Bank transfer specific
+  bankInfo: text("bank_info"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// First set of types (keeping these, removing duplicates below)
+// Company Billing Information (from billing.blade.php)
+export const companyBilling = pgTable("company_billing", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  company: varchar("company"),
+  country: varchar("country"),
+  address: text("address"),
+  city: varchar("city"),
+  zip: varchar("zip"),
+  vat: varchar("vat"),
+  phone: varchar("phone"),
+  showAddressCompanyFooter: boolean("show_address_company_footer").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Enhanced Audio Call Settings (from audio-call-settings.blade.php)
+export const audioCallSettings = pgTable("audio_call_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  audioCallStatus: boolean("audio_call_status").default(false),
+  agoraAppId: varchar("agora_app_id"),
+  audioCallMinPrice: decimal("audio_call_min_price", { precision: 10, scale: 2 }),
+  audioCallMaxPrice: decimal("audio_call_max_price", { precision: 10, scale: 2 }),
+  audioCallMaxDuration: integer("audio_call_max_duration").default(60), // minutes
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// System Announcements (from announcements.blade.php)
+export const systemAnnouncements = pgTable("system_announcements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  content: text("content"),
+  type: varchar("type").default("primary"), // 'primary', 'danger'
+  showTo: varchar("show_to").default("all"), // 'all', 'creators'
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Blog/CMS Posts (from blog.blade.php)
+export const blogPosts = pgTable("blog_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  slug: varchar("slug").notNull().unique(),
+  content: text("content"),
+  excerpt: text("excerpt"),
+  featuredImage: varchar("featured_image"),
+  isPublished: boolean("is_published").default(false),
+  publishedAt: timestamp("published_at"),
+  authorId: varchar("author_id").references(() => users.id),
+  viewCount: integer("view_count").default(0),
+  metaTitle: varchar("meta_title"),
+  metaDescription: text("meta_description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Content Categories (from categories.blade.php)
+export const contentCategories = pgTable("content_categories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  slug: varchar("slug").notNull().unique(),
+  description: text("description"),
+  mode: varchar("mode").default("on"), // 'on', 'off'
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Countries Management (from countries.blade.php)
+export const countries = pgTable("countries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  countryCode: varchar("country_code").notNull().unique(), // ISO code
+  countryName: varchar("country_name").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Comments System (from comments.blade.php)
+export const userComments = pgTable("user_comments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  contentId: varchar("content_id").references(() => contentItems.id),
+  reply: text("reply").notNull(),
+  isApproved: boolean("is_approved").default(false),
+  moderatorId: varchar("moderator_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas (defined after all tables)
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -1125,6 +1231,49 @@ export const insertExtendedPaymentProcessorSchema = createInsertSchema(extendedP
   updatedAt: true,
 });
 
+export const insertCompanyBillingSchema = createInsertSchema(companyBilling).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAudioCallSettingsSchema = createInsertSchema(audioCallSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSystemAnnouncementSchema = createInsertSchema(systemAnnouncements).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  publishedAt: true,
+});
+
+export const insertContentCategorySchema = createInsertSchema(contentCategories).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCountrySchema = createInsertSchema(countries).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserCommentSchema = createInsertSchema(userComments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // All type definitions (consolidated)
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -1230,9 +1379,17 @@ export type AudioCall = typeof audioCalls.$inferSelect;
 export type InsertAudioCall = z.infer<typeof insertAudioCallSchema>;
 export type ExtendedPaymentProcessor = typeof extendedPaymentProcessors.$inferSelect;
 export type InsertExtendedPaymentProcessor = z.infer<typeof insertExtendedPaymentProcessorSchema>;
-export type WebRTCRoom = typeof webrtcRooms.$inferSelect;
-export type InsertWebRTCRoom = z.infer<typeof insertWebRTCRoomSchema>;
-export type GeoLocation = typeof geoLocations.$inferSelect;
-export type InsertGeoLocation = z.infer<typeof insertGeoLocationSchema>;
-export type GeoCollaboration = typeof geoCollaborations.$inferSelect;
-export type InsertGeoCollaboration = z.infer<typeof insertGeoCollaborationSchema>;
+export type CompanyBilling = typeof companyBilling.$inferSelect;
+export type InsertCompanyBilling = z.infer<typeof insertCompanyBillingSchema>;
+export type AudioCallSettings = typeof audioCallSettings.$inferSelect;
+export type InsertAudioCallSettings = z.infer<typeof insertAudioCallSettingsSchema>;
+export type SystemAnnouncement = typeof systemAnnouncements.$inferSelect;
+export type InsertSystemAnnouncement = z.infer<typeof insertSystemAnnouncementSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+export type ContentCategory = typeof contentCategories.$inferSelect;
+export type InsertContentCategory = z.infer<typeof insertContentCategorySchema>;
+export type Country = typeof countries.$inferSelect;
+export type InsertCountry = z.infer<typeof insertCountrySchema>;
+export type UserComment = typeof userComments.$inferSelect;
+export type InsertUserComment = z.infer<typeof insertUserCommentSchema>;

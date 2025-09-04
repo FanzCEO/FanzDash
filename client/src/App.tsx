@@ -29,6 +29,7 @@ import PaymentManagement from "@/pages/payment-management";
 import PaymentProcessorManagement from "@/pages/payment-processor-management";
 import TaxManagement from "@/pages/tax-management";
 import AdvertisingManagement from "@/pages/advertising-management";
+import AudioCallSettings from "@/pages/audio-call-settings";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -61,6 +62,7 @@ function Router() {
           <Route path="/payment-processors" component={PaymentProcessorManagement} />
           <Route path="/tax-management" component={TaxManagement} />
           <Route path="/advertising" component={AdvertisingManagement} />
+          <Route path="/audio-calls" component={AudioCallSettings} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

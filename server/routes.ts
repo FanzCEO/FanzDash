@@ -291,7 +291,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         adultContentBlocked: true,
         personalInfoProtection: true,
         toxicityFilter: true,
-        ...data.safetyFilters
+        ...(data.safetyFilters || {})
       };
       
       const companion = await storage.createAICompanion({
@@ -539,6 +539,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating settings:", error);
       res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
+  // Audio Call Settings
+  app.get("/api/audio-call-settings", async (req, res) => {
+    try {
+      const settings = await storage.getAudioCallSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching audio call settings:", error);
+      res.status(500).json({ message: "Failed to fetch audio call settings" });
+    }
+  });
+
+  app.post("/api/audio-call-settings", async (req, res) => {
+    try {
+      const { audioCallStatus, agoraAppId, audioCallMinPrice, audioCallMaxPrice, audioCallMaxDuration } = req.body;
+      
+      const settings = {
+        audioCallStatus: Boolean(audioCallStatus),
+        agoraAppId: agoraAppId || null,
+        audioCallMinPrice: Number(audioCallMinPrice) || 1,
+        audioCallMaxPrice: Number(audioCallMaxPrice) || 100,
+        audioCallMaxDuration: Number(audioCallMaxDuration) || 60
+      };
+      
+      await storage.updateAudioCallSettings(settings);
+      res.json({ success: true, settings });
+    } catch (error) {
+      console.error("Error updating audio call settings:", error);
+      res.status(500).json({ message: "Failed to update audio call settings" });
     }
   });
 
