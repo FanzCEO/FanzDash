@@ -78,6 +78,7 @@ import IntelligentModerationPage from "@/pages/intelligent-moderation";
 import VRRenderingEngine from "@/pages/VRRenderingEngine";
 import FutureTechManager from "@/pages/FutureTechManager";
 import AICFODashboard from "@/pages/AICFODashboard";
+import ComplianceCenter from "@/pages/ComplianceCenter";
 
 function Router() {
   return (
@@ -122,6 +123,7 @@ function Router() {
           <Route path="/future-tech" component={FutureTechManager} />
           <Route path="/ai-cfo" component={AICFODashboard} />
           <Route path="/starz-studio" component={StarzStudioAdmin} />
+          <Route path="/compliance-center" component={ComplianceCenter} />
           <Route path="/blog" component={BlogManagement} />
           <Route path="/blog/create" component={BlogCreate} />
           <Route path="/blog/edit/:id" component={BlogEdit} />

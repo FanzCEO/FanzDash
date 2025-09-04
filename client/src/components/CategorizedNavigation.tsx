@@ -118,6 +118,14 @@ const navigationCategories: NavigationCategory[] = [
     description: "Legal compliance & regulatory monitoring",
     items: [
       {
+        name: "Legal Compliance Center",
+        href: "/compliance-center",
+        icon: Shield,
+        description: "Military-grade compliance bot with violation prevention",
+        requiresCompliance: true,
+        complianceLevel: "COMPLIANCE_OFFICER"
+      },
+      {
         name: "Compliance Monitoring",
         href: "/compliance-monitoring",
         icon: CheckCircle2,

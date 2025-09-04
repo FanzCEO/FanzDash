@@ -39,6 +39,7 @@ import { aiContentModerationService } from "./aiContentModeration";
 import { creatorAutomationSystem } from "./creatorAutomation";
 import { ecosystemMaintenance } from "./ecosystemMaintenance";
 import { starzStudioService } from "./starzStudioService";
+import { complianceMonitor, ViolationType, RiskLevel } from "./complianceMonitor";
 
 // Store connected WebSocket clients
 let connectedModerators: Set<WebSocket> = new Set();
@@ -339,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get future tech roadmap
   app.get('/api/future-tech/roadmap', isAuthenticated, (req, res) => {
     try {
-      const status = futureTechManager.getFutureTechStatus();
+      const status = futureTechManager.getSystemStatus();
       res.json({ status });
     } catch (error) {
       res.status(500).json({ error: error instanceof Error ? error.message : 'Roadmap fetch failed' });
@@ -1114,13 +1115,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/starz-studio/finance/integration', async (req, res) => {
     try {
       const studioAnalytics = starzStudioService.getAnalytics();
-      const cfoData = await aiFinanceCopilot.generateFinancialReport();
+      const cfoData = await aiFinanceCopilot.generateCFOBrief('weekly');
       
       const integration = {
         contentProductionCosts: studioAnalytics.aiMetrics.costPerJob * studioAnalytics.aiMetrics.jobsProcessed,
         contentRevenue: studioAnalytics.overview.totalRevenue,
         platformROI: studioAnalytics.overview.averageROI,
-        budgetEfficiency: cfoData.recommendations?.filter(r => r.category === 'cost_optimization') || [],
+        budgetEfficiency: cfoData.recommendations?.filter((r: any) => r.category === 'cost_optimization') || [],
         financialHealth: {
           profitMargin: ((studioAnalytics.overview.totalRevenue - (studioAnalytics.aiMetrics.costPerJob * studioAnalytics.aiMetrics.jobsProcessed)) / Math.max(studioAnalytics.overview.totalRevenue, 1)) * 100,
           contentProductionEfficiency: studioAnalytics.performance.contentProductionRate,
@@ -1200,6 +1201,258 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('Streaming WebSocket error:', error);
       }
     });
+  });
+
+  // Compliance Bot API Route
+  app.post('/api/compliance-bot/chat', async (req, res) => {
+    try {
+      const { message, conversationHistory } = req.body;
+      const userId = req.user?.claims?.sub || 'anonymous';
+      
+      if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      // Check message for compliance violations
+      const complianceCheck = complianceMonitor.checkCompliance(
+        'chat_message',
+        userId,
+        message,
+        { source: 'compliance_bot' }
+      );
+
+      // If blocked, return immediately
+      if (complianceCheck.blocked) {
+        return res.json({
+          message: `🚫 **ACTION BLOCKED**\n\nYour message has been blocked due to potential legal violations:\n\n${complianceCheck.violations.map(v => `• ${v.replace('_', ' ').toUpperCase()}`).join('\n')}\n\nContact legal@fanzunlimited.com if you believe this is an error.`,
+          alertLevel: 'error',
+          complianceCheck: {
+            violations: complianceCheck.violations,
+            riskLevel: complianceCheck.riskLevel,
+            blocked: true
+          }
+        });
+      }
+
+      // Build conversation context with legal focus
+      const messages = [
+        {
+          role: "system",
+          content: `You are FanzLegal AI Guardian, the military-grade compliance monitor for Fanz™ Unlimited Network LLC. Your mission is to:
+
+**PRIMARY FUNCTIONS:**
+1. Monitor all staff actions for legal violations
+2. Block illegal activities immediately
+3. Provide expert legal guidance on federal laws and platform policies
+4. Enforce compliance protocols and escalate violations
+
+**LEGAL EXPERTISE AREAS:**
+- 18 U.S.C. § 2257 (Record-keeping requirements)
+- DMCA Copyright Law
+- GDPR & CCPA Data Protection
+- Money Laundering Prevention
+- Content Moderation Policies
+- Crisis Management Protocols
+
+**VIOLATION MATRIX:**
+- IMMEDIATE BLOCK: Child exploitation, human trafficking
+- CRITICAL: Money laundering, major copyright infringement
+- HIGH: GDPR violations, unauthorized data access
+- MEDIUM: Platform policy violations
+- LOW: Minor compliance issues
+
+**RESPONSE GUIDELINES:**
+- Always check for legal violations in user requests
+- Provide specific legal references (USC codes, regulations)
+- Escalate serious violations to legal@fanzunlimited.com
+- For emergencies, activate crisis management protocols
+- Be firm but helpful in preventing legal issues
+
+Remember: You have the authority to BLOCK actions and require approval for risky operations.`
+        }
+      ];
+
+      // Add recent conversation history
+      if (conversationHistory && Array.isArray(conversationHistory)) {
+        const recentHistory = conversationHistory.slice(-8);
+        recentHistory.forEach((msg: any) => {
+          if (msg.role === 'user' || msg.role === 'assistant') {
+            messages.push({
+              role: msg.role,
+              content: msg.content
+            });
+          }
+        });
+      }
+
+      // Add current user message
+      messages.push({
+        role: "user",
+        content: `${message}\n\n[COMPLIANCE CHECK: ${complianceCheck.violations.length > 0 ? complianceCheck.violations.join(', ') : 'No violations detected'} | Risk Level: ${complianceCheck.riskLevel}]`
+      });
+
+      // Get legal guidance first
+      let legalResponse = complianceMonitor.getLegalGuidance(message);
+      
+      // Try to get AI response with fallback
+      try {
+        const openai = await import("openai");
+        const client = new openai.default({
+          apiKey: process.env.OPENAI_API_KEY,
+        });
+
+        const response = await client.chat.completions.create({
+          model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+          messages: messages as any[],
+          max_tokens: 600,
+          temperature: 0.3, // Lower temperature for more precise legal guidance
+        });
+
+        legalResponse = response.choices[0].message.content || legalResponse;
+      } catch (error) {
+        console.error('OpenAI API error in compliance bot:', error);
+        // Use fallback legal guidance
+      }
+
+      // Determine alert level based on compliance check
+      let alertLevel = 'info';
+      if (complianceCheck.riskLevel === 'critical' || complianceCheck.riskLevel === 'immediate_block') {
+        alertLevel = 'error';
+      } else if (complianceCheck.riskLevel === 'high' || complianceCheck.riskLevel === 'medium') {
+        alertLevel = 'warning';
+      }
+
+      res.json({
+        message: legalResponse,
+        alertLevel,
+        complianceCheck: complianceCheck.violations.length > 0 ? {
+          violations: complianceCheck.violations,
+          riskLevel: complianceCheck.riskLevel,
+          blocked: false
+        } : undefined
+      });
+    } catch (error) {
+      console.error('Compliance bot API error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Compliance status endpoint
+  app.get('/api/compliance/status', isAuthenticated, (req, res) => {
+    try {
+      const status = complianceMonitor.getComplianceStatus();
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get compliance status' });
+    }
+  });
+
+  // Approval requests endpoint
+  app.get('/api/compliance/approvals', isAuthenticated, (req, res) => {
+    try {
+      const approvals = complianceMonitor.getPendingApprovals();
+      res.json({ approvals });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get approval requests' });
+    }
+  });
+
+  // Process approval endpoint
+  app.post('/api/compliance/approvals/:id', isAuthenticated, (req, res) => {
+    try {
+      const { id } = req.params;
+      const { approved, notes } = req.body;
+      const approvedBy = req.user?.claims?.sub || 'unknown';
+      
+      const result = complianceMonitor.processApproval(id, approved, approvedBy, notes);
+      res.json({ success: true, approved: result });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to process approval' });
+    }
+  });
+
+  // GPT Chatbot API Route
+  app.post('/api/gpt-chatbot/chat', async (req, res) => {
+    try {
+      const { message, conversationHistory } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      // Build conversation context from history
+      const messages = [
+        {
+          role: "system",
+          content: `You are FanzAI, the intelligent assistant for Fanz™ Unlimited Network LLC's enterprise platform. You help users with:
+          
+- Platform navigation and feature explanations
+- Content moderation policies and compliance (18 U.S.C. § 2257)
+- Financial insights and analytics interpretation
+- Technical support for creators and moderators
+- Crisis management and threat assessment procedures
+- AI analysis engine capabilities and results
+- Platform cluster management (BoyFanz, GirlFanz, DaddyFanz, etc.)
+- Self-healing system status and maintenance
+- Predictive analytics and forecasting
+
+Always provide accurate, helpful information while maintaining professional tone. For sensitive compliance matters, remind users to contact the legal team at fanzunlimited.com for official guidance.`
+        }
+      ];
+
+      // Add conversation history (last 5 exchanges)
+      if (conversationHistory && Array.isArray(conversationHistory)) {
+        const recentHistory = conversationHistory.slice(-10);
+        recentHistory.forEach((msg: any) => {
+          if (msg.role === 'user' || msg.role === 'assistant') {
+            messages.push({
+              role: msg.role,
+              content: msg.content
+            });
+          }
+        });
+      }
+
+      // Add current user message
+      messages.push({
+        role: "user",
+        content: message
+      });
+
+      // Use the existing OpenAI service with fallback
+      try {
+        const openai = await import("openai");
+        const client = new openai.default({
+          apiKey: process.env.OPENAI_API_KEY,
+        });
+
+        const response = await client.chat.completions.create({
+          model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+          messages: messages as any[],
+          max_tokens: 500,
+          temperature: 0.7,
+        });
+
+        const aiResponse = response.choices[0].message.content;
+        res.json({ message: aiResponse });
+      } catch (error) {
+        console.error('OpenAI API error:', error);
+        // Fallback response for when OpenAI is unavailable
+        const fallbackResponse = `I'm experiencing some technical difficulties right now. For immediate assistance with FanzDash, please:
+
+• Check the Neural Dashboard for system status
+• Review the Knowledge Base in the help section
+• Contact support at fanzunlimited.com
+• For urgent compliance matters, use the Crisis Management portal
+
+I'll be back online shortly. Thank you for your patience!`;
+        
+        res.json({ message: fallbackResponse });
+      }
+    } catch (error) {
+      console.error('Chatbot API error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   });
 
   // WebSocket for chat
