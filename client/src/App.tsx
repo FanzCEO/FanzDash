@@ -21,6 +21,9 @@ import VaultPage from "@/pages/vault";
 import AuditPage from "@/pages/audit";
 import ThreatsPage from "@/pages/threats";
 import DataPage from "@/pages/data";
+import LandingHub from "@/pages/landing-hub";
+import Verification2257 from "@/pages/verification-2257";
+import ChatSystem from "@/pages/chat-system";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -29,7 +32,8 @@ function Router() {
       <Navigation />
       <main className="flex-1">
         <Switch>
-          <Route path="/" component={Dashboard} />
+          <Route path="/" component={LandingHub} />
+          <Route path="/dashboard" component={Dashboard} />
           <Route path="/platforms" component={PlatformsPage} />
           <Route path="/ai-analysis" component={AIAnalysisPage} />
           <Route path="/content-review" component={ContentReviewPage} />
@@ -45,6 +49,8 @@ function Router() {
           <Route path="/audit" component={AuditPage} />
           <Route path="/threats" component={ThreatsPage} />
           <Route path="/data" component={DataPage} />
+          <Route path="/verification-2257" component={Verification2257} />
+          <Route path="/chat-system" component={ChatSystem} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

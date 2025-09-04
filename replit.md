@@ -1,6 +1,8 @@
 # Overview
 
-FanzMod is a comprehensive multi-platform content moderation system that connects to all Fanz platforms through one unified control panel. The system features advanced AI-powered analysis using ChatGPT-4o/GPT-5, manual approval workflows, enterprise-grade compliance, risk management, crisis management, advanced analytics, predictive modeling, automated appeals, and a premium cyberpunk UI that processes content at social media speed while maintaining robust audit trails.
+FanzDash is a comprehensive enterprise-grade multi-platform management system designed to handle 20+ million users across all Fanz platforms through one unified control panel. The system features advanced AI-powered analysis using ChatGPT-4o/GPT-5, manual approval workflows, enterprise-grade compliance, risk management, crisis management, advanced analytics, predictive modeling, automated appeals, integrated communication systems, 2257 form verification, and a premium cyberpunk UI that processes content at social media speed while maintaining robust audit trails.
+
+The platform serves as the main brain for people data, media management, and platform coordination - connecting seamlessly with FanzUnlimited.com email systems and handling creator verification workflows with military-grade security and compliance.
 
 The platform implements a hybrid multi-signal moderation stack providing real-time monitoring and moderation of images, videos, text content, and live streams using a combination of machine learning models and human review workflows. Enhanced with comprehensive risk assessment, crisis response capabilities, predictive analytics, cross-platform risk correlation, automated threat detection, and user management systems for enterprise-grade operations.
 

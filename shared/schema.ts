@@ -5,14 +5,28 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  fanzId: varchar("fanz_id").notNull().unique(), // Unique FanzID for each user
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  role: varchar("role").notNull().default("moderator"), // 'moderator', 'admin', 'executive', 'super_admin'
+  email: varchar("email").notNull().unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  role: varchar("role").notNull().default("moderator"), // 'creator', 'moderator', 'admin', 'executive', 'super_admin'
   clearanceLevel: integer("clearance_level").notNull().default(1), // 1-5, higher = more access
   vaultAccess: boolean("vault_access").default(false),
+  modulePermissions: jsonb("module_permissions").default('{}'), // Per-module access control
   lastLoginAt: timestamp("last_login_at"),
   isActive: boolean("is_active").default(true),
+  profileImageUrl: varchar("profile_image_url"),
+  phoneNumber: varchar("phone_number"),
+  address: text("address"),
+  city: varchar("city"),
+  country: varchar("country"),
+  postalCode: varchar("postal_code"),
+  verificationStatus: varchar("verification_status").default("pending"), // 'verified', 'declined', 'pending'
+  createdBy: varchar("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const contentItems = pgTable("content_items", {
@@ -187,10 +201,192 @@ export const aiAnalysisResults = pgTable("ai_analysis_results", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Insert schemas
-export const insertUserSchema = createInsertSchema(users).pick({
+// Table definitions first
+
+// 2257 Form Verification System
+export const form2257Verifications = pgTable("form_2257_verifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  stageName: varchar("stage_name").notNull(),
+  legalName: varchar("legal_name").notNull(),
+  address: text("address").notNull(),
+  city: varchar("city").notNull(),
+  country: varchar("country").notNull(),
+  postalCode: varchar("postal_code").notNull(),
+  idFrontImageUrl: text("id_front_image_url").notNull(),
+  idBackImageUrl: text("id_back_image_url").notNull(),
+  holdingIdImageUrl: text("holding_id_image_url").notNull(),
+  w9FormUrl: text("w9_form_url"),
+  dateOfBirth: timestamp("date_of_birth").notNull(),
+  status: varchar("status").notNull().default("pending"), // 'verified', 'declined', 'pending'
+  actionTakenBy: varchar("action_taken_by").references(() => users.id),
+  actionReason: text("action_reason"),
+  actionType: varchar("action_type"), // 'approved', 'declined', 'sent_back_for_editing', 'sent_to_management'
+  verificationNotes: text("verification_notes"),
+  submittedAt: timestamp("submitted_at").defaultNow(),
+  processedAt: timestamp("processed_at"),
+  expiresAt: timestamp("expires_at"),
+});
+
+// Integrated Chat System
+export const chatRooms = pgTable("chat_rooms", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  type: varchar("type").notNull(), // 'direct', 'group', 'broadcast', 'emergency'
+  participants: jsonb("participants").notNull(), // Array of user IDs
+  isActive: boolean("is_active").default(true),
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const chatMessages = pgTable("chat_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  roomId: varchar("room_id").references(() => chatRooms.id).notNull(),
+  senderId: varchar("sender_id").references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  messageType: varchar("message_type").default("text"), // 'text', 'image', 'file', 'system'
+  attachmentUrl: text("attachment_url"),
+  isEdited: boolean("is_edited").default(false),
+  editedAt: timestamp("edited_at"),
+  isDeleted: boolean("is_deleted").default(false),
+  readBy: jsonb("read_by").default('[]'), // Array of user IDs who read the message
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Email Integration System
+export const emailAccounts = pgTable("email_accounts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  emailAddress: varchar("email_address").notNull().unique(),
+  displayName: varchar("display_name").notNull(),
+  isSystemEmail: boolean("is_system_email").default(false),
+  isPrimary: boolean("is_primary").default(false),
+  imapConfig: jsonb("imap_config"),
+  smtpConfig: jsonb("smtp_config"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const emailMessages = pgTable("email_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  accountId: varchar("account_id").references(() => emailAccounts.id).notNull(),
+  messageId: varchar("message_id").notNull(), // External email message ID
+  threadId: varchar("thread_id"),
+  fromAddress: varchar("from_address").notNull(),
+  toAddresses: jsonb("to_addresses").notNull(),
+  ccAddresses: jsonb("cc_addresses").default('[]'),
+  bccAddresses: jsonb("bcc_addresses").default('[]'),
+  subject: text("subject"),
+  content: text("content"),
+  htmlContent: text("html_content"),
+  attachments: jsonb("attachments").default('[]'),
+  isRead: boolean("is_read").default(false),
+  isStarred: boolean("is_starred").default(false),
+  labels: jsonb("labels").default('[]'),
+  receivedAt: timestamp("received_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// People Data Main Brain
+export const userAnalytics = pgTable("user_analytics", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  platformId: varchar("platform_id").references(() => platforms.id),
+  activityScore: decimal("activity_score", { precision: 5, scale: 2 }),
+  engagementRate: decimal("engagement_rate", { precision: 5, scale: 2 }),
+  riskScore: decimal("risk_score", { precision: 5, scale: 2 }),
+  behaviorPattern: jsonb("behavior_pattern"),
+  lastActivity: timestamp("last_activity"),
+  contentCount: integer("content_count").default(0),
+  violationCount: integer("violation_count").default(0),
+  warningCount: integer("warning_count").default(0),
+  analyticsData: jsonb("analytics_data"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Media Main Brain
+export const mediaAssets = pgTable("media_assets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  platformId: varchar("platform_id").references(() => platforms.id),
+  fileName: varchar("file_name").notNull(),
+  fileType: varchar("file_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  mimeType: varchar("mime_type").notNull(),
+  storageUrl: text("storage_url").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  aiAnalysisResult: jsonb("ai_analysis_result"),
+  moderationStatus: varchar("moderation_status").default("pending"),
+  tags: jsonb("tags").default('[]'),
+  metadata: jsonb("metadata"),
+  isDeleted: boolean("is_deleted").default(false),
+  uploadedAt: timestamp("uploaded_at").defaultNow(),
+  processedAt: timestamp("processed_at"),
+});
+
+// System Notifications
+export const systemNotifications = pgTable("system_notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  recipientId: varchar("recipient_id").references(() => users.id).notNull(),
+  type: varchar("type").notNull(), // 'alert', 'warning', 'info', 'success', 'emergency'
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  priority: varchar("priority").default("normal"), // 'low', 'normal', 'high', 'critical'
+  actionUrl: varchar("action_url"),
+  isRead: boolean("is_read").default(false),
+  readAt: timestamp("read_at"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Platform Integration Stats
+export const platformStats = pgTable("platform_stats", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  platformId: varchar("platform_id").references(() => platforms.id).notNull(),
+  date: timestamp("date").notNull(),
+  totalUsers: integer("total_users").default(0),
+  activeUsers: integer("active_users").default(0),
+  newSignups: integer("new_signups").default(0),
+  contentUploads: integer("content_uploads").default(0),
+  moderationActions: integer("moderation_actions").default(0),
+  revenue: decimal("revenue", { precision: 10, scale: 2 }).default('0'),
+  metrics: jsonb("metrics"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type Form2257Verification = typeof form2257Verifications.$inferSelect;
+export type ChatRoom = typeof chatRooms.$inferSelect;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type EmailAccount = typeof emailAccounts.$inferSelect;
+export type EmailMessage = typeof emailMessages.$inferSelect;
+export type UserAnalytics = typeof userAnalytics.$inferSelect;
+export type MediaAsset = typeof mediaAssets.$inferSelect;
+export type SystemNotification = typeof systemNotifications.$inferSelect;
+export type PlatformStats = typeof platformStats.$inferSelect;
+
+// Additional insert types
+export type InsertForm2257Verification = z.infer<typeof insertForm2257VerificationSchema>;
+export type InsertChatRoom = z.infer<typeof insertChatRoomSchema>;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type InsertEmailAccount = z.infer<typeof insertEmailAccountSchema>;
+// Insert schemas (defined after all tables)
+export const insertUserSchema = createInsertSchema(users).extend({
+  fanzId: z.string().optional(),
+  email: z.string().email(),
+}).pick({
   username: true,
   password: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  fanzId: true,
+  role: true,
 });
 
 export const insertContentItemSchema = createInsertSchema(contentItems).omit({
@@ -264,7 +460,57 @@ export const insertAIAnalysisResultSchema = createInsertSchema(aiAnalysisResults
   createdAt: true,
 });
 
-// Types
+export const insertForm2257VerificationSchema = createInsertSchema(form2257Verifications).omit({
+  id: true,
+  submittedAt: true,
+  processedAt: true,
+});
+
+export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertEmailAccountSchema = createInsertSchema(emailAccounts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertEmailMessageSchema = createInsertSchema(emailMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserAnalyticsSchema = createInsertSchema(userAnalytics).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertMediaAssetSchema = createInsertSchema(mediaAssets).omit({
+  id: true,
+  uploadedAt: true,
+  processedAt: true,
+});
+
+export const insertSystemNotificationSchema = createInsertSchema(systemNotifications).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPlatformStatsSchema = createInsertSchema(platformStats).omit({
+  id: true,
+  createdAt: true,
+});
+
+// All type definitions
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type ContentItem = typeof contentItems.$inferSelect;
@@ -287,11 +533,27 @@ export type ContentFilter = typeof contentFilters.$inferSelect;
 export type InsertContentFilter = z.infer<typeof insertContentFilterSchema>;
 export type AuditTrail = typeof auditTrail.$inferSelect;
 export type InsertAuditTrail = z.infer<typeof insertAuditTrailSchema>;
-
-// Multi-platform types
 export type Platform = typeof platforms.$inferSelect;
 export type InsertPlatform = z.infer<typeof insertPlatformSchema>;
 export type PlatformConnection = typeof platformConnections.$inferSelect;
 export type InsertPlatformConnection = z.infer<typeof insertPlatformConnectionSchema>;
 export type AIAnalysisResult = typeof aiAnalysisResults.$inferSelect;
 export type InsertAIAnalysisResult = z.infer<typeof insertAIAnalysisResultSchema>;
+export type Form2257Verification = typeof form2257Verifications.$inferSelect;
+export type InsertForm2257Verification = z.infer<typeof insertForm2257VerificationSchema>;
+export type ChatRoom = typeof chatRooms.$inferSelect;
+export type InsertChatRoom = z.infer<typeof insertChatRoomSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type EmailAccount = typeof emailAccounts.$inferSelect;
+export type InsertEmailAccount = z.infer<typeof insertEmailAccountSchema>;
+export type EmailMessage = typeof emailMessages.$inferSelect;
+export type InsertEmailMessage = z.infer<typeof insertEmailMessageSchema>;
+export type UserAnalytics = typeof userAnalytics.$inferSelect;
+export type InsertUserAnalytics = z.infer<typeof insertUserAnalyticsSchema>;
+export type MediaAsset = typeof mediaAssets.$inferSelect;
+export type InsertMediaAsset = z.infer<typeof insertMediaAssetSchema>;
+export type SystemNotification = typeof systemNotifications.$inferSelect;
+export type InsertSystemNotification = z.infer<typeof insertSystemNotificationSchema>;
+export type PlatformStats = typeof platformStats.$inferSelect;
+export type InsertPlatformStats = z.infer<typeof insertPlatformStatsSchema>;
