@@ -3,13 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
-import { 
-  List, 
-  Filter, 
+import {
+  List,
+  Filter,
   ArrowLeft,
   Users,
   Star,
@@ -17,7 +29,7 @@ import {
   UserPlus,
   Tag,
   Radio,
-  Search
+  Search,
 } from "lucide-react";
 
 interface Category {
@@ -42,9 +54,9 @@ export function CategoryFilter({
   currentCategory,
   showGenderFilter = false,
   showLiveFilter = false,
-  genders = ['male', 'female', 'couple', 'trans'],
+  genders = ["male", "female", "couple", "trans"],
   onSearch,
-  className = ""
+  className = "",
 }: CategoryFilterProps) {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,7 +65,8 @@ export function CategoryFilter({
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
 
-  const isCreatorsPage = location.includes('/creators') || location.includes('/category');
+  const isCreatorsPage =
+    location.includes("/creators") || location.includes("/category");
   const isSearching = searchQuery.length > 2;
 
   const filterItems = [
@@ -61,32 +74,45 @@ export function CategoryFilter({
       name: "Popular",
       href: currentCategory ? `/category/${currentCategory}` : "/creators",
       icon: "/public/img/popular.png",
-      active: !location.includes('/featured') && !location.includes('/more-active') && !location.includes('/new') && !location.includes('/free') && !location.includes('/live')
+      active:
+        !location.includes("/featured") &&
+        !location.includes("/more-active") &&
+        !location.includes("/new") &&
+        !location.includes("/free") &&
+        !location.includes("/live"),
     },
     {
-      name: "Featured Creators", 
-      href: currentCategory ? `/category/${currentCategory}/featured` : "/creators/featured",
-      icon: "/public/img/featured.png", 
-      active: location.includes('/featured')
+      name: "Featured Creators",
+      href: currentCategory
+        ? `/category/${currentCategory}/featured`
+        : "/creators/featured",
+      icon: "/public/img/featured.png",
+      active: location.includes("/featured"),
     },
     {
       name: "More Active",
-      href: currentCategory ? `/category/${currentCategory}/more-active` : "/creators/more-active",
+      href: currentCategory
+        ? `/category/${currentCategory}/more-active`
+        : "/creators/more-active",
       icon: "/public/img/more-active.png",
-      active: location.includes('/more-active')
+      active: location.includes("/more-active"),
     },
     {
       name: "New Creators",
-      href: currentCategory ? `/category/${currentCategory}/new` : "/creators/new", 
+      href: currentCategory
+        ? `/category/${currentCategory}/new`
+        : "/creators/new",
       icon: "/public/img/creators.png",
-      active: location.includes('/new')
+      active: location.includes("/new"),
     },
     {
       name: "Free Subscription",
-      href: currentCategory ? `/category/${currentCategory}/free` : "/creators/free",
-      icon: "/public/img/unlock.png", 
-      active: location.includes('/free')
-    }
+      href: currentCategory
+        ? `/category/${currentCategory}/free`
+        : "/creators/free",
+      icon: "/public/img/unlock.png",
+      active: location.includes("/free"),
+    },
   ];
 
   if (showLiveFilter) {
@@ -94,7 +120,7 @@ export function CategoryFilter({
       name: "Live",
       href: "/explore/creators/live",
       icon: "/public/img/live.png",
-      active: location.includes('/live')
+      active: location.includes("/live"),
     });
   }
 
@@ -109,14 +135,14 @@ export function CategoryFilter({
     e.preventDefault();
     // Build query string
     const params = new URLSearchParams();
-    if (selectedGender !== 'all') params.set('gender', selectedGender);
-    if (minAge) params.set('min_age', minAge);
-    if (maxAge) params.set('max_age', maxAge);
-    
+    if (selectedGender !== "all") params.set("gender", selectedGender);
+    if (minAge) params.set("min_age", minAge);
+    if (maxAge) params.set("max_age", maxAge);
+
     const queryString = params.toString();
-    const baseUrl = location.split('?')[0];
+    const baseUrl = location.split("?")[0];
     const newUrl = queryString ? `${baseUrl}?${queryString}` : baseUrl;
-    
+
     window.location.href = newUrl;
     setGenderFilterOpen(false);
   };
@@ -139,7 +165,9 @@ export function CategoryFilter({
           {/* Desktop Header */}
           <div className="hidden lg:flex items-center mb-4">
             <List className="h-5 w-5 mr-2 text-muted-foreground" />
-            <span className="font-semibold text-muted-foreground">Categories</span>
+            <span className="font-semibold text-muted-foreground">
+              Categories
+            </span>
           </div>
 
           {/* Back to All Button */}
@@ -161,11 +189,13 @@ export function CategoryFilter({
                 <Button
                   variant="ghost"
                   className={`w-full justify-start p-3 h-auto ${
-                    location.includes(`/category/${category.slug}`) ? 'bg-primary/10 text-primary' : ''
+                    location.includes(`/category/${category.slug}`)
+                      ? "bg-primary/10 text-primary"
+                      : ""
                   }`}
                 >
-                  <img 
-                    src={category.image} 
+                  <img
+                    src={category.image}
                     alt={category.name}
                     className="w-6 h-6 mr-3 rounded"
                   />
@@ -194,7 +224,9 @@ export function CategoryFilter({
             {/* Desktop Header */}
             <div className="hidden lg:flex items-center mb-4">
               <Filter className="h-5 w-5 mr-2 text-muted-foreground" />
-              <span className="font-semibold text-muted-foreground">Filter By</span>
+              <span className="font-semibold text-muted-foreground">
+                Filter By
+              </span>
             </div>
 
             {/* Filter Buttons */}
@@ -204,11 +236,11 @@ export function CategoryFilter({
                   <Button
                     variant="ghost"
                     className={`w-full justify-start p-3 h-auto ${
-                      item.active ? 'bg-primary/10 text-primary' : ''
+                      item.active ? "bg-primary/10 text-primary" : ""
                     }`}
                   >
-                    <img 
-                      src={item.icon} 
+                    <img
+                      src={item.icon}
                       alt={item.name}
                       className="w-6 h-6 mr-3"
                     />
@@ -219,30 +251,36 @@ export function CategoryFilter({
 
               {/* Gender/Age Filter */}
               {showGenderFilter && (
-                <Dialog open={genderFilterOpen} onOpenChange={setGenderFilterOpen}>
+                <Dialog
+                  open={genderFilterOpen}
+                  onOpenChange={setGenderFilterOpen}
+                >
                   <DialogTrigger asChild>
                     <Button
                       variant="ghost"
                       className="w-full justify-start p-3 h-auto"
                     >
-                      <img 
-                        src="/public/img/genders.png" 
+                      <img
+                        src="/public/img/genders.png"
                         alt="Gender & Age"
                         className="w-6 h-6 mr-3"
                       />
                       Gender & Age
                     </Button>
                   </DialogTrigger>
-                  
+
                   <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                       <DialogTitle>Filter by Gender & Age</DialogTitle>
                     </DialogHeader>
-                    
+
                     <form onSubmit={handleGenderFilter} className="space-y-4">
                       <div>
                         <Label htmlFor="gender">Gender</Label>
-                        <Select value={selectedGender} onValueChange={setSelectedGender}>
+                        <Select
+                          value={selectedGender}
+                          onValueChange={setSelectedGender}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select gender" />
                           </SelectTrigger>
@@ -250,7 +288,8 @@ export function CategoryFilter({
                             <SelectItem value="all">All Genders</SelectItem>
                             {genders.map((gender) => (
                               <SelectItem key={gender} value={gender}>
-                                {gender.charAt(0).toUpperCase() + gender.slice(1)}
+                                {gender.charAt(0).toUpperCase() +
+                                  gender.slice(1)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -306,11 +345,11 @@ export function CategoryFilter({
                 className="pl-10"
               />
             </div>
-            
+
             {searchQuery.length > 0 && (
-              <Button 
-                type="submit" 
-                size="sm" 
+              <Button
+                type="submit"
+                size="sm"
                 className="w-full mt-2"
                 disabled={searchQuery.length <= 2}
               >

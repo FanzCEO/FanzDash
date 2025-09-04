@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
-  CardFooter 
+  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -30,17 +30,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { z } from "zod";
 import {
   Clock,
@@ -76,7 +78,10 @@ const cronJobFormSchema = z.object({
   schedule: z.string().min(1, "Schedule is required"),
   category: z.string().min(1, "Category is required"),
   priority: z.string().default("normal"),
-  timeout: z.number().min(10, "Timeout must be at least 10 seconds").default(300),
+  timeout: z
+    .number()
+    .min(10, "Timeout must be at least 10 seconds")
+    .default(300),
   maxRetries: z.number().min(0, "Max retries must be 0 or greater").default(3),
   isActive: z.boolean().default(true),
   createdBy: z.string().default("admin"),
@@ -163,14 +168,17 @@ export default function CronManagement() {
   });
 
   // Fetch logs for selected job
-  const { data: cronLogs = [], isLoading: logsLoading } = useQuery<CronJobLog[]>({
+  const { data: cronLogs = [], isLoading: logsLoading } = useQuery<
+    CronJobLog[]
+  >({
     queryKey: ["/api/cron-job-logs"],
     enabled: activeTab === "logs",
   });
 
   // Create cron job mutation
   const createJobMutation = useMutation({
-    mutationFn: (data: CronJobFormData) => apiRequest("/api/cron-jobs", "POST", data),
+    mutationFn: (data: CronJobFormData) =>
+      apiRequest("/api/cron-jobs", "POST", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cron-jobs"] });
       setIsCreateDialogOpen(false);
@@ -190,8 +198,13 @@ export default function CronManagement() {
 
   // Update cron job mutation
   const updateJobMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CronJobFormData> }) =>
-      apiRequest(`/api/cron-jobs/${id}`, "PUT", data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<CronJobFormData>;
+    }) => apiRequest(`/api/cron-jobs/${id}`, "PUT", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cron-jobs"] });
       setIsEditDialogOpen(false);
@@ -290,9 +303,11 @@ export default function CronManagement() {
 
   const getJobStats = () => {
     const totalJobs = cronJobs.length;
-    const activeJobs = cronJobs.filter(job => job.isActive).length;
-    const runningJobs = cronJobs.filter(job => job.isRunning).length;
-    const failedJobs = cronJobs.filter(job => job.lastResult === 'failed').length;
+    const activeJobs = cronJobs.filter((job) => job.isActive).length;
+    const runningJobs = cronJobs.filter((job) => job.isRunning).length;
+    const failedJobs = cronJobs.filter(
+      (job) => job.lastResult === "failed",
+    ).length;
 
     return { totalJobs, activeJobs, runningJobs, failedJobs };
   };
@@ -314,14 +329,19 @@ export default function CronManagement() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-4">
-          <Link href="/" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+          <Link
+            href="/"
+            className="text-cyan-400 hover:text-cyan-300 transition-colors"
+          >
             ← Back to Dashboard
           </Link>
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
           Cron Job Management
         </h1>
-        <p className="text-slate-400 mt-2">Enterprise-grade task scheduling and automation system</p>
+        <p className="text-slate-400 mt-2">
+          Enterprise-grade task scheduling and automation system
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -332,7 +352,9 @@ export default function CronManagement() {
               <Clock className="h-8 w-8 text-cyan-400" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-slate-400">Total Jobs</p>
-                <p className="text-2xl font-bold text-white">{stats.totalJobs}</p>
+                <p className="text-2xl font-bold text-white">
+                  {stats.totalJobs}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -343,8 +365,12 @@ export default function CronManagement() {
             <div className="flex items-center">
               <CheckCircle className="h-8 w-8 text-green-400" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-slate-400">Active Jobs</p>
-                <p className="text-2xl font-bold text-white">{stats.activeJobs}</p>
+                <p className="text-sm font-medium text-slate-400">
+                  Active Jobs
+                </p>
+                <p className="text-2xl font-bold text-white">
+                  {stats.activeJobs}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -355,8 +381,12 @@ export default function CronManagement() {
             <div className="flex items-center">
               <Activity className="h-8 w-8 text-blue-400" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-slate-400">Running Now</p>
-                <p className="text-2xl font-bold text-white">{stats.runningJobs}</p>
+                <p className="text-sm font-medium text-slate-400">
+                  Running Now
+                </p>
+                <p className="text-2xl font-bold text-white">
+                  {stats.runningJobs}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -367,8 +397,12 @@ export default function CronManagement() {
             <div className="flex items-center">
               <XCircle className="h-8 w-8 text-red-400" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-slate-400">Failed Jobs</p>
-                <p className="text-2xl font-bold text-white">{stats.failedJobs}</p>
+                <p className="text-sm font-medium text-slate-400">
+                  Failed Jobs
+                </p>
+                <p className="text-2xl font-bold text-white">
+                  {stats.failedJobs}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -376,18 +410,31 @@ export default function CronManagement() {
       </div>
 
       {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <div className="flex items-center justify-between">
           <TabsList className="bg-slate-900/50 border-slate-800">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-cyan-500/20">
+            <TabsTrigger
+              value="overview"
+              className="data-[state=active]:bg-cyan-500/20"
+            >
               Overview
             </TabsTrigger>
-            <TabsTrigger value="logs" className="data-[state=active]:bg-cyan-500/20">
+            <TabsTrigger
+              value="logs"
+              className="data-[state=active]:bg-cyan-500/20"
+            >
               Execution Logs
             </TabsTrigger>
           </TabsList>
 
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600">
                 <Plus className="h-4 w-4 mr-2" />
@@ -396,13 +443,19 @@ export default function CronManagement() {
             </DialogTrigger>
             <DialogContent className="bg-slate-900 border-slate-800 max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-white">Create New Cron Job</DialogTitle>
+                <DialogTitle className="text-white">
+                  Create New Cron Job
+                </DialogTitle>
                 <DialogDescription className="text-slate-400">
-                  Set up a new automated task with custom scheduling and execution parameters.
+                  Set up a new automated task with custom scheduling and
+                  execution parameters.
                 </DialogDescription>
               </DialogHeader>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onCreateSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(onCreateSubmit)}
+                  className="space-y-4"
+                >
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -411,8 +464,8 @@ export default function CronManagement() {
                         <FormItem>
                           <FormLabel className="text-white">Job Name</FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
+                            <Input
+                              {...field}
                               className="bg-slate-800 border-slate-700 text-white"
                               placeholder="Daily cleanup job"
                               data-testid="input-job-name"
@@ -428,15 +481,22 @@ export default function CronManagement() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Category</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent className="bg-slate-800 border-slate-700">
-                              <SelectItem value="maintenance">Maintenance</SelectItem>
-                              <SelectItem value="analytics">Analytics</SelectItem>
+                              <SelectItem value="maintenance">
+                                Maintenance
+                              </SelectItem>
+                              <SelectItem value="analytics">
+                                Analytics
+                              </SelectItem>
                               <SelectItem value="payments">Payments</SelectItem>
                               <SelectItem value="content">Content</SelectItem>
                               <SelectItem value="backup">Backup</SelectItem>
@@ -456,10 +516,12 @@ export default function CronManagement() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Description</FormLabel>
+                        <FormLabel className="text-white">
+                          Description
+                        </FormLabel>
                         <FormControl>
-                          <Textarea 
-                            {...field} 
+                          <Textarea
+                            {...field}
                             className="bg-slate-800 border-slate-700 text-white"
                             placeholder="Brief description of what this job does"
                             data-testid="textarea-job-description"
@@ -477,8 +539,8 @@ export default function CronManagement() {
                       <FormItem>
                         <FormLabel className="text-white">Command</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
+                          <Input
+                            {...field}
                             className="bg-slate-800 border-slate-700 text-white font-mono"
                             placeholder="node scripts/cleanup.js"
                             data-testid="input-job-command"
@@ -495,10 +557,12 @@ export default function CronManagement() {
                       name="schedule"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Cron Schedule</FormLabel>
+                          <FormLabel className="text-white">
+                            Cron Schedule
+                          </FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
+                            <Input
+                              {...field}
                               className="bg-slate-800 border-slate-700 text-white font-mono"
                               placeholder="0 2 * * *"
                               data-testid="input-job-schedule"
@@ -514,7 +578,10 @@ export default function CronManagement() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Priority</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                                 <SelectValue placeholder="Select priority" />
@@ -539,13 +606,17 @@ export default function CronManagement() {
                       name="timeout"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Timeout (seconds)</FormLabel>
+                          <FormLabel className="text-white">
+                            Timeout (seconds)
+                          </FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
+                            <Input
+                              {...field}
                               type="number"
                               className="bg-slate-800 border-slate-700 text-white"
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              onChange={(e) =>
+                                field.onChange(parseInt(e.target.value))
+                              }
                               data-testid="input-job-timeout"
                             />
                           </FormControl>
@@ -558,13 +629,17 @@ export default function CronManagement() {
                       name="maxRetries"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Max Retries</FormLabel>
+                          <FormLabel className="text-white">
+                            Max Retries
+                          </FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
+                            <Input
+                              {...field}
                               type="number"
                               className="bg-slate-800 border-slate-700 text-white"
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              onChange={(e) =>
+                                field.onChange(parseInt(e.target.value))
+                              }
                               data-testid="input-job-retries"
                             />
                           </FormControl>
@@ -575,21 +650,23 @@ export default function CronManagement() {
                   </div>
 
                   <DialogFooter>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={() => setIsCreateDialogOpen(false)}
                       className="border-slate-700 text-white hover:bg-slate-800"
                     >
                       Cancel
                     </Button>
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={createJobMutation.isPending}
                       className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
                       data-testid="button-create-job"
                     >
-                      {createJobMutation.isPending ? "Creating..." : "Create Job"}
+                      {createJobMutation.isPending
+                        ? "Creating..."
+                        : "Create Job"}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -603,9 +680,13 @@ export default function CronManagement() {
             <Card className="bg-slate-900/50 border-slate-800">
               <CardContent className="p-12 text-center">
                 <Clock className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-white mb-2">No Cron Jobs Found</h3>
-                <p className="text-slate-400 mb-6">Get started by creating your first automated task.</p>
-                <Button 
+                <h3 className="text-xl font-medium text-white mb-2">
+                  No Cron Jobs Found
+                </h3>
+                <p className="text-slate-400 mb-6">
+                  Get started by creating your first automated task.
+                </p>
+                <Button
                   onClick={() => setIsCreateDialogOpen(true)}
                   className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
                 >
@@ -617,37 +698,55 @@ export default function CronManagement() {
           ) : (
             <div className="grid gap-6">
               {cronJobs.map((job) => (
-                <Card key={job.id} className="bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-colors">
+                <Card
+                  key={job.id}
+                  className="bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-colors"
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="p-2 rounded-lg bg-slate-800">
-                          {categoryIcons[job.category as keyof typeof categoryIcons] || <Settings className="h-4 w-4" />}
+                          {categoryIcons[
+                            job.category as keyof typeof categoryIcons
+                          ] || <Settings className="h-4 w-4" />}
                         </div>
                         <div>
-                          <CardTitle className="text-white text-lg">{job.name}</CardTitle>
+                          <CardTitle className="text-white text-lg">
+                            {job.name}
+                          </CardTitle>
                           <CardDescription className="text-slate-400">
                             {job.description || "No description provided"}
                           </CardDescription>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge 
-                          variant="outline" 
-                          className={priorityColors[job.priority as keyof typeof priorityColors]}
+                        <Badge
+                          variant="outline"
+                          className={
+                            priorityColors[
+                              job.priority as keyof typeof priorityColors
+                            ]
+                          }
                         >
                           {job.priority}
                         </Badge>
                         {job.lastResult && (
-                          <Badge 
-                            variant="outline" 
-                            className={statusColors[job.lastResult as keyof typeof statusColors]}
+                          <Badge
+                            variant="outline"
+                            className={
+                              statusColors[
+                                job.lastResult as keyof typeof statusColors
+                              ]
+                            }
                           >
                             {job.lastResult}
                           </Badge>
                         )}
                         {job.isRunning && (
-                          <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-200 animate-pulse">
+                          <Badge
+                            variant="outline"
+                            className="bg-blue-500/10 text-blue-400 border-blue-200 animate-pulse"
+                          >
                             Running
                           </Badge>
                         )}
@@ -658,31 +757,48 @@ export default function CronManagement() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                       <div>
                         <p className="text-sm text-slate-400 mb-1">Command</p>
-                        <p className="text-white font-mono text-sm bg-slate-800 p-2 rounded border">{job.command}</p>
+                        <p className="text-white font-mono text-sm bg-slate-800 p-2 rounded border">
+                          {job.command}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-slate-400 mb-1">Schedule</p>
-                        <p className="text-white font-mono text-sm">{job.schedule}</p>
+                        <p className="text-white font-mono text-sm">
+                          {job.schedule}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-slate-400 mb-1">Last Run</p>
                         <p className="text-white text-sm">
-                          {job.lastRunAt ? format(new Date(job.lastRunAt), "MMM dd, yyyy HH:mm") : "Never"}
+                          {job.lastRunAt
+                            ? format(
+                                new Date(job.lastRunAt),
+                                "MMM dd, yyyy HH:mm",
+                              )
+                            : "Never"}
                         </p>
                       </div>
                     </div>
 
                     {job.lastError && (
                       <div className="bg-red-500/10 border border-red-500/20 rounded p-3 mb-4">
-                        <p className="text-red-400 text-sm font-medium mb-1">Last Error:</p>
-                        <p className="text-red-300 text-sm font-mono">{job.lastError}</p>
+                        <p className="text-red-400 text-sm font-medium mb-1">
+                          Last Error:
+                        </p>
+                        <p className="text-red-300 text-sm font-mono">
+                          {job.lastError}
+                        </p>
                       </div>
                     )}
 
                     {job.lastOutput && (
                       <div className="bg-green-500/10 border border-green-500/20 rounded p-3 mb-4">
-                        <p className="text-green-400 text-sm font-medium mb-1">Last Output:</p>
-                        <p className="text-green-300 text-sm font-mono">{job.lastOutput}</p>
+                        <p className="text-green-400 text-sm font-medium mb-1">
+                          Last Output:
+                        </p>
+                        <p className="text-green-300 text-sm font-mono">
+                          {job.lastOutput}
+                        </p>
                       </div>
                     )}
                   </CardContent>
@@ -690,8 +806,11 @@ export default function CronManagement() {
                     <div className="flex items-center gap-2">
                       <Switch
                         checked={job.isActive}
-                        onCheckedChange={(checked) => 
-                          toggleJobMutation.mutate({ id: job.id, isActive: checked })
+                        onCheckedChange={(checked) =>
+                          toggleJobMutation.mutate({
+                            id: job.id,
+                            isActive: checked,
+                          })
                         }
                         disabled={toggleJobMutation.isPending}
                         data-testid={`switch-job-${job.id}`}
@@ -700,7 +819,7 @@ export default function CronManagement() {
                         {job.isActive ? "Active" : "Inactive"}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <Button
                         size="sm"
@@ -761,16 +880,23 @@ export default function CronManagement() {
             <Card className="bg-slate-900/50 border-slate-800">
               <CardContent className="p-12 text-center">
                 <FileText className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-white mb-2">No Execution Logs</h3>
-                <p className="text-slate-400">Execution logs will appear here after jobs start running.</p>
+                <h3 className="text-xl font-medium text-white mb-2">
+                  No Execution Logs
+                </h3>
+                <p className="text-slate-400">
+                  Execution logs will appear here after jobs start running.
+                </p>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-4">
               {cronLogs.map((log) => {
-                const job = cronJobs.find(j => j.id === log.jobId);
+                const job = cronJobs.find((j) => j.id === log.jobId);
                 return (
-                  <Card key={log.id} className="bg-slate-900/50 border-slate-800">
+                  <Card
+                    key={log.id}
+                    className="bg-slate-900/50 border-slate-800"
+                  >
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div>
@@ -778,18 +904,36 @@ export default function CronManagement() {
                             {job?.name || "Unknown Job"}
                           </CardTitle>
                           <CardDescription className="text-slate-400">
-                            Started: {format(new Date(log.startedAt), "MMM dd, yyyy HH:mm:ss")}
+                            Started:{" "}
+                            {format(
+                              new Date(log.startedAt),
+                              "MMM dd, yyyy HH:mm:ss",
+                            )}
                             {log.completedAt && (
-                              <> • Completed: {format(new Date(log.completedAt), "MMM dd, yyyy HH:mm:ss")}</>
+                              <>
+                                {" "}
+                                • Completed:{" "}
+                                {format(
+                                  new Date(log.completedAt),
+                                  "MMM dd, yyyy HH:mm:ss",
+                                )}
+                              </>
                             )}
                             {log.duration && (
-                              <> • Duration: {(log.duration / 1000).toFixed(2)}s</>
+                              <>
+                                {" "}
+                                • Duration: {(log.duration / 1000).toFixed(2)}s
+                              </>
                             )}
                           </CardDescription>
                         </div>
-                        <Badge 
-                          variant="outline" 
-                          className={statusColors[log.status as keyof typeof statusColors]}
+                        <Badge
+                          variant="outline"
+                          className={
+                            statusColors[
+                              log.status as keyof typeof statusColors
+                            ]
+                          }
                         >
                           {log.status}
                         </Badge>
@@ -798,21 +942,34 @@ export default function CronManagement() {
                     <CardContent>
                       {log.output && (
                         <div className="bg-slate-800 rounded p-4 mb-4">
-                          <p className="text-green-400 text-sm font-medium mb-2">Output:</p>
-                          <pre className="text-green-300 text-sm font-mono whitespace-pre-wrap">{log.output}</pre>
+                          <p className="text-green-400 text-sm font-medium mb-2">
+                            Output:
+                          </p>
+                          <pre className="text-green-300 text-sm font-mono whitespace-pre-wrap">
+                            {log.output}
+                          </pre>
                         </div>
                       )}
                       {log.errorOutput && (
                         <div className="bg-red-500/10 border border-red-500/20 rounded p-4">
-                          <p className="text-red-400 text-sm font-medium mb-2">Error Output:</p>
-                          <pre className="text-red-300 text-sm font-mono whitespace-pre-wrap">{log.errorOutput}</pre>
+                          <p className="text-red-400 text-sm font-medium mb-2">
+                            Error Output:
+                          </p>
+                          <pre className="text-red-300 text-sm font-mono whitespace-pre-wrap">
+                            {log.errorOutput}
+                          </pre>
                         </div>
                       )}
                       {log.memoryUsage && (
                         <div className="flex items-center gap-4 mt-4 text-sm text-slate-400">
-                          <span>Memory: {(log.memoryUsage / 1024 / 1024).toFixed(2)} MB</span>
+                          <span>
+                            Memory: {(log.memoryUsage / 1024 / 1024).toFixed(2)}{" "}
+                            MB
+                          </span>
                           {log.cpuUsage && <span>CPU: {log.cpuUsage}%</span>}
-                          {log.exitCode !== null && <span>Exit Code: {log.exitCode}</span>}
+                          {log.exitCode !== null && (
+                            <span>Exit Code: {log.exitCode}</span>
+                          )}
                         </div>
                       )}
                     </CardContent>
@@ -834,7 +991,10 @@ export default function CronManagement() {
             </DialogDescription>
           </DialogHeader>
           <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+            <form
+              onSubmit={editForm.handleSubmit(onEditSubmit)}
+              className="space-y-4"
+            >
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={editForm.control}
@@ -843,8 +1003,8 @@ export default function CronManagement() {
                     <FormItem>
                       <FormLabel className="text-white">Job Name</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field} 
+                        <Input
+                          {...field}
                           className="bg-slate-800 border-slate-700 text-white"
                           data-testid="input-edit-job-name"
                         />
@@ -859,14 +1019,19 @@ export default function CronManagement() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Category</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-slate-800 border-slate-700">
-                          <SelectItem value="maintenance">Maintenance</SelectItem>
+                          <SelectItem value="maintenance">
+                            Maintenance
+                          </SelectItem>
                           <SelectItem value="analytics">Analytics</SelectItem>
                           <SelectItem value="payments">Payments</SelectItem>
                           <SelectItem value="content">Content</SelectItem>
@@ -889,8 +1054,8 @@ export default function CronManagement() {
                   <FormItem>
                     <FormLabel className="text-white">Description</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        {...field} 
+                      <Textarea
+                        {...field}
                         className="bg-slate-800 border-slate-700 text-white"
                         data-testid="textarea-edit-job-description"
                       />
@@ -907,8 +1072,8 @@ export default function CronManagement() {
                   <FormItem>
                     <FormLabel className="text-white">Command</FormLabel>
                     <FormControl>
-                      <Input 
-                        {...field} 
+                      <Input
+                        {...field}
                         className="bg-slate-800 border-slate-700 text-white font-mono"
                         data-testid="input-edit-job-command"
                       />
@@ -924,10 +1089,12 @@ export default function CronManagement() {
                   name="schedule"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Cron Schedule</FormLabel>
+                      <FormLabel className="text-white">
+                        Cron Schedule
+                      </FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field} 
+                        <Input
+                          {...field}
                           className="bg-slate-800 border-slate-700 text-white font-mono"
                           data-testid="input-edit-job-schedule"
                         />
@@ -942,7 +1109,10 @@ export default function CronManagement() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Priority</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                             <SelectValue />
@@ -967,13 +1137,17 @@ export default function CronManagement() {
                   name="timeout"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Timeout (seconds)</FormLabel>
+                      <FormLabel className="text-white">
+                        Timeout (seconds)
+                      </FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field} 
+                        <Input
+                          {...field}
                           type="number"
                           className="bg-slate-800 border-slate-700 text-white"
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
                           data-testid="input-edit-job-timeout"
                         />
                       </FormControl>
@@ -988,11 +1162,13 @@ export default function CronManagement() {
                     <FormItem>
                       <FormLabel className="text-white">Max Retries</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field} 
+                        <Input
+                          {...field}
                           type="number"
                           className="bg-slate-800 border-slate-700 text-white"
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
                           data-testid="input-edit-job-retries"
                         />
                       </FormControl>
@@ -1003,16 +1179,16 @@ export default function CronManagement() {
               </div>
 
               <DialogFooter>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsEditDialogOpen(false)}
                   className="border-slate-700 text-white hover:bg-slate-800"
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={updateJobMutation.isPending}
                   className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
                   data-testid="button-update-job"
@@ -1037,39 +1213,53 @@ export default function CronManagement() {
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-96 overflow-y-auto space-y-4">
-            {selectedJob && cronLogs
-              .filter(log => log.jobId === selectedJob.id)
-              .slice(0, 10)
-              .map((log) => (
-                <div key={log.id} className="bg-slate-800 rounded p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium">
-                      {format(new Date(log.startedAt), "MMM dd, yyyy HH:mm:ss")}
-                    </span>
-                    <Badge 
-                      variant="outline" 
-                      className={statusColors[log.status as keyof typeof statusColors]}
-                    >
-                      {log.status}
-                    </Badge>
+            {selectedJob &&
+              cronLogs
+                .filter((log) => log.jobId === selectedJob.id)
+                .slice(0, 10)
+                .map((log) => (
+                  <div key={log.id} className="bg-slate-800 rounded p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-white font-medium">
+                        {format(
+                          new Date(log.startedAt),
+                          "MMM dd, yyyy HH:mm:ss",
+                        )}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={
+                          statusColors[log.status as keyof typeof statusColors]
+                        }
+                      >
+                        {log.status}
+                      </Badge>
+                    </div>
+                    {log.output && (
+                      <div className="bg-slate-900 rounded p-3 mb-2">
+                        <p className="text-green-400 text-sm font-medium mb-1">
+                          Output:
+                        </p>
+                        <pre className="text-green-300 text-xs font-mono whitespace-pre-wrap">
+                          {log.output}
+                        </pre>
+                      </div>
+                    )}
+                    {log.errorOutput && (
+                      <div className="bg-red-500/10 border border-red-500/20 rounded p-3">
+                        <p className="text-red-400 text-sm font-medium mb-1">
+                          Error:
+                        </p>
+                        <pre className="text-red-300 text-xs font-mono whitespace-pre-wrap">
+                          {log.errorOutput}
+                        </pre>
+                      </div>
+                    )}
                   </div>
-                  {log.output && (
-                    <div className="bg-slate-900 rounded p-3 mb-2">
-                      <p className="text-green-400 text-sm font-medium mb-1">Output:</p>
-                      <pre className="text-green-300 text-xs font-mono whitespace-pre-wrap">{log.output}</pre>
-                    </div>
-                  )}
-                  {log.errorOutput && (
-                    <div className="bg-red-500/10 border border-red-500/20 rounded p-3">
-                      <p className="text-red-400 text-sm font-medium mb-1">Error:</p>
-                      <pre className="text-red-300 text-xs font-mono whitespace-pre-wrap">{log.errorOutput}</pre>
-                    </div>
-                  )}
-                </div>
-              ))}
+                ))}
           </div>
           <DialogFooter>
-            <Button 
+            <Button
               onClick={() => setIsLogDialogOpen(false)}
               className="bg-slate-700 hover:bg-slate-600 text-white"
             >

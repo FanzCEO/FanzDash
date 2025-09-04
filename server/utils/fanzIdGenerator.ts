@@ -13,10 +13,10 @@ let idCounter = 100000; // Starting counter for unique IDs
 export async function generateFanzId(): Promise<string> {
   const year = new Date().getFullYear();
   const uniqueNumber = idCounter++;
-  
+
   // Format: FZ-YYYY-XXXXXX
-  const fanzId = `FZ-${year}-${uniqueNumber.toString().padStart(6, '0')}`;
-  
+  const fanzId = `FZ-${year}-${uniqueNumber.toString().padStart(6, "0")}`;
+
   return fanzId;
 }
 
@@ -37,10 +37,10 @@ export function validateFanzId(fanzId: string): boolean {
  */
 export function getFanzIdYear(fanzId: string): number {
   if (!validateFanzId(fanzId)) {
-    throw new Error('Invalid FanzID format');
+    throw new Error("Invalid FanzID format");
   }
-  
-  const parts = fanzId.split('-');
+
+  const parts = fanzId.split("-");
   return parseInt(parts[1], 10);
 }
 
@@ -51,9 +51,9 @@ export function getFanzIdYear(fanzId: string): number {
  */
 export function getFanzIdNumber(fanzId: string): number {
   if (!validateFanzId(fanzId)) {
-    throw new Error('Invalid FanzID format');
+    throw new Error("Invalid FanzID format");
   }
-  
-  const parts = fanzId.split('-');
+
+  const parts = fanzId.split("-");
   return parseInt(parts[2], 10);
 }

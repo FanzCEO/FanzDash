@@ -3,10 +3,10 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Video, 
-  VideoOff, 
-  Mic, 
+import {
+  Video,
+  VideoOff,
+  Mic,
   MicOff,
   Volume2,
   VolumeX,
@@ -16,13 +16,13 @@ import {
   CameraOff,
   Clock,
   DollarSign,
-  Monitor
+  Monitor,
 } from "lucide-react";
 
 interface VideoCallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  callType: 'incoming' | 'outgoing' | 'active';
+  callType: "incoming" | "outgoing" | "active";
   caller: {
     id: string;
     username: string;
@@ -66,17 +66,17 @@ export function VideoCallModal({
   isVolumeOff = false,
   localVideoStream,
   remoteVideoStream,
-  className = ""
+  className = "",
 }: VideoCallModalProps) {
   const [callDuration, setCallDuration] = useState(0);
   const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
-    if (callType === 'active') {
+
+    if (callType === "active") {
       interval = setInterval(() => {
-        setCallDuration(prev => prev + 1);
+        setCallDuration((prev) => prev + 1);
       }, 1000);
     }
 
@@ -88,7 +88,7 @@ export function VideoCallModal({
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleAccept = () => {
@@ -108,14 +108,14 @@ export function VideoCallModal({
 
   const getCallStatus = () => {
     switch (callType) {
-      case 'incoming':
+      case "incoming":
         return `${caller.username} is calling you`;
-      case 'outgoing':
-        return isConnecting ? 'Connecting...' : 'Please wait for answer';
-      case 'active':
+      case "outgoing":
+        return isConnecting ? "Connecting..." : "Please wait for answer";
+      case "active":
         return `Connected - ${formatDuration(callDuration)}`;
       default:
-        return '';
+        return "";
     }
   };
 
@@ -124,7 +124,7 @@ export function VideoCallModal({
       <DialogContent className="sm:max-w-lg bg-gradient-to-b from-slate-900 to-black text-white border-slate-700">
         <div className="space-y-4 p-4">
           {/* Video Areas */}
-          {callType === 'active' && (
+          {callType === "active" && (
             <div className="relative">
               {/* Remote Video (main) */}
               <div className="relative w-full aspect-video bg-slate-800 rounded-lg overflow-hidden">
@@ -198,7 +198,7 @@ export function VideoCallModal({
           )}
 
           {/* Non-active call UI */}
-          {callType !== 'active' && (
+          {callType !== "active" && (
             <div className="text-center space-y-6">
               {/* Profile Image */}
               <div className="relative inline-block">
@@ -208,11 +208,14 @@ export function VideoCallModal({
                     {caller.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 {/* Call indicator */}
-                {callType === 'incoming' && (
+                {callType === "incoming" && (
                   <div className="absolute -bottom-2 -right-2">
-                    <Badge variant="default" className="bg-blue-500 animate-pulse">
+                    <Badge
+                      variant="default"
+                      className="bg-blue-500 animate-pulse"
+                    >
                       <Video className="w-3 h-3 mr-1" />
                       VIDEO
                     </Badge>
@@ -223,31 +226,33 @@ export function VideoCallModal({
               {/* Caller Info */}
               <div className="space-y-2">
                 <h3 className="text-2xl font-semibold">
-                  {callType === 'incoming' ? 'Incoming Video Call' : caller.name}
+                  {callType === "incoming"
+                    ? "Incoming Video Call"
+                    : caller.name}
                 </h3>
-                <p className="text-slate-300">
-                  {getCallStatus()}
-                </p>
+                <p className="text-slate-300">{getCallStatus()}</p>
 
                 {/* Pricing info for incoming calls */}
-                {callData && callType === 'incoming' && (
+                {callData && callType === "incoming" && (
                   <div className="bg-white/10 p-3 rounded-lg inline-block">
                     <div className="flex items-center justify-center space-x-1 text-green-400">
                       <DollarSign className="h-4 w-4" />
                       <span className="font-semibold">
-                        {callData.currencySymbol}{callData.totalAmount?.toFixed(2)}
+                        {callData.currencySymbol}
+                        {callData.totalAmount?.toFixed(2)}
                       </span>
                     </div>
                     {callData.pricePerMinute && (
                       <p className="text-xs text-slate-400 mt-1">
-                        {callData.currencySymbol}{callData.pricePerMinute}/minute
+                        {callData.currencySymbol}
+                        {callData.pricePerMinute}/minute
                       </p>
                     )}
                   </div>
                 )}
 
                 {/* Warning notice */}
-                {callType === 'incoming' && (
+                {callType === "incoming" && (
                   <p className="text-xs text-slate-400">
                     Video calls are recorded for quality and safety
                   </p>
@@ -258,7 +263,7 @@ export function VideoCallModal({
 
           {/* Call Controls */}
           <div className="flex justify-center space-x-3">
-            {callType === 'incoming' && (
+            {callType === "incoming" && (
               <>
                 <Button
                   variant="destructive"
@@ -269,7 +274,7 @@ export function VideoCallModal({
                 >
                   <PhoneOff className="h-6 w-6" />
                 </Button>
-                
+
                 <Button
                   variant="default"
                   size="lg"
@@ -283,7 +288,7 @@ export function VideoCallModal({
               </>
             )}
 
-            {callType === 'outgoing' && (
+            {callType === "outgoing" && (
               <Button
                 variant="destructive"
                 size="lg"
@@ -295,7 +300,7 @@ export function VideoCallModal({
               </Button>
             )}
 
-            {callType === 'active' && (
+            {callType === "active" && (
               <>
                 {/* Mic Toggle */}
                 <Button
@@ -357,17 +362,22 @@ export function VideoCallModal({
           </div>
 
           {/* Active call info */}
-          {callType === 'active' && callData && (
+          {callType === "active" && callData && (
             <div className="text-center bg-black/30 p-3 rounded-lg">
               <div className="flex items-center justify-center space-x-4 text-sm">
                 <div className="flex items-center space-x-1">
                   <Clock className="h-4 w-4" />
-                  <span className="font-mono">{formatDuration(callDuration)}</span>
+                  <span className="font-mono">
+                    {formatDuration(callDuration)}
+                  </span>
                 </div>
                 {callData.pricePerMinute && (
                   <div className="flex items-center space-x-1">
                     <DollarSign className="h-4 w-4" />
-                    <span>{callData.currencySymbol}{callData.pricePerMinute}/min</span>
+                    <span>
+                      {callData.currencySymbol}
+                      {callData.pricePerMinute}/min
+                    </span>
                   </div>
                 )}
               </div>

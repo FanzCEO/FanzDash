@@ -3,11 +3,30 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -37,18 +56,18 @@ export default function AudioCallSettings() {
   const queryClient = useQueryClient();
 
   const { data: settings, isLoading } = useQuery<AudioCallSettingsData>({
-    queryKey: ['/api/audio-call-settings'],
+    queryKey: ["/api/audio-call-settings"],
   });
 
   const updateSettingsMutation = useMutation({
-    mutationFn: (data: AudioCallSettingsForm) => 
-      apiRequest('/api/audio-call-settings', 'POST', data),
+    mutationFn: (data: AudioCallSettingsForm) =>
+      apiRequest("/api/audio-call-settings", "POST", data),
     onSuccess: () => {
       toast({
         title: "Success",
         description: "Audio call settings updated successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/audio-call-settings'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/audio-call-settings"] });
     },
     onError: () => {
       toast({
@@ -109,7 +128,8 @@ export default function AudioCallSettings() {
           </h1>
         </div>
         <p className="text-gray-600">
-          Configure audio calling features with Agora WebRTC integration and pricing controls
+          Configure audio calling features with Agora WebRTC integration and
+          pricing controls
         </p>
       </div>
 
@@ -129,7 +149,9 @@ export default function AudioCallSettings() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
                 <span className="font-medium">Audio Calls</span>
-                <Badge variant={settings?.audioCallStatus ? "default" : "secondary"}>
+                <Badge
+                  variant={settings?.audioCallStatus ? "default" : "secondary"}
+                >
                   {settings?.audioCallStatus ? "Active" : "Disabled"}
                 </Badge>
               </div>
@@ -140,7 +162,8 @@ export default function AudioCallSettings() {
               <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
                 <span className="font-medium">Price Range</span>
                 <Badge variant="outline">
-                  ${settings?.audioCallMinPrice || 1} - ${settings?.audioCallMaxPrice || 100}
+                  ${settings?.audioCallMinPrice || 1} - $
+                  {settings?.audioCallMaxPrice || 100}
                 </Badge>
               </div>
             </div>
@@ -155,12 +178,16 @@ export default function AudioCallSettings() {
               Audio Call Configuration
             </CardTitle>
             <CardDescription>
-              Configure Agora WebRTC settings and pricing controls for audio calls
+              Configure Agora WebRTC settings and pricing controls for audio
+              calls
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 {/* Audio Call Status */}
                 <FormField
                   control={form.control}
@@ -270,7 +297,9 @@ export default function AudioCallSettings() {
                       </FormLabel>
                       <Select
                         value={field.value?.toString()}
-                        onValueChange={(value) => field.onChange(parseInt(value))}
+                        onValueChange={(value) =>
+                          field.onChange(parseInt(value))
+                        }
                       >
                         <FormControl>
                           <SelectTrigger data-testid="select-max-duration">
@@ -279,7 +308,10 @@ export default function AudioCallSettings() {
                         </FormControl>
                         <SelectContent>
                           {durationOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value.toString()}>
+                            <SelectItem
+                              key={option.value}
+                              value={option.value.toString()}
+                            >
                               {option.label}
                             </SelectItem>
                           ))}
@@ -296,7 +328,9 @@ export default function AudioCallSettings() {
                   className="w-full md:w-auto"
                   data-testid="button-save-settings"
                 >
-                  {updateSettingsMutation.isPending ? "Saving..." : "Save Settings"}
+                  {updateSettingsMutation.isPending
+                    ? "Saving..."
+                    : "Save Settings"}
                 </Button>
               </form>
             </Form>
@@ -306,13 +340,27 @@ export default function AudioCallSettings() {
         {/* Integration Info */}
         <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
           <CardHeader>
-            <CardTitle className="text-blue-800">Integration Information</CardTitle>
+            <CardTitle className="text-blue-800">
+              Integration Information
+            </CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-2">
-            <p><strong>Agora WebRTC:</strong> Provides high-quality, low-latency audio calling</p>
-            <p><strong>Per-Minute Billing:</strong> Charges creators and fans based on actual call duration</p>
-            <p><strong>Pricing Controls:</strong> Set platform-wide minimum and maximum pricing limits</p>
-            <p><strong>Duration Limits:</strong> Prevent excessively long calls with configurable time limits</p>
+            <p>
+              <strong>Agora WebRTC:</strong> Provides high-quality, low-latency
+              audio calling
+            </p>
+            <p>
+              <strong>Per-Minute Billing:</strong> Charges creators and fans
+              based on actual call duration
+            </p>
+            <p>
+              <strong>Pricing Controls:</strong> Set platform-wide minimum and
+              maximum pricing limits
+            </p>
+            <p>
+              <strong>Duration Limits:</strong> Prevent excessively long calls
+              with configurable time limits
+            </p>
           </CardContent>
         </Card>
       </div>

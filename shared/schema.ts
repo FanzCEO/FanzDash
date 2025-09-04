@@ -1,10 +1,22 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, decimal, jsonb, boolean, date } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  varchar,
+  timestamp,
+  integer,
+  decimal,
+  jsonb,
+  boolean,
+  date,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   fanzId: varchar("fanz_id").unique(), // Unique FanzID for each user
   username: text("username").unique(),
   password: text("password"), // Made optional for OAuth-only users
@@ -14,7 +26,7 @@ export const users = pgTable("users", {
   role: varchar("role").notNull().default("moderator"), // 'creator', 'moderator', 'admin', 'executive', 'super_admin'
   clearanceLevel: integer("clearance_level").notNull().default(1), // 1-5, higher = more access
   vaultAccess: boolean("vault_access").default(false),
-  modulePermissions: jsonb("module_permissions").default('{}'), // Per-module access control
+  modulePermissions: jsonb("module_permissions").default("{}"), // Per-module access control
   lastLoginAt: timestamp("last_login_at"),
   isActive: boolean("is_active").default(true),
   profileImageUrl: varchar("profile_image_url"),
@@ -24,40 +36,42 @@ export const users = pgTable("users", {
   country: varchar("country"),
   postalCode: varchar("postal_code"),
   verificationStatus: varchar("verification_status").default("pending"), // 'verified', 'declined', 'pending'
-  
+
   // Enhanced auth fields
   passwordHash: varchar("password_hash"),
   emailVerified: boolean("email_verified").default(false),
   accountLocked: boolean("account_locked").default(false),
   loginAttempts: integer("login_attempts").default(0),
   fanzIdEnabled: boolean("fanz_id_enabled").default(false),
-  
+
   // OAuth provider IDs
   googleId: varchar("google_id"),
-  githubId: varchar("github_id"), 
+  githubId: varchar("github_id"),
   facebookId: varchar("facebook_id"),
   twitterId: varchar("twitter_id"),
   linkedinId: varchar("linkedin_id"),
-  
+
   // 2FA/TOTP
   totpSecret: varchar("totp_secret"),
   totpEnabled: boolean("totp_enabled").default(false),
   backupCodes: jsonb("backup_codes").$type<string[]>(),
-  
+
   // WebAuthn/Biometrics
   webauthnEnabled: boolean("webauthn_enabled").default(false),
-  
+
   // SSO
   samlNameId: varchar("saml_name_id"),
   ssoProvider: varchar("sso_provider"),
-  
+
   createdBy: varchar("created_by"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const contentItems = pgTable("content_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   type: varchar("type").notNull(), // 'image', 'video', 'text', 'live_stream'
   url: text("url"),
   content: text("content"), // for text content
@@ -70,8 +84,12 @@ export const contentItems = pgTable("content_items", {
 });
 
 export const moderationResults = pgTable("moderation_results", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contentId: varchar("content_id").references(() => contentItems.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .references(() => contentItems.id)
+    .notNull(),
   modelType: varchar("model_type").notNull(), // 'nudenet', 'detoxify', 'pdq_hash'
   confidence: decimal("confidence", { precision: 3, scale: 2 }),
   detections: jsonb("detections"), // array of detection objects
@@ -80,7 +98,9 @@ export const moderationResults = pgTable("moderation_results", {
 });
 
 export const liveStreams = pgTable("live_streams", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   streamKey: text("stream_key").notNull().unique(),
   userId: varchar("user_id").references(() => users.id),
   title: text("title"),
@@ -94,9 +114,14 @@ export const liveStreams = pgTable("live_streams", {
 });
 
 export const moderationSettings = pgTable("moderation_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   type: varchar("type").notNull(), // 'image', 'text', 'live_stream'
-  autoBlockThreshold: decimal("auto_block_threshold", { precision: 3, scale: 2 }),
+  autoBlockThreshold: decimal("auto_block_threshold", {
+    precision: 3,
+    scale: 2,
+  }),
   reviewThreshold: decimal("review_threshold", { precision: 3, scale: 2 }),
   frameSampleRate: integer("frame_sample_rate").default(4),
   autoBlurThreshold: decimal("auto_blur_threshold", { precision: 3, scale: 2 }),
@@ -104,9 +129,15 @@ export const moderationSettings = pgTable("moderation_settings", {
 });
 
 export const appealRequests = pgTable("appeal_requests", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contentId: varchar("content_id").references(() => contentItems.id).notNull(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .references(() => contentItems.id)
+    .notNull(),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   reason: text("reason").notNull(),
   status: varchar("status").notNull().default("pending"), // 'pending', 'approved', 'denied'
   moderatorId: varchar("moderator_id").references(() => users.id),
@@ -117,22 +148,32 @@ export const appealRequests = pgTable("appeal_requests", {
 
 // Encrypted vault for storing illegal/sensitive content evidence
 export const encryptedVault = pgTable("encrypted_vault", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contentId: varchar("content_id").references(() => contentItems.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .references(() => contentItems.id)
+    .notNull(),
   encryptedData: text("encrypted_data").notNull(), // AES encrypted content
   encryptionKey: text("encryption_key").notNull(), // RSA encrypted key
   vaultReason: varchar("vault_reason").notNull(), // 'illegal_content', 'csam', 'terrorism', 'evidence'
   severity: varchar("severity").notNull(), // 'low', 'medium', 'high', 'critical'
   executiveAccess: boolean("executive_access").notNull().default(true),
   accessLog: jsonb("access_log").default([]), // track who accessed when
-  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Admin action logs - tracks every admin approval/rejection
 export const adminActionLogs = pgTable("admin_action_logs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  adminId: varchar("admin_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  adminId: varchar("admin_id")
+    .references(() => users.id)
+    .notNull(),
   action: varchar("action").notNull(), // 'approve', 'reject', 'escalate', 'vault', 'unvault'
   targetType: varchar("target_type").notNull(), // 'content_item', 'live_stream', 'appeal_request', 'user'
   targetId: varchar("target_id").notNull(),
@@ -147,8 +188,12 @@ export const adminActionLogs = pgTable("admin_action_logs", {
 
 // Admin session logs - tracks every login/logout
 export const adminSessionLogs = pgTable("admin_session_logs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  adminId: varchar("admin_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  adminId: varchar("admin_id")
+    .references(() => users.id)
+    .notNull(),
   sessionType: varchar("session_type").notNull(), // 'login', 'logout', 'timeout', 'forced_logout'
   ipAddress: varchar("ip_address").notNull(),
   userAgent: text("user_agent"),
@@ -161,11 +206,15 @@ export const adminSessionLogs = pgTable("admin_session_logs", {
 
 // Advanced filtering and search capabilities
 export const contentFilters = pgTable("content_filters", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   description: text("description"),
   filterCriteria: jsonb("filter_criteria").notNull(), // complex filter rules
-  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
   isShared: boolean("is_shared").default(false),
   usageCount: integer("usage_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
@@ -174,7 +223,9 @@ export const contentFilters = pgTable("content_filters", {
 
 // Audit trail for all system changes
 export const auditTrail = pgTable("audit_trail", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
   action: varchar("action").notNull(),
   resource: varchar("resource").notNull(),
@@ -188,7 +239,9 @@ export const auditTrail = pgTable("audit_trail", {
 
 // Multi-platform management tables
 export const platforms = pgTable("platforms", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   domain: varchar("domain").notNull().unique(),
   niche: varchar("niche").notNull(),
@@ -197,7 +250,7 @@ export const platforms = pgTable("platforms", {
   apiKey: varchar("api_key"),
   webhookUrl: varchar("webhook_url").notNull(),
   moderationRules: jsonb("moderation_rules").notNull(),
-  stats: jsonb("stats").notNull().default('{}'),
+  stats: jsonb("stats").notNull().default("{}"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   lastActive: timestamp("last_active").defaultNow(),
@@ -205,8 +258,12 @@ export const platforms = pgTable("platforms", {
 
 // Platform connections tracking
 export const platformConnections = pgTable("platform_connections", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  platformId: varchar("platform_id").notNull().references(() => platforms.id),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  platformId: varchar("platform_id")
+    .notNull()
+    .references(() => platforms.id),
   connectionType: varchar("connection_type").notNull(), // webhook, api, direct
   status: varchar("status").notNull().default("connected"), // connected, disconnected, error
   lastHeartbeat: timestamp("last_heartbeat").defaultNow(),
@@ -218,8 +275,12 @@ export const platformConnections = pgTable("platform_connections", {
 
 // AI Analysis results for content (enhanced)
 export const aiAnalysisResults = pgTable("ai_analysis_results", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contentId: varchar("content_id").notNull().references(() => contentItems.id),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .notNull()
+    .references(() => contentItems.id),
   analysisType: varchar("analysis_type").notNull(), // nudenet, chatgpt-4o, perspective, detoxify, pdq-hash
   confidence: decimal("confidence", { precision: 5, scale: 4 }).notNull(),
   result: jsonb("result").notNull(),
@@ -232,8 +293,12 @@ export const aiAnalysisResults = pgTable("ai_analysis_results", {
 
 // 2257 Form Verification System
 export const form2257Verifications = pgTable("form_2257_verifications", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id")
+    .references(() => users.id)
+    .notNull(),
   stageName: varchar("stage_name").notNull(),
   legalName: varchar("legal_name").notNull(),
   address: text("address").notNull(),
@@ -259,8 +324,12 @@ export const form2257Verifications = pgTable("form_2257_verifications", {
 
 // Email Integration System
 export const emailAccounts = pgTable("email_accounts", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   emailAddress: varchar("email_address").notNull().unique(),
   displayName: varchar("display_name").notNull(),
   isSystemEmail: boolean("is_system_email").default(false),
@@ -273,29 +342,37 @@ export const emailAccounts = pgTable("email_accounts", {
 });
 
 export const emailMessages = pgTable("email_messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  accountId: varchar("account_id").references(() => emailAccounts.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  accountId: varchar("account_id")
+    .references(() => emailAccounts.id)
+    .notNull(),
   messageId: varchar("message_id").notNull(), // External email message ID
   threadId: varchar("thread_id"),
   fromAddress: varchar("from_address").notNull(),
   toAddresses: jsonb("to_addresses").notNull(),
-  ccAddresses: jsonb("cc_addresses").default('[]'),
-  bccAddresses: jsonb("bcc_addresses").default('[]'),
+  ccAddresses: jsonb("cc_addresses").default("[]"),
+  bccAddresses: jsonb("bcc_addresses").default("[]"),
   subject: text("subject"),
   content: text("content"),
   htmlContent: text("html_content"),
-  attachments: jsonb("attachments").default('[]'),
+  attachments: jsonb("attachments").default("[]"),
   isRead: boolean("is_read").default(false),
   isStarred: boolean("is_starred").default(false),
-  labels: jsonb("labels").default('[]'),
+  labels: jsonb("labels").default("[]"),
   receivedAt: timestamp("received_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // People Data Main Brain
 export const userAnalytics = pgTable("user_analytics", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   platformId: varchar("platform_id").references(() => platforms.id),
   activityScore: decimal("activity_score", { precision: 5, scale: 2 }),
   engagementRate: decimal("engagement_rate", { precision: 5, scale: 2 }),
@@ -312,8 +389,12 @@ export const userAnalytics = pgTable("user_analytics", {
 
 // Media Main Brain
 export const mediaAssets = pgTable("media_assets", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   platformId: varchar("platform_id").references(() => platforms.id),
   fileName: varchar("file_name").notNull(),
   fileType: varchar("file_type").notNull(),
@@ -323,7 +404,7 @@ export const mediaAssets = pgTable("media_assets", {
   thumbnailUrl: text("thumbnail_url"),
   aiAnalysisResult: jsonb("ai_analysis_result"),
   moderationStatus: varchar("moderation_status").default("pending"),
-  tags: jsonb("tags").default('[]'),
+  tags: jsonb("tags").default("[]"),
   metadata: jsonb("metadata"),
   isDeleted: boolean("is_deleted").default(false),
   uploadedAt: timestamp("uploaded_at").defaultNow(),
@@ -332,8 +413,12 @@ export const mediaAssets = pgTable("media_assets", {
 
 // System Notifications
 export const systemNotifications = pgTable("system_notifications", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  recipientId: varchar("recipient_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  recipientId: varchar("recipient_id")
+    .references(() => users.id)
+    .notNull(),
   type: varchar("type").notNull(), // 'alert', 'warning', 'info', 'success', 'emergency'
   title: varchar("title").notNull(),
   message: text("message").notNull(),
@@ -347,53 +432,69 @@ export const systemNotifications = pgTable("system_notifications", {
 
 // Platform Integration Stats
 export const platformStats = pgTable("platform_stats", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  platformId: varchar("platform_id").references(() => platforms.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  platformId: varchar("platform_id")
+    .references(() => platforms.id)
+    .notNull(),
   date: timestamp("date").notNull(),
   totalUsers: integer("total_users").default(0),
   activeUsers: integer("active_users").default(0),
   newSignups: integer("new_signups").default(0),
   contentUploads: integer("content_uploads").default(0),
   moderationActions: integer("moderation_actions").default(0),
-  revenue: decimal("revenue", { precision: 10, scale: 2 }).default('0'),
+  revenue: decimal("revenue", { precision: 10, scale: 2 }).default("0"),
   metrics: jsonb("metrics"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // GetStream Integration
 export const streamTokens = pgTable("stream_tokens", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   token: text("token").notNull(),
   tokenType: varchar("token_type").notNull(), // 'chat', 'feeds', 'activity'
   expiresAt: timestamp("expires_at").notNull(),
-  scopes: jsonb("scopes").default('[]'),
+  scopes: jsonb("scopes").default("[]"),
   isRevoked: boolean("is_revoked").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const streamChannels = pgTable("stream_channels", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   streamChannelId: varchar("stream_channel_id").notNull().unique(),
   channelType: varchar("channel_type").notNull(), // 'messaging', 'livestream', 'team'
   members: jsonb("members").notNull(),
-  moderationRules: jsonb("moderation_rules").default('{}'),
-  customData: jsonb("custom_data").default('{}'),
+  moderationRules: jsonb("moderation_rules").default("{}"),
+  customData: jsonb("custom_data").default("{}"),
   isActive: boolean("is_active").default(true),
-  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Coconut Media Encoding
 export const encodingJobs = pgTable("encoding_jobs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   coconutJobId: varchar("coconut_job_id").notNull().unique(),
-  mediaAssetId: varchar("media_asset_id").references(() => mediaAssets.id).notNull(),
+  mediaAssetId: varchar("media_asset_id")
+    .references(() => mediaAssets.id)
+    .notNull(),
   sourceUrl: text("source_url").notNull(),
   status: varchar("status").notNull().default("processing"), // 'processing', 'completed', 'failed'
   progress: integer("progress").default(0),
-  outputs: jsonb("outputs").default('[]'), // HLS, DASH, MP4 variants
+  outputs: jsonb("outputs").default("[]"), // HLS, DASH, MP4 variants
   webhookData: jsonb("webhook_data"),
   errorMessage: text("error_message"),
   processingTimeMs: integer("processing_time_ms"),
@@ -402,40 +503,52 @@ export const encodingJobs = pgTable("encoding_jobs", {
 });
 
 export const encodingPresets = pgTable("encoding_presets", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   description: text("description"),
   preset: jsonb("preset").notNull(), // Coconut preset configuration
   isDefault: boolean("is_default").default(false),
   isActive: boolean("is_active").default(true),
-  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Payment Processor Management
 export const paymentProcessors = pgTable("payment_processors", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull().unique(),
   processorType: varchar("processor_type").notNull(), // 'crypto', 'traditional', 'adult_friendly'
   status: varchar("status").notNull().default("active"), // 'active', 'inactive', 'banned'
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
-  supportedCurrencies: jsonb("supported_currencies").default('[]'),
+  supportedCurrencies: jsonb("supported_currencies").default("[]"),
   fees: jsonb("fees"), // fee structure
   adultFriendly: boolean("adult_friendly").notNull(),
-  geographicRestrictions: jsonb("geographic_restrictions").default('[]'),
+  geographicRestrictions: jsonb("geographic_restrictions").default("[]"),
   integrationConfig: jsonb("integration_config"),
-  webhookEndpoints: jsonb("webhook_endpoints").default('[]'),
+  webhookEndpoints: jsonb("webhook_endpoints").default("[]"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const paymentTransactions = pgTable("payment_transactions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  processorId: varchar("processor_id").references(() => paymentProcessors.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  processorId: varchar("processor_id")
+    .references(() => paymentProcessors.id)
+    .notNull(),
   externalTransactionId: varchar("external_transaction_id").notNull(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency").notNull(),
   status: varchar("status").notNull(), // 'pending', 'completed', 'failed', 'refunded'
@@ -448,23 +561,29 @@ export const paymentTransactions = pgTable("payment_transactions", {
 
 // AI Companions & Digital Twins
 export const aiCompanions = pgTable("ai_companions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   name: varchar("name").notNull(),
   personality: jsonb("personality").notNull(), // personality traits, preferences
   appearance: jsonb("appearance"), // avatar/model configuration
   voiceConfig: jsonb("voice_config"), // voice synthesis settings
   knowledgeBase: jsonb("knowledge_base"), // custom knowledge/memories
   safetyFilters: jsonb("safety_filters").notNull(),
-  conversationHistory: jsonb("conversation_history").default('[]'),
+  conversationHistory: jsonb("conversation_history").default("[]"),
   isActive: boolean("is_active").default(true),
-  privacySettings: jsonb("privacy_settings").default('{}'),
+  privacySettings: jsonb("privacy_settings").default("{}"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const aiModels = pgTable("ai_models", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   modelType: varchar("model_type").notNull(), // 'llm', 'image', 'voice', 'safety'
   version: varchar("version").notNull(),
@@ -482,8 +601,12 @@ export const aiModels = pgTable("ai_models", {
 
 // VR/WebXR Integration
 export const vrSessions = pgTable("vr_sessions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  hostId: varchar("host_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  hostId: varchar("host_id")
+    .references(() => users.id)
+    .notNull(),
   roomId: varchar("room_id").notNull().unique(),
   sessionType: varchar("session_type").notNull(), // 'private', 'group', 'public', 'ticketed'
   title: varchar("title").notNull(),
@@ -493,7 +616,7 @@ export const vrSessions = pgTable("vr_sessions", {
   isRecording: boolean("is_recording").default(false),
   recordingUrl: text("recording_url"),
   vrEnvironment: jsonb("vr_environment").notNull(), // 3D scene configuration
-  accessSettings: jsonb("access_settings").default('{}'),
+  accessSettings: jsonb("access_settings").default("{}"),
   ticketPrice: decimal("ticket_price", { precision: 10, scale: 2 }),
   status: varchar("status").notNull().default("scheduled"), // 'scheduled', 'live', 'ended'
   startedAt: timestamp("started_at"),
@@ -502,24 +625,30 @@ export const vrSessions = pgTable("vr_sessions", {
 });
 
 export const webrtcRooms = pgTable("webrtc_rooms", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   roomId: varchar("room_id").notNull().unique(),
   sessionId: varchar("session_id").references(() => vrSessions.id),
   roomType: varchar("room_type").notNull(), // 'video', 'audio', 'screen_share', 'vr'
-  participants: jsonb("participants").default('[]'),
-  mediaStreams: jsonb("media_streams").default('[]'),
+  participants: jsonb("participants").default("[]"),
+  mediaStreams: jsonb("media_streams").default("[]"),
   isRecording: boolean("is_recording").default(false),
   recordingConfig: jsonb("recording_config"),
-  bandwidth: jsonb("bandwidth").default('{}'), // bandwidth stats
-  qualitySettings: jsonb("quality_settings").default('{}'),
+  bandwidth: jsonb("bandwidth").default("{}"), // bandwidth stats
+  qualitySettings: jsonb("quality_settings").default("{}"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Geo-Collaboration Features
 export const geoLocations = pgTable("geo_locations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   latitude: decimal("latitude", { precision: 10, scale: 8 }).notNull(),
   longitude: decimal("longitude", { precision: 11, scale: 8 }).notNull(),
   accuracy: integer("accuracy"), // GPS accuracy in meters
@@ -532,15 +661,21 @@ export const geoLocations = pgTable("geo_locations", {
 });
 
 export const geoCollaborations = pgTable("geo_collaborations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   title: varchar("title").notNull(),
   description: text("description"),
-  organizerId: varchar("organizer_id").references(() => users.id).notNull(),
-  locationId: varchar("location_id").references(() => geoLocations.id).notNull(),
+  organizerId: varchar("organizer_id")
+    .references(() => users.id)
+    .notNull(),
+  locationId: varchar("location_id")
+    .references(() => geoLocations.id)
+    .notNull(),
   collaborationType: varchar("collaboration_type").notNull(), // 'meetup', 'photoshoot', 'event'
   maxParticipants: integer("max_participants").default(10),
   currentParticipants: integer("current_participants").default(0),
-  requirements: jsonb("requirements").default('{}'), // age, verification, etc.
+  requirements: jsonb("requirements").default("{}"), // age, verification, etc.
   scheduledAt: timestamp("scheduled_at").notNull(),
   duration: integer("duration"), // in minutes
   status: varchar("status").notNull().default("open"), // 'open', 'full', 'cancelled', 'completed'
@@ -553,14 +688,18 @@ export const geoCollaborations = pgTable("geo_collaborations", {
 
 // Tax Management System
 export const taxRates = pgTable("tax_rates", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   rate: decimal("rate", { precision: 5, scale: 4 }).notNull(), // 0.2000 for 20%
   type: varchar("type").notNull(), // 'vat', 'gst', 'sales_tax', 'income_tax'
   country: varchar("country").notNull(),
   state: varchar("state"), // For US states, etc.
   region: varchar("region"),
-  applicableServices: jsonb("applicable_services").default('["subscriptions", "tips", "content"]'),
+  applicableServices: jsonb("applicable_services").default(
+    '["subscriptions", "tips", "content"]',
+  ),
   isActive: boolean("is_active").default(true),
   effectiveDate: timestamp("effective_date").defaultNow(),
   expiryDate: timestamp("expiry_date"),
@@ -570,12 +709,16 @@ export const taxRates = pgTable("tax_rates", {
 
 // Advertising System
 export const adCampaigns = pgTable("ad_campaigns", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  advertiserId: varchar("advertiser_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  advertiserId: varchar("advertiser_id")
+    .references(() => users.id)
+    .notNull(),
   title: varchar("title").notNull(),
   description: text("description"),
   type: varchar("type").notNull(), // 'banner', 'video', 'sponsored_post', 'creator_promotion'
-  targetAudience: jsonb("target_audience").default('{}'), // Demographics, interests, etc.
+  targetAudience: jsonb("target_audience").default("{}"), // Demographics, interests, etc.
   budget: decimal("budget", { precision: 10, scale: 2 }).notNull(),
   dailyBudget: decimal("daily_budget", { precision: 10, scale: 2 }),
   bidAmount: decimal("bid_amount", { precision: 8, scale: 4 }),
@@ -585,17 +728,21 @@ export const adCampaigns = pgTable("ad_campaigns", {
   impressions: integer("impressions").default(0),
   clicks: integer("clicks").default(0),
   conversions: integer("conversions").default(0),
-  spend: decimal("spend", { precision: 10, scale: 2 }).default('0'),
-  adContent: jsonb("ad_content").default('{}'), // Images, videos, text
-  placementRules: jsonb("placement_rules").default('{}'), // Where ads can appear
+  spend: decimal("spend", { precision: 10, scale: 2 }).default("0"),
+  adContent: jsonb("ad_content").default("{}"), // Images, videos, text
+  placementRules: jsonb("placement_rules").default("{}"), // Where ads can appear
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Live Streaming Enhanced
 export const liveStreamSessions = pgTable("live_stream_sessions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  streamerId: varchar("streamer_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  streamerId: varchar("streamer_id")
+    .references(() => users.id)
+    .notNull(),
   title: varchar("title").notNull(),
   description: text("description"),
   type: varchar("type").notNull(), // 'public', 'private', 'ticketed', 'subscriber_only'
@@ -603,11 +750,13 @@ export const liveStreamSessions = pgTable("live_stream_sessions", {
   minTipAmount: decimal("min_tip_amount", { precision: 10, scale: 2 }),
   maxViewers: integer("max_viewers").default(1000),
   currentViewers: integer("current_viewers").default(0),
-  totalEarnings: decimal("total_earnings", { precision: 10, scale: 2 }).default('0'),
+  totalEarnings: decimal("total_earnings", { precision: 10, scale: 2 }).default(
+    "0",
+  ),
   streamKey: varchar("stream_key").notNull(),
   rtmpUrl: text("rtmp_url"),
   hlsUrl: text("hls_url"),
-  webRtcConfig: jsonb("webrtc_config").default('{}'),
+  webRtcConfig: jsonb("webrtc_config").default("{}"),
   recordingEnabled: boolean("recording_enabled").default(false),
   recordingUrl: text("recording_url"),
   status: varchar("status").default("scheduled"), // 'scheduled', 'live', 'ended', 'cancelled'
@@ -621,16 +770,24 @@ export const liveStreamSessions = pgTable("live_stream_sessions", {
 
 // Private Show Requests
 export const privateShowRequests = pgTable("private_show_requests", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  requesterId: varchar("requester_id").references(() => users.id).notNull(),
-  performerId: varchar("performer_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  requesterId: varchar("requester_id")
+    .references(() => users.id)
+    .notNull(),
+  performerId: varchar("performer_id")
+    .references(() => users.id)
+    .notNull(),
   requestedDate: timestamp("requested_date").notNull(),
   duration: integer("duration").notNull(), // minutes
   offeredPrice: decimal("offered_price", { precision: 10, scale: 2 }).notNull(),
   message: text("message"),
   specialRequests: text("special_requests"),
   status: varchar("status").default("pending"), // 'pending', 'accepted', 'rejected', 'completed', 'cancelled'
-  streamSessionId: varchar("stream_session_id").references(() => liveStreamSessions.id),
+  streamSessionId: varchar("stream_session_id").references(
+    () => liveStreamSessions.id,
+  ),
   responseMessage: text("response_message"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -638,12 +795,14 @@ export const privateShowRequests = pgTable("private_show_requests", {
 
 // Gift System
 export const giftCatalog = pgTable("gift_catalog", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   description: text("description"),
   category: varchar("category").notNull(), // 'virtual', 'physical', 'experience'
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
-  currency: varchar("currency").default('USD'),
+  currency: varchar("currency").default("USD"),
   imageUrl: text("image_url"),
   animationUrl: text("animation_url"), // For virtual gifts
   rarity: varchar("rarity").default("common"), // 'common', 'rare', 'epic', 'legendary'
@@ -653,10 +812,18 @@ export const giftCatalog = pgTable("gift_catalog", {
 });
 
 export const giftTransactions = pgTable("gift_transactions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  senderId: varchar("sender_id").references(() => users.id).notNull(),
-  recipientId: varchar("recipient_id").references(() => users.id).notNull(),
-  giftId: varchar("gift_id").references(() => giftCatalog.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  senderId: varchar("sender_id")
+    .references(() => users.id)
+    .notNull(),
+  recipientId: varchar("recipient_id")
+    .references(() => users.id)
+    .notNull(),
+  giftId: varchar("gift_id")
+    .references(() => giftCatalog.id)
+    .notNull(),
   quantity: integer("quantity").default(1),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   message: text("message"),
@@ -668,17 +835,23 @@ export const giftTransactions = pgTable("gift_transactions", {
 
 // User Deposits System
 export const userDeposits = pgTable("user_deposits", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency").notNull(),
-  processorId: varchar("processor_id").references(() => paymentProcessors.id).notNull(),
+  processorId: varchar("processor_id")
+    .references(() => paymentProcessors.id)
+    .notNull(),
   transactionId: varchar("transaction_id"), // External transaction ID
   status: varchar("status").default("pending"), // 'pending', 'completed', 'failed', 'refunded'
   method: varchar("method").notNull(), // 'card', 'crypto', 'bank_transfer'
   processorFee: decimal("processor_fee", { precision: 10, scale: 2 }),
   netAmount: decimal("net_amount", { precision: 10, scale: 2 }),
-  metadata: jsonb("metadata").default('{}'),
+  metadata: jsonb("metadata").default("{}"),
   confirmationHash: text("confirmation_hash"), // For crypto
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -686,7 +859,9 @@ export const userDeposits = pgTable("user_deposits", {
 
 // Role-Based Access Control
 export const roles = pgTable("roles", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull().unique(),
   displayName: varchar("display_name").notNull(),
   description: text("description"),
@@ -698,9 +873,15 @@ export const roles = pgTable("roles", {
 });
 
 export const userRoles = pgTable("user_roles", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
-  roleId: varchar("role_id").references(() => roles.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  roleId: varchar("role_id")
+    .references(() => roles.id)
+    .notNull(),
   grantedBy: varchar("granted_by").references(() => users.id),
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -708,7 +889,9 @@ export const userRoles = pgTable("user_roles", {
 
 // System Announcements
 export const announcements = pgTable("announcements", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   title: varchar("title").notNull(),
   content: text("content").notNull(),
   type: varchar("type").notNull(), // 'info', 'warning', 'urgent', 'update', 'maintenance'
@@ -718,14 +901,18 @@ export const announcements = pgTable("announcements", {
   endDate: timestamp("end_date"),
   isActive: boolean("is_active").default(true),
   dismissible: boolean("dismissible").default(true),
-  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // CMS System
 export const cmsPages = pgTable("cms_pages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   title: varchar("title").notNull(),
   slug: varchar("slug").notNull().unique(),
   content: text("content").notNull(),
@@ -735,7 +922,9 @@ export const cmsPages = pgTable("cms_pages", {
   featuredImage: text("featured_image"),
   status: varchar("status").default("draft"), // 'draft', 'published', 'archived'
   type: varchar("type").default("page"), // 'page', 'blog_post', 'help_article'
-  authorId: varchar("author_id").references(() => users.id).notNull(),
+  authorId: varchar("author_id")
+    .references(() => users.id)
+    .notNull(),
   publishedAt: timestamp("published_at"),
   seoScore: integer("seo_score"),
   viewCount: integer("view_count").default(0),
@@ -746,7 +935,9 @@ export const cmsPages = pgTable("cms_pages", {
 
 // Platform Limits
 export const platformLimits = pgTable("platform_limits", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   limitType: varchar("limit_type").notNull(), // 'upload_size', 'post_length', 'followers', 'daily_posts'
   userRole: varchar("user_role").notNull(), // 'free', 'premium', 'creator', 'verified'
   limitValue: integer("limit_value").notNull(),
@@ -759,7 +950,9 @@ export const platformLimits = pgTable("platform_limits", {
 
 // Reserved Usernames
 export const reservedNames = pgTable("reserved_names", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull().unique(),
   reason: text("reason"), // 'brand', 'system', 'admin', 'profanity'
   category: varchar("category").notNull(), // 'system', 'brand', 'inappropriate'
@@ -769,7 +962,9 @@ export const reservedNames = pgTable("reserved_names", {
 
 // System Settings
 export const systemSettings = pgTable("system_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   key: varchar("key").notNull().unique(),
   value: text("value"),
   type: varchar("type").default("string"), // 'string', 'number', 'boolean', 'json'
@@ -782,9 +977,15 @@ export const systemSettings = pgTable("system_settings", {
 
 // Audio Call System
 export const audioCalls = pgTable("audio_calls", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  callerId: varchar("caller_id").references(() => users.id).notNull(),
-  receiverId: varchar("receiver_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  callerId: varchar("caller_id")
+    .references(() => users.id)
+    .notNull(),
+  receiverId: varchar("receiver_id")
+    .references(() => users.id)
+    .notNull(),
   duration: integer("duration"), // seconds
   pricePerMinute: decimal("price_per_minute", { precision: 8, scale: 2 }),
   totalCost: decimal("total_cost", { precision: 10, scale: 2 }),
@@ -799,50 +1000,59 @@ export const audioCalls = pgTable("audio_calls", {
 });
 
 // Enhanced Payment Processors for all global gateways
-export const extendedPaymentProcessors = pgTable("extended_payment_processors", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: varchar("name").notNull().unique(),
-  slug: varchar("slug").notNull().unique(), // For API reference
-  processorType: varchar("processor_type").notNull(), // 'crypto', 'traditional', 'adult_friendly', 'regional'
-  region: varchar("region"), // 'global', 'us', 'eu', 'asia', 'latam', 'africa'
-  status: varchar("status").notNull().default("active"), // 'active', 'inactive', 'banned'
-  isBanned: boolean("is_banned").default(false),
-  banReason: text("ban_reason"),
-  supportedCurrencies: jsonb("supported_currencies").default('["USD"]'),
-  fees: jsonb("fees").default('{}'), // fee structure
-  adultFriendly: boolean("adult_friendly").notNull(),
-  geographicRestrictions: jsonb("geographic_restrictions").default('[]'),
-  integrationConfig: jsonb("integration_config").default('{}'),
-  webhookEndpoints: jsonb("webhook_endpoints").default('[]'),
-  apiCredentials: jsonb("api_credentials").default('{}'), // Encrypted storage
-  testMode: boolean("test_mode").default(true),
-  minimumAmount: decimal("minimum_amount", { precision: 10, scale: 2 }),
-  maximumAmount: decimal("maximum_amount", { precision: 10, scale: 2 }),
-  processingTime: varchar("processing_time"), // '1-3 days', 'instant', etc.
-  // Enhanced configurations for specific processors
-  subscriptionSupport: boolean("subscription_support").default(false),
-  ccbillAccountNumber: varchar("ccbill_account_number"),
-  ccbillSubaccountSubscriptions: varchar("ccbill_subaccount_subscriptions"),
-  ccbillSubaccount: varchar("ccbill_subaccount"),
-  ccbillFlexId: varchar("ccbill_flex_id"),
-  ccbillSaltKey: varchar("ccbill_salt_key"),
-  ccbillDatalinkUsername: varchar("ccbill_datalink_username"),
-  ccbillDatalinkPassword: varchar("ccbill_datalink_password"),
-  ccbillSkipSubaccountCancellations: boolean("ccbill_skip_subaccount_cancellations").default(false),
-  // Cardinity specific
-  cardinityProjectId: varchar("cardinity_project_id"),
-  cardinityProjectSecret: varchar("cardinity_project_secret"),
-  // Crypto specific
-  cryptoCurrency: varchar("crypto_currency"), // For Binance, etc.
-  // Bank transfer specific
-  bankInfo: text("bank_info"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+export const extendedPaymentProcessors = pgTable(
+  "extended_payment_processors",
+  {
+    id: varchar("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    name: varchar("name").notNull().unique(),
+    slug: varchar("slug").notNull().unique(), // For API reference
+    processorType: varchar("processor_type").notNull(), // 'crypto', 'traditional', 'adult_friendly', 'regional'
+    region: varchar("region"), // 'global', 'us', 'eu', 'asia', 'latam', 'africa'
+    status: varchar("status").notNull().default("active"), // 'active', 'inactive', 'banned'
+    isBanned: boolean("is_banned").default(false),
+    banReason: text("ban_reason"),
+    supportedCurrencies: jsonb("supported_currencies").default('["USD"]'),
+    fees: jsonb("fees").default("{}"), // fee structure
+    adultFriendly: boolean("adult_friendly").notNull(),
+    geographicRestrictions: jsonb("geographic_restrictions").default("[]"),
+    integrationConfig: jsonb("integration_config").default("{}"),
+    webhookEndpoints: jsonb("webhook_endpoints").default("[]"),
+    apiCredentials: jsonb("api_credentials").default("{}"), // Encrypted storage
+    testMode: boolean("test_mode").default(true),
+    minimumAmount: decimal("minimum_amount", { precision: 10, scale: 2 }),
+    maximumAmount: decimal("maximum_amount", { precision: 10, scale: 2 }),
+    processingTime: varchar("processing_time"), // '1-3 days', 'instant', etc.
+    // Enhanced configurations for specific processors
+    subscriptionSupport: boolean("subscription_support").default(false),
+    ccbillAccountNumber: varchar("ccbill_account_number"),
+    ccbillSubaccountSubscriptions: varchar("ccbill_subaccount_subscriptions"),
+    ccbillSubaccount: varchar("ccbill_subaccount"),
+    ccbillFlexId: varchar("ccbill_flex_id"),
+    ccbillSaltKey: varchar("ccbill_salt_key"),
+    ccbillDatalinkUsername: varchar("ccbill_datalink_username"),
+    ccbillDatalinkPassword: varchar("ccbill_datalink_password"),
+    ccbillSkipSubaccountCancellations: boolean(
+      "ccbill_skip_subaccount_cancellations",
+    ).default(false),
+    // Cardinity specific
+    cardinityProjectId: varchar("cardinity_project_id"),
+    cardinityProjectSecret: varchar("cardinity_project_secret"),
+    // Crypto specific
+    cryptoCurrency: varchar("crypto_currency"), // For Binance, etc.
+    // Bank transfer specific
+    bankInfo: text("bank_info"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+);
 
 // Company Billing Information (from billing.blade.php)
 export const companyBilling = pgTable("company_billing", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   company: varchar("company"),
   country: varchar("country"),
   address: text("address"),
@@ -850,18 +1060,28 @@ export const companyBilling = pgTable("company_billing", {
   zip: varchar("zip"),
   vat: varchar("vat"),
   phone: varchar("phone"),
-  showAddressCompanyFooter: boolean("show_address_company_footer").default(false),
+  showAddressCompanyFooter: boolean("show_address_company_footer").default(
+    false,
+  ),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Enhanced Audio Call Settings (from audio-call-settings.blade.php)
 export const audioCallSettings = pgTable("audio_call_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   audioCallStatus: boolean("audio_call_status").default(false),
   agoraAppId: varchar("agora_app_id"),
-  audioCallMinPrice: decimal("audio_call_min_price", { precision: 10, scale: 2 }),
-  audioCallMaxPrice: decimal("audio_call_max_price", { precision: 10, scale: 2 }),
+  audioCallMinPrice: decimal("audio_call_min_price", {
+    precision: 10,
+    scale: 2,
+  }),
+  audioCallMaxPrice: decimal("audio_call_max_price", {
+    precision: 10,
+    scale: 2,
+  }),
   audioCallMaxDuration: integer("audio_call_max_duration").default(60), // minutes
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -869,7 +1089,9 @@ export const audioCallSettings = pgTable("audio_call_settings", {
 
 // System Announcements (from announcements.blade.php)
 export const systemAnnouncements = pgTable("system_announcements", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   content: text("content"),
   type: varchar("type").default("primary"), // 'primary', 'danger'
   showTo: varchar("show_to").default("all"), // 'all', 'creators'
@@ -880,7 +1102,9 @@ export const systemAnnouncements = pgTable("system_announcements", {
 
 // Blog/CMS Posts (from blog.blade.php)
 export const blogPosts = pgTable("blog_posts", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
   slug: varchar("slug").notNull().unique(),
   content: text("content"),
@@ -898,7 +1122,9 @@ export const blogPosts = pgTable("blog_posts", {
 
 // Content Categories (from categories.blade.php)
 export const contentCategories = pgTable("content_categories", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   slug: varchar("slug").notNull().unique(),
   description: text("description"),
@@ -910,7 +1136,9 @@ export const contentCategories = pgTable("content_categories", {
 
 // Countries Management (from countries.blade.php)
 export const countries = pgTable("countries", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   countryCode: varchar("country_code").notNull().unique(), // ISO code
   countryName: varchar("country_name").notNull(),
   isActive: boolean("is_active").default(true),
@@ -920,8 +1148,12 @@ export const countries = pgTable("countries", {
 
 // States/Regions Management (from edit-state.blade.php)
 export const states = pgTable("states", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  countryId: varchar("country_id").references(() => countries.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  countryId: varchar("country_id")
+    .references(() => countries.id)
+    .notNull(),
   stateCode: varchar("state_code").notNull(),
   stateName: varchar("state_name").notNull(),
   isActive: boolean("is_active").default(true),
@@ -931,7 +1163,9 @@ export const states = pgTable("states", {
 
 // Languages Management (from edit-languages.blade.php)
 export const languages = pgTable("languages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   languageName: varchar("language_name").notNull(),
   languageCode: varchar("language_code").notNull().unique(), // ISO 639-1 code
   isActive: boolean("is_active").default(true),
@@ -942,7 +1176,9 @@ export const languages = pgTable("languages", {
 
 // Comments System (from comments.blade.php)
 export const userComments = pgTable("user_comments", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
   contentId: varchar("content_id").references(() => contentItems.id),
   reply: text("reply").notNull(),
@@ -954,7 +1190,9 @@ export const userComments = pgTable("user_comments", {
 
 // Cron Jobs Management System
 export const cronJobs = pgTable("cron_jobs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   description: text("description"),
   command: text("command").notNull(),
@@ -978,8 +1216,12 @@ export const cronJobs = pgTable("cron_jobs", {
 
 // Cron Job Execution Logs
 export const cronJobLogs = pgTable("cron_job_logs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  jobId: varchar("job_id").references(() => cronJobs.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  jobId: varchar("job_id")
+    .references(() => cronJobs.id)
+    .notNull(),
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   status: varchar("status").notNull(), // 'running', 'success', 'failed', 'timeout', 'cancelled'
@@ -1018,7 +1260,9 @@ export const insertContentItemSchema = createInsertSchema(contentItems).omit({
   updatedAt: true,
 });
 
-export const insertModerationResultSchema = createInsertSchema(moderationResults).omit({
+export const insertModerationResultSchema = createInsertSchema(
+  moderationResults,
+).omit({
   id: true,
   createdAt: true,
 });
@@ -1029,33 +1273,45 @@ export const insertLiveStreamSchema = createInsertSchema(liveStreams).omit({
   updatedAt: true,
 });
 
-export const insertModerationSettingsSchema = createInsertSchema(moderationSettings).omit({
+export const insertModerationSettingsSchema = createInsertSchema(
+  moderationSettings,
+).omit({
   id: true,
   updatedAt: true,
 });
 
-export const insertAppealRequestSchema = createInsertSchema(appealRequests).omit({
+export const insertAppealRequestSchema = createInsertSchema(
+  appealRequests,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertEncryptedVaultSchema = createInsertSchema(encryptedVault).omit({
+export const insertEncryptedVaultSchema = createInsertSchema(
+  encryptedVault,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertAdminActionLogSchema = createInsertSchema(adminActionLogs).omit({
+export const insertAdminActionLogSchema = createInsertSchema(
+  adminActionLogs,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertAdminSessionLogSchema = createInsertSchema(adminSessionLogs).omit({
+export const insertAdminSessionLogSchema = createInsertSchema(
+  adminSessionLogs,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertContentFilterSchema = createInsertSchema(contentFilters).omit({
+export const insertContentFilterSchema = createInsertSchema(
+  contentFilters,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1072,18 +1328,24 @@ export const insertPlatformSchema = createInsertSchema(platforms).omit({
   updatedAt: true,
 });
 
-export const insertPlatformConnectionSchema = createInsertSchema(platformConnections).omit({
+export const insertPlatformConnectionSchema = createInsertSchema(
+  platformConnections,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertAIAnalysisResultSchema = createInsertSchema(aiAnalysisResults).omit({
+export const insertAIAnalysisResultSchema = createInsertSchema(
+  aiAnalysisResults,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertForm2257VerificationSchema = createInsertSchema(form2257Verifications).omit({
+export const insertForm2257VerificationSchema = createInsertSchema(
+  form2257Verifications,
+).omit({
   id: true,
   submittedAt: true,
   processedAt: true,
@@ -1102,11 +1364,13 @@ export const insertEmailMessageSchema = createInsertSchema(emailMessages).omit({
   createdAt: true,
 });
 
-export const insertUserAnalyticsSchema = createInsertSchema(userAnalytics).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertUserAnalyticsSchema = createInsertSchema(userAnalytics).omit(
+  {
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+);
 
 export const insertMediaAssetSchema = createInsertSchema(mediaAssets).omit({
   id: true,
@@ -1114,22 +1378,28 @@ export const insertMediaAssetSchema = createInsertSchema(mediaAssets).omit({
   processedAt: true,
 });
 
-export const insertSystemNotificationSchema = createInsertSchema(systemNotifications).omit({
+export const insertSystemNotificationSchema = createInsertSchema(
+  systemNotifications,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertPlatformStatsSchema = createInsertSchema(platformStats).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertPlatformStatsSchema = createInsertSchema(platformStats).omit(
+  {
+    id: true,
+    createdAt: true,
+  },
+);
 
 export const insertStreamTokenSchema = createInsertSchema(streamTokens).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertStreamChannelSchema = createInsertSchema(streamChannels).omit({
+export const insertStreamChannelSchema = createInsertSchema(
+  streamChannels,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1141,19 +1411,25 @@ export const insertEncodingJobSchema = createInsertSchema(encodingJobs).omit({
   completedAt: true,
 });
 
-export const insertEncodingPresetSchema = createInsertSchema(encodingPresets).omit({
+export const insertEncodingPresetSchema = createInsertSchema(
+  encodingPresets,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertPaymentProcessorSchema = createInsertSchema(paymentProcessors).omit({
+export const insertPaymentProcessorSchema = createInsertSchema(
+  paymentProcessors,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertPaymentTransactionSchema = createInsertSchema(paymentTransactions).omit({
+export const insertPaymentTransactionSchema = createInsertSchema(
+  paymentTransactions,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1187,7 +1463,9 @@ export const insertGeoLocationSchema = createInsertSchema(geoLocations).omit({
   createdAt: true,
 });
 
-export const insertGeoCollaborationSchema = createInsertSchema(geoCollaborations).omit({
+export const insertGeoCollaborationSchema = createInsertSchema(
+  geoCollaborations,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1206,13 +1484,17 @@ export const insertAdCampaignSchema = createInsertSchema(adCampaigns).omit({
   updatedAt: true,
 });
 
-export const insertLiveStreamSessionSchema = createInsertSchema(liveStreamSessions).omit({
+export const insertLiveStreamSessionSchema = createInsertSchema(
+  liveStreamSessions,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertPrivateShowRequestSchema = createInsertSchema(privateShowRequests).omit({
+export const insertPrivateShowRequestSchema = createInsertSchema(
+  privateShowRequests,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1224,7 +1506,9 @@ export const insertGiftCatalogSchema = createInsertSchema(giftCatalog).omit({
   updatedAt: true,
 });
 
-export const insertGiftTransactionSchema = createInsertSchema(giftTransactions).omit({
+export const insertGiftTransactionSchema = createInsertSchema(
+  giftTransactions,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1259,7 +1543,9 @@ export const insertCmsPageSchema = createInsertSchema(cmsPages).omit({
   updatedAt: true,
 });
 
-export const insertPlatformLimitSchema = createInsertSchema(platformLimits).omit({
+export const insertPlatformLimitSchema = createInsertSchema(
+  platformLimits,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1270,7 +1556,9 @@ export const insertReservedNameSchema = createInsertSchema(reservedNames).omit({
   createdAt: true,
 });
 
-export const insertSystemSettingSchema = createInsertSchema(systemSettings).omit({
+export const insertSystemSettingSchema = createInsertSchema(
+  systemSettings,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1281,25 +1569,33 @@ export const insertAudioCallSchema = createInsertSchema(audioCalls).omit({
   createdAt: true,
 });
 
-export const insertExtendedPaymentProcessorSchema = createInsertSchema(extendedPaymentProcessors).omit({
+export const insertExtendedPaymentProcessorSchema = createInsertSchema(
+  extendedPaymentProcessors,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertCompanyBillingSchema = createInsertSchema(companyBilling).omit({
+export const insertCompanyBillingSchema = createInsertSchema(
+  companyBilling,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertAudioCallSettingsSchema = createInsertSchema(audioCallSettings).omit({
+export const insertAudioCallSettingsSchema = createInsertSchema(
+  audioCallSettings,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertSystemAnnouncementSchema = createInsertSchema(systemAnnouncements).omit({
+export const insertSystemAnnouncementSchema = createInsertSchema(
+  systemAnnouncements,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1312,7 +1608,9 @@ export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
   publishedAt: true,
 });
 
-export const insertContentCategorySchema = createInsertSchema(contentCategories).omit({
+export const insertContentCategorySchema = createInsertSchema(
+  contentCategories,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1366,11 +1664,15 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type ContentItem = typeof contentItems.$inferSelect;
 export type InsertContentItem = z.infer<typeof insertContentItemSchema>;
 export type ModerationResult = typeof moderationResults.$inferSelect;
-export type InsertModerationResult = z.infer<typeof insertModerationResultSchema>;
+export type InsertModerationResult = z.infer<
+  typeof insertModerationResultSchema
+>;
 export type LiveStream = typeof liveStreams.$inferSelect;
 export type InsertLiveStream = z.infer<typeof insertLiveStreamSchema>;
 export type ModerationSettings = typeof moderationSettings.$inferSelect;
-export type InsertModerationSettings = z.infer<typeof insertModerationSettingsSchema>;
+export type InsertModerationSettings = z.infer<
+  typeof insertModerationSettingsSchema
+>;
 export type AppealRequest = typeof appealRequests.$inferSelect;
 export type InsertAppealRequest = z.infer<typeof insertAppealRequestSchema>;
 export type EncryptedVault = typeof encryptedVault.$inferSelect;
@@ -1386,11 +1688,17 @@ export type InsertAuditTrail = z.infer<typeof insertAuditTrailSchema>;
 export type Platform = typeof platforms.$inferSelect;
 export type InsertPlatform = z.infer<typeof insertPlatformSchema>;
 export type PlatformConnection = typeof platformConnections.$inferSelect;
-export type InsertPlatformConnection = z.infer<typeof insertPlatformConnectionSchema>;
+export type InsertPlatformConnection = z.infer<
+  typeof insertPlatformConnectionSchema
+>;
 export type AIAnalysisResult = typeof aiAnalysisResults.$inferSelect;
-export type InsertAIAnalysisResult = z.infer<typeof insertAIAnalysisResultSchema>;
+export type InsertAIAnalysisResult = z.infer<
+  typeof insertAIAnalysisResultSchema
+>;
 export type Form2257Verification = typeof form2257Verifications.$inferSelect;
-export type InsertForm2257Verification = z.infer<typeof insertForm2257VerificationSchema>;
+export type InsertForm2257Verification = z.infer<
+  typeof insertForm2257VerificationSchema
+>;
 export type ChatRoom = typeof chatRooms.$inferSelect;
 export type InsertChatRoom = z.infer<typeof insertChatRoomSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
@@ -1404,7 +1712,9 @@ export type InsertUserAnalytics = z.infer<typeof insertUserAnalyticsSchema>;
 export type MediaAsset = typeof mediaAssets.$inferSelect;
 export type InsertMediaAsset = z.infer<typeof insertMediaAssetSchema>;
 export type SystemNotification = typeof systemNotifications.$inferSelect;
-export type InsertSystemNotification = z.infer<typeof insertSystemNotificationSchema>;
+export type InsertSystemNotification = z.infer<
+  typeof insertSystemNotificationSchema
+>;
 export type PlatformStats = typeof platformStats.$inferSelect;
 export type InsertPlatformStats = z.infer<typeof insertPlatformStatsSchema>;
 export type StreamToken = typeof streamTokens.$inferSelect;
@@ -1416,9 +1726,13 @@ export type InsertEncodingJob = z.infer<typeof insertEncodingJobSchema>;
 export type EncodingPreset = typeof encodingPresets.$inferSelect;
 export type InsertEncodingPreset = z.infer<typeof insertEncodingPresetSchema>;
 export type PaymentProcessor = typeof paymentProcessors.$inferSelect;
-export type InsertPaymentProcessor = z.infer<typeof insertPaymentProcessorSchema>;
+export type InsertPaymentProcessor = z.infer<
+  typeof insertPaymentProcessorSchema
+>;
 export type PaymentTransaction = typeof paymentTransactions.$inferSelect;
-export type InsertPaymentTransaction = z.infer<typeof insertPaymentTransactionSchema>;
+export type InsertPaymentTransaction = z.infer<
+  typeof insertPaymentTransactionSchema
+>;
 export type AICompanion = typeof aiCompanions.$inferSelect;
 export type InsertAICompanion = z.infer<typeof insertAICompanionSchema>;
 export type AIModel = typeof aiModels.$inferSelect;
@@ -1430,7 +1744,9 @@ export type InsertWebRTCRoom = z.infer<typeof insertWebRTCRoomSchema>;
 export type GeoLocation = typeof geoLocations.$inferSelect;
 export type InsertGeoLocation = z.infer<typeof insertGeoLocationSchema>;
 export type GeoCollaboration = typeof geoCollaborations.$inferSelect;
-export type InsertGeoCollaboration = z.infer<typeof insertGeoCollaborationSchema>;
+export type InsertGeoCollaboration = z.infer<
+  typeof insertGeoCollaborationSchema
+>;
 
 // New Sponzy v6.8 types
 export type TaxRate = typeof taxRates.$inferSelect;
@@ -1438,9 +1754,13 @@ export type InsertTaxRate = z.infer<typeof insertTaxRateSchema>;
 export type AdCampaign = typeof adCampaigns.$inferSelect;
 export type InsertAdCampaign = z.infer<typeof insertAdCampaignSchema>;
 export type LiveStreamSession = typeof liveStreamSessions.$inferSelect;
-export type InsertLiveStreamSession = z.infer<typeof insertLiveStreamSessionSchema>;
+export type InsertLiveStreamSession = z.infer<
+  typeof insertLiveStreamSessionSchema
+>;
 export type PrivateShowRequest = typeof privateShowRequests.$inferSelect;
-export type InsertPrivateShowRequest = z.infer<typeof insertPrivateShowRequestSchema>;
+export type InsertPrivateShowRequest = z.infer<
+  typeof insertPrivateShowRequestSchema
+>;
 export type GiftCatalog = typeof giftCatalog.$inferSelect;
 export type InsertGiftCatalog = z.infer<typeof insertGiftCatalogSchema>;
 export type GiftTransaction = typeof giftTransactions.$inferSelect;
@@ -1463,14 +1783,21 @@ export type SystemSetting = typeof systemSettings.$inferSelect;
 export type InsertSystemSetting = z.infer<typeof insertSystemSettingSchema>;
 export type AudioCall = typeof audioCalls.$inferSelect;
 export type InsertAudioCall = z.infer<typeof insertAudioCallSchema>;
-export type ExtendedPaymentProcessor = typeof extendedPaymentProcessors.$inferSelect;
-export type InsertExtendedPaymentProcessor = z.infer<typeof insertExtendedPaymentProcessorSchema>;
+export type ExtendedPaymentProcessor =
+  typeof extendedPaymentProcessors.$inferSelect;
+export type InsertExtendedPaymentProcessor = z.infer<
+  typeof insertExtendedPaymentProcessorSchema
+>;
 export type CompanyBilling = typeof companyBilling.$inferSelect;
 export type InsertCompanyBilling = z.infer<typeof insertCompanyBillingSchema>;
 export type AudioCallSettings = typeof audioCallSettings.$inferSelect;
-export type InsertAudioCallSettings = z.infer<typeof insertAudioCallSettingsSchema>;
+export type InsertAudioCallSettings = z.infer<
+  typeof insertAudioCallSettingsSchema
+>;
 export type SystemAnnouncement = typeof systemAnnouncements.$inferSelect;
-export type InsertSystemAnnouncement = z.infer<typeof insertSystemAnnouncementSchema>;
+export type InsertSystemAnnouncement = z.infer<
+  typeof insertSystemAnnouncementSchema
+>;
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 export type ContentCategory = typeof contentCategories.$inferSelect;
@@ -1491,25 +1818,41 @@ export type InsertCronJobLog = z.infer<typeof insertCronJobLogSchema>;
 // Additional Sponzy v6.8 Features - Unique Definitions Only
 
 // Live Streaming Private Requests (from live-streaming-private-requests.blade)
-export const liveStreamingPrivateRequests = pgTable("live_streaming_private_requests", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  buyerId: varchar("buyer_id").references(() => users.id).notNull(),
-  creatorId: varchar("creator_id").references(() => users.id).notNull(),
-  minutes: integer("minutes").notNull(),
-  pricePerMinute: decimal("price_per_minute", { precision: 10, scale: 2 }).notNull(),
-  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
-  status: varchar("status").default("pending"), // 'pending', 'accepted', 'rejected', 'completed'
-  message: text("message"),
-  streamUrl: varchar("stream_url"),
-  startedAt: timestamp("started_at"),
-  endedAt: timestamp("ended_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
+export const liveStreamingPrivateRequests = pgTable(
+  "live_streaming_private_requests",
+  {
+    id: varchar("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    buyerId: varchar("buyer_id")
+      .references(() => users.id)
+      .notNull(),
+    creatorId: varchar("creator_id")
+      .references(() => users.id)
+      .notNull(),
+    minutes: integer("minutes").notNull(),
+    pricePerMinute: decimal("price_per_minute", {
+      precision: 10,
+      scale: 2,
+    }).notNull(),
+    totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
+    status: varchar("status").default("pending"), // 'pending', 'accepted', 'rejected', 'completed'
+    message: text("message"),
+    streamUrl: varchar("stream_url"),
+    startedAt: timestamp("started_at"),
+    endedAt: timestamp("ended_at"),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+);
 
 // Enhanced Member Management (from members.blade)
 export const memberProfiles = pgTable("member_profiles", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   biography: text("biography"),
   website: varchar("website"),
   location: varchar("location"),
@@ -1517,7 +1860,7 @@ export const memberProfiles = pgTable("member_profiles", {
   isVerified: boolean("is_verified").default(false),
   verificationStatus: varchar("verification_status").default("pending"), // 'pending', 'approved', 'rejected'
   verificationDocuments: text("verification_documents").array(),
-  socialLinks: jsonb("social_links").default('{}'),
+  socialLinks: jsonb("social_links").default("{}"),
   earnings: decimal("earnings", { precision: 12, scale: 2 }).default("0.00"),
   accountStatus: varchar("account_status").default("active"), // 'active', 'suspended', 'banned'
   lastActivity: timestamp("last_activity"),
@@ -1527,7 +1870,9 @@ export const memberProfiles = pgTable("member_profiles", {
 
 // Platform Messages System (from messages.blade)
 export const platformMessages = pgTable("platform_messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   senderId: varchar("sender_id").references(() => users.id),
   receiverId: varchar("receiver_id").references(() => users.id),
   subject: varchar("subject"),
@@ -1536,19 +1881,21 @@ export const platformMessages = pgTable("platform_messages", {
   isRead: boolean("is_read").default(false),
   isArchived: boolean("is_archived").default(false),
   priority: varchar("priority").default("normal"), // 'low', 'normal', 'high', 'urgent'
-  attachments: jsonb("attachments").default('[]'),
+  attachments: jsonb("attachments").default("[]"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Payment Processor Specific Settings
 export const paymentProcessorSettings = pgTable("payment_processor_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   processorName: varchar("processor_name").notNull(), // 'flutterwave', 'instamojo', 'mercadopago', 'mollie', 'nowpayments'
   isEnabled: boolean("is_enabled").default(false),
   fee: decimal("fee", { precision: 5, scale: 2 }).default("0.00"),
   feeCents: decimal("fee_cents", { precision: 5, scale: 2 }).default("0.00"),
   isSandbox: boolean("is_sandbox").default(true),
-  
+
   // Common fields
   publicKey: varchar("public_key"),
   secretKey: varchar("secret_key"),
@@ -1556,18 +1903,20 @@ export const paymentProcessorSettings = pgTable("payment_processor_settings", {
   authToken: varchar("auth_token"),
   accessToken: varchar("access_token"),
   ipnSecret: varchar("ipn_secret"),
-  
+
   // Processor-specific settings
   projectId: varchar("project_id"), // For processors that need it
   environment: varchar("environment").default("sandbox"), // 'sandbox', 'production'
-  
+
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // System Limits Configuration (from limits.blade)
 export const systemLimits = pgTable("system_limits", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   limitType: varchar("limit_type").notNull(), // 'upload_size', 'daily_posts', 'followers', etc.
   limitName: varchar("limit_name").notNull(),
   limitValue: integer("limit_value").notNull(),
@@ -1586,59 +1935,78 @@ export type InsertSystemLimit = z.infer<typeof insertSystemLimitSchema>;
 
 // Shop/Marketplace System
 export const shopSettings = pgTable("shop_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   shopEnabled: boolean("shop_enabled").default(false),
   allowFreeItems: boolean("allow_free_items").default(false),
   allowExternalLinks: boolean("allow_external_links").default(false),
   digitalProductsEnabled: boolean("digital_products_enabled").default(false),
   customContentEnabled: boolean("custom_content_enabled").default(false),
   physicalProductsEnabled: boolean("physical_products_enabled").default(false),
-  minPriceProduct: decimal("min_price_product", { precision: 10, scale: 2 }).default("1.00"),
-  maxPriceProduct: decimal("max_price_product", { precision: 10, scale: 2 }).default("1000.00"),
-  commissionRate: decimal("commission_rate", { precision: 5, scale: 4 }).default("0.20"), // 20%
+  minPriceProduct: decimal("min_price_product", {
+    precision: 10,
+    scale: 2,
+  }).default("1.00"),
+  maxPriceProduct: decimal("max_price_product", {
+    precision: 10,
+    scale: 2,
+  }).default("1000.00"),
+  commissionRate: decimal("commission_rate", {
+    precision: 5,
+    scale: 4,
+  }).default("0.20"), // 20%
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const shopProducts = pgTable("shop_products", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  sellerId: varchar("seller_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  sellerId: varchar("seller_id")
+    .references(() => users.id)
+    .notNull(),
   title: varchar("title").notNull(),
   description: text("description"),
   type: varchar("type").notNull(), // 'digital', 'physical', 'custom_content'
   category: varchar("category"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency").default("USD"),
-  imageUrls: jsonb("image_urls").default('[]'),
+  imageUrls: jsonb("image_urls").default("[]"),
   downloadUrl: text("download_url"), // For digital products
   fileSize: integer("file_size"), // In bytes
   externalUrl: text("external_url"), // For external links
   stock: integer("stock"), // For physical products
   isActive: boolean("is_active").default(true),
   totalSales: integer("total_sales").default(0),
-  tags: jsonb("tags").default('[]'),
-  metadata: jsonb("metadata").default('{}'),
+  tags: jsonb("tags").default("[]"),
+  metadata: jsonb("metadata").default("{}"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Social Login Configuration
 export const socialLoginProviders = pgTable("social_login_providers", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   provider: varchar("provider").notNull().unique(), // 'facebook', 'twitter', 'google', 'apple'
   clientId: text("client_id"),
   clientSecret: text("client_secret"),
   isEnabled: boolean("is_enabled").default(false),
   callbackUrl: text("callback_url"),
-  scopes: jsonb("scopes").default('[]'),
-  additionalConfig: jsonb("additional_config").default('{}'),
+  scopes: jsonb("scopes").default("[]"),
+  additionalConfig: jsonb("additional_config").default("{}"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Cloud Storage Configuration
 export const storageProviders = pgTable("storage_providers", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   provider: varchar("provider").notNull().unique(), // 's3', 'dospace', 'wasabi', 'backblaze', 'vultr', 'r2'
   isDefault: boolean("is_default").default(false),
   isEnabled: boolean("is_enabled").default(false),
@@ -1650,14 +2018,16 @@ export const storageProviders = pgTable("storage_providers", {
   cdnEnabled: boolean("cdn_enabled").default(false),
   cdnUrl: text("cdn_url"),
   forceHttps: boolean("force_https").default(true),
-  additionalConfig: jsonb("additional_config").default('{}'),
+  additionalConfig: jsonb("additional_config").default("{}"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Stories System
 export const storyBackgrounds = pgTable("story_backgrounds", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   imageUrl: text("image_url").notNull(),
   category: varchar("category").default("default"),
@@ -1666,7 +2036,9 @@ export const storyBackgrounds = pgTable("story_backgrounds", {
 });
 
 export const storyFonts = pgTable("story_fonts", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   fontFamily: varchar("font_family").notNull(),
   googleFontName: varchar("google_font_name"), // For Google Fonts
@@ -1675,8 +2047,12 @@ export const storyFonts = pgTable("story_fonts", {
 });
 
 export const storyPosts = pgTable("story_posts", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   title: varchar("title"),
   mediaType: varchar("media_type").notNull(), // 'image', 'video', 'text'
   mediaUrl: text("media_url"),
@@ -1694,7 +2070,9 @@ export const storyPosts = pgTable("story_posts", {
 });
 
 export const storySettings = pgTable("story_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   storyStatus: boolean("story_status").default(false),
   storyImage: boolean("story_image").default(true),
   storyText: boolean("story_text").default(true),
@@ -1708,7 +2086,9 @@ export const storySettings = pgTable("story_settings", {
 
 // Stickers/Emojis Management
 export const stickers = pgTable("stickers", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name"),
   url: text("url").notNull(),
   category: varchar("category").default("general"),
@@ -1721,7 +2101,9 @@ export const stickers = pgTable("stickers", {
 
 // Theme & Branding Settings
 export const themeSettings = pgTable("theme_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   homeStyle: integer("home_style").default(0), // 0, 1, 2 for different layouts
   logoUrl: text("logo_url"),
   logoBlueUrl: text("logo_blue_url"),
@@ -1746,7 +2128,9 @@ export const themeSettings = pgTable("theme_settings", {
 
 // Video Encoding Configuration
 export const videoEncodingSettings = pgTable("video_encoding_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   encodingEnabled: boolean("encoding_enabled").default(false),
   encodingMethod: varchar("encoding_method").default("ffmpeg"), // 'ffmpeg', 'coconut'
   watermarkEnabled: boolean("watermark_enabled").default(false),
@@ -1756,14 +2140,16 @@ export const videoEncodingSettings = pgTable("video_encoding_settings", {
   coconutApiKey: text("coconut_api_key"),
   coconutRegion: varchar("coconut_region").default("Virginia"),
   outputFormats: jsonb("output_formats").default('["mp4", "webm"]'),
-  qualitySettings: jsonb("quality_settings").default('{}'),
+  qualitySettings: jsonb("quality_settings").default("{}"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // WebSocket/Pusher Configuration
 export const websocketSettings = pgTable("websocket_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   websocketsEnabled: boolean("websockets_enabled").default(false),
   pusherAppId: text("pusher_app_id"),
   pusherAppKey: text("pusher_app_key"),
@@ -1777,15 +2163,19 @@ export const websocketSettings = pgTable("websocket_settings", {
 
 // Enhanced Subscription Management
 export const subscriptionPlans = pgTable("subscription_plans", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id")
+    .references(() => users.id)
+    .notNull(),
   name: varchar("name").notNull(),
   description: text("description"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency").default("USD"),
   billingCycle: varchar("billing_cycle").default("monthly"), // 'monthly', 'yearly', 'weekly'
   trialDays: integer("trial_days").default(0),
-  benefits: jsonb("benefits").default('[]'),
+  benefits: jsonb("benefits").default("[]"),
   isActive: boolean("is_active").default(true),
   subscriberCount: integer("subscriber_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
@@ -1805,19 +2195,25 @@ export const insertShopProductSchema = createInsertSchema(shopProducts).omit({
   updatedAt: true,
 });
 
-export const insertSocialLoginProviderSchema = createInsertSchema(socialLoginProviders).omit({
+export const insertSocialLoginProviderSchema = createInsertSchema(
+  socialLoginProviders,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertStorageProviderSchema = createInsertSchema(storageProviders).omit({
+export const insertStorageProviderSchema = createInsertSchema(
+  storageProviders,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertStoryBackgroundSchema = createInsertSchema(storyBackgrounds).omit({
+export const insertStoryBackgroundSchema = createInsertSchema(
+  storyBackgrounds,
+).omit({
   id: true,
   createdAt: true,
 });
@@ -1832,36 +2228,46 @@ export const insertStoryPostSchema = createInsertSchema(storyPosts).omit({
   createdAt: true,
 });
 
-export const insertStorySettingsSchema = createInsertSchema(storySettings).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertStorySettingsSchema = createInsertSchema(storySettings).omit(
+  {
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+);
 
 export const insertStickerSchema = createInsertSchema(stickers).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertThemeSettingsSchema = createInsertSchema(themeSettings).omit({
+export const insertThemeSettingsSchema = createInsertSchema(themeSettings).omit(
+  {
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+);
+
+export const insertVideoEncodingSettingsSchema = createInsertSchema(
+  videoEncodingSettings,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertVideoEncodingSettingsSchema = createInsertSchema(videoEncodingSettings).omit({
+export const insertWebsocketSettingsSchema = createInsertSchema(
+  websocketSettings,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertWebsocketSettingsSchema = createInsertSchema(websocketSettings).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlans).omit({
+export const insertSubscriptionPlanSchema = createInsertSchema(
+  subscriptionPlans,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1873,7 +2279,9 @@ export type InsertShopSettings = z.infer<typeof insertShopSettingsSchema>;
 export type ShopProduct = typeof shopProducts.$inferSelect;
 export type InsertShopProduct = z.infer<typeof insertShopProductSchema>;
 export type SocialLoginProvider = typeof socialLoginProviders.$inferSelect;
-export type InsertSocialLoginProvider = z.infer<typeof insertSocialLoginProviderSchema>;
+export type InsertSocialLoginProvider = z.infer<
+  typeof insertSocialLoginProviderSchema
+>;
 export type StorageProvider = typeof storageProviders.$inferSelect;
 export type InsertStorageProvider = z.infer<typeof insertStorageProviderSchema>;
 export type StoryBackground = typeof storyBackgrounds.$inferSelect;
@@ -1889,16 +2297,26 @@ export type InsertSticker = z.infer<typeof insertStickerSchema>;
 export type ThemeSettings = typeof themeSettings.$inferSelect;
 export type InsertThemeSettings = z.infer<typeof insertThemeSettingsSchema>;
 export type VideoEncodingSettings = typeof videoEncodingSettings.$inferSelect;
-export type InsertVideoEncodingSettings = z.infer<typeof insertVideoEncodingSettingsSchema>;
+export type InsertVideoEncodingSettings = z.infer<
+  typeof insertVideoEncodingSettingsSchema
+>;
 export type WebsocketSettings = typeof websocketSettings.$inferSelect;
-export type InsertWebsocketSettings = z.infer<typeof insertWebsocketSettingsSchema>;
+export type InsertWebsocketSettings = z.infer<
+  typeof insertWebsocketSettingsSchema
+>;
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
-export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema>;
+export type InsertSubscriptionPlan = z.infer<
+  typeof insertSubscriptionPlanSchema
+>;
 
 // Withdrawal Management System
 export const withdrawalRequests = pgTable("withdrawal_requests", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   gateway: varchar("gateway").notNull(), // 'PayPal', 'Payoneer', 'Zelle', 'Western Union', 'Bitcoin', 'Mercado Pago', 'Bank'
   account: text("account").notNull(), // Account details/address
@@ -1917,13 +2335,24 @@ export const withdrawalRequests = pgTable("withdrawal_requests", {
 
 // Withdrawal Settings Configuration
 export const withdrawalSettings = pgTable("withdrawal_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  minimumAmount: decimal("minimum_amount", { precision: 10, scale: 2 }).default("50.00"),
-  maximumAmount: decimal("maximum_amount", { precision: 10, scale: 2 }).default("10000.00"),
-  processingFee: decimal("processing_fee", { precision: 5, scale: 4 }).default("0.0250"), // 2.5%
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  minimumAmount: decimal("minimum_amount", { precision: 10, scale: 2 }).default(
+    "50.00",
+  ),
+  maximumAmount: decimal("maximum_amount", { precision: 10, scale: 2 }).default(
+    "10000.00",
+  ),
+  processingFee: decimal("processing_fee", { precision: 5, scale: 4 }).default(
+    "0.0250",
+  ), // 2.5%
   fixedFee: decimal("fixed_fee", { precision: 10, scale: 2 }).default("2.00"),
   processingDays: integer("processing_days").default(7),
-  autoApprovalThreshold: decimal("auto_approval_threshold", { precision: 10, scale: 2 }).default("1000.00"),
+  autoApprovalThreshold: decimal("auto_approval_threshold", {
+    precision: 10,
+    scale: 2,
+  }).default("1000.00"),
   enabledGateways: jsonb("enabled_gateways").default('["PayPal", "Bank"]'),
   requireVerification: boolean("require_verification").default(true),
   weeklyLimit: decimal("weekly_limit", { precision: 10, scale: 2 }),
@@ -1933,13 +2362,17 @@ export const withdrawalSettings = pgTable("withdrawal_settings", {
 });
 
 // Insert Schemas for withdrawal tables
-export const insertWithdrawalRequestSchema = createInsertSchema(withdrawalRequests).omit({
+export const insertWithdrawalRequestSchema = createInsertSchema(
+  withdrawalRequests,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertWithdrawalSettingsSchema = createInsertSchema(withdrawalSettings).omit({
+export const insertWithdrawalSettingsSchema = createInsertSchema(
+  withdrawalSettings,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -1947,18 +2380,24 @@ export const insertWithdrawalSettingsSchema = createInsertSchema(withdrawalSetti
 
 // Type definitions for withdrawal tables
 export type WithdrawalRequest = typeof withdrawalRequests.$inferSelect;
-export type InsertWithdrawalRequest = z.infer<typeof insertWithdrawalRequestSchema>;
+export type InsertWithdrawalRequest = z.infer<
+  typeof insertWithdrawalRequestSchema
+>;
 export type WithdrawalSettings = typeof withdrawalSettings.$inferSelect;
-export type InsertWithdrawalSettings = z.infer<typeof insertWithdrawalSettingsSchema>;
+export type InsertWithdrawalSettings = z.infer<
+  typeof insertWithdrawalSettingsSchema
+>;
 
 // Authentication & Email Management System
 export const emailTemplates = pgTable("email_templates", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   templateName: varchar("template_name").notNull().unique(),
   subject: varchar("subject").notNull(),
   htmlContent: text("html_content").notNull(),
   textContent: text("text_content"),
-  variables: jsonb("variables").default('[]'), // Available template variables
+  variables: jsonb("variables").default("[]"), // Available template variables
   isActive: boolean("is_active").default(true),
   category: varchar("category").default("general"), // 'auth', 'notification', 'marketing', 'system'
   createdAt: timestamp("created_at").defaultNow(),
@@ -1966,7 +2405,9 @@ export const emailTemplates = pgTable("email_templates", {
 });
 
 export const emailLogs = pgTable("email_logs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   recipientEmail: varchar("recipient_email").notNull(),
   recipientName: varchar("recipient_name"),
   templateId: varchar("template_id").references(() => emailTemplates.id),
@@ -1983,8 +2424,12 @@ export const emailLogs = pgTable("email_logs", {
 });
 
 export const socialLogins = pgTable("social_logins", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   provider: varchar("provider").notNull(), // 'facebook', 'google', 'twitter', 'apple'
   providerId: varchar("provider_id").notNull(), // Social platform user ID
   providerEmail: varchar("provider_email"),
@@ -1999,8 +2444,12 @@ export const socialLogins = pgTable("social_logins", {
 });
 
 export const userVerifications = pgTable("user_verifications", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   verificationType: varchar("verification_type").notNull(), // 'email', 'phone', 'identity', 'address'
   verificationValue: varchar("verification_value").notNull(), // email, phone, etc.
   token: varchar("token"), // Verification token
@@ -2015,8 +2464,12 @@ export const userVerifications = pgTable("user_verifications", {
 });
 
 export const userSessions = pgTable("user_sessions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   sessionToken: varchar("session_token").notNull().unique(),
   deviceInfo: jsonb("device_info"), // Browser, OS, device details
   ipAddress: varchar("ip_address"),
@@ -2028,8 +2481,12 @@ export const userSessions = pgTable("user_sessions", {
 });
 
 export const userActivity = pgTable("user_activity", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   activityType: varchar("activity_type").notNull(), // 'login', 'logout', 'profile_update', 'content_upload'
   description: text("description"),
   metadata: jsonb("metadata"), // Additional activity data
@@ -2039,7 +2496,9 @@ export const userActivity = pgTable("user_activity", {
 });
 
 export const contactMessages = pgTable("contact_messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   email: varchar("email").notNull(),
   subject: varchar("subject").notNull(),
@@ -2057,7 +2516,9 @@ export const contactMessages = pgTable("contact_messages", {
 
 // Radio Broadcasting Tables
 export const radioStations = pgTable("radio_stations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   description: text("description"),
   streamUrl: text("stream_url").notNull(),
@@ -2070,29 +2531,41 @@ export const radioStations = pgTable("radio_stations", {
   isModerated: boolean("is_moderated").default(true),
   moderationLevel: varchar("moderation_level").default("medium"), // 'low', 'medium', 'high'
   autoModerationEnabled: boolean("auto_moderation_enabled").default(true),
-  settings: jsonb("settings").default('{}'),
-  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  settings: jsonb("settings").default("{}"),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   lastActive: timestamp("last_active").defaultNow(),
 });
 
 export const radioModerationActions = pgTable("radio_moderation_actions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  stationId: varchar("station_id").references(() => radioStations.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  stationId: varchar("station_id")
+    .references(() => radioStations.id)
+    .notNull(),
   action: varchar("action").notNull(), // 'mute', 'kick', 'ban', 'warning', 'content_flag'
   targetUser: varchar("target_user"),
   targetType: varchar("target_type").default("user"), // 'user', 'content', 'stream'
   reason: text("reason").notNull(),
   duration: varchar("duration"), // e.g., '10 minutes', 'permanent'
-  moderatorId: varchar("moderator_id").references(() => users.id).notNull(),
+  moderatorId: varchar("moderator_id")
+    .references(() => users.id)
+    .notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const radioChat = pgTable("radio_chat", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  stationId: varchar("station_id").references(() => radioStations.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  stationId: varchar("station_id")
+    .references(() => radioStations.id)
+    .notNull(),
   userId: varchar("user_id").references(() => users.id),
   username: varchar("username").notNull(),
   message: text("message").notNull(),
@@ -2105,11 +2578,15 @@ export const radioChat = pgTable("radio_chat", {
 
 // Podcast Management Tables
 export const podcasts = pgTable("podcasts", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   title: varchar("title").notNull(),
   description: text("description"),
   hostName: varchar("host_name").notNull(),
-  hostId: varchar("host_id").references(() => users.id).notNull(),
+  hostId: varchar("host_id")
+    .references(() => users.id)
+    .notNull(),
   category: varchar("category").notNull(),
   status: varchar("status").notNull().default("draft"), // 'active', 'draft', 'archived'
   coverImageUrl: text("cover_image_url"),
@@ -2119,16 +2596,22 @@ export const podcasts = pgTable("podcasts", {
   isExplicit: boolean("is_explicit").default(false),
   totalEpisodes: integer("total_episodes").default(0),
   totalListeners: integer("total_listeners").default(0),
-  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default('0.00'),
-  settings: jsonb("settings").default('{}'),
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default(
+    "0.00",
+  ),
+  settings: jsonb("settings").default("{}"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   lastEpisodeDate: timestamp("last_episode_date"),
 });
 
 export const podcastEpisodes = pgTable("podcast_episodes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  podcastId: varchar("podcast_id").references(() => podcasts.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  podcastId: varchar("podcast_id")
+    .references(() => podcasts.id)
+    .notNull(),
   title: varchar("title").notNull(),
   description: text("description"),
   audioUrl: text("audio_url").notNull(),
@@ -2143,15 +2626,17 @@ export const podcastEpisodes = pgTable("podcast_episodes", {
   chapters: jsonb("chapters"), // array of {time, title}
   listens: integer("listens").default(0),
   downloads: integer("downloads").default(0),
-  rating: decimal("rating", { precision: 3, scale: 2 }).default('0.00'),
-  tags: jsonb("tags").default('[]'),
+  rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
+  tags: jsonb("tags").default("[]"),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Insert Schemas for authentication tables
-export const insertEmailTemplateSchema = createInsertSchema(emailTemplates).omit({
+export const insertEmailTemplateSchema = createInsertSchema(
+  emailTemplates,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -2168,7 +2653,9 @@ export const insertSocialLoginSchema = createInsertSchema(socialLogins).omit({
   updatedAt: true,
 });
 
-export const insertUserVerificationSchema = createInsertSchema(userVerifications).omit({
+export const insertUserVerificationSchema = createInsertSchema(
+  userVerifications,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -2184,7 +2671,9 @@ export const insertUserActivitySchema = createInsertSchema(userActivity).omit({
   createdAt: true,
 });
 
-export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({
+export const insertContactMessageSchema = createInsertSchema(
+  contactMessages,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -2198,7 +2687,9 @@ export type InsertEmailLog = z.infer<typeof insertEmailLogSchema>;
 export type SocialLogin = typeof socialLogins.$inferSelect;
 export type InsertSocialLogin = z.infer<typeof insertSocialLoginSchema>;
 export type UserVerification = typeof userVerifications.$inferSelect;
-export type InsertUserVerification = z.infer<typeof insertUserVerificationSchema>;
+export type InsertUserVerification = z.infer<
+  typeof insertUserVerificationSchema
+>;
 export type UserSession = typeof userSessions.$inferSelect;
 export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
 export type UserActivity = typeof userActivity.$inferSelect;
@@ -2210,7 +2701,8 @@ export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
 export type RadioStation = typeof radioStations.$inferSelect;
 export type InsertRadioStation = typeof radioStations.$inferInsert;
 export type RadioModerationAction = typeof radioModerationActions.$inferSelect;
-export type InsertRadioModerationAction = typeof radioModerationActions.$inferInsert;
+export type InsertRadioModerationAction =
+  typeof radioModerationActions.$inferInsert;
 export type RadioChat = typeof radioChat.$inferSelect;
 export type InsertRadioChat = typeof radioChat.$inferInsert;
 
@@ -2222,8 +2714,12 @@ export type InsertPodcastEpisode = typeof podcastEpisodes.$inferInsert;
 
 // Device tracking and security tables for enhanced authentication
 export const trustedDevices = pgTable("trusted_devices", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   deviceFingerprint: text("device_fingerprint").notNull().unique(),
   deviceName: varchar("device_name"),
   browser: varchar("browser"),
@@ -2236,8 +2732,12 @@ export const trustedDevices = pgTable("trusted_devices", {
 });
 
 export const loginSessions = pgTable("login_sessions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   sessionToken: varchar("session_token").notNull().unique(),
   deviceFingerprint: text("device_fingerprint"),
   ipAddress: varchar("ip_address"),
@@ -2251,7 +2751,9 @@ export const loginSessions = pgTable("login_sessions", {
 });
 
 export const oauthStates = pgTable("oauth_states", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   state: varchar("state").notNull().unique(),
   provider: varchar("provider").notNull(),
   redirectUrl: varchar("redirect_url"),
@@ -2260,8 +2762,12 @@ export const oauthStates = pgTable("oauth_states", {
 });
 
 export const webauthnCredentials = pgTable("webauthn_credentials", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   credentialId: text("credential_id").notNull().unique(),
   credentialPublicKey: text("credential_public_key").notNull(),
   counter: integer("counter").notNull().default(0),
@@ -2271,8 +2777,12 @@ export const webauthnCredentials = pgTable("webauthn_credentials", {
 });
 
 export const emailVerificationTokens = pgTable("email_verification_tokens", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   token: varchar("token").notNull().unique(),
   email: varchar("email").notNull(),
   purpose: varchar("purpose").notNull(), // 'email_verification', 'device_verification', 'password_reset'
@@ -2284,7 +2794,9 @@ export const emailVerificationTokens = pgTable("email_verification_tokens", {
 });
 
 export const securityAuditLog = pgTable("security_audit_log", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
   event: varchar("event").notNull(), // 'login', 'logout', 'device_added', 'suspicious_login', etc.
   details: jsonb("details"),
@@ -2306,17 +2818,23 @@ export type OAuthState = typeof oauthStates.$inferSelect;
 export type InsertOAuthState = typeof oauthStates.$inferInsert;
 export type WebAuthnCredential = typeof webauthnCredentials.$inferSelect;
 export type InsertWebAuthnCredential = typeof webauthnCredentials.$inferInsert;
-export type EmailVerificationToken = typeof emailVerificationTokens.$inferSelect;
-export type InsertEmailVerificationToken = typeof emailVerificationTokens.$inferInsert;
+export type EmailVerificationToken =
+  typeof emailVerificationTokens.$inferSelect;
+export type InsertEmailVerificationToken =
+  typeof emailVerificationTokens.$inferInsert;
 export type SecurityAuditLogEntry = typeof securityAuditLog.$inferSelect;
 export type InsertSecurityAuditLogEntry = typeof securityAuditLog.$inferInsert;
 
 // Chat system tables
 export const chatRooms = pgTable("chat_rooms", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   description: text("description"),
-  createdBy: varchar("created_by").notNull().references(() => users.id, { onDelete: "cascade" }),
+  createdBy: varchar("created_by")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   isPrivate: boolean("is_private").default(false),
   settings: jsonb("settings").$type<{
     maxParticipants?: number;
@@ -2328,9 +2846,15 @@ export const chatRooms = pgTable("chat_rooms", {
 });
 
 export const chatMessages = pgTable("chat_messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  roomId: varchar("room_id").notNull().references(() => chatRooms.id, { onDelete: "cascade" }),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  roomId: varchar("room_id")
+    .notNull()
+    .references(() => chatRooms.id, { onDelete: "cascade" }),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
   messageType: varchar("message_type").default("text"), // text, image, file, system
   metadata: jsonb("metadata"),
@@ -2341,9 +2865,15 @@ export const chatMessages = pgTable("chat_messages", {
 });
 
 export const chatParticipants = pgTable("chat_participants", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  roomId: varchar("room_id").notNull().references(() => chatRooms.id, { onDelete: "cascade" }),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  roomId: varchar("room_id")
+    .notNull()
+    .references(() => chatRooms.id, { onDelete: "cascade" }),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   role: varchar("role").default("member"), // admin, moderator, member
   joinedAt: timestamp("joined_at").defaultNow(),
   leftAt: timestamp("left_at"),
@@ -2352,15 +2882,19 @@ export const chatParticipants = pgTable("chat_participants", {
 
 // 2257 Compliance and Verification System
 export const form2257Records = pgTable("form_2257_records", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+
   // Basic Information
   firstName: varchar("first_name").notNull(),
   lastName: varchar("last_name").notNull(),
   dateOfBirth: date("date_of_birth").notNull(),
   placeOfBirth: varchar("place_of_birth").notNull(),
-  
+
   // Primary ID Documentation
   primaryIdType: varchar("primary_id_type").notNull(), // driver_license, passport, state_id
   primaryIdNumber: varchar("primary_id_number").notNull(),
@@ -2369,7 +2903,7 @@ export const form2257Records = pgTable("form_2257_records", {
   primaryIdExpirationDate: date("primary_id_expiration_date"),
   primaryIdImageFront: varchar("primary_id_image_front"), // Object storage path
   primaryIdImageBack: varchar("primary_id_image_back"), // Object storage path
-  
+
   // Secondary ID Documentation (if required)
   secondaryIdType: varchar("secondary_id_type"),
   secondaryIdNumber: varchar("secondary_id_number"),
@@ -2378,55 +2912,61 @@ export const form2257Records = pgTable("form_2257_records", {
   secondaryIdExpirationDate: date("secondary_id_expiration_date"),
   secondaryIdImageFront: varchar("secondary_id_image_front"),
   secondaryIdImageBack: varchar("secondary_id_image_back"),
-  
+
   // Performance Information
   performerNames: jsonb("performer_names").$type<string[]>(), // Stage names, aliases
   performanceDate: date("performance_date").notNull(),
   performanceDescription: text("performance_description"),
-  
+
   // Legal Compliance
   ageVerified: boolean("age_verified").default(false),
   consentProvided: boolean("consent_provided").default(false),
   legalGuardianConsent: boolean("legal_guardian_consent").default(false),
-  
+
   // Verification Status
   verificationStatus: varchar("verification_status").default("pending"), // pending, approved, rejected, expired
   verifiedBy: varchar("verified_by").references(() => users.id),
   verifiedAt: timestamp("verified_at"),
   rejectionReason: text("rejection_reason"),
-  
+
   // Compliance Officer Information
   custodianName: varchar("custodian_name").notNull(),
   custodianTitle: varchar("custodian_title").notNull(),
   custodianAddress: text("custodian_address").notNull(),
-  
+
   // Record Keeping
   recordLocation: varchar("record_location").notNull(),
   retentionDate: date("retention_date").notNull(),
-  
+
   // Digital Signatures and Timestamps
   performerSignature: varchar("performer_signature"), // Digital signature path
   custodianSignature: varchar("custodian_signature"),
   witnessSignature: varchar("witness_signature"),
-  
+
   // Audit Trail
   ipAddress: varchar("ip_address"),
   userAgent: text("user_agent"),
   deviceFingerprint: text("device_fingerprint"),
   geoLocation: jsonb("geo_location"),
-  
+
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const form2257Amendments = pgTable("form_2257_amendments", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  recordId: varchar("record_id").notNull().references(() => form2257Records.id, { onDelete: "cascade" }),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  recordId: varchar("record_id")
+    .notNull()
+    .references(() => form2257Records.id, { onDelete: "cascade" }),
   amendmentType: varchar("amendment_type").notNull(), // correction, update, addition
   previousValue: jsonb("previous_value"),
   newValue: jsonb("new_value"),
   reason: text("reason").notNull(),
-  amendedBy: varchar("amended_by").notNull().references(() => users.id),
+  amendedBy: varchar("amended_by")
+    .notNull()
+    .references(() => users.id),
   amendmentDate: timestamp("amendment_date").defaultNow(),
   custodianApproval: boolean("custodian_approval").default(false),
   approvedBy: varchar("approved_by").references(() => users.id),
@@ -2434,41 +2974,55 @@ export const form2257Amendments = pgTable("form_2257_amendments", {
 });
 
 export const complianceChecklist = pgTable("compliance_checklist", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  recordId: varchar("record_id").notNull().references(() => form2257Records.id, { onDelete: "cascade" }),
-  
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  recordId: varchar("record_id")
+    .notNull()
+    .references(() => form2257Records.id, { onDelete: "cascade" }),
+
   // Required Document Checks
   primaryIdPresent: boolean("primary_id_present").default(false),
   primaryIdValid: boolean("primary_id_valid").default(false),
   primaryIdPhotoMatch: boolean("primary_id_photo_match").default(false),
-  
+
   secondaryIdPresent: boolean("secondary_id_present").default(false),
   secondaryIdValid: boolean("secondary_id_valid").default(false),
-  
+
   // Age Verification Checks
   ageCalculationCorrect: boolean("age_calculation_correct").default(false),
   minimumAgeVerified: boolean("minimum_age_verified").default(false),
-  
+
   // Performance Documentation
-  performanceDescriptionComplete: boolean("performance_description_complete").default(false),
+  performanceDescriptionComplete: boolean(
+    "performance_description_complete",
+  ).default(false),
   performerNamesComplete: boolean("performer_names_complete").default(false),
   performanceDateValid: boolean("performance_date_valid").default(false),
-  
+
   // Legal Requirements
   consentDocumented: boolean("consent_documented").default(false),
   custodianInfoComplete: boolean("custodian_info_complete").default(false),
-  recordLocationDocumented: boolean("record_location_documented").default(false),
-  
+  recordLocationDocumented: boolean("record_location_documented").default(
+    false,
+  ),
+
   // Digital Compliance
-  digitalSignaturesPresent: boolean("digital_signatures_present").default(false),
+  digitalSignaturesPresent: boolean("digital_signatures_present").default(
+    false,
+  ),
   auditTrailComplete: boolean("audit_trail_complete").default(false),
-  retentionPolicyCompliant: boolean("retention_policy_compliant").default(false),
-  
+  retentionPolicyCompliant: boolean("retention_policy_compliant").default(
+    false,
+  ),
+
   // Overall Compliance
   complianceScore: integer("compliance_score").default(0), // 0-100
   isCompliant: boolean("is_compliant").default(false),
-  
-  checkedBy: varchar("checked_by").notNull().references(() => users.id),
+
+  checkedBy: varchar("checked_by")
+    .notNull()
+    .references(() => users.id),
   checkedAt: timestamp("checked_at").defaultNow(),
   notes: text("notes"),
 });
@@ -2485,35 +3039,43 @@ export type InsertChatParticipant = typeof chatParticipants.$inferInsert;
 export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({
   id: true,
   createdAt: true,
-  updatedAt: true
+  updatedAt: true,
 });
 
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   id: true,
   createdAt: true,
-  updatedAt: true
+  updatedAt: true,
 });
 
-export const insertChatParticipantSchema = createInsertSchema(chatParticipants).omit({
+export const insertChatParticipantSchema = createInsertSchema(
+  chatParticipants,
+).omit({
   id: true,
-  joinedAt: true
+  joinedAt: true,
 });
 
 // 2257 Compliance schemas
-export const insertForm2257RecordSchema = createInsertSchema(form2257Records).omit({
+export const insertForm2257RecordSchema = createInsertSchema(
+  form2257Records,
+).omit({
   id: true,
   createdAt: true,
-  updatedAt: true
+  updatedAt: true,
 });
 
-export const insertForm2257AmendmentSchema = createInsertSchema(form2257Amendments).omit({
+export const insertForm2257AmendmentSchema = createInsertSchema(
+  form2257Amendments,
+).omit({
   id: true,
-  amendmentDate: true
+  amendmentDate: true,
 });
 
-export const insertComplianceChecklistSchema = createInsertSchema(complianceChecklist).omit({
+export const insertComplianceChecklistSchema = createInsertSchema(
+  complianceChecklist,
+).omit({
   id: true,
-  checkedAt: true
+  checkedAt: true,
 });
 
 // 2257 Compliance types
@@ -2523,4 +3085,3 @@ export type Form2257Amendment = typeof form2257Amendments.$inferSelect;
 export type InsertForm2257Amendment = typeof form2257Amendments.$inferInsert;
 export type ComplianceChecklist = typeof complianceChecklist.$inferSelect;
 export type InsertComplianceChecklist = typeof complianceChecklist.$inferInsert;
-

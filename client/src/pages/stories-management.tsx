@@ -1,29 +1,55 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Play, 
-  Image as ImageIcon, 
-  Type, 
-  Palette, 
-  Settings, 
+import {
+  Play,
+  Image as ImageIcon,
+  Type,
+  Palette,
+  Settings,
   Plus,
   Trash2,
   Eye,
   Clock,
   Users,
   FileImage,
-  Download
+  Download,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -61,7 +87,7 @@ interface StoryPost {
   userId: string;
   username: string;
   title?: string;
-  mediaType: 'image' | 'video' | 'text';
+  mediaType: "image" | "video" | "text";
   mediaUrl?: string;
   textContent?: string;
   backgroundColor?: string;
@@ -78,7 +104,8 @@ interface StoryPost {
 
 export default function StoriesManagement() {
   const [activeTab, setActiveTab] = useState("settings");
-  const [selectedBackground, setSelectedBackground] = useState<StoryBackground | null>(null);
+  const [selectedBackground, setSelectedBackground] =
+    useState<StoryBackground | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -91,7 +118,7 @@ export default function StoriesManagement() {
     storyVideo: true,
     maxVideoLength: 30,
     autoDeleteAfter: 24,
-    allowDownload: false
+    allowDownload: false,
   };
 
   const storyBackgrounds: StoryBackground[] = [
@@ -101,24 +128,24 @@ export default function StoriesManagement() {
       imageUrl: "/api/placeholder/400/800",
       category: "gradients",
       isActive: true,
-      createdAt: "2025-01-15T10:00:00Z"
+      createdAt: "2025-01-15T10:00:00Z",
     },
     {
-      id: "2", 
+      id: "2",
       name: "Sunset Beach",
       imageUrl: "/api/placeholder/400/800",
       category: "nature",
       isActive: true,
-      createdAt: "2025-01-14T15:30:00Z"
+      createdAt: "2025-01-14T15:30:00Z",
     },
     {
       id: "3",
       name: "Neon City",
-      imageUrl: "/api/placeholder/400/800", 
+      imageUrl: "/api/placeholder/400/800",
       category: "urban",
       isActive: true,
-      createdAt: "2025-01-13T12:00:00Z"
-    }
+      createdAt: "2025-01-13T12:00:00Z",
+    },
   ];
 
   const storyFonts: StoryFont[] = [
@@ -128,24 +155,24 @@ export default function StoriesManagement() {
       fontFamily: "Roboto, sans-serif",
       googleFontName: "Roboto",
       isActive: true,
-      createdAt: "2025-01-15T10:00:00Z"
+      createdAt: "2025-01-15T10:00:00Z",
     },
     {
       id: "2",
-      name: "Open Sans", 
+      name: "Open Sans",
       fontFamily: "Open Sans, sans-serif",
       googleFontName: "Open Sans",
       isActive: true,
-      createdAt: "2025-01-14T15:30:00Z"
+      createdAt: "2025-01-14T15:30:00Z",
     },
     {
       id: "3",
       name: "Playfair Display",
       fontFamily: "Playfair Display, serif",
-      googleFontName: "Playfair Display", 
+      googleFontName: "Playfair Display",
       isActive: true,
-      createdAt: "2025-01-13T12:00:00Z"
-    }
+      createdAt: "2025-01-13T12:00:00Z",
+    },
   ];
 
   const storyPosts: StoryPost[] = [
@@ -161,11 +188,11 @@ export default function StoriesManagement() {
       viewCount: 1250,
       isActive: true,
       expiresAt: "2025-01-16T10:00:00Z",
-      createdAt: "2025-01-15T10:00:00Z"
+      createdAt: "2025-01-15T10:00:00Z",
     },
     {
       id: "2",
-      userId: "user_2", 
+      userId: "user_2",
       username: "alex_creator",
       textContent: "New content coming soon! 🔥",
       mediaType: "text",
@@ -177,7 +204,7 @@ export default function StoriesManagement() {
       viewCount: 890,
       isActive: true,
       expiresAt: "2025-01-16T15:30:00Z",
-      createdAt: "2025-01-15T15:30:00Z"
+      createdAt: "2025-01-15T15:30:00Z",
     },
     {
       id: "3",
@@ -190,46 +217,50 @@ export default function StoriesManagement() {
       viewCount: 2100,
       isActive: true,
       expiresAt: "2025-01-16T12:00:00Z",
-      createdAt: "2025-01-15T12:00:00Z"
-    }
+      createdAt: "2025-01-15T12:00:00Z",
+    },
   ];
 
   const isLoading = false;
 
   const updateSettingsMutation = useMutation({
     mutationFn: (data: Partial<StorySettings>) =>
-      apiRequest('/api/admin/stories/settings', 'PATCH', data),
+      apiRequest("/api/admin/stories/settings", "PATCH", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/stories/settings'] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/admin/stories/settings"],
+      });
       toast({ title: "Story settings updated successfully" });
-    }
+    },
   });
 
   const deleteBackgroundMutation = useMutation({
     mutationFn: (id: string) =>
-      apiRequest(`/api/admin/stories/backgrounds/${id}`, 'DELETE'),
+      apiRequest(`/api/admin/stories/backgrounds/${id}`, "DELETE"),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/stories/backgrounds'] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/admin/stories/backgrounds"],
+      });
       toast({ title: "Background deleted successfully" });
-    }
+    },
   });
 
   const deleteFontMutation = useMutation({
     mutationFn: (id: string) =>
-      apiRequest(`/api/admin/stories/fonts/${id}`, 'DELETE'),
+      apiRequest(`/api/admin/stories/fonts/${id}`, "DELETE"),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/stories/fonts'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stories/fonts"] });
       toast({ title: "Font deleted successfully" });
-    }
+    },
   });
 
   const deleteStoryMutation = useMutation({
     mutationFn: (id: string) =>
-      apiRequest(`/api/admin/stories/posts/${id}`, 'DELETE'),
+      apiRequest(`/api/admin/stories/posts/${id}`, "DELETE"),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/stories/posts'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stories/posts"] });
       toast({ title: "Story deleted successfully" });
-    }
+    },
   });
 
   const handleSettingsChange = (field: keyof StorySettings, value: any) => {
@@ -238,10 +269,14 @@ export default function StoriesManagement() {
 
   const getMediaTypeIcon = (type: string) => {
     switch (type) {
-      case 'image': return <ImageIcon className="h-4 w-4" />;
-      case 'video': return <Play className="h-4 w-4" />;
-      case 'text': return <Type className="h-4 w-4" />;
-      default: return <ImageIcon className="h-4 w-4" />;
+      case "image":
+        return <ImageIcon className="h-4 w-4" />;
+      case "video":
+        return <Play className="h-4 w-4" />;
+      case "text":
+        return <Type className="h-4 w-4" />;
+      default:
+        return <ImageIcon className="h-4 w-4" />;
     }
   };
 
@@ -249,7 +284,7 @@ export default function StoriesManagement() {
     const variants = {
       image: "default",
       video: "secondary",
-      text: "outline"
+      text: "outline",
     } as const;
 
     return (
@@ -262,14 +297,20 @@ export default function StoriesManagement() {
   const formatTimeRemaining = (expiresAt: string) => {
     const now = new Date();
     const expires = new Date(expiresAt);
-    const diffHours = Math.max(0, Math.floor((expires.getTime() - now.getTime()) / (1000 * 60 * 60)));
+    const diffHours = Math.max(
+      0,
+      Math.floor((expires.getTime() - now.getTime()) / (1000 * 60 * 60)),
+    );
     return `${diffHours}h remaining`;
   };
 
   const getStatsOverview = () => {
-    const totalViews = storyPosts.reduce((sum, post) => sum + post.viewCount, 0);
-    const activeStories = storyPosts.filter(post => post.isActive).length;
-    const totalCreators = new Set(storyPosts.map(post => post.userId)).size;
+    const totalViews = storyPosts.reduce(
+      (sum, post) => sum + post.viewCount,
+      0,
+    );
+    const activeStories = storyPosts.filter((post) => post.isActive).length;
+    const totalCreators = new Set(storyPosts.map((post) => post.userId)).size;
 
     return { totalViews, activeStories, totalCreators };
   };
@@ -277,10 +318,15 @@ export default function StoriesManagement() {
   const stats = getStatsOverview();
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="stories-management">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="stories-management"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold cyber-text-glow">Stories Management</h1>
+          <h1 className="text-3xl font-bold cyber-text-glow">
+            Stories Management
+          </h1>
           <p className="text-muted-foreground">
             Manage ephemeral content, backgrounds, fonts, and story settings
           </p>
@@ -313,7 +359,9 @@ export default function StoriesManagement() {
               <Eye className="h-8 w-8 text-blue-500" />
               <div>
                 <p className="text-sm font-medium">Total Views</p>
-                <p className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  {stats.totalViews.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -348,7 +396,9 @@ export default function StoriesManagement() {
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="posts">Posts ({storyPosts.length})</TabsTrigger>
-          <TabsTrigger value="backgrounds">Backgrounds ({storyBackgrounds.length})</TabsTrigger>
+          <TabsTrigger value="backgrounds">
+            Backgrounds ({storyBackgrounds.length})
+          </TabsTrigger>
           <TabsTrigger value="fonts">Fonts ({storyFonts.length})</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
@@ -375,7 +425,9 @@ export default function StoriesManagement() {
                 <Switch
                   id="story-status"
                   checked={storySettings.storyStatus}
-                  onCheckedChange={(checked) => handleSettingsChange('storyStatus', checked)}
+                  onCheckedChange={(checked) =>
+                    handleSettingsChange("storyStatus", checked)
+                  }
                   data-testid="switch-story-status"
                 />
               </div>
@@ -393,7 +445,9 @@ export default function StoriesManagement() {
                   <Switch
                     id="story-image"
                     checked={storySettings.storyImage}
-                    onCheckedChange={(checked) => handleSettingsChange('storyImage', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("storyImage", checked)
+                    }
                     data-testid="switch-story-image"
                   />
                 </div>
@@ -408,7 +462,9 @@ export default function StoriesManagement() {
                   <Switch
                     id="story-text"
                     checked={storySettings.storyText}
-                    onCheckedChange={(checked) => handleSettingsChange('storyText', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("storyText", checked)
+                    }
                     data-testid="switch-story-text"
                   />
                 </div>
@@ -423,7 +479,9 @@ export default function StoriesManagement() {
                   <Switch
                     id="story-video"
                     checked={storySettings.storyVideo}
-                    onCheckedChange={(checked) => handleSettingsChange('storyVideo', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("storyVideo", checked)
+                    }
                     data-testid="switch-story-video"
                   />
                 </div>
@@ -431,10 +489,14 @@ export default function StoriesManagement() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="max-video-length">Max Video Length (seconds)</Label>
+                  <Label htmlFor="max-video-length">
+                    Max Video Length (seconds)
+                  </Label>
                   <Select
                     value={storySettings.maxVideoLength.toString()}
-                    onValueChange={(value) => handleSettingsChange('maxVideoLength', parseInt(value))}
+                    onValueChange={(value) =>
+                      handleSettingsChange("maxVideoLength", parseInt(value))
+                    }
                   >
                     <SelectTrigger data-testid="select-max-video-length">
                       <SelectValue />
@@ -453,7 +515,9 @@ export default function StoriesManagement() {
                   <Label htmlFor="auto-delete">Auto Delete After (hours)</Label>
                   <Select
                     value={storySettings.autoDeleteAfter.toString()}
-                    onValueChange={(value) => handleSettingsChange('autoDeleteAfter', parseInt(value))}
+                    onValueChange={(value) =>
+                      handleSettingsChange("autoDeleteAfter", parseInt(value))
+                    }
                   >
                     <SelectTrigger data-testid="select-auto-delete">
                       <SelectValue />
@@ -479,7 +543,9 @@ export default function StoriesManagement() {
                 <Switch
                   id="allow-download"
                   checked={storySettings.allowDownload}
-                  onCheckedChange={(checked) => handleSettingsChange('allowDownload', checked)}
+                  onCheckedChange={(checked) =>
+                    handleSettingsChange("allowDownload", checked)
+                  }
                   data-testid="switch-allow-download"
                 />
               </div>
@@ -529,9 +595,9 @@ export default function StoriesManagement() {
                           )}
                           <div>
                             <div className="font-medium">
-                              {post.title || post.textContent || 'Untitled'}
+                              {post.title || post.textContent || "Untitled"}
                             </div>
-                            {post.textContent && post.mediaType === 'text' && (
+                            {post.textContent && post.mediaType === "text" && (
                               <div className="text-sm text-muted-foreground">
                                 Text story
                               </div>
@@ -549,22 +615,32 @@ export default function StoriesManagement() {
                       <TableCell>
                         <div className="flex items-center space-x-1">
                           <Clock className="h-4 w-4" />
-                          <span className="text-sm">{formatTimeRemaining(post.expiresAt)}</span>
+                          <span className="text-sm">
+                            {formatTimeRemaining(post.expiresAt)}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm" data-testid={`button-view-story-${post.id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            data-testid={`button-view-story-${post.id}`}
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
                           {storySettings.allowDownload && (
-                            <Button variant="outline" size="sm" data-testid={`button-download-story-${post.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              data-testid={`button-download-story-${post.id}`}
+                            >
                               <Download className="h-4 w-4" />
                             </Button>
                           )}
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => deleteStoryMutation.mutate(post.id)}
                             data-testid={`button-delete-story-${post.id}`}
                           >
@@ -611,8 +687,8 @@ export default function StoriesManagement() {
                       <div className="flex items-center space-x-2">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button 
-                              variant="secondary" 
+                            <Button
+                              variant="secondary"
                               size="sm"
                               onClick={() => setSelectedBackground(background)}
                               data-testid={`button-view-background-${background.id}`}
@@ -636,10 +712,12 @@ export default function StoriesManagement() {
                             </div>
                           </DialogContent>
                         </Dialog>
-                        <Button 
-                          variant="destructive" 
+                        <Button
+                          variant="destructive"
                           size="sm"
-                          onClick={() => deleteBackgroundMutation.mutate(background.id)}
+                          onClick={() =>
+                            deleteBackgroundMutation.mutate(background.id)
+                          }
                           data-testid={`button-delete-background-${background.id}`}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -648,7 +726,9 @@ export default function StoriesManagement() {
                     </div>
                     <div className="mt-2">
                       <p className="text-sm font-medium">{background.name}</p>
-                      <p className="text-xs text-muted-foreground">{background.category}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {background.category}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -689,10 +769,12 @@ export default function StoriesManagement() {
                     <TableRow key={font.id}>
                       <TableCell>
                         <div className="font-medium">{font.name}</div>
-                        <div className="text-sm text-muted-foreground">{font.fontFamily}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {font.fontFamily}
+                        </div>
                       </TableCell>
                       <TableCell>
-                        <div 
+                        <div
                           style={{ fontFamily: font.fontFamily }}
                           className="text-lg"
                         >
@@ -707,13 +789,15 @@ export default function StoriesManagement() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={font.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={font.isActive ? "default" : "secondary"}
+                        >
                           {font.isActive ? "Active" : "Inactive"}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => deleteFontMutation.mutate(font.id)}
                           data-testid={`button-delete-font-${font.id}`}
@@ -737,20 +821,35 @@ export default function StoriesManagement() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {['image', 'video', 'text'].map((type) => {
-                    const typePosts = storyPosts.filter(p => p.mediaType === type);
-                    const totalViews = typePosts.reduce((sum, p) => sum + p.viewCount, 0);
-                    const avgViews = typePosts.length > 0 ? Math.round(totalViews / typePosts.length) : 0;
-                    
+                  {["image", "video", "text"].map((type) => {
+                    const typePosts = storyPosts.filter(
+                      (p) => p.mediaType === type,
+                    );
+                    const totalViews = typePosts.reduce(
+                      (sum, p) => sum + p.viewCount,
+                      0,
+                    );
+                    const avgViews =
+                      typePosts.length > 0
+                        ? Math.round(totalViews / typePosts.length)
+                        : 0;
+
                     return (
-                      <div key={type} className="flex items-center justify-between">
+                      <div
+                        key={type}
+                        className="flex items-center justify-between"
+                      >
                         <div className="flex items-center space-x-2">
                           {getMediaTypeIcon(type)}
                           <span className="capitalize">{type} Stories</span>
                         </div>
                         <div className="text-right">
-                          <div className="font-medium">{totalViews.toLocaleString()} views</div>
-                          <div className="text-sm text-muted-foreground">{avgViews} avg per post</div>
+                          <div className="font-medium">
+                            {totalViews.toLocaleString()} views
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {avgViews} avg per post
+                          </div>
                         </div>
                       </div>
                     );
@@ -769,19 +868,26 @@ export default function StoriesManagement() {
                     .sort((a, b) => b.viewCount - a.viewCount)
                     .slice(0, 5)
                     .map((post) => (
-                      <div key={post.id} className="flex items-center justify-between">
+                      <div
+                        key={post.id}
+                        className="flex items-center justify-between"
+                      >
                         <div className="flex items-center space-x-2">
                           {getMediaTypeIcon(post.mediaType)}
                           <div>
                             <div className="font-medium">@{post.username}</div>
                             <div className="text-sm text-muted-foreground">
-                              {post.title || post.textContent || 'Untitled'}
+                              {post.title || post.textContent || "Untitled"}
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-medium">{post.viewCount.toLocaleString()}</div>
-                          <div className="text-sm text-muted-foreground">views</div>
+                          <div className="font-medium">
+                            {post.viewCount.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            views
+                          </div>
                         </div>
                       </div>
                     ))}

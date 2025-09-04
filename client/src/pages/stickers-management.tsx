@@ -3,7 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Sticker, Upload, Trash2, Edit, Plus, Search } from "lucide-react";
 import { SEOHeadTags } from "@/components/SEOHeadTags";
 
@@ -15,28 +21,58 @@ export default function StickersManagementPage() {
     totalStickers: 2847,
     totalPacks: 156,
     activeUsers: 45230,
-    dailyUsage: 892143
+    dailyUsage: 892143,
   };
 
   const stickerPacks = [
-    { id: 1, name: "Cyberpunk Emojis", stickers: 24, category: "tech", status: "active", downloads: 5432 },
-    { id: 2, name: "Creator Reactions", stickers: 18, category: "reactions", status: "active", downloads: 8901 },
-    { id: 3, name: "FanzDash Branded", stickers: 12, category: "brand", status: "active", downloads: 3210 },
-    { id: 4, name: "Seasonal Collection", stickers: 36, category: "seasonal", status: "draft", downloads: 0 }
+    {
+      id: 1,
+      name: "Cyberpunk Emojis",
+      stickers: 24,
+      category: "tech",
+      status: "active",
+      downloads: 5432,
+    },
+    {
+      id: 2,
+      name: "Creator Reactions",
+      stickers: 18,
+      category: "reactions",
+      status: "active",
+      downloads: 8901,
+    },
+    {
+      id: 3,
+      name: "FanzDash Branded",
+      stickers: 12,
+      category: "brand",
+      status: "active",
+      downloads: 3210,
+    },
+    {
+      id: 4,
+      name: "Seasonal Collection",
+      stickers: 36,
+      category: "seasonal",
+      status: "draft",
+      downloads: 0,
+    },
   ];
 
   return (
     <div className="min-h-screen p-6 cyber-bg">
-      <SEOHeadTags 
+      <SEOHeadTags
         title="Stickers Management - FanzDash"
         description="Manage emoji and sticker collections for enhanced user engagement"
         canonicalUrl="https://fanzdash.com/stickers-management"
       />
-      
+
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Stickers Management</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Stickers Management
+            </h1>
             <p className="text-muted-foreground">Emoji & sticker collections</p>
           </div>
           <Dialog>
@@ -68,8 +104,12 @@ export default function StickersManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Stickers</p>
-                  <p className="text-2xl font-bold cyber-text-glow">{stickerStats.totalStickers.toLocaleString()}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Stickers
+                  </p>
+                  <p className="text-2xl font-bold cyber-text-glow">
+                    {stickerStats.totalStickers.toLocaleString()}
+                  </p>
                 </div>
                 <Sticker className="w-8 h-8 text-primary" />
               </div>
@@ -81,7 +121,9 @@ export default function StickersManagementPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Sticker Packs</p>
-                  <p className="text-2xl font-bold text-blue-400">{stickerStats.totalPacks}</p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {stickerStats.totalPacks}
+                  </p>
                 </div>
                 <Upload className="w-8 h-8 text-blue-400" />
               </div>
@@ -93,7 +135,9 @@ export default function StickersManagementPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Active Users</p>
-                  <p className="text-2xl font-bold text-green-400">{stickerStats.activeUsers.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {stickerStats.activeUsers.toLocaleString()}
+                  </p>
                 </div>
                 <Badge className="bg-green-500/20 text-green-400">Online</Badge>
               </div>
@@ -105,7 +149,9 @@ export default function StickersManagementPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Daily Usage</p>
-                  <p className="text-2xl font-bold text-yellow-400">{stickerStats.dailyUsage.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {stickerStats.dailyUsage.toLocaleString()}
+                  </p>
                 </div>
                 <Sticker className="w-8 h-8 text-yellow-400" />
               </div>
@@ -119,7 +165,7 @@ export default function StickersManagementPage() {
             <div className="flex gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input 
+                <Input
                   placeholder="Search sticker packs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -140,7 +186,9 @@ export default function StickersManagementPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{pack.name}</CardTitle>
-                  <Badge variant={pack.status === 'active' ? 'default' : 'secondary'}>
+                  <Badge
+                    variant={pack.status === "active" ? "default" : "secondary"}
+                  >
                     {pack.status}
                   </Badge>
                 </div>
@@ -164,7 +212,11 @@ export default function StickersManagementPage() {
                       <Edit className="w-4 h-4 mr-1" />
                       Edit
                     </Button>
-                    <Button size="sm" variant="outline" className="flex-1 text-red-400 hover:text-red-300">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 text-red-400 hover:text-red-300"
+                    >
                       <Trash2 className="w-4 h-4 mr-1" />
                       Delete
                     </Button>

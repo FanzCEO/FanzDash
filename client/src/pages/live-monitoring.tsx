@@ -3,7 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Activity, Radio, Users, AlertTriangle, Play, Pause, Eye, Volume2 } from "lucide-react";
+import {
+  Activity,
+  Radio,
+  Users,
+  AlertTriangle,
+  Play,
+  Pause,
+  Eye,
+  Volume2,
+} from "lucide-react";
 
 export default function LiveMonitoringPage() {
   const [monitoringActive, setMonitoringActive] = useState(true);
@@ -24,19 +33,19 @@ export default function LiveMonitoringPage() {
       riskScore: 0.23,
       duration: "02:34:12",
       tags: ["adult", "vip", "private"],
-      thumbnail: "https://via.placeholder.com/320x180?text=Live+Stream+1"
+      thumbnail: "https://via.placeholder.com/320x180?text=Live+Stream+1",
     },
     {
       id: "stream-002",
       title: "Gaming & Chat",
       streamer: "gamer_alex_pro",
-      platform: "FanzSocial Community", 
+      platform: "FanzSocial Community",
       viewers: 856,
       status: "live",
       riskScore: 0.08,
       duration: "01:15:43",
       tags: ["gaming", "chat", "community"],
-      thumbnail: "https://via.placeholder.com/320x180?text=Live+Stream+2"
+      thumbnail: "https://via.placeholder.com/320x180?text=Live+Stream+2",
     },
     {
       id: "stream-003",
@@ -44,11 +53,11 @@ export default function LiveMonitoringPage() {
       streamer: "artist_luna_moon",
       platform: "FanzMain Adult",
       viewers: 2103,
-      status: "live", 
+      status: "live",
       riskScore: 0.67,
       duration: "00:45:20",
       tags: ["music", "performance", "adult"],
-      thumbnail: "https://via.placeholder.com/320x180?text=Live+Stream+3"
+      thumbnail: "https://via.placeholder.com/320x180?text=Live+Stream+3",
     },
     {
       id: "stream-004",
@@ -60,8 +69,8 @@ export default function LiveMonitoringPage() {
       riskScore: 0.15,
       duration: "00:28:05",
       tags: ["fitness", "training", "health"],
-      thumbnail: "https://via.placeholder.com/320x180?text=Live+Stream+4"
-    }
+      thumbnail: "https://via.placeholder.com/320x180?text=Live+Stream+4",
+    },
   ];
 
   const getRiskColor = (riskScore: number) => {
@@ -73,7 +82,12 @@ export default function LiveMonitoringPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "live":
-        return <Badge className="bg-red-600"><Radio className="w-3 h-3 mr-1" />LIVE</Badge>;
+        return (
+          <Badge className="bg-red-600">
+            <Radio className="w-3 h-3 mr-1" />
+            LIVE
+          </Badge>
+        );
       case "offline":
         return <Badge variant="secondary">OFFLINE</Badge>;
       case "scheduled":
@@ -100,11 +114,15 @@ export default function LiveMonitoringPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Live Monitoring</h1>
-            <p className="text-muted-foreground">Real-time Stream Surveillance</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Live Monitoring
+            </h1>
+            <p className="text-muted-foreground">
+              Real-time Stream Surveillance
+            </p>
           </div>
           <div className="flex items-center space-x-4">
-            <Button 
+            <Button
               onClick={() => setMonitoringActive(!monitoringActive)}
               variant={monitoringActive ? "default" : "outline"}
               className={monitoringActive ? "neon-button" : ""}
@@ -129,31 +147,43 @@ export default function LiveMonitoringPage() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-400 cyber-text-glow">4</div>
-              <div className="text-sm text-muted-foreground">Active Streams</div>
+              <div className="text-2xl font-bold text-red-400 cyber-text-glow">
+                4
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Active Streams
+              </div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-primary cyber-text-glow">4,638</div>
+              <div className="text-2xl font-bold text-primary cyber-text-glow">
+                4,638
+              </div>
               <div className="text-sm text-muted-foreground">Total Viewers</div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 cyber-text-glow">96.2%</div>
+              <div className="text-2xl font-bold text-green-400 cyber-text-glow">
+                96.2%
+              </div>
               <div className="text-sm text-muted-foreground">Uptime</div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-yellow-400 cyber-text-glow">1</div>
+              <div className="text-2xl font-bold text-yellow-400 cyber-text-glow">
+                1
+              </div>
               <div className="text-sm text-muted-foreground">Flagged</div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-accent cyber-text-glow">180ms</div>
+              <div className="text-2xl font-bold text-accent cyber-text-glow">
+                180ms
+              </div>
               <div className="text-sm text-muted-foreground">Avg Latency</div>
             </CardContent>
           </Card>
@@ -165,17 +195,22 @@ export default function LiveMonitoringPage() {
             <CardTitle className="flex items-center space-x-2">
               <Activity className="w-6 h-6 text-primary cyber-pulse" />
               <span className="cyber-text-glow">ACTIVE LIVE STREAMS</span>
-              {monitoringActive && <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />}
+              {monitoringActive && (
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {mockStreams.map((stream) => (
-                <div key={stream.id} className="cyber-card border border-primary/20 overflow-hidden">
+                <div
+                  key={stream.id}
+                  className="cyber-card border border-primary/20 overflow-hidden"
+                >
                   {/* Stream Thumbnail */}
                   <div className="relative">
-                    <img 
-                      src={stream.thumbnail} 
+                    <img
+                      src={stream.thumbnail}
                       alt={stream.title}
                       className="w-full h-48 object-cover"
                     />
@@ -195,7 +230,9 @@ export default function LiveMonitoringPage() {
                   <div className="p-4">
                     <h3 className="font-semibold mb-2">{stream.title}</h3>
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm text-muted-foreground">@{stream.streamer}</span>
+                      <span className="text-sm text-muted-foreground">
+                        @{stream.streamer}
+                      </span>
                       <Badge variant="outline">{stream.platform}</Badge>
                     </div>
 
@@ -203,7 +240,9 @@ export default function LiveMonitoringPage() {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
                         <span className="text-xs">Risk Score:</span>
-                        <span className={`text-xs font-bold ${getRiskColor(stream.riskScore)}`}>
+                        <span
+                          className={`text-xs font-bold ${getRiskColor(stream.riskScore)}`}
+                        >
                           {(stream.riskScore * 100).toFixed(1)}%
                         </span>
                         {stream.riskScore > 0.6 && (
@@ -215,7 +254,11 @@ export default function LiveMonitoringPage() {
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1 mb-4">
                       {stream.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -223,15 +266,28 @@ export default function LiveMonitoringPage() {
 
                     {/* Action Buttons */}
                     <div className="flex items-center space-x-2">
-                      <Button size="sm" variant="outline" className="flex-1" data-testid={`watch-${stream.id}`}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        data-testid={`watch-${stream.id}`}
+                      >
                         <Eye className="w-3 h-3 mr-1" />
                         Watch
                       </Button>
-                      <Button size="sm" variant="outline" data-testid={`audio-${stream.id}`}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid={`audio-${stream.id}`}
+                      >
                         <Volume2 className="w-3 h-3" />
                       </Button>
                       {stream.riskScore > 0.6 && (
-                        <Button size="sm" variant="destructive" data-testid={`flag-${stream.id}`}>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          data-testid={`flag-${stream.id}`}
+                        >
                           <AlertTriangle className="w-3 h-3" />
                         </Button>
                       )}

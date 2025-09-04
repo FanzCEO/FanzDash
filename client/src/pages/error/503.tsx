@@ -15,11 +15,15 @@ export default function Maintenance503() {
           <CardContent className="p-8 text-center">
             <div className="mb-6">
               <Wrench className="h-16 w-16 text-blue-500 mx-auto mb-4 animate-bounce" />
-              <h1 className="text-4xl font-bold text-blue-600 mb-4">Maintenance Mode</h1>
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">Sorry for the inconvenience</h2>
+              <h1 className="text-4xl font-bold text-blue-600 mb-4">
+                Maintenance Mode
+              </h1>
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                Sorry for the inconvenience
+              </h2>
               <p className="text-gray-600">
-                We're currently performing scheduled maintenance to improve your experience. 
-                We'll be back online shortly.
+                We're currently performing scheduled maintenance to improve your
+                experience. We'll be back online shortly.
               </p>
             </div>
 
@@ -27,7 +31,9 @@ export default function Maintenance503() {
             <div className="bg-blue-50 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-center mb-2">
                 <Clock className="h-4 w-4 text-blue-600 mr-2" />
-                <span className="text-sm font-medium text-blue-800">Estimated Time</span>
+                <span className="text-sm font-medium text-blue-800">
+                  Estimated Time
+                </span>
               </div>
               <p className="text-blue-700 text-sm">
                 Maintenance usually takes 30-60 minutes
@@ -35,7 +41,7 @@ export default function Maintenance503() {
             </div>
 
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={refreshPage}
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 data-testid="button-refresh"
@@ -45,7 +51,7 @@ export default function Maintenance503() {
               </Button>
 
               <Link href="/">
-                <Button 
+                <Button
                   variant="outline"
                   className="w-full"
                   data-testid="button-go-home"

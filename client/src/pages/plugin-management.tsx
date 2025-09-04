@@ -1,16 +1,35 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
+import {
   Puzzle,
   Download,
   Upload,
@@ -37,7 +56,7 @@ import {
   Image as ImageIcon,
   Search,
   Plus,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 
 interface Plugin {
@@ -45,8 +64,16 @@ interface Plugin {
   name: string;
   version: string;
   description: string;
-  category: 'microservice' | 'payment' | 'ai_service' | 'media' | 'security' | 'communication' | 'analytics' | 'integration';
-  status: 'active' | 'inactive' | 'error' | 'updating';
+  category:
+    | "microservice"
+    | "payment"
+    | "ai_service"
+    | "media"
+    | "security"
+    | "communication"
+    | "analytics"
+    | "integration";
+  status: "active" | "inactive" | "error" | "updating";
   author: string;
   installDate: string;
   lastUpdate: string;
@@ -83,23 +110,34 @@ export default function PluginManagement() {
       id: "fanzos_api_gateway",
       name: "FanzOS API Gateway",
       version: "2.1.0",
-      description: "Service orchestration, routing, and authentication for all FanzOS microservices",
+      description:
+        "Service orchestration, routing, and authentication for all FanzOS microservices",
       category: "microservice",
       status: "active",
       author: "Fanz™ Unlimited Network LLC",
       installDate: "2025-01-01T00:00:00Z",
       lastUpdate: "2025-01-10T10:00:00Z",
       dependencies: ["user_service", "auth_service"],
-      platforms: ["FanzLab", "BoyFanz", "GirlFanz", "DaddyFanz", "PupFanz", "TabooFanz", "TransFanz", "CougarFanz"],
+      platforms: [
+        "FanzLab",
+        "BoyFanz",
+        "GirlFanz",
+        "DaddyFanz",
+        "PupFanz",
+        "TabooFanz",
+        "TransFanz",
+        "CougarFanz",
+      ],
       apiEndpoint: "/api/v2/gateway",
       configurable: true,
-      essential: true
+      essential: true,
     },
     {
       id: "openai_gpt4o_vision",
       name: "OpenAI GPT-4o Vision Analysis",
       version: "1.5.2",
-      description: "Advanced AI-powered image and video content moderation using GPT-4o Vision",
+      description:
+        "Advanced AI-powered image and video content moderation using GPT-4o Vision",
       category: "ai_service",
       status: "active",
       author: "OpenAI Integration",
@@ -109,13 +147,14 @@ export default function PluginManagement() {
       platforms: ["All"],
       apiEndpoint: "/api/ai/vision",
       configurable: true,
-      essential: false
+      essential: false,
     },
     {
       id: "ccbill_payment",
       name: "CCBill Payment Processor",
       version: "3.2.1",
-      description: "Adult-friendly payment processing with CCBill integration for global transactions",
+      description:
+        "Adult-friendly payment processing with CCBill integration for global transactions",
       category: "payment",
       status: "active",
       author: "CCBill Official",
@@ -125,13 +164,14 @@ export default function PluginManagement() {
       platforms: ["All"],
       apiEndpoint: "/api/payments/ccbill",
       configurable: true,
-      essential: true
+      essential: true,
     },
     {
       id: "live_streaming_service",
       name: "WebRTC Live Streaming",
       version: "2.0.8",
-      description: "Low-latency live streaming infrastructure with WebRTC and RTMP support",
+      description:
+        "Low-latency live streaming infrastructure with WebRTC and RTMP support",
       category: "media",
       status: "active",
       author: "Fanz™ Media Team",
@@ -141,13 +181,14 @@ export default function PluginManagement() {
       platforms: ["FanzLab", "GirlFanz", "BoyFanz", "TransFanz"],
       apiEndpoint: "/api/streaming/webrtc",
       configurable: true,
-      essential: false
+      essential: false,
     },
     {
       id: "podcast_service",
       name: "Podcast Management System",
       version: "1.8.5",
-      description: "Complete podcast hosting, management, and analytics platform",
+      description:
+        "Complete podcast hosting, management, and analytics platform",
       category: "media",
       status: "active",
       author: "Fanz™ Audio Team",
@@ -157,13 +198,14 @@ export default function PluginManagement() {
       platforms: ["FanzTube", "FanzLab"],
       apiEndpoint: "/api/podcasts",
       configurable: true,
-      essential: false
+      essential: false,
     },
     {
       id: "radio_broadcasting",
       name: "Live Radio Broadcasting",
       version: "1.4.3",
-      description: "Real-time radio broadcasting with DJ management and live chat moderation",
+      description:
+        "Real-time radio broadcasting with DJ management and live chat moderation",
       category: "media",
       status: "active",
       author: "Fanz™ Radio Team",
@@ -173,13 +215,14 @@ export default function PluginManagement() {
       platforms: ["FanzTube"],
       apiEndpoint: "/api/radio",
       configurable: true,
-      essential: false
+      essential: false,
     },
     {
       id: "fanzshield_security",
       name: "FanzShield Security Suite",
       version: "3.0.1",
-      description: "Advanced DDoS protection, WAF, bot detection, and threat monitoring",
+      description:
+        "Advanced DDoS protection, WAF, bot detection, and threat monitoring",
       category: "security",
       status: "active",
       author: "Fanz™ Security Team",
@@ -189,13 +232,14 @@ export default function PluginManagement() {
       platforms: ["All"],
       apiEndpoint: "/api/security/shield",
       configurable: true,
-      essential: true
+      essential: true,
     },
     {
       id: "perspective_api",
       name: "Google Perspective API",
       version: "2.1.0",
-      description: "Text toxicity detection and harassment identification for content moderation",
+      description:
+        "Text toxicity detection and harassment identification for content moderation",
       category: "ai_service",
       status: "active",
       author: "Google AI",
@@ -205,13 +249,14 @@ export default function PluginManagement() {
       platforms: ["All"],
       apiEndpoint: "/api/ai/perspective",
       configurable: true,
-      essential: false
+      essential: false,
     },
     {
       id: "nowpayments_crypto",
       name: "NOWPayments Crypto Gateway",
       version: "1.6.7",
-      description: "Adult-friendly cryptocurrency payments supporting 100+ digital currencies",
+      description:
+        "Adult-friendly cryptocurrency payments supporting 100+ digital currencies",
       category: "payment",
       status: "active",
       author: "NOWPayments",
@@ -221,13 +266,14 @@ export default function PluginManagement() {
       platforms: ["All"],
       apiEndpoint: "/api/payments/crypto",
       configurable: true,
-      essential: false
+      essential: false,
     },
     {
       id: "aws_rekognition",
       name: "AWS Rekognition Video Analysis",
       version: "2.3.1",
-      description: "Advanced video content analysis and object detection using AWS Rekognition",
+      description:
+        "Advanced video content analysis and object detection using AWS Rekognition",
       category: "ai_service",
       status: "error",
       author: "Amazon Web Services",
@@ -237,8 +283,8 @@ export default function PluginManagement() {
       platforms: ["All"],
       apiEndpoint: "/api/ai/rekognition",
       configurable: true,
-      essential: false
-    }
+      essential: false,
+    },
   ];
 
   // Mock plugin store
@@ -247,87 +293,94 @@ export default function PluginManagement() {
       id: "stripe_advanced",
       name: "Stripe Advanced Integration",
       version: "4.1.2",
-      description: "Enhanced Stripe payment processing with advanced fraud detection and analytics",
+      description:
+        "Enhanced Stripe payment processing with advanced fraud detection and analytics",
       category: "payment",
       downloads: 15420,
       rating: 4.8,
       price: 29.99,
       author: "Stripe Official",
-      verified: true
+      verified: true,
     },
     {
       id: "whisper_ai",
       name: "OpenAI Whisper Audio Analysis",
       version: "1.2.8",
-      description: "Real-time audio transcription and analysis for live streams and podcasts",
+      description:
+        "Real-time audio transcription and analysis for live streams and podcasts",
       category: "ai_service",
       downloads: 8934,
       rating: 4.6,
       price: 19.99,
       author: "OpenAI",
-      verified: true
+      verified: true,
     },
     {
       id: "coingate_crypto",
       name: "CoinGate Crypto Payments",
       version: "2.0.3",
-      description: "European cryptocurrency payment gateway with 1% fee structure",
+      description:
+        "European cryptocurrency payment gateway with 1% fee structure",
       category: "payment",
       downloads: 5621,
       rating: 4.4,
-      price: 15.00,
+      price: 15.0,
       author: "CoinGate",
-      verified: true
+      verified: true,
     },
     {
       id: "twilio_sms",
       name: "Twilio SMS & Voice",
       version: "3.1.5",
-      description: "SMS verification, notifications, and voice calling integration",
+      description:
+        "SMS verification, notifications, and voice calling integration",
       category: "communication",
       downloads: 12078,
       rating: 4.7,
       price: 24.99,
       author: "Twilio",
-      verified: true
-    }
+      verified: true,
+    },
   ];
 
   const handleTogglePlugin = useMutation({
-    mutationFn: (pluginId: string) => apiRequest("POST", `/api/plugins/${pluginId}/toggle`),
+    mutationFn: (pluginId: string) =>
+      apiRequest("POST", `/api/plugins/${pluginId}/toggle`),
     onSuccess: (_, pluginId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/plugins"] });
-      const plugin = installedPlugins.find(p => p.id === pluginId);
-      toast({ 
-        title: `Plugin ${plugin?.status === 'active' ? 'deactivated' : 'activated'}`,
-        description: `${plugin?.name} has been ${plugin?.status === 'active' ? 'stopped' : 'started'} successfully`
+      const plugin = installedPlugins.find((p) => p.id === pluginId);
+      toast({
+        title: `Plugin ${plugin?.status === "active" ? "deactivated" : "activated"}`,
+        description: `${plugin?.name} has been ${plugin?.status === "active" ? "stopped" : "started"} successfully`,
       });
-    }
+    },
   });
 
   const handleInstallPlugin = useMutation({
-    mutationFn: (pluginId: string) => apiRequest("POST", `/api/plugins/install`, { pluginId }),
+    mutationFn: (pluginId: string) =>
+      apiRequest("POST", `/api/plugins/install`, { pluginId }),
     onSuccess: (_, pluginId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/plugins"] });
-      const plugin = storePlugins.find(p => p.id === pluginId);
-      toast({ 
+      const plugin = storePlugins.find((p) => p.id === pluginId);
+      toast({
         title: "Plugin installed successfully",
-        description: `${plugin?.name} has been installed and is ready to configure`
+        description: `${plugin?.name} has been installed and is ready to configure`,
       });
-    }
+    },
   });
 
   const handleUninstallPlugin = useMutation({
-    mutationFn: (pluginId: string) => apiRequest("DELETE", `/api/plugins/${pluginId}`),
+    mutationFn: (pluginId: string) =>
+      apiRequest("DELETE", `/api/plugins/${pluginId}`),
     onSuccess: (_, pluginId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/plugins"] });
-      const plugin = installedPlugins.find(p => p.id === pluginId);
-      toast({ 
+      const plugin = installedPlugins.find((p) => p.id === pluginId);
+      toast({
         title: "Plugin uninstalled",
         description: `${plugin?.name} has been removed from the system`,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const getStatusBadge = (status: string) => {
@@ -335,11 +388,13 @@ export default function PluginManagement() {
       active: "bg-green-600",
       inactive: "bg-gray-600",
       error: "bg-red-600",
-      updating: "bg-yellow-600"
+      updating: "bg-yellow-600",
     } as const;
 
     return (
-      <Badge className={variants[status as keyof typeof variants] || "bg-gray-600"}>
+      <Badge
+        className={variants[status as keyof typeof variants] || "bg-gray-600"}
+      >
         {status.toUpperCase()}
       </Badge>
     );
@@ -347,32 +402,43 @@ export default function PluginManagement() {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'microservice': return <Package className="w-4 h-4" />;
-      case 'payment': return <CreditCard className="w-4 h-4" />;
-      case 'ai_service': return <Bot className="w-4 h-4" />;
-      case 'media': return <Video className="w-4 h-4" />;
-      case 'security': return <Shield className="w-4 h-4" />;
-      case 'communication': return <Radio className="w-4 h-4" />;
-      case 'analytics': return <Zap className="w-4 h-4" />;
-      case 'integration': return <Globe className="w-4 h-4" />;
-      default: return <Puzzle className="w-4 h-4" />;
+      case "microservice":
+        return <Package className="w-4 h-4" />;
+      case "payment":
+        return <CreditCard className="w-4 h-4" />;
+      case "ai_service":
+        return <Bot className="w-4 h-4" />;
+      case "media":
+        return <Video className="w-4 h-4" />;
+      case "security":
+        return <Shield className="w-4 h-4" />;
+      case "communication":
+        return <Radio className="w-4 h-4" />;
+      case "analytics":
+        return <Zap className="w-4 h-4" />;
+      case "integration":
+        return <Globe className="w-4 h-4" />;
+      default:
+        return <Puzzle className="w-4 h-4" />;
     }
   };
 
-  const filteredPlugins = installedPlugins.filter(plugin => {
-    const matchesSearch = !searchQuery || 
+  const filteredPlugins = installedPlugins.filter((plugin) => {
+    const matchesSearch =
+      !searchQuery ||
       plugin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       plugin.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || plugin.category === selectedCategory;
-    
+    const matchesCategory =
+      selectedCategory === "all" || plugin.category === selectedCategory;
+
     return matchesSearch && matchesCategory;
   });
 
   const stats = {
     totalPlugins: installedPlugins.length,
-    activePlugins: installedPlugins.filter(p => p.status === 'active').length,
-    errorPlugins: installedPlugins.filter(p => p.status === 'error').length,
-    essentialPlugins: installedPlugins.filter(p => p.essential).length
+    activePlugins: installedPlugins.filter((p) => p.status === "active").length,
+    errorPlugins: installedPlugins.filter((p) => p.status === "error").length,
+    essentialPlugins: installedPlugins.filter((p) => p.essential).length,
   };
 
   return (
@@ -381,7 +447,9 @@ export default function PluginManagement() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Plugin Management System</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Plugin Management System
+            </h1>
             <p className="text-muted-foreground">
               Manage FanzOS microservices, integrations, and third-party plugins
             </p>
@@ -406,7 +474,9 @@ export default function PluginManagement() {
                 <Package className="h-8 w-8 text-cyan-400" />
                 <div>
                   <p className="text-sm font-medium">Total Plugins</p>
-                  <p className="text-2xl font-bold text-cyan-400">{stats.totalPlugins}</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {stats.totalPlugins}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -418,7 +488,9 @@ export default function PluginManagement() {
                 <CheckCircle className="h-8 w-8 text-green-400" />
                 <div>
                   <p className="text-sm font-medium">Active</p>
-                  <p className="text-2xl font-bold text-green-400">{stats.activePlugins}</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {stats.activePlugins}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -430,7 +502,9 @@ export default function PluginManagement() {
                 <XCircle className="h-8 w-8 text-red-400" />
                 <div>
                   <p className="text-sm font-medium">Errors</p>
-                  <p className="text-2xl font-bold text-red-400">{stats.errorPlugins}</p>
+                  <p className="text-2xl font-bold text-red-400">
+                    {stats.errorPlugins}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -442,7 +516,9 @@ export default function PluginManagement() {
                 <Shield className="h-8 w-8 text-yellow-400" />
                 <div>
                   <p className="text-sm font-medium">Essential</p>
-                  <p className="text-2xl font-bold text-yellow-400">{stats.essentialPlugins}</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {stats.essentialPlugins}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -459,8 +535,12 @@ export default function PluginManagement() {
           <TabsContent value="installed" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Installed Plugins</CardTitle>
-                <CardDescription>Manage your installed FanzOS plugins and integrations</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Installed Plugins
+                </CardTitle>
+                <CardDescription>
+                  Manage your installed FanzOS plugins and integrations
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -474,19 +554,26 @@ export default function PluginManagement() {
                       data-testid="input-plugin-search"
                     />
                   </div>
-                  
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                  >
                     <SelectTrigger className="w-[200px] bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Filter by category" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="microservice">Microservices</SelectItem>
+                      <SelectItem value="microservice">
+                        Microservices
+                      </SelectItem>
                       <SelectItem value="payment">Payment Systems</SelectItem>
                       <SelectItem value="ai_service">AI Services</SelectItem>
                       <SelectItem value="media">Media Processing</SelectItem>
                       <SelectItem value="security">Security</SelectItem>
-                      <SelectItem value="communication">Communication</SelectItem>
+                      <SelectItem value="communication">
+                        Communication
+                      </SelectItem>
                       <SelectItem value="analytics">Analytics</SelectItem>
                       <SelectItem value="integration">Integrations</SelectItem>
                     </SelectContent>
@@ -512,9 +599,14 @@ export default function PluginManagement() {
                             <div>
                               <div className="flex items-center gap-2 mb-1">
                                 {getCategoryIcon(plugin.category)}
-                                <span className="font-medium">{plugin.name}</span>
+                                <span className="font-medium">
+                                  {plugin.name}
+                                </span>
                                 {plugin.essential && (
-                                  <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-400">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs border-yellow-500 text-yellow-400"
+                                  >
                                     ESSENTIAL
                                   </Badge>
                                 )}
@@ -526,7 +618,7 @@ export default function PluginManagement() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className="capitalize">
-                              {plugin.category.replace('_', ' ')}
+                              {plugin.category.replace("_", " ")}
                             </Badge>
                           </TableCell>
                           <TableCell className="font-mono text-sm">
@@ -535,7 +627,11 @@ export default function PluginManagement() {
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
                               {plugin.platforms.slice(0, 2).map((platform) => (
-                                <Badge key={platform} variant="secondary" className="text-xs">
+                                <Badge
+                                  key={platform}
+                                  variant="secondary"
+                                  className="text-xs"
+                                >
                                   {platform}
                                 </Badge>
                               ))}
@@ -546,37 +642,54 @@ export default function PluginManagement() {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell>
-                            {getStatusBadge(plugin.status)}
-                          </TableCell>
+                          <TableCell>{getStatusBadge(plugin.status)}</TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Button
                                 size="sm"
-                                onClick={() => handleTogglePlugin.mutate(plugin.id)}
-                                disabled={handleTogglePlugin.isPending || plugin.essential}
-                                variant={plugin.status === 'active' ? 'destructive' : 'default'}
+                                onClick={() =>
+                                  handleTogglePlugin.mutate(plugin.id)
+                                }
+                                disabled={
+                                  handleTogglePlugin.isPending ||
+                                  plugin.essential
+                                }
+                                variant={
+                                  plugin.status === "active"
+                                    ? "destructive"
+                                    : "default"
+                                }
                                 data-testid={`button-toggle-${plugin.id}`}
                               >
-                                {plugin.status === 'active' ? (
+                                {plugin.status === "active" ? (
                                   <PowerOff className="w-3 h-3" />
                                 ) : (
                                   <Power className="w-3 h-3" />
                                 )}
                               </Button>
                               {plugin.configurable && (
-                                <Button size="sm" variant="outline" data-testid={`button-config-${plugin.id}`}>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  data-testid={`button-config-${plugin.id}`}
+                                >
                                   <Settings className="w-3 h-3" />
                                 </Button>
                               )}
-                              <Button size="sm" variant="outline" data-testid={`button-view-${plugin.id}`}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                data-testid={`button-view-${plugin.id}`}
+                              >
                                 <Eye className="w-3 h-3" />
                               </Button>
                               {!plugin.essential && (
-                                <Button 
-                                  size="sm" 
+                                <Button
+                                  size="sm"
                                   variant="outline"
-                                  onClick={() => handleUninstallPlugin.mutate(plugin.id)}
+                                  onClick={() =>
+                                    handleUninstallPlugin.mutate(plugin.id)
+                                  }
                                   disabled={handleUninstallPlugin.isPending}
                                   data-testid={`button-uninstall-${plugin.id}`}
                                 >
@@ -598,7 +711,9 @@ export default function PluginManagement() {
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
                 <CardTitle className="text-cyan-400">Plugin Store</CardTitle>
-                <CardDescription>Browse and install verified plugins for your Fanz ecosystem</CardDescription>
+                <CardDescription>
+                  Browse and install verified plugins for your Fanz ecosystem
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -606,7 +721,9 @@ export default function PluginManagement() {
                     <Card key={plugin.id} className="bg-gray-800/50">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-white">{plugin.name}</h3>
+                          <h3 className="font-semibold text-white">
+                            {plugin.name}
+                          </h3>
                           {plugin.verified && (
                             <Badge className="bg-blue-600">
                               <CheckCircle className="w-3 h-3 mr-1" />
@@ -624,11 +741,13 @@ export default function PluginManagement() {
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
-                          <span>{plugin.downloads.toLocaleString()} downloads</span>
+                          <span>
+                            {plugin.downloads.toLocaleString()} downloads
+                          </span>
                           <span>⭐ {plugin.rating}</span>
                         </div>
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           className="w-full"
                           onClick={() => handleInstallPlugin.mutate(plugin.id)}
                           disabled={handleInstallPlugin.isPending}
@@ -648,15 +767,22 @@ export default function PluginManagement() {
           <TabsContent value="custom" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Custom Plugin Development</CardTitle>
-                <CardDescription>Upload and develop custom plugins for your Fanz ecosystem</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Custom Plugin Development
+                </CardTitle>
+                <CardDescription>
+                  Upload and develop custom plugins for your Fanz ecosystem
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
                   <Code className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
-                  <p className="text-lg font-medium text-white mb-2">Custom Plugin Development</p>
+                  <p className="text-lg font-medium text-white mb-2">
+                    Custom Plugin Development
+                  </p>
                   <p className="text-gray-400 mb-6">
-                    Upload your own plugins or use the FanzOS Plugin SDK to create custom integrations
+                    Upload your own plugins or use the FanzOS Plugin SDK to
+                    create custom integrations
                   </p>
                   <div className="flex justify-center gap-4">
                     <Button data-testid="button-upload-plugin">

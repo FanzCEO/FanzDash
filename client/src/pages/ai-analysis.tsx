@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Brain, Zap, Clock, CheckCircle, AlertTriangle, Play } from "lucide-react";
+import {
+  Brain,
+  Zap,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Play,
+} from "lucide-react";
 import { InteractiveAnalysisForm } from "@/components/InteractiveAnalysisForm";
 
 export default function AIAnalysisPage() {
@@ -30,19 +37,27 @@ export default function AIAnalysisPage() {
         analysisTypes: ["chatgpt-4o"],
         priority: "high",
         contentBatch: [
-          { type: "image", url: "https://example.com/test-image.jpg", context: "Test analysis" },
-          { type: "text", content: "Sample text for analysis", context: "Test content" }
-        ]
+          {
+            type: "image",
+            url: "https://example.com/test-image.jpg",
+            context: "Test analysis",
+          },
+          {
+            type: "text",
+            content: "Sample text for analysis",
+            context: "Test content",
+          },
+        ],
       });
       toast({
         title: "Analysis Started",
-        description: "AI analysis engine is processing content batch"
+        description: "AI analysis engine is processing content batch",
       });
     } catch (error) {
       toast({
-        title: "Analysis Failed", 
+        title: "Analysis Failed",
         description: "Unable to start analysis batch",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
     setTimeout(() => setAnalysisRunning(false), 3000);
@@ -65,10 +80,14 @@ export default function AIAnalysisPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">AI Analysis Engine</h1>
-            <p className="text-muted-foreground">Advanced ChatGPT-4o Content Moderation</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              AI Analysis Engine
+            </h1>
+            <p className="text-muted-foreground">
+              Advanced ChatGPT-4o Content Moderation
+            </p>
           </div>
-          <Button 
+          <Button
             onClick={runAnalysis}
             disabled={analysisRunning}
             className="neon-button"
@@ -90,23 +109,30 @@ export default function AIAnalysisPage() {
 
         {/* Model Performance Stats */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {modelStats && Object.entries(modelStats).map(([model, stats]: [string, any]) => (
-            <Card key={model} className="cyber-card">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold cyber-text-glow">
-                  {stats?.accuracy || 0}%
-                </div>
-                <div className="text-sm text-muted-foreground uppercase">{model}</div>
-                <div className="text-xs text-primary">{stats?.speed || '0ms'}</div>
-                <Badge 
-                  variant={stats?.status === 'optimal' ? 'default' : 'secondary'}
-                  className="mt-2"
-                >
-                  {stats?.status || 'unknown'}
-                </Badge>
-              </CardContent>
-            </Card>
-          ))}
+          {modelStats &&
+            Object.entries(modelStats).map(([model, stats]: [string, any]) => (
+              <Card key={model} className="cyber-card">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold cyber-text-glow">
+                    {stats?.accuracy || 0}%
+                  </div>
+                  <div className="text-sm text-muted-foreground uppercase">
+                    {model}
+                  </div>
+                  <div className="text-xs text-primary">
+                    {stats?.speed || "0ms"}
+                  </div>
+                  <Badge
+                    variant={
+                      stats?.status === "optimal" ? "default" : "secondary"
+                    }
+                    className="mt-2"
+                  >
+                    {stats?.status || "unknown"}
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))}
         </div>
 
         {/* Real-time Analysis Feed */}
@@ -119,40 +145,58 @@ export default function AIAnalysisPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {(recentAnalysis as any[])?.map((analysis: any, index: number) => (
-                <div key={analysis.id} className="flex items-center justify-between p-4 cyber-card border border-primary/20">
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-3 h-3 rounded-full ${
-                      analysis.result.riskScore > 0.7 ? 'bg-red-500' : 
-                      analysis.result.riskScore > 0.4 ? 'bg-yellow-500' : 'bg-green-500'
-                    } cyber-pulse`} />
-                    <div>
-                      <div className="font-medium">{analysis.contentType}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {analysis.platformName} • {analysis.analysisType}
+              {(recentAnalysis as any[])?.map(
+                (analysis: any, index: number) => (
+                  <div
+                    key={analysis.id}
+                    className="flex items-center justify-between p-4 cyber-card border border-primary/20"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div
+                        className={`w-3 h-3 rounded-full ${
+                          analysis.result.riskScore > 0.7
+                            ? "bg-red-500"
+                            : analysis.result.riskScore > 0.4
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
+                        } cyber-pulse`}
+                      />
+                      <div>
+                        <div className="font-medium">
+                          {analysis.contentType}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {analysis.platformName} • {analysis.analysisType}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-bold text-lg">
-                      {(analysis.result.riskScore * 100).toFixed(1)}%
+                    <div className="text-right">
+                      <div className="font-bold text-lg">
+                        {(analysis.result.riskScore * 100).toFixed(1)}%
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {analysis.processingTime}ms
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {analysis.processingTime}ms
+                    <div className="flex items-center space-x-2">
+                      {analysis.result.riskScore > 0.7 ? (
+                        <AlertTriangle className="w-5 h-5 text-red-500" />
+                      ) : (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      )}
+                      <Badge
+                        variant={
+                          analysis.result.riskScore > 0.7
+                            ? "destructive"
+                            : "default"
+                        }
+                      >
+                        {analysis.result.recommendations[0]}
+                      </Badge>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {analysis.result.riskScore > 0.7 ? (
-                      <AlertTriangle className="w-5 h-5 text-red-500" />
-                    ) : (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    )}
-                    <Badge variant={analysis.result.riskScore > 0.7 ? 'destructive' : 'default'}>
-                      {analysis.result.recommendations[0]}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </CardContent>
         </Card>
@@ -237,7 +281,9 @@ export default function AIAnalysisPage() {
 
       {/* Interactive Analysis Testing */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-6 text-cyan-400">Interactive Content Analysis</h2>
+        <h2 className="text-2xl font-bold mb-6 text-cyan-400">
+          Interactive Content Analysis
+        </h2>
         <InteractiveAnalysisForm />
       </div>
     </div>

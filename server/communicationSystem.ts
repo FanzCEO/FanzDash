@@ -1,15 +1,15 @@
-import { EventEmitter } from 'events';
-import { WebSocketServer, WebSocket } from 'ws';
-import { randomUUID } from 'crypto';
-import { promises as fs } from 'fs';
-import { join } from 'path';
-import OpenAI from 'openai';
+import { EventEmitter } from "events";
+import { WebSocketServer, WebSocket } from "ws";
+import { randomUUID } from "crypto";
+import { promises as fs } from "fs";
+import { join } from "path";
+import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export interface Message {
   id: string;
-  type: 'text' | 'image' | 'video' | 'audio' | 'file' | 'system';
+  type: "text" | "image" | "video" | "audio" | "file" | "system";
   content: string;
   senderId: string;
   senderName: string;
@@ -31,10 +31,10 @@ export interface Message {
     userAgent?: string;
     platform?: string;
     encrypted: boolean;
-    priority: 'low' | 'normal' | 'high' | 'urgent';
+    priority: "low" | "normal" | "high" | "urgent";
   };
-  status: 'sent' | 'delivered' | 'read' | 'failed';
-  moderationStatus: 'pending' | 'approved' | 'rejected' | 'flagged';
+  status: "sent" | "delivered" | "read" | "failed";
+  moderationStatus: "pending" | "approved" | "rejected" | "flagged";
   moderationScore: number;
   flaggedReasons: string[];
 }
@@ -43,7 +43,7 @@ export interface Channel {
   id: string;
   name: string;
   description?: string;
-  type: 'public' | 'private' | 'direct' | 'group' | 'broadcast';
+  type: "public" | "private" | "direct" | "group" | "broadcast";
   members: string[];
   moderators: string[];
   settings: {
@@ -73,13 +73,13 @@ export interface User {
   username: string;
   displayName: string;
   avatar?: string;
-  status: 'online' | 'away' | 'busy' | 'offline';
+  status: "online" | "away" | "busy" | "offline";
   lastSeen: Date;
   preferences: {
     notifications: boolean;
     muteChannels: string[];
     blockedUsers: string[];
-    theme: 'light' | 'dark' | 'auto';
+    theme: "light" | "dark" | "auto";
     language: string;
   };
   permissions: {
@@ -92,7 +92,13 @@ export interface User {
 
 export interface Notification {
   id: string;
-  type: 'message' | 'mention' | 'reaction' | 'channel_invite' | 'system' | 'alert';
+  type:
+    | "message"
+    | "mention"
+    | "reaction"
+    | "channel_invite"
+    | "system"
+    | "alert";
   title: string;
   content: string;
   userId: string;
@@ -101,7 +107,7 @@ export interface Notification {
   messageId?: string;
   timestamp: Date;
   read: boolean;
-  priority: 'low' | 'normal' | 'high' | 'urgent';
+  priority: "low" | "normal" | "high" | "urgent";
   actions: Array<{
     label: string;
     action: string;
@@ -116,7 +122,7 @@ export interface EmailTemplate {
   html: string;
   text: string;
   variables: string[];
-  category: 'transactional' | 'marketing' | 'system' | 'notification';
+  category: "transactional" | "marketing" | "system" | "notification";
 }
 
 export class CommunicationSystem extends EventEmitter {
@@ -128,7 +134,7 @@ export class CommunicationSystem extends EventEmitter {
   private emailTemplates = new Map<string, EmailTemplate>();
   private wsServer?: WebSocketServer;
   private rateLimits = new Map<string, number[]>();
-  
+
   constructor() {
     super();
     this.setupDefaultChannels();
@@ -139,10 +145,10 @@ export class CommunicationSystem extends EventEmitter {
   private async setupDefaultChannels() {
     // Create default channels
     const generalChannel: Channel = {
-      id: 'general',
-      name: 'General',
-      description: 'General discussion channel',
-      type: 'public',
+      id: "general",
+      name: "General",
+      description: "General discussion channel",
+      type: "public",
       members: [],
       moderators: [],
       settings: {
@@ -153,19 +159,19 @@ export class CommunicationSystem extends EventEmitter {
         autoModeration: true,
         rateLimiting: { messagesPerMinute: 30, enabled: true },
         encryption: false,
-        retention: { enabled: true, days: 90 }
+        retention: { enabled: true, days: 90 },
       },
       created: new Date(),
       lastActivity: new Date(),
       messageCount: 0,
-      archived: false
+      archived: false,
     };
 
     const supportChannel: Channel = {
-      id: 'support',
-      name: 'Support',
-      description: 'Customer support channel',
-      type: 'public',
+      id: "support",
+      name: "Support",
+      description: "Customer support channel",
+      type: "public",
       members: [],
       moderators: [],
       settings: {
@@ -176,38 +182,38 @@ export class CommunicationSystem extends EventEmitter {
         autoModeration: true,
         rateLimiting: { messagesPerMinute: 10, enabled: true },
         encryption: false,
-        retention: { enabled: true, days: 365 }
+        retention: { enabled: true, days: 365 },
       },
       created: new Date(),
       lastActivity: new Date(),
       messageCount: 0,
-      archived: false
+      archived: false,
     };
 
-    this.channels.set('general', generalChannel);
-    this.channels.set('support', supportChannel);
+    this.channels.set("general", generalChannel);
+    this.channels.set("support", supportChannel);
   }
 
   private setupEmailTemplates() {
     const templates: EmailTemplate[] = [
       {
-        id: 'welcome',
-        name: 'Welcome Email',
-        subject: 'Welcome to Fanz™ Unlimited Network',
+        id: "welcome",
+        name: "Welcome Email",
+        subject: "Welcome to Fanz™ Unlimited Network",
         html: `
           <h1>Welcome {{displayName}}!</h1>
           <p>Thank you for joining Fanz™ Unlimited Network. We're excited to have you!</p>
           <p>Your account is now active and you can start exploring our platform.</p>
           <a href="{{platformUrl}}/dashboard">Get Started</a>
         `,
-        text: 'Welcome {{displayName}}! Thank you for joining Fanz™ Unlimited Network.',
-        variables: ['displayName', 'platformUrl'],
-        category: 'transactional'
+        text: "Welcome {{displayName}}! Thank you for joining Fanz™ Unlimited Network.",
+        variables: ["displayName", "platformUrl"],
+        category: "transactional",
       },
       {
-        id: 'password_reset',
-        name: 'Password Reset',
-        subject: 'Reset Your Password',
+        id: "password_reset",
+        name: "Password Reset",
+        subject: "Reset Your Password",
         html: `
           <h1>Password Reset Request</h1>
           <p>Hi {{displayName}},</p>
@@ -215,27 +221,27 @@ export class CommunicationSystem extends EventEmitter {
           <a href="{{resetUrl}}">Reset Password</a>
           <p>This link expires in 1 hour.</p>
         `,
-        text: 'Password reset requested. Visit: {{resetUrl}}',
-        variables: ['displayName', 'resetUrl'],
-        category: 'transactional'
+        text: "Password reset requested. Visit: {{resetUrl}}",
+        variables: ["displayName", "resetUrl"],
+        category: "transactional",
       },
       {
-        id: 'verification',
-        name: 'Email Verification',
-        subject: 'Verify Your Email Address',
+        id: "verification",
+        name: "Email Verification",
+        subject: "Verify Your Email Address",
         html: `
           <h1>Verify Your Email</h1>
           <p>Please click the link below to verify your email address:</p>
           <a href="{{verificationUrl}}">Verify Email</a>
         `,
-        text: 'Verify your email: {{verificationUrl}}',
-        variables: ['verificationUrl'],
-        category: 'transactional'
+        text: "Verify your email: {{verificationUrl}}",
+        variables: ["verificationUrl"],
+        category: "transactional",
       },
       {
-        id: 'moderation_alert',
-        name: 'Content Moderation Alert',
-        subject: 'Content Moderation Required',
+        id: "moderation_alert",
+        name: "Content Moderation Alert",
+        subject: "Content Moderation Required",
         html: `
           <h1>Content Flagged for Review</h1>
           <p>Content ID: {{contentId}}</p>
@@ -243,10 +249,10 @@ export class CommunicationSystem extends EventEmitter {
           <p>Confidence: {{confidence}}%</p>
           <a href="{{reviewUrl}}">Review Content</a>
         `,
-        text: 'Content {{contentId}} flagged for {{reason}}. Review: {{reviewUrl}}',
-        variables: ['contentId', 'reason', 'confidence', 'reviewUrl'],
-        category: 'system'
-      }
+        text: "Content {{contentId}} flagged for {{reason}}. Review: {{reviewUrl}}",
+        variables: ["contentId", "reason", "confidence", "reviewUrl"],
+        category: "system",
+      },
     ];
 
     for (const template of templates) {
@@ -271,13 +277,13 @@ export class CommunicationSystem extends EventEmitter {
     }, 300000);
   }
 
-  setupWebSocket(server: any, path: string = '/ws-chat') {
-    this.wsServer = new WebSocketServer({ 
-      server, 
-      path 
+  setupWebSocket(server: any, path: string = "/ws-chat") {
+    this.wsServer = new WebSocketServer({
+      server,
+      path,
     });
 
-    this.wsServer.on('connection', (ws, req) => {
+    this.wsServer.on("connection", (ws, req) => {
       this.handleWebSocketConnection(ws, req);
     });
   }
@@ -285,81 +291,99 @@ export class CommunicationSystem extends EventEmitter {
   private handleWebSocketConnection(ws: WebSocket, req: any) {
     const userId = this.extractUserFromRequest(req);
     if (!userId) {
-      ws.close(1008, 'Authentication required');
+      ws.close(1008, "Authentication required");
       return;
     }
 
     this.connections.set(userId, ws);
-    this.updateUserStatus(userId, 'online');
+    this.updateUserStatus(userId, "online");
 
-    ws.on('message', (data) => {
+    ws.on("message", (data) => {
       try {
         const message = JSON.parse(data.toString());
         this.handleWebSocketMessage(userId, message, ws);
       } catch (error) {
-        console.error('WebSocket message error:', error);
-        ws.send(JSON.stringify({ type: 'error', message: 'Invalid message format' }));
+        console.error("WebSocket message error:", error);
+        ws.send(
+          JSON.stringify({ type: "error", message: "Invalid message format" }),
+        );
       }
     });
 
-    ws.on('close', () => {
+    ws.on("close", () => {
       this.connections.delete(userId);
-      this.updateUserStatus(userId, 'offline');
+      this.updateUserStatus(userId, "offline");
     });
 
-    ws.on('pong', () => {
+    ws.on("pong", () => {
       // Update last seen
       this.updateUserLastSeen(userId);
     });
 
     // Send initial data
-    ws.send(JSON.stringify({
-      type: 'connected',
-      userId,
-      channels: this.getUserChannels(userId),
-      unreadCount: this.getUnreadCount(userId)
-    }));
+    ws.send(
+      JSON.stringify({
+        type: "connected",
+        userId,
+        channels: this.getUserChannels(userId),
+        unreadCount: this.getUnreadCount(userId),
+      }),
+    );
   }
 
-  private async handleWebSocketMessage(userId: string, message: any, ws: WebSocket) {
+  private async handleWebSocketMessage(
+    userId: string,
+    message: any,
+    ws: WebSocket,
+  ) {
     switch (message.type) {
-      case 'send_message':
-        await this.sendMessage(userId, message.channelId, message.content, message.messageType, message.attachments);
+      case "send_message":
+        await this.sendMessage(
+          userId,
+          message.channelId,
+          message.content,
+          message.messageType,
+          message.attachments,
+        );
         break;
-        
-      case 'join_channel':
+
+      case "join_channel":
         await this.joinChannel(userId, message.channelId);
         break;
-        
-      case 'leave_channel':
+
+      case "leave_channel":
         await this.leaveChannel(userId, message.channelId);
         break;
-        
-      case 'create_channel':
+
+      case "create_channel":
         await this.createChannel(userId, message.channelData);
         break;
-        
-      case 'react_to_message':
+
+      case "react_to_message":
         await this.addReaction(message.messageId, userId, message.emoji);
         break;
-        
-      case 'edit_message':
+
+      case "edit_message":
         await this.editMessage(message.messageId, userId, message.newContent);
         break;
-        
-      case 'delete_message':
+
+      case "delete_message":
         await this.deleteMessage(message.messageId, userId);
         break;
-        
-      case 'mark_read':
-        await this.markMessagesRead(userId, message.channelId, message.messageIds);
+
+      case "mark_read":
+        await this.markMessagesRead(
+          userId,
+          message.channelId,
+          message.messageIds,
+        );
         break;
-        
-      case 'typing':
+
+      case "typing":
         this.broadcastTyping(userId, message.channelId, message.isTyping);
         break;
-        
-      case 'update_status':
+
+      case "update_status":
         this.updateUserStatus(userId, message.status);
         break;
     }
@@ -369,23 +393,23 @@ export class CommunicationSystem extends EventEmitter {
     senderId: string,
     channelId: string,
     content: string,
-    type: Message['type'] = 'text',
-    attachments: Message['attachments'] = []
+    type: Message["type"] = "text",
+    attachments: Message["attachments"] = [],
   ): Promise<string> {
     const channel = this.channels.get(channelId);
     const sender = this.users.get(senderId);
 
     if (!channel || !sender) {
-      throw new Error('Channel or sender not found');
+      throw new Error("Channel or sender not found");
     }
 
     if (!channel.members.includes(senderId)) {
-      throw new Error('User not a member of channel');
+      throw new Error("User not a member of channel");
     }
 
     // Check rate limiting
     if (!this.checkRateLimit(senderId, channelId)) {
-      throw new Error('Rate limit exceeded');
+      throw new Error("Rate limit exceeded");
     }
 
     // Moderate content
@@ -404,12 +428,12 @@ export class CommunicationSystem extends EventEmitter {
       attachments,
       metadata: {
         encrypted: channel.settings.encryption,
-        priority: 'normal'
+        priority: "normal",
       },
-      status: 'sent',
-      moderationStatus: moderationResult.approved ? 'approved' : 'pending',
+      status: "sent",
+      moderationStatus: moderationResult.approved ? "approved" : "pending",
       moderationScore: moderationResult.score,
-      flaggedReasons: moderationResult.flags
+      flaggedReasons: moderationResult.flags,
     };
 
     this.messages.set(message.id, message);
@@ -418,14 +442,14 @@ export class CommunicationSystem extends EventEmitter {
 
     // Broadcast to channel members
     this.broadcastToChannel(channelId, {
-      type: 'new_message',
-      message
+      type: "new_message",
+      message,
     });
 
     // Send notifications
     await this.sendMessageNotifications(message);
 
-    this.emit('messageSent', message);
+    this.emit("messageSent", message);
     return message.id;
   }
 
@@ -433,12 +457,12 @@ export class CommunicationSystem extends EventEmitter {
     senderId: string,
     recipientId: string,
     content: string,
-    type: Message['type'] = 'text',
-    attachments: Message['attachments'] = []
+    type: Message["type"] = "text",
+    attachments: Message["attachments"] = [],
   ): Promise<string> {
     // Create or find direct message channel
     let channelId = this.findDirectMessageChannel(senderId, recipientId);
-    
+
     if (!channelId) {
       channelId = await this.createDirectMessageChannel(senderId, recipientId);
     }
@@ -446,19 +470,27 @@ export class CommunicationSystem extends EventEmitter {
     return this.sendMessage(senderId, channelId, content, type, attachments);
   }
 
-  private findDirectMessageChannel(user1: string, user2: string): string | undefined {
+  private findDirectMessageChannel(
+    user1: string,
+    user2: string,
+  ): string | undefined {
     for (const [channelId, channel] of this.channels.entries()) {
-      if (channel.type === 'direct' && 
-          channel.members.length === 2 &&
-          channel.members.includes(user1) && 
-          channel.members.includes(user2)) {
+      if (
+        channel.type === "direct" &&
+        channel.members.length === 2 &&
+        channel.members.includes(user1) &&
+        channel.members.includes(user2)
+      ) {
         return channelId;
       }
     }
     return undefined;
   }
 
-  private async createDirectMessageChannel(user1: string, user2: string): Promise<string> {
+  private async createDirectMessageChannel(
+    user1: string,
+    user2: string,
+  ): Promise<string> {
     const channelId = randomUUID();
     const user1Data = this.users.get(user1);
     const user2Data = this.users.get(user2);
@@ -466,7 +498,7 @@ export class CommunicationSystem extends EventEmitter {
     const channel: Channel = {
       id: channelId,
       name: `${user1Data?.displayName} & ${user2Data?.displayName}`,
-      type: 'direct',
+      type: "direct",
       members: [user1, user2],
       moderators: [],
       settings: {
@@ -477,17 +509,17 @@ export class CommunicationSystem extends EventEmitter {
         autoModeration: true,
         rateLimiting: { messagesPerMinute: 60, enabled: true },
         encryption: true,
-        retention: { enabled: true, days: 365 }
+        retention: { enabled: true, days: 365 },
       },
       created: new Date(),
       lastActivity: new Date(),
       messageCount: 0,
-      archived: false
+      archived: false,
     };
 
     this.channels.set(channelId, channel);
-    this.emit('channelCreated', channel);
-    
+    this.emit("channelCreated", channel);
+
     return channelId;
   }
 
@@ -496,18 +528,18 @@ export class CommunicationSystem extends EventEmitter {
     channelData: {
       name: string;
       description?: string;
-      type: Channel['type'];
+      type: Channel["type"];
       isPrivate?: boolean;
-      settings?: Partial<Channel['settings']>;
-    }
+      settings?: Partial<Channel["settings"]>;
+    },
   ): Promise<string> {
     const creator = this.users.get(creatorId);
     if (!creator || !creator.permissions.canCreateChannels) {
-      throw new Error('User cannot create channels');
+      throw new Error("User cannot create channels");
     }
 
     const channelId = randomUUID();
-    const defaultSettings: Channel['settings'] = {
+    const defaultSettings: Channel["settings"] = {
       maxMembers: 1000,
       requireApproval: channelData.isPrivate || false,
       allowFiles: true,
@@ -515,7 +547,7 @@ export class CommunicationSystem extends EventEmitter {
       autoModeration: true,
       rateLimiting: { messagesPerMinute: 30, enabled: true },
       encryption: channelData.isPrivate || false,
-      retention: { enabled: true, days: 90 }
+      retention: { enabled: true, days: 90 },
     };
 
     const channel: Channel = {
@@ -529,12 +561,12 @@ export class CommunicationSystem extends EventEmitter {
       created: new Date(),
       lastActivity: new Date(),
       messageCount: 0,
-      archived: false
+      archived: false,
     };
 
     this.channels.set(channelId, channel);
-    this.emit('channelCreated', channel);
-    
+    this.emit("channelCreated", channel);
+
     return channelId;
   }
 
@@ -546,7 +578,10 @@ export class CommunicationSystem extends EventEmitter {
     if (channel.members.includes(userId)) return true;
 
     // Check if channel requires approval
-    if (channel.settings.requireApproval && !channel.moderators.includes(userId)) {
+    if (
+      channel.settings.requireApproval &&
+      !channel.moderators.includes(userId)
+    ) {
       // Send join request to moderators
       await this.sendJoinRequest(userId, channelId);
       return false;
@@ -561,12 +596,12 @@ export class CommunicationSystem extends EventEmitter {
     channel.lastActivity = new Date();
 
     this.broadcastToChannel(channelId, {
-      type: 'user_joined',
+      type: "user_joined",
       userId,
-      username: user.displayName
+      username: user.displayName,
     });
 
-    this.emit('userJoinedChannel', channel, user);
+    this.emit("userJoinedChannel", channel, user);
     return true;
   }
 
@@ -578,7 +613,7 @@ export class CommunicationSystem extends EventEmitter {
     if (memberIndex === -1) return false;
 
     channel.members.splice(memberIndex, 1);
-    
+
     // Remove from moderators if applicable
     const modIndex = channel.moderators.indexOf(userId);
     if (modIndex !== -1) {
@@ -586,25 +621,28 @@ export class CommunicationSystem extends EventEmitter {
     }
 
     // If no members left, archive the channel (except for direct messages)
-    if (channel.members.length === 0 && channel.type !== 'direct') {
+    if (channel.members.length === 0 && channel.type !== "direct") {
       channel.archived = true;
     }
 
     this.broadcastToChannel(channelId, {
-      type: 'user_left',
-      userId
+      type: "user_left",
+      userId,
     });
 
-    this.emit('userLeftChannel', channel, userId);
+    this.emit("userLeftChannel", channel, userId);
     return true;
   }
 
-  private async moderateContent(content: string, type: Message['type']): Promise<{
+  private async moderateContent(
+    content: string,
+    type: Message["type"],
+  ): Promise<{
     approved: boolean;
     score: number;
     flags: string[];
   }> {
-    if (type !== 'text') {
+    if (type !== "text") {
       // For non-text content, assume approved for now
       // In practice, this would analyze images/videos/files
       return { approved: true, score: 0, flags: [] };
@@ -627,43 +665,49 @@ export class CommunicationSystem extends EventEmitter {
             Return JSON with:
             - score: 0-100 (higher = more problematic)
             - flags: array of detected issues
-            - approved: boolean (score < 70)`
+            - approved: boolean (score < 70)`,
           },
           {
             role: "user",
-            content
-          }
+            content,
+          },
         ],
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
       });
 
       const result = JSON.parse(response.choices[0].message.content!);
       return {
         approved: result.approved || result.score < 70,
         score: result.score || 0,
-        flags: result.flags || []
+        flags: result.flags || [],
       };
     } catch (error) {
-      console.error('Content moderation error:', error);
+      console.error("Content moderation error:", error);
       // Default to approved if moderation fails
       return { approved: true, score: 0, flags: [] };
     }
   }
 
-  async addReaction(messageId: string, userId: string, emoji: string): Promise<boolean> {
+  async addReaction(
+    messageId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<boolean> {
     const message = this.messages.get(messageId);
     if (!message) return false;
 
-    let reaction = message.reactions.find(r => r.emoji === emoji);
-    
+    let reaction = message.reactions.find((r) => r.emoji === emoji);
+
     if (reaction) {
       if (reaction.users.includes(userId)) {
         // Remove reaction
-        reaction.users = reaction.users.filter(u => u !== userId);
+        reaction.users = reaction.users.filter((u) => u !== userId);
         reaction.count = reaction.users.length;
-        
+
         if (reaction.count === 0) {
-          message.reactions = message.reactions.filter(r => r.emoji !== emoji);
+          message.reactions = message.reactions.filter(
+            (r) => r.emoji !== emoji,
+          );
         }
       } else {
         // Add reaction
@@ -675,40 +719,49 @@ export class CommunicationSystem extends EventEmitter {
       message.reactions.push({
         emoji,
         users: [userId],
-        count: 1
+        count: 1,
       });
     }
 
     this.broadcastToChannel(message.channelId!, {
-      type: 'message_reaction',
+      type: "message_reaction",
       messageId,
-      reactions: message.reactions
+      reactions: message.reactions,
     });
 
-    this.emit('reactionAdded', message, emoji, userId);
+    this.emit("reactionAdded", message, emoji, userId);
     return true;
   }
 
-  async editMessage(messageId: string, userId: string, newContent: string): Promise<boolean> {
+  async editMessage(
+    messageId: string,
+    userId: string,
+    newContent: string,
+  ): Promise<boolean> {
     const message = this.messages.get(messageId);
     if (!message || message.senderId !== userId) return false;
 
-    const moderationResult = await this.moderateContent(newContent, message.type);
-    
+    const moderationResult = await this.moderateContent(
+      newContent,
+      message.type,
+    );
+
     message.content = newContent;
     message.edited = new Date();
-    message.moderationStatus = moderationResult.approved ? 'approved' : 'pending';
+    message.moderationStatus = moderationResult.approved
+      ? "approved"
+      : "pending";
     message.moderationScore = moderationResult.score;
     message.flaggedReasons = moderationResult.flags;
 
     this.broadcastToChannel(message.channelId!, {
-      type: 'message_edited',
+      type: "message_edited",
       messageId,
       newContent,
-      edited: message.edited
+      edited: message.edited,
     });
 
-    this.emit('messageEdited', message);
+    this.emit("messageEdited", message);
     return true;
   }
 
@@ -717,33 +770,36 @@ export class CommunicationSystem extends EventEmitter {
     if (!message) return false;
 
     const channel = this.channels.get(message.channelId!);
-    const canDelete = message.senderId === userId || 
-                     (channel && channel.moderators.includes(userId));
+    const canDelete =
+      message.senderId === userId ||
+      (channel && channel.moderators.includes(userId));
 
     if (!canDelete) return false;
 
     this.messages.delete(messageId);
-    
+
     if (channel) {
       channel.messageCount = Math.max(0, channel.messageCount - 1);
     }
 
     this.broadcastToChannel(message.channelId!, {
-      type: 'message_deleted',
-      messageId
+      type: "message_deleted",
+      messageId,
     });
 
-    this.emit('messageDeleted', message);
+    this.emit("messageDeleted", message);
     return true;
   }
 
-  async sendNotification(notification: Omit<Notification, 'id' | 'timestamp' | 'read'>): Promise<string> {
+  async sendNotification(
+    notification: Omit<Notification, "id" | "timestamp" | "read">,
+  ): Promise<string> {
     const notificationId = randomUUID();
     const fullNotification: Notification = {
       ...notification,
       id: notificationId,
       timestamp: new Date(),
-      read: false
+      read: false,
     };
 
     this.notifications.set(notificationId, fullNotification);
@@ -751,21 +807,23 @@ export class CommunicationSystem extends EventEmitter {
     // Send via WebSocket if user is connected
     const connection = this.connections.get(notification.userId);
     if (connection && connection.readyState === WebSocket.OPEN) {
-      connection.send(JSON.stringify({
-        type: 'notification',
-        notification: fullNotification
-      }));
+      connection.send(
+        JSON.stringify({
+          type: "notification",
+          notification: fullNotification,
+        }),
+      );
     }
 
     // Send email notification if high priority
-    if (['high', 'urgent'].includes(notification.priority)) {
+    if (["high", "urgent"].includes(notification.priority)) {
       await this.sendEmailNotification(fullNotification);
     }
 
     // Send push notification
     await this.sendPushNotification(fullNotification);
 
-    this.emit('notificationSent', fullNotification);
+    this.emit("notificationSent", fullNotification);
     return notificationId;
   }
 
@@ -775,9 +833,9 @@ export class CommunicationSystem extends EventEmitter {
     variables: Record<string, string>,
     options: {
       from?: string;
-      priority?: 'low' | 'normal' | 'high';
+      priority?: "low" | "normal" | "high";
       category?: string;
-    } = {}
+    } = {},
   ): Promise<boolean> {
     const template = this.emailTemplates.get(templateId);
     if (!template) {
@@ -791,34 +849,34 @@ export class CommunicationSystem extends EventEmitter {
     // Replace variables
     for (const [key, value] of Object.entries(variables)) {
       const placeholder = `{{${key}}}`;
-      subject = subject.replace(new RegExp(placeholder, 'g'), value);
-      html = html.replace(new RegExp(placeholder, 'g'), value);
-      text = text.replace(new RegExp(placeholder, 'g'), value);
+      subject = subject.replace(new RegExp(placeholder, "g"), value);
+      html = html.replace(new RegExp(placeholder, "g"), value);
+      text = text.replace(new RegExp(placeholder, "g"), value);
     }
 
     try {
       // In a real implementation, this would integrate with an email service
       // For now, we'll simulate email sending
-      console.log('Sending email:', {
+      console.log("Sending email:", {
         to,
         subject,
         html,
         text,
-        from: options.from || 'noreply@fanzunlimited.com',
-        priority: options.priority || 'normal',
-        category: options.category || template.category
+        from: options.from || "noreply@fanzunlimited.com",
+        priority: options.priority || "normal",
+        category: options.category || template.category,
       });
 
-      this.emit('emailSent', {
+      this.emit("emailSent", {
         to,
         templateId,
         subject,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
 
       return true;
     } catch (error) {
-      console.error('Email sending failed:', error);
+      console.error("Email sending failed:", error);
       return false;
     }
   }
@@ -828,17 +886,17 @@ export class CommunicationSystem extends EventEmitter {
     if (!user || !user.preferences.notifications) return;
 
     // Use appropriate email template based on notification type
-    let templateId = 'notification_generic';
-    
+    let templateId = "notification_generic";
+
     switch (notification.type) {
-      case 'message':
-        templateId = 'new_message';
+      case "message":
+        templateId = "new_message";
         break;
-      case 'mention':
-        templateId = 'mention';
+      case "mention":
+        templateId = "mention";
         break;
-      case 'system':
-        templateId = 'system_alert';
+      case "system":
+        templateId = "system_alert";
         break;
     }
 
@@ -846,20 +904,20 @@ export class CommunicationSystem extends EventEmitter {
       displayName: user.displayName,
       title: notification.title,
       content: notification.content,
-      timestamp: notification.timestamp.toLocaleString()
+      timestamp: notification.timestamp.toLocaleString(),
     });
   }
 
   private async sendPushNotification(notification: Notification) {
     // In a real implementation, this would integrate with push notification services
-    console.log('Push notification:', {
+    console.log("Push notification:", {
       userId: notification.userId,
       title: notification.title,
       content: notification.content,
-      priority: notification.priority
+      priority: notification.priority,
     });
 
-    this.emit('pushNotificationSent', notification);
+    this.emit("pushNotificationSent", notification);
   }
 
   private async sendMessageNotifications(message: Message) {
@@ -877,26 +935,35 @@ export class CommunicationSystem extends EventEmitter {
       if (user.preferences.muteChannels.includes(message.channelId)) continue;
 
       // Check if user is mentioned
-      const isMentioned = message.content.includes(`@${user.username}`) || 
-                         message.content.includes('@everyone') ||
-                         message.content.includes('@here');
+      const isMentioned =
+        message.content.includes(`@${user.username}`) ||
+        message.content.includes("@everyone") ||
+        message.content.includes("@here");
 
-      const notificationType = isMentioned ? 'mention' : 'message';
-      const priority = isMentioned ? 'high' : 'normal';
+      const notificationType = isMentioned ? "mention" : "message";
+      const priority = isMentioned ? "high" : "normal";
 
       await this.sendNotification({
         type: notificationType,
-        title: isMentioned ? 'You were mentioned' : 'New message',
+        title: isMentioned ? "You were mentioned" : "New message",
         content: `${message.senderName}: ${message.content.substring(0, 100)}`,
         userId: memberId,
         fromUserId: message.senderId,
         channelId: message.channelId,
         messageId: message.id,
-        priority: priority as Notification['priority'],
+        priority: priority as Notification["priority"],
         actions: [
-          { label: 'View', action: 'view_message', data: { messageId: message.id } },
-          { label: 'Reply', action: 'reply_message', data: { messageId: message.id } }
-        ]
+          {
+            label: "View",
+            action: "view_message",
+            data: { messageId: message.id },
+          },
+          {
+            label: "Reply",
+            action: "reply_message",
+            data: { messageId: message.id },
+          },
+        ],
       });
     }
   }
@@ -915,17 +982,17 @@ export class CommunicationSystem extends EventEmitter {
     }
 
     const timestamps = this.rateLimits.get(key)!;
-    
+
     // Remove old timestamps outside the window
-    const validTimestamps = timestamps.filter(ts => now - ts < windowMs);
-    
+    const validTimestamps = timestamps.filter((ts) => now - ts < windowMs);
+
     if (validTimestamps.length >= limit) {
       return false;
     }
 
     validTimestamps.push(now);
     this.rateLimits.set(key, validTimestamps);
-    
+
     return true;
   }
 
@@ -941,16 +1008,20 @@ export class CommunicationSystem extends EventEmitter {
     }
   }
 
-  private broadcastTyping(userId: string, channelId: string, isTyping: boolean) {
+  private broadcastTyping(
+    userId: string,
+    channelId: string,
+    isTyping: boolean,
+  ) {
     this.broadcastToChannel(channelId, {
-      type: 'typing',
+      type: "typing",
       userId,
       channelId,
-      isTyping
+      isTyping,
     });
   }
 
-  private updateUserStatus(userId: string, status: User['status']) {
+  private updateUserStatus(userId: string, status: User["status"]) {
     const user = this.users.get(userId);
     if (user) {
       user.status = status;
@@ -958,9 +1029,9 @@ export class CommunicationSystem extends EventEmitter {
 
       // Broadcast status update
       this.broadcast({
-        type: 'user_status',
+        type: "user_status",
         userId,
-        status
+        status,
       });
     }
   }
@@ -983,56 +1054,68 @@ export class CommunicationSystem extends EventEmitter {
   private extractUserFromRequest(req: any): string | undefined {
     // In a real implementation, this would extract user ID from JWT or session
     // For now, return mock user ID
-    return req.headers['x-user-id'] || req.url.searchParams?.get('userId');
+    return req.headers["x-user-id"] || req.url.searchParams?.get("userId");
   }
 
   private getUserChannels(userId: string): Channel[] {
-    return Array.from(this.channels.values())
-      .filter(channel => channel.members.includes(userId));
+    return Array.from(this.channels.values()).filter((channel) =>
+      channel.members.includes(userId),
+    );
   }
 
   private getUnreadCount(userId: string): number {
-    return Array.from(this.notifications.values())
-      .filter(n => n.userId === userId && !n.read).length;
+    return Array.from(this.notifications.values()).filter(
+      (n) => n.userId === userId && !n.read,
+    ).length;
   }
 
   private async sendJoinRequest(userId: string, channelId: string) {
     const channel = this.channels.get(channelId);
     const user = this.users.get(userId);
-    
+
     if (!channel || !user) return;
 
     // Send notification to moderators
     for (const moderatorId of channel.moderators) {
       await this.sendNotification({
-        type: 'channel_invite',
-        title: 'Channel Join Request',
+        type: "channel_invite",
+        title: "Channel Join Request",
         content: `${user.displayName} wants to join ${channel.name}`,
         userId: moderatorId,
         fromUserId: userId,
         channelId,
-        priority: 'normal',
+        priority: "normal",
         actions: [
-          { label: 'Approve', action: 'approve_join', data: { userId, channelId } },
-          { label: 'Deny', action: 'deny_join', data: { userId, channelId } }
-        ]
+          {
+            label: "Approve",
+            action: "approve_join",
+            data: { userId, channelId },
+          },
+          { label: "Deny", action: "deny_join", data: { userId, channelId } },
+        ],
       });
     }
   }
 
-  private async markMessagesRead(userId: string, channelId: string, messageIds: string[]) {
+  private async markMessagesRead(
+    userId: string,
+    channelId: string,
+    messageIds: string[],
+  ) {
     for (const messageId of messageIds) {
       const message = this.messages.get(messageId);
       if (message && message.channelId === channelId) {
-        message.status = 'read';
+        message.status = "read";
       }
     }
 
     // Mark related notifications as read
     for (const notification of this.notifications.values()) {
-      if (notification.userId === userId && 
-          notification.channelId === channelId &&
-          messageIds.includes(notification.messageId || '')) {
+      if (
+        notification.userId === userId &&
+        notification.channelId === channelId &&
+        messageIds.includes(notification.messageId || "")
+      ) {
         notification.read = true;
       }
     }
@@ -1040,10 +1123,10 @@ export class CommunicationSystem extends EventEmitter {
 
   private cleanOldMessages() {
     const now = new Date();
-    
+
     for (const [messageId, message] of this.messages.entries()) {
       if (!message.channelId) continue;
-      
+
       const channel = this.channels.get(message.channelId);
       if (!channel || !channel.settings.retention.enabled) continue;
 
@@ -1060,7 +1143,7 @@ export class CommunicationSystem extends EventEmitter {
     const windowMs = 60000; // 1 minute
 
     for (const [key, timestamps] of this.rateLimits.entries()) {
-      const validTimestamps = timestamps.filter(ts => now - ts < windowMs);
+      const validTimestamps = timestamps.filter((ts) => now - ts < windowMs);
       if (validTimestamps.length === 0) {
         this.rateLimits.delete(key);
       } else {
@@ -1074,14 +1157,16 @@ export class CommunicationSystem extends EventEmitter {
     const offlineThreshold = 5 * 60 * 1000; // 5 minutes
 
     for (const user of this.users.values()) {
-      if (user.status === 'online' && 
-          now.getTime() - user.lastSeen.getTime() > offlineThreshold) {
-        user.status = 'offline';
-        
+      if (
+        user.status === "online" &&
+        now.getTime() - user.lastSeen.getTime() > offlineThreshold
+      ) {
+        user.status = "offline";
+
         this.broadcast({
-          type: 'user_status',
+          type: "user_status",
           userId: user.id,
-          status: 'offline'
+          status: "offline",
         });
       }
     }
@@ -1100,13 +1185,17 @@ export class CommunicationSystem extends EventEmitter {
     return this.messages.get(messageId);
   }
 
-  getChannelMessages(channelId: string, limit: number = 50, before?: string): Message[] {
+  getChannelMessages(
+    channelId: string,
+    limit: number = 50,
+    before?: string,
+  ): Message[] {
     const messages = Array.from(this.messages.values())
-      .filter(m => m.channelId === channelId)
+      .filter((m) => m.channelId === channelId)
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
     if (before) {
-      const beforeIndex = messages.findIndex(m => m.id === before);
+      const beforeIndex = messages.findIndex((m) => m.id === before);
       if (beforeIndex !== -1) {
         return messages.slice(beforeIndex + 1, beforeIndex + 1 + limit);
       }
@@ -1125,7 +1214,7 @@ export class CommunicationSystem extends EventEmitter {
 
   getNotifications(userId: string, limit: number = 20): Notification[] {
     return Array.from(this.notifications.values())
-      .filter(n => n.userId === userId)
+      .filter((n) => n.userId === userId)
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(0, limit);
   }
@@ -1137,7 +1226,7 @@ export class CommunicationSystem extends EventEmitter {
       users: this.users.size,
       notifications: this.notifications.size,
       activeConnections: this.connections.size,
-      emailTemplates: this.emailTemplates.size
+      emailTemplates: this.emailTemplates.size,
     };
   }
 }

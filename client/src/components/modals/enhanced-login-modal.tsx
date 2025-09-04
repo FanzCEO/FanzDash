@@ -1,21 +1,26 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Mail, 
-  Lock, 
-  User, 
-  Eye, 
-  EyeOff, 
+import {
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
   Loader2,
   AlertTriangle,
   LogIn,
-  UserPlus
+  UserPlus,
 } from "lucide-react";
 import { SiFacebook, SiGoogle } from "react-icons/si";
 import { FaXTwitter } from "react-icons/fa6";
@@ -25,7 +30,7 @@ interface LoginModalProps {
   onClose: () => void;
   onLogin: (credentials: LoginData) => Promise<void>;
   onRegister: (userData: RegisterData) => Promise<void>;
-  onSocialLogin: (provider: 'facebook' | 'google' | 'twitter') => void;
+  onSocialLogin: (provider: "facebook" | "google" | "twitter") => void;
   settings: {
     facebookLogin: boolean;
     googleLogin: boolean;
@@ -63,7 +68,7 @@ export function EnhancedLoginModal({
   settings,
   isProfileAccess = false,
   profileUsername,
-  className = ""
+  className = "",
 }: LoginModalProps) {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -75,7 +80,7 @@ export function EnhancedLoginModal({
   const [loginData, setLoginData] = useState<LoginData>({
     usernameOrEmail: "",
     password: "",
-    remember: false
+    remember: false,
   });
 
   // Register form state
@@ -83,10 +88,11 @@ export function EnhancedLoginModal({
     name: "",
     email: "",
     password: "",
-    agreeToTerms: false
+    agreeToTerms: false,
   });
 
-  const hasSocialLogin = settings.facebookLogin || settings.googleLogin || settings.twitterLogin;
+  const hasSocialLogin =
+    settings.facebookLogin || settings.googleLogin || settings.twitterLogin;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,7 +109,11 @@ export function EnhancedLoginModal({
         await onLogin(loginData);
         onClose();
       } else {
-        if (!registerData.name || !registerData.email || !registerData.password) {
+        if (
+          !registerData.name ||
+          !registerData.email ||
+          !registerData.password
+        ) {
           setError("Please fill in all required fields");
           return;
         }
@@ -112,7 +122,9 @@ export function EnhancedLoginModal({
           return;
         }
         await onRegister(registerData);
-        setSuccess("Account created successfully! Please check your email for verification.");
+        setSuccess(
+          "Account created successfully! Please check your email for verification.",
+        );
       }
     } catch (err: any) {
       setError(err.message || "An error occurred. Please try again.");
@@ -145,12 +157,11 @@ export function EnhancedLoginModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center">
-            {isProfileAccess 
-              ? "Login to Continue" 
-              : isLoginMode 
-                ? "Welcome Back" 
-                : "Create Account"
-            }
+            {isProfileAccess
+              ? "Login to Continue"
+              : isLoginMode
+                ? "Welcome Back"
+                : "Create Account"}
             {profileUsername && (
               <p className="text-sm font-normal text-muted-foreground mt-1">
                 Access @{profileUsername}'s profile
@@ -167,7 +178,7 @@ export function EnhancedLoginModal({
                 {settings.facebookLogin && (
                   <Button
                     variant="outline"
-                    onClick={() => onSocialLogin('facebook')}
+                    onClick={() => onSocialLogin("facebook")}
                     className="w-full"
                     data-testid="facebook-login-btn"
                   >
@@ -179,7 +190,7 @@ export function EnhancedLoginModal({
                 {settings.twitterLogin && (
                   <Button
                     variant="outline"
-                    onClick={() => onSocialLogin('twitter')}
+                    onClick={() => onSocialLogin("twitter")}
                     className="w-full"
                     data-testid="twitter-login-btn"
                   >
@@ -191,7 +202,7 @@ export function EnhancedLoginModal({
                 {settings.googleLogin && (
                   <Button
                     variant="outline"
-                    onClick={() => onSocialLogin('google')}
+                    onClick={() => onSocialLogin("google")}
                     className="w-full"
                     data-testid="google-login-btn"
                   >
@@ -228,7 +239,12 @@ export function EnhancedLoginModal({
                         id="name"
                         type="text"
                         value={registerData.name}
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) =>
+                          setRegisterData((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         className="pl-10"
                         placeholder="Enter your full name"
                         data-testid="register-name-input"
@@ -244,7 +260,12 @@ export function EnhancedLoginModal({
                         id="email"
                         type="email"
                         value={registerData.email}
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
+                        onChange={(e) =>
+                          setRegisterData((prev) => ({
+                            ...prev,
+                            email: e.target.value,
+                          }))
+                        }
                         className="pl-10"
                         placeholder="Enter your email address"
                         data-testid="register-email-input"
@@ -264,7 +285,12 @@ export function EnhancedLoginModal({
                       id="username-email"
                       type="text"
                       value={loginData.usernameOrEmail}
-                      onChange={(e) => setLoginData(prev => ({ ...prev, usernameOrEmail: e.target.value }))}
+                      onChange={(e) =>
+                        setLoginData((prev) => ({
+                          ...prev,
+                          usernameOrEmail: e.target.value,
+                        }))
+                      }
                       className="pl-10"
                       placeholder="Enter username or email"
                       data-testid="login-username-input"
@@ -281,12 +307,20 @@ export function EnhancedLoginModal({
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    value={isLoginMode ? loginData.password : registerData.password}
+                    value={
+                      isLoginMode ? loginData.password : registerData.password
+                    }
                     onChange={(e) => {
                       if (isLoginMode) {
-                        setLoginData(prev => ({ ...prev, password: e.target.value }));
+                        setLoginData((prev) => ({
+                          ...prev,
+                          password: e.target.value,
+                        }));
                       } else {
-                        setRegisterData(prev => ({ ...prev, password: e.target.value }));
+                        setRegisterData((prev) => ({
+                          ...prev,
+                          password: e.target.value,
+                        }));
                       }
                     }}
                     className="pl-10 pr-10"
@@ -308,7 +342,7 @@ export function EnhancedLoginModal({
                     )}
                   </Button>
                 </div>
-                
+
                 {isLoginMode && (
                   <div className="text-right">
                     <Button
@@ -334,8 +368,11 @@ export function EnhancedLoginModal({
                     <Checkbox
                       id="remember"
                       checked={loginData.remember}
-                      onCheckedChange={(checked) => 
-                        setLoginData(prev => ({ ...prev, remember: checked as boolean }))
+                      onCheckedChange={(checked) =>
+                        setLoginData((prev) => ({
+                          ...prev,
+                          remember: checked as boolean,
+                        }))
                       }
                       data-testid="remember-checkbox"
                     />
@@ -348,18 +385,29 @@ export function EnhancedLoginModal({
                     <Checkbox
                       id="agree-terms"
                       checked={registerData.agreeToTerms}
-                      onCheckedChange={(checked) => 
-                        setRegisterData(prev => ({ ...prev, agreeToTerms: checked as boolean }))
+                      onCheckedChange={(checked) =>
+                        setRegisterData((prev) => ({
+                          ...prev,
+                          agreeToTerms: checked as boolean,
+                        }))
                       }
                       data-testid="terms-checkbox"
                     />
                     <Label htmlFor="agree-terms" className="text-sm leading-5">
                       I agree to the{" "}
-                      <a href={settings.termsLink} target="_blank" className="text-primary hover:underline">
+                      <a
+                        href={settings.termsLink}
+                        target="_blank"
+                        className="text-primary hover:underline"
+                      >
                         Terms & Conditions
-                      </a>
-                      {" "}and{" "}
-                      <a href={settings.privacyLink} target="_blank" className="text-primary hover:underline">
+                      </a>{" "}
+                      and{" "}
+                      <a
+                        href={settings.privacyLink}
+                        target="_blank"
+                        className="text-primary hover:underline"
+                      >
                         Privacy Policy
                       </a>
                     </Label>
@@ -436,10 +484,9 @@ export function EnhancedLoginModal({
                 data-testid="toggle-mode-btn"
               >
                 <strong>
-                  {isLoginMode 
-                    ? "Don't have an account?" 
-                    : "Already have an account?"
-                  }
+                  {isLoginMode
+                    ? "Don't have an account?"
+                    : "Already have an account?"}
                 </strong>
               </Button>
             </div>
@@ -450,11 +497,19 @@ export function EnhancedLoginModal({
             <div className="text-center">
               <p className="text-xs text-muted-foreground">
                 This site is protected by reCAPTCHA.{" "}
-                <a href="https://policies.google.com/privacy" target="_blank" className="text-primary hover:underline">
+                <a
+                  href="https://policies.google.com/privacy"
+                  target="_blank"
+                  className="text-primary hover:underline"
+                >
                   Privacy
-                </a>
-                {" "}•{" "}
-                <a href="https://policies.google.com/terms" target="_blank" className="text-primary hover:underline">
+                </a>{" "}
+                •{" "}
+                <a
+                  href="https://policies.google.com/terms"
+                  target="_blank"
+                  className="text-primary hover:underline"
+                >
                   Terms
                 </a>
               </p>

@@ -5,24 +5,29 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Search,
   Filter,
   MoreHorizontal,
@@ -49,7 +54,7 @@ import {
   Archive,
   UserCheck,
   Settings,
-  Zap
+  Zap,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -68,8 +73,8 @@ interface SupportTicket {
   categoryName: string;
   subject: string;
   description: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'open' | 'pending' | 'resolved' | 'closed';
+  priority: "low" | "medium" | "high" | "urgent";
+  status: "open" | "pending" | "resolved" | "closed";
   source: string;
   tags: string[];
   messageCount: number;
@@ -87,10 +92,10 @@ interface TicketMessage {
   ticketId: string;
   authorId: string;
   authorName: string;
-  authorType: 'customer' | 'agent' | 'system';
+  authorType: "customer" | "agent" | "system";
   authorAvatar?: string;
   message: string;
-  messageType: 'reply' | 'note' | 'status_change';
+  messageType: "reply" | "note" | "status_change";
   attachments: Array<{
     id: string;
     name: string;
@@ -129,7 +134,11 @@ interface TicketManagementDashboardProps {
   onAssignTicket: (ticketId: string, agentId: string) => Promise<void>;
   onUpdateTicketStatus: (ticketId: string, status: string) => Promise<void>;
   onUpdateTicketPriority: (ticketId: string, priority: string) => Promise<void>;
-  onAddTicketMessage: (ticketId: string, message: string, isInternal: boolean) => Promise<void>;
+  onAddTicketMessage: (
+    ticketId: string,
+    message: string,
+    isInternal: boolean,
+  ) => Promise<void>;
   onLoadTicketMessages: (ticketId: string) => Promise<TicketMessage[]>;
   currentUser: {
     id: string;
@@ -159,37 +168,49 @@ export function TicketManagementDashboard({
   onLoadTicketMessages,
   currentUser,
   stats,
-  className = ""
+  className = "",
 }: TicketManagementDashboardProps) {
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(
+    null,
+  );
   const [ticketMessages, setTicketMessages] = useState<TicketMessage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPriority, setFilterPriority] = useState("all");
   const [filterDepartment, setFilterDepartment] = useState("all");
   const [newMessage, setNewMessage] = useState("");
-  const [messageType, setMessageType] = useState<'reply' | 'note'>('reply');
+  const [messageType, setMessageType] = useState<"reply" | "note">("reply");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
 
-  const filteredTickets = tickets.filter(ticket => {
-    const matchesSearch = 
+  const filteredTickets = tickets.filter((ticket) => {
+    const matchesSearch =
       ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.ticketNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.customerEmail.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = filterStatus === "all" || ticket.status === filterStatus;
-    const matchesPriority = filterPriority === "all" || ticket.priority === filterPriority;
-    const matchesDepartment = filterDepartment === "all" || ticket.departmentId === filterDepartment;
+
+    const matchesStatus =
+      filterStatus === "all" || ticket.status === filterStatus;
+    const matchesPriority =
+      filterPriority === "all" || ticket.priority === filterPriority;
+    const matchesDepartment =
+      filterDepartment === "all" || ticket.departmentId === filterDepartment;
 
     // Role-based filtering
-    const canView = currentUser.role === 'admin' || 
-                   currentUser.role === 'supervisor' ||
-                   ticket.departmentId === currentUser.departmentId ||
-                   ticket.assignedAgentId === currentUser.id;
+    const canView =
+      currentUser.role === "admin" ||
+      currentUser.role === "supervisor" ||
+      ticket.departmentId === currentUser.departmentId ||
+      ticket.assignedAgentId === currentUser.id;
 
-    return matchesSearch && matchesStatus && matchesPriority && matchesDepartment && canView;
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesPriority &&
+      matchesDepartment &&
+      canView
+    );
   });
 
   const loadTicketMessages = async (ticket: SupportTicket) => {
@@ -198,7 +219,7 @@ export function TicketManagementDashboard({
       const messages = await onLoadTicketMessages(ticket.id);
       setTicketMessages(messages);
     } catch (error) {
-      console.error('Failed to load ticket messages:', error);
+      console.error("Failed to load ticket messages:", error);
     } finally {
       setIsLoadingMessages(false);
     }
@@ -214,11 +235,15 @@ export function TicketManagementDashboard({
 
     setIsSubmittingMessage(true);
     try {
-      await onAddTicketMessage(selectedTicket.id, newMessage, messageType === 'note');
+      await onAddTicketMessage(
+        selectedTicket.id,
+        newMessage,
+        messageType === "note",
+      );
       setNewMessage("");
       await loadTicketMessages(selectedTicket); // Reload messages
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error("Failed to send message:", error);
     } finally {
       setIsSubmittingMessage(false);
     }
@@ -226,14 +251,34 @@ export function TicketManagementDashboard({
 
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
-      case 'urgent':
-        return <Badge variant="destructive" className="animate-pulse"><Flag className="h-3 w-3 mr-1" />Urgent</Badge>;
-      case 'high':
-        return <Badge variant="destructive"><ArrowUp className="h-3 w-3 mr-1" />High</Badge>;
-      case 'medium':
-        return <Badge className="bg-yellow-500"><ArrowUp className="h-3 w-3 mr-1" />Medium</Badge>;
-      case 'low':
-        return <Badge variant="secondary"><ArrowDown className="h-3 w-3 mr-1" />Low</Badge>;
+      case "urgent":
+        return (
+          <Badge variant="destructive" className="animate-pulse">
+            <Flag className="h-3 w-3 mr-1" />
+            Urgent
+          </Badge>
+        );
+      case "high":
+        return (
+          <Badge variant="destructive">
+            <ArrowUp className="h-3 w-3 mr-1" />
+            High
+          </Badge>
+        );
+      case "medium":
+        return (
+          <Badge className="bg-yellow-500">
+            <ArrowUp className="h-3 w-3 mr-1" />
+            Medium
+          </Badge>
+        );
+      case "low":
+        return (
+          <Badge variant="secondary">
+            <ArrowDown className="h-3 w-3 mr-1" />
+            Low
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{priority}</Badge>;
     }
@@ -241,27 +286,50 @@ export function TicketManagementDashboard({
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'open':
-        return <Badge className="bg-blue-500"><Clock className="h-3 w-3 mr-1" />Open</Badge>;
-      case 'pending':
-        return <Badge className="bg-yellow-500"><Timer className="h-3 w-3 mr-1" />Pending</Badge>;
-      case 'resolved':
-        return <Badge className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" />Resolved</Badge>;
-      case 'closed':
-        return <Badge variant="outline"><Archive className="h-3 w-3 mr-1" />Closed</Badge>;
+      case "open":
+        return (
+          <Badge className="bg-blue-500">
+            <Clock className="h-3 w-3 mr-1" />
+            Open
+          </Badge>
+        );
+      case "pending":
+        return (
+          <Badge className="bg-yellow-500">
+            <Timer className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
+      case "resolved":
+        return (
+          <Badge className="bg-green-500">
+            <CheckCircle className="h-3 w-3 mr-1" />
+            Resolved
+          </Badge>
+        );
+      case "closed":
+        return (
+          <Badge variant="outline">
+            <Archive className="h-3 w-3 mr-1" />
+            Closed
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const TicketCard = ({ ticket }: { ticket: SupportTicket }) => (
-    <Card 
+    <Card
       className={`cursor-pointer hover:shadow-lg transition-all duration-300 border-l-4 ${
-        ticket.priority === 'urgent' ? 'border-l-red-500' :
-        ticket.priority === 'high' ? 'border-l-orange-500' :
-        ticket.priority === 'medium' ? 'border-l-yellow-500' :
-        'border-l-blue-500'
-      } ${selectedTicket?.id === ticket.id ? 'ring-2 ring-primary bg-primary/5' : ''}`}
+        ticket.priority === "urgent"
+          ? "border-l-red-500"
+          : ticket.priority === "high"
+            ? "border-l-orange-500"
+            : ticket.priority === "medium"
+              ? "border-l-yellow-500"
+              : "border-l-blue-500"
+      } ${selectedTicket?.id === ticket.id ? "ring-2 ring-primary bg-primary/5" : ""}`}
       onClick={() => handleTicketSelect(ticket)}
     >
       <CardContent className="p-4">
@@ -283,13 +351,17 @@ export function TicketManagementDashboard({
                 </Badge>
               ))}
               {ticket.tags.length > 2 && (
-                <Badge variant="outline" className="text-xs">+{ticket.tags.length - 2}</Badge>
+                <Badge variant="outline" className="text-xs">
+                  +{ticket.tags.length - 2}
+                </Badge>
               )}
             </div>
           </div>
 
           {/* Subject */}
-          <h3 className="font-semibold text-lg line-clamp-2">{ticket.subject}</h3>
+          <h3 className="font-semibold text-lg line-clamp-2">
+            {ticket.subject}
+          </h3>
 
           {/* Customer Info */}
           <div className="flex items-center space-x-3">
@@ -299,7 +371,9 @@ export function TicketManagementDashboard({
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm">{ticket.customerName}</p>
-              <p className="text-xs text-muted-foreground truncate">{ticket.customerEmail}</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {ticket.customerEmail}
+              </p>
             </div>
           </div>
 
@@ -308,12 +382,14 @@ export function TicketManagementDashboard({
             <div className="flex items-center space-x-2">
               <UserCheck className="h-4 w-4 text-muted-foreground" />
               <span className="text-muted-foreground">
-                {ticket.assignedAgentName || 'Unassigned'}
+                {ticket.assignedAgentName || "Unassigned"}
               </span>
             </div>
             <div className="flex items-center space-x-2">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{ticket.departmentName}</span>
+              <span className="text-muted-foreground">
+                {ticket.departmentName}
+              </span>
             </div>
           </div>
 
@@ -332,7 +408,9 @@ export function TicketManagementDashboard({
               )}
             </div>
             <div className="text-muted-foreground">
-              {formatDistanceToNow(new Date(ticket.lastMessageAt), { addSuffix: true })}
+              {formatDistanceToNow(new Date(ticket.lastMessageAt), {
+                addSuffix: true,
+              })}
             </div>
           </div>
         </div>
@@ -341,39 +419,58 @@ export function TicketManagementDashboard({
   );
 
   const MessageBubble = ({ message }: { message: TicketMessage }) => (
-    <div className={`flex space-x-3 mb-4 ${message.authorType === 'customer' ? 'flex-row' : 'flex-row-reverse'}`}>
+    <div
+      className={`flex space-x-3 mb-4 ${message.authorType === "customer" ? "flex-row" : "flex-row-reverse"}`}
+    >
       <Avatar className="h-8 w-8 flex-shrink-0">
         <AvatarImage src={message.authorAvatar} />
         <AvatarFallback>{message.authorName.charAt(0)}</AvatarFallback>
       </Avatar>
-      
-      <div className={`flex-1 ${message.authorType === 'customer' ? 'text-left' : 'text-right'}`}>
+
+      <div
+        className={`flex-1 ${message.authorType === "customer" ? "text-left" : "text-right"}`}
+      >
         <div className="flex items-center space-x-2 mb-1">
           <span className="font-semibold text-sm">{message.authorName}</span>
           <span className="text-xs text-muted-foreground">
-            {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+            {formatDistanceToNow(new Date(message.createdAt), {
+              addSuffix: true,
+            })}
           </span>
           {message.isInternal && (
-            <Badge variant="outline" className="text-xs">Internal Note</Badge>
+            <Badge variant="outline" className="text-xs">
+              Internal Note
+            </Badge>
           )}
         </div>
-        
-        <div className={`rounded-lg p-3 ${
-          message.authorType === 'customer' 
-            ? 'bg-muted' 
-            : message.isInternal 
-              ? 'bg-yellow-100 border border-yellow-200'
-              : 'bg-primary text-primary-foreground'
-        }`}>
+
+        <div
+          className={`rounded-lg p-3 ${
+            message.authorType === "customer"
+              ? "bg-muted"
+              : message.isInternal
+                ? "bg-yellow-100 border border-yellow-200"
+                : "bg-primary text-primary-foreground"
+          }`}
+        >
           <p className="whitespace-pre-wrap">{message.message}</p>
-          
+
           {message.attachments.length > 0 && (
             <div className="mt-2 space-y-1">
               {message.attachments.map((attachment) => (
-                <div key={attachment.id} className="flex items-center space-x-2 text-sm">
+                <div
+                  key={attachment.id}
+                  className="flex items-center space-x-2 text-sm"
+                >
                   <Paperclip className="h-3 w-3" />
-                  <a href={attachment.url} target="_blank" rel="noopener noreferrer" className="underline">
-                    {attachment.name} ({(attachment.size / 1024 / 1024).toFixed(2)} MB)
+                  <a
+                    href={attachment.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    {attachment.name} (
+                    {(attachment.size / 1024 / 1024).toFixed(2)} MB)
                   </a>
                 </div>
               ))}
@@ -394,7 +491,9 @@ export function TicketManagementDashboard({
               <HeadphonesIcon className="h-8 w-8 text-primary" />
               <span>Support Dashboard</span>
             </h1>
-            <p className="text-muted-foreground">Manage and respond to customer support tickets</p>
+            <p className="text-muted-foreground">
+              Manage and respond to customer support tickets
+            </p>
           </div>
 
           <div className="flex items-center space-x-4">
@@ -409,25 +508,33 @@ export function TicketManagementDashboard({
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-4">
           <Card>
             <CardContent className="p-3 text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.totalTickets}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.totalTickets}
+              </div>
               <div className="text-xs text-muted-foreground">Total</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-3 text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.openTickets}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.openTickets}
+              </div>
               <div className="text-xs text-muted-foreground">Open</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-3 text-center">
-              <div className="text-2xl font-bold text-yellow-600">{stats.pendingTickets}</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {stats.pendingTickets}
+              </div>
               <div className="text-xs text-muted-foreground">Pending</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-3 text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.resolvedTickets}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {stats.resolvedTickets}
+              </div>
               <div className="text-xs text-muted-foreground">Resolved</div>
             </CardContent>
           </Card>
@@ -439,8 +546,12 @@ export function TicketManagementDashboard({
           </Card>
           <Card>
             <CardContent className="p-3 text-center">
-              <div className="text-2xl font-bold">{stats.avgResolutionTime}h</div>
-              <div className="text-xs text-muted-foreground">Avg Resolution</div>
+              <div className="text-2xl font-bold">
+                {stats.avgResolutionTime}h
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Avg Resolution
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -487,7 +598,10 @@ export function TicketManagementDashboard({
               </SelectContent>
             </Select>
 
-            <Select value={filterDepartment} onValueChange={setFilterDepartment}>
+            <Select
+              value={filterDepartment}
+              onValueChange={setFilterDepartment}
+            >
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Department" />
               </SelectTrigger>
@@ -518,10 +632,9 @@ export function TicketManagementDashboard({
                 <HeadphonesIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">No Tickets Found</h3>
                 <p className="text-muted-foreground">
-                  {searchQuery ? 
-                    `No tickets match your search criteria.` :
-                    "No support tickets available."
-                  }
+                  {searchQuery
+                    ? `No tickets match your search criteria.`
+                    : "No support tickets available."}
                 </p>
               </div>
             )}
@@ -536,20 +649,27 @@ export function TicketManagementDashboard({
               <div className="border-b p-4 bg-muted/20">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h2 className="text-xl font-bold mb-1">{selectedTicket.subject}</h2>
+                    <h2 className="text-xl font-bold mb-1">
+                      {selectedTicket.subject}
+                    </h2>
                     <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                       <span>#{selectedTicket.ticketNumber}</span>
                       <span>•</span>
                       <span>{selectedTicket.customerName}</span>
                       <span>•</span>
-                      <span>{formatDistanceToNow(new Date(selectedTicket.createdAt), { addSuffix: true })}</span>
+                      <span>
+                        {formatDistanceToNow(
+                          new Date(selectedTicket.createdAt),
+                          { addSuffix: true },
+                        )}
+                      </span>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     {getPriorityBadge(selectedTicket.priority)}
                     {getStatusBadge(selectedTicket.status)}
-                    
+
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm">
@@ -577,9 +697,11 @@ export function TicketManagementDashboard({
 
                 {/* Quick Actions */}
                 <div className="flex items-center space-x-2">
-                  <Select 
-                    value={selectedTicket.status} 
-                    onValueChange={(value) => onUpdateTicketStatus(selectedTicket.id, value)}
+                  <Select
+                    value={selectedTicket.status}
+                    onValueChange={(value) =>
+                      onUpdateTicketStatus(selectedTicket.id, value)
+                    }
                   >
                     <SelectTrigger className="w-32">
                       <SelectValue />
@@ -592,9 +714,11 @@ export function TicketManagementDashboard({
                     </SelectContent>
                   </Select>
 
-                  <Select 
-                    value={selectedTicket.priority} 
-                    onValueChange={(value) => onUpdateTicketPriority(selectedTicket.id, value)}
+                  <Select
+                    value={selectedTicket.priority}
+                    onValueChange={(value) =>
+                      onUpdateTicketPriority(selectedTicket.id, value)
+                    }
                   >
                     <SelectTrigger className="w-32">
                       <SelectValue />
@@ -607,9 +731,11 @@ export function TicketManagementDashboard({
                     </SelectContent>
                   </Select>
 
-                  <Select 
-                    value={selectedTicket.assignedAgentId || ""} 
-                    onValueChange={(value) => onAssignTicket(selectedTicket.id, value)}
+                  <Select
+                    value={selectedTicket.assignedAgentId || ""}
+                    onValueChange={(value) =>
+                      onAssignTicket(selectedTicket.id, value)
+                    }
                   >
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="Assign Agent" />
@@ -617,15 +743,23 @@ export function TicketManagementDashboard({
                     <SelectContent>
                       <SelectItem value="">Unassigned</SelectItem>
                       {agents
-                        .filter(agent => agent.departmentId === selectedTicket.departmentId)
+                        .filter(
+                          (agent) =>
+                            agent.departmentId === selectedTicket.departmentId,
+                        )
                         .map((agent) => (
-                        <SelectItem key={agent.id} value={agent.id}>
-                          <div className="flex items-center space-x-2">
-                            <div className={`w-2 h-2 rounded-full ${agent.isOnline ? 'bg-green-500' : 'bg-gray-300'}`} />
-                            <span>{agent.name} ({agent.currentTickets}/{agent.maxTickets})</span>
-                          </div>
-                        </SelectItem>
-                      ))}
+                          <SelectItem key={agent.id} value={agent.id}>
+                            <div className="flex items-center space-x-2">
+                              <div
+                                className={`w-2 h-2 rounded-full ${agent.isOnline ? "bg-green-500" : "bg-gray-300"}`}
+                              />
+                              <span>
+                                {agent.name} ({agent.currentTickets}/
+                                {agent.maxTickets})
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -655,7 +789,12 @@ export function TicketManagementDashboard({
               {/* Message Composer */}
               <div className="border-t p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Select value={messageType} onValueChange={(value: 'reply' | 'note') => setMessageType(value)}>
+                  <Select
+                    value={messageType}
+                    onValueChange={(value: "reply" | "note") =>
+                      setMessageType(value)
+                    }
+                  >
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
@@ -674,7 +813,7 @@ export function TicketManagementDashboard({
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  
+
                   <Button variant="ghost" size="sm">
                     <Zap className="h-4 w-4 mr-2" />
                     Templates
@@ -685,7 +824,11 @@ export function TicketManagementDashboard({
                   <Textarea
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder={messageType === 'reply' ? "Type your reply..." : "Add an internal note..."}
+                    placeholder={
+                      messageType === "reply"
+                        ? "Type your reply..."
+                        : "Add an internal note..."
+                    }
                     rows={3}
                     className="flex-1"
                     data-testid="message-input"
@@ -694,7 +837,7 @@ export function TicketManagementDashboard({
                     <Button variant="ghost" size="sm">
                       <Paperclip className="h-4 w-4" />
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleSendMessage}
                       disabled={!newMessage.trim() || isSubmittingMessage}
                       size="sm"
@@ -712,7 +855,9 @@ export function TicketManagementDashboard({
               <div className="text-center">
                 <HeadphonesIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Select a Ticket</h3>
-                <p className="text-muted-foreground">Choose a ticket from the list to view details and respond</p>
+                <p className="text-muted-foreground">
+                  Choose a ticket from the list to view details and respond
+                </p>
               </div>
             </div>
           )}

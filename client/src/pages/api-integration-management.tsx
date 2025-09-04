@@ -1,16 +1,35 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
+import {
   Globe,
   Link,
   Key,
@@ -36,15 +55,29 @@ import {
   Filter,
   Database,
   Cloud,
-  Smartphone
+  Smartphone,
 } from "lucide-react";
 
 interface APIIntegration {
   id: string;
   name: string;
   provider: string;
-  category: 'payment' | 'ai_service' | 'social_media' | 'communication' | 'storage' | 'analytics' | 'security' | 'media' | 'compliance' | 'adult_platforms' | 'live_streaming' | 'affiliate' | 'crypto' | 'verification';
-  status: 'active' | 'inactive' | 'error' | 'rate_limited';
+  category:
+    | "payment"
+    | "ai_service"
+    | "social_media"
+    | "communication"
+    | "storage"
+    | "analytics"
+    | "security"
+    | "media"
+    | "compliance"
+    | "adult_platforms"
+    | "live_streaming"
+    | "affiliate"
+    | "crypto"
+    | "verification";
+  status: "active" | "inactive" | "error" | "rate_limited";
   endpoint: string;
   version: string;
   lastCall: string;
@@ -65,7 +98,7 @@ interface WebhookEndpoint {
   name: string;
   url: string;
   events: string[];
-  status: 'active' | 'inactive' | 'failed';
+  status: "active" | "inactive" | "failed";
   lastTriggered: string;
   successfulCalls: number;
   failedCalls: number;
@@ -100,7 +133,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 1500000,
-      quotaUsed: 847562
+      quotaUsed: 847562,
     },
     {
       id: "perspective_api",
@@ -108,7 +141,8 @@ export default function APIIntegrationManagement() {
       provider: "Google",
       category: "ai_service",
       status: "active",
-      endpoint: "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze",
+      endpoint:
+        "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze",
       version: "v1alpha1",
       lastCall: "2025-01-15T11:55:00Z",
       callsToday: 8934,
@@ -120,7 +154,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 450000,
-      quotaUsed: 267891
+      quotaUsed: 267891,
     },
     {
       id: "aws_rekognition",
@@ -140,7 +174,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 150000,
-      quotaUsed: 149999
+      quotaUsed: 149999,
     },
     {
       id: "nudenet_api",
@@ -160,7 +194,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 300000,
-      quotaUsed: 156789
+      quotaUsed: 156789,
     },
     {
       id: "anthropic_claude",
@@ -180,7 +214,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 600000,
-      quotaUsed: 103456
+      quotaUsed: 103456,
     },
 
     // === PAYMENT PROCESSORS (ADULT-FRIENDLY) ===
@@ -202,7 +236,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 300000,
-      quotaUsed: 95432
+      quotaUsed: 95432,
     },
     {
       id: "epoch_payment",
@@ -222,7 +256,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 240000,
-      quotaUsed: 56234
+      quotaUsed: 56234,
     },
     {
       id: "segpay_payment",
@@ -242,7 +276,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 150000,
-      quotaUsed: 37089
+      quotaUsed: 37089,
     },
     {
       id: "zombaio_payment",
@@ -262,7 +296,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 90000,
-      quotaUsed: 29634
+      quotaUsed: 29634,
     },
     {
       id: "verotel_payment",
@@ -282,7 +316,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 60000,
-      quotaUsed: 22678
+      quotaUsed: 22678,
     },
     {
       id: "paypal_adaptive",
@@ -302,7 +336,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 450000,
-      quotaUsed: 70234
+      quotaUsed: 70234,
     },
     {
       id: "nowpayments_crypto",
@@ -322,7 +356,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 60000,
-      quotaUsed: 18234
+      quotaUsed: 18234,
     },
     {
       id: "coinbase_commerce",
@@ -342,7 +376,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 150000,
-      quotaUsed: 25067
+      quotaUsed: 25067,
     },
     {
       id: "stripe_connect",
@@ -362,7 +396,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 750000,
-      quotaUsed: 137023
+      quotaUsed: 137023,
     },
 
     // === LIVE STREAMING & MEDIA PLATFORMS ===
@@ -384,7 +418,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 600000,
-      quotaUsed: 203456
+      quotaUsed: 203456,
     },
     {
       id: "youtube_live_api",
@@ -404,7 +438,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 300000,
-      quotaUsed: 103678
+      quotaUsed: 103678,
     },
     {
       id: "facebook_live_api",
@@ -424,7 +458,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 240000,
-      quotaUsed: 64023
+      quotaUsed: 64023,
     },
     {
       id: "obs_websocket",
@@ -444,7 +478,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: false,
       hasWebhook: true,
       monthlyQuota: 3000000,
-      quotaUsed: 374562
+      quotaUsed: 374562,
     },
     {
       id: "wowza_streaming",
@@ -464,7 +498,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 150000,
-      quotaUsed: 56234
+      quotaUsed: 56234,
     },
     {
       id: "agora_rtc",
@@ -484,7 +518,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 450000,
-      quotaUsed: 110345
+      quotaUsed: 110345,
     },
     {
       id: "mux_video",
@@ -504,7 +538,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 300000,
-      quotaUsed: 73678
+      quotaUsed: 73678,
     },
     {
       id: "jw_player",
@@ -524,7 +558,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 150000,
-      quotaUsed: 47023
+      quotaUsed: 47023,
     },
 
     // === COMMUNICATION & MESSAGING ===
@@ -534,7 +568,8 @@ export default function APIIntegrationManagement() {
       provider: "Twilio",
       category: "communication",
       status: "active",
-      endpoint: "https://api.twilio.com/2010-04-01/Accounts/{AccountSid}/Messages.json",
+      endpoint:
+        "https://api.twilio.com/2010-04-01/Accounts/{AccountSid}/Messages.json",
       version: "2010-04-01",
       lastCall: "2025-01-15T11:30:00Z",
       callsToday: 1256,
@@ -546,7 +581,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 150000,
-      quotaUsed: 47823
+      quotaUsed: 47823,
     },
     {
       id: "sendgrid_email",
@@ -566,7 +601,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 900000,
-      quotaUsed: 267891
+      quotaUsed: 267891,
     },
     {
       id: "telegram_bot",
@@ -586,7 +621,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 600000,
-      quotaUsed: 136890
+      quotaUsed: 136890,
     },
     {
       id: "discord_webhook",
@@ -606,7 +641,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: false,
       hasWebhook: true,
       monthlyQuota: 300000,
-      quotaUsed: 70234
+      quotaUsed: 70234,
     },
     {
       id: "whatsapp_business",
@@ -626,7 +661,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 240000,
-      quotaUsed: 56234
+      quotaUsed: 56234,
     },
     {
       id: "pusher_realtime",
@@ -646,7 +681,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 1500000,
-      quotaUsed: 374562
+      quotaUsed: 374562,
     },
     {
       id: "mailchimp_api",
@@ -666,7 +701,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 150000,
-      quotaUsed: 29634
+      quotaUsed: 29634,
     },
 
     // === ADULT CONTENT PLATFORMS ===
@@ -688,7 +723,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: false,
       hasWebhook: false,
       monthlyQuota: 30000,
-      quotaUsed: 0
+      quotaUsed: 0,
     },
     {
       id: "manyvids_api",
@@ -708,7 +743,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 60000,
-      quotaUsed: 13678
+      quotaUsed: 13678,
     },
     {
       id: "chaturbate_api",
@@ -728,7 +763,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 300000,
-      quotaUsed: 70234
+      quotaUsed: 70234,
     },
     {
       id: "cam4_api",
@@ -748,7 +783,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 150000,
-      quotaUsed: 37089
+      quotaUsed: 37089,
     },
 
     // === STORAGE & CDN ===
@@ -770,7 +805,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 1500000,
-      quotaUsed: 456789
+      quotaUsed: 456789,
     },
     {
       id: "aws_s3",
@@ -790,7 +825,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 3000000,
-      quotaUsed: 470234
+      quotaUsed: 470234,
     },
     {
       id: "cloudflare_r2",
@@ -810,7 +845,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 900000,
-      quotaUsed: 267891
+      quotaUsed: 267891,
     },
     {
       id: "backblaze_b2",
@@ -830,7 +865,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 450000,
-      quotaUsed: 103678
+      quotaUsed: 103678,
     },
     {
       id: "bunny_cdn",
@@ -850,7 +885,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 600000,
-      quotaUsed: 136890
+      quotaUsed: 136890,
     },
     {
       id: "cloudinary_media",
@@ -870,7 +905,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 750000,
-      quotaUsed: 203456
+      quotaUsed: 203456,
     },
 
     // === COMPLIANCE & VERIFICATION ===
@@ -892,7 +927,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 60000,
-      quotaUsed: 17023
+      quotaUsed: 17023,
     },
     {
       id: "onfido_identity",
@@ -912,7 +947,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 45000,
-      quotaUsed: 12967
+      quotaUsed: 12967,
     },
     {
       id: "age_verification",
@@ -932,7 +967,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 150000,
-      quotaUsed: 56234
+      quotaUsed: 56234,
     },
     {
       id: "yoti_identity",
@@ -952,7 +987,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 30000,
-      quotaUsed: 8934
+      quotaUsed: 8934,
     },
 
     // === ANALYTICS & TRACKING ===
@@ -974,7 +1009,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 450000,
-      quotaUsed: 103678
+      quotaUsed: 103678,
     },
     {
       id: "mixpanel_analytics",
@@ -994,7 +1029,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 900000,
-      quotaUsed: 236790
+      quotaUsed: 236790,
     },
     {
       id: "hotjar_analytics",
@@ -1014,7 +1049,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 150000,
-      quotaUsed: 37089
+      quotaUsed: 37089,
     },
     {
       id: "facebook_pixel",
@@ -1034,7 +1069,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 300000,
-      quotaUsed: 70234
+      quotaUsed: 70234,
     },
     {
       id: "amplitude_analytics",
@@ -1054,7 +1089,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 600000,
-      quotaUsed: 136890
+      quotaUsed: 136890,
     },
 
     // === SOCIAL MEDIA & MARKETING ===
@@ -1076,7 +1111,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 60000,
-      quotaUsed: 0
+      quotaUsed: 0,
     },
     {
       id: "instagram_basic",
@@ -1096,7 +1131,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 450000,
-      quotaUsed: 103678
+      quotaUsed: 103678,
     },
     {
       id: "tiktok_business",
@@ -1116,7 +1151,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 240000,
-      quotaUsed: 56234
+      quotaUsed: 56234,
     },
     {
       id: "reddit_api",
@@ -1136,7 +1171,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: false,
       monthlyQuota: 300000,
-      quotaUsed: 64023
+      quotaUsed: 64023,
     },
     {
       id: "linkedin_api",
@@ -1156,7 +1191,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 150000,
-      quotaUsed: 29634
+      quotaUsed: 29634,
     },
 
     // === AFFILIATE & CPA NETWORKS ===
@@ -1178,7 +1213,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 60000,
-      quotaUsed: 13678
+      quotaUsed: 13678,
     },
     {
       id: "shareasale_api",
@@ -1198,7 +1233,7 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 90000,
-      quotaUsed: 20345
+      quotaUsed: 20345,
     },
     {
       id: "impact_radius",
@@ -1218,8 +1253,8 @@ export default function APIIntegrationManagement() {
       hasApiKey: true,
       hasWebhook: true,
       monthlyQuota: 120000,
-      quotaUsed: 25067
-    }
+      quotaUsed: 25067,
+    },
   ];
 
   // Mock webhook endpoints
@@ -1233,7 +1268,7 @@ export default function APIIntegrationManagement() {
       lastTriggered: "2025-01-15T11:45:00Z",
       successfulCalls: 2847,
       failedCalls: 12,
-      retryCount: 3
+      retryCount: 3,
     },
     {
       id: "twilio_webhook",
@@ -1244,7 +1279,7 @@ export default function APIIntegrationManagement() {
       lastTriggered: "2025-01-15T11:30:00Z",
       successfulCalls: 1244,
       failedCalls: 3,
-      retryCount: 2
+      retryCount: 2,
     },
     {
       id: "twitter_webhook",
@@ -1255,39 +1290,41 @@ export default function APIIntegrationManagement() {
       lastTriggered: "2025-01-15T08:30:00Z",
       successfulCalls: 0,
       failedCalls: 45,
-      retryCount: 5
-    }
+      retryCount: 5,
+    },
   ];
 
   const handleToggleIntegration = useMutation({
-    mutationFn: (integrationId: string) => apiRequest("POST", `/api/integrations/${integrationId}/toggle`),
+    mutationFn: (integrationId: string) =>
+      apiRequest("POST", `/api/integrations/${integrationId}/toggle`),
     onSuccess: (_, integrationId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/integrations"] });
-      const integration = apiIntegrations.find(i => i.id === integrationId);
+      const integration = apiIntegrations.find((i) => i.id === integrationId);
       toast({
-        title: `Integration ${integration?.status === 'active' ? 'disabled' : 'enabled'}`,
-        description: `${integration?.name} has been ${integration?.status === 'active' ? 'deactivated' : 'activated'}`
+        title: `Integration ${integration?.status === "active" ? "disabled" : "enabled"}`,
+        description: `${integration?.name} has been ${integration?.status === "active" ? "deactivated" : "activated"}`,
       });
-    }
+    },
   });
 
   const handleTestIntegration = useMutation({
-    mutationFn: (integrationId: string) => apiRequest("POST", `/api/integrations/${integrationId}/test`),
+    mutationFn: (integrationId: string) =>
+      apiRequest("POST", `/api/integrations/${integrationId}/test`),
     onSuccess: (_, integrationId) => {
-      const integration = apiIntegrations.find(i => i.id === integrationId);
+      const integration = apiIntegrations.find((i) => i.id === integrationId);
       toast({
         title: "Test successful",
-        description: `${integration?.name} is responding correctly`
+        description: `${integration?.name} is responding correctly`,
       });
     },
     onError: (_, integrationId) => {
-      const integration = apiIntegrations.find(i => i.id === integrationId);
+      const integration = apiIntegrations.find((i) => i.id === integrationId);
       toast({
         title: "Test failed",
         description: `${integration?.name} is not responding`,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const getStatusBadge = (status: string) => {
@@ -1295,49 +1332,69 @@ export default function APIIntegrationManagement() {
       active: "bg-green-600",
       inactive: "bg-gray-600",
       error: "bg-red-600",
-      rate_limited: "bg-yellow-600"
+      rate_limited: "bg-yellow-600",
     } as const;
 
     return (
-      <Badge className={variants[status as keyof typeof variants] || "bg-gray-600"}>
-        {status.replace('_', ' ').toUpperCase()}
+      <Badge
+        className={variants[status as keyof typeof variants] || "bg-gray-600"}
+      >
+        {status.replace("_", " ").toUpperCase()}
       </Badge>
     );
   };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'payment': return <CreditCard className="w-4 h-4" />;
-      case 'ai_service': return <Bot className="w-4 h-4" />;
-      case 'social_media': return <Globe className="w-4 h-4" />;
-      case 'communication': return <Radio className="w-4 h-4" />;
-      case 'storage': return <Database className="w-4 h-4" />;
-      case 'analytics': return <Activity className="w-4 h-4" />;
-      case 'security': return <Shield className="w-4 h-4" />;
-      case 'media': return <Video className="w-4 h-4" />;
-      case 'compliance': return <CheckCircle className="w-4 h-4" />;
-      case 'adult_platforms': return <ImageIcon className="w-4 h-4" />;
-      case 'affiliate': return <Link className="w-4 h-4" />;
-      case 'crypto': return <Zap className="w-4 h-4" />;
-      default: return <Link className="w-4 h-4" />;
+      case "payment":
+        return <CreditCard className="w-4 h-4" />;
+      case "ai_service":
+        return <Bot className="w-4 h-4" />;
+      case "social_media":
+        return <Globe className="w-4 h-4" />;
+      case "communication":
+        return <Radio className="w-4 h-4" />;
+      case "storage":
+        return <Database className="w-4 h-4" />;
+      case "analytics":
+        return <Activity className="w-4 h-4" />;
+      case "security":
+        return <Shield className="w-4 h-4" />;
+      case "media":
+        return <Video className="w-4 h-4" />;
+      case "compliance":
+        return <CheckCircle className="w-4 h-4" />;
+      case "adult_platforms":
+        return <ImageIcon className="w-4 h-4" />;
+      case "affiliate":
+        return <Link className="w-4 h-4" />;
+      case "crypto":
+        return <Zap className="w-4 h-4" />;
+      default:
+        return <Link className="w-4 h-4" />;
     }
   };
 
-  const filteredIntegrations = apiIntegrations.filter(integration => {
-    const matchesSearch = !searchQuery || 
+  const filteredIntegrations = apiIntegrations.filter((integration) => {
+    const matchesSearch =
+      !searchQuery ||
       integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       integration.provider.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || integration.category === selectedCategory;
-    const matchesStatus = selectedStatus === "all" || integration.status === selectedStatus;
-    
+    const matchesCategory =
+      selectedCategory === "all" || integration.category === selectedCategory;
+    const matchesStatus =
+      selectedStatus === "all" || integration.status === selectedStatus;
+
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
   const stats = {
     totalIntegrations: apiIntegrations.length,
-    activeIntegrations: apiIntegrations.filter(i => i.status === 'active').length,
-    errorIntegrations: apiIntegrations.filter(i => i.status === 'error').length,
-    totalCallsToday: apiIntegrations.reduce((sum, i) => sum + i.callsToday, 0)
+    activeIntegrations: apiIntegrations.filter((i) => i.status === "active")
+      .length,
+    errorIntegrations: apiIntegrations.filter((i) => i.status === "error")
+      .length,
+    totalCallsToday: apiIntegrations.reduce((sum, i) => sum + i.callsToday, 0),
   };
 
   return (
@@ -1346,9 +1403,12 @@ export default function APIIntegrationManagement() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">API Integration Management</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              API Integration Management
+            </h1>
             <p className="text-muted-foreground">
-              Manage external API integrations and webhook endpoints for the Fanz ecosystem
+              Manage external API integrations and webhook endpoints for the
+              Fanz ecosystem
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -1371,7 +1431,9 @@ export default function APIIntegrationManagement() {
                 <Globe className="h-8 w-8 text-cyan-400" />
                 <div>
                   <p className="text-sm font-medium">Total APIs</p>
-                  <p className="text-2xl font-bold text-cyan-400">{stats.totalIntegrations}</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {stats.totalIntegrations}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -1383,7 +1445,9 @@ export default function APIIntegrationManagement() {
                 <CheckCircle className="h-8 w-8 text-green-400" />
                 <div>
                   <p className="text-sm font-medium">Active</p>
-                  <p className="text-2xl font-bold text-green-400">{stats.activeIntegrations}</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {stats.activeIntegrations}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -1395,7 +1459,9 @@ export default function APIIntegrationManagement() {
                 <XCircle className="h-8 w-8 text-red-400" />
                 <div>
                   <p className="text-sm font-medium">Errors</p>
-                  <p className="text-2xl font-bold text-red-400">{stats.errorIntegrations}</p>
+                  <p className="text-2xl font-bold text-red-400">
+                    {stats.errorIntegrations}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -1407,7 +1473,9 @@ export default function APIIntegrationManagement() {
                 <Activity className="h-8 w-8 text-purple-400" />
                 <div>
                   <p className="text-sm font-medium">Calls Today</p>
-                  <p className="text-2xl font-bold text-purple-400">{stats.totalCallsToday.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-purple-400">
+                    {stats.totalCallsToday.toLocaleString()}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -1425,8 +1493,12 @@ export default function APIIntegrationManagement() {
           <TabsContent value="integrations" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">API Integrations</CardTitle>
-                <CardDescription>Manage external API connections and configurations</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  API Integrations
+                </CardTitle>
+                <CardDescription>
+                  Manage external API connections and configurations
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -1440,8 +1512,11 @@ export default function APIIntegrationManagement() {
                       data-testid="input-integration-search"
                     />
                   </div>
-                  
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                  >
                     <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Filter by category" />
                     </SelectTrigger>
@@ -1450,19 +1525,34 @@ export default function APIIntegrationManagement() {
                       <SelectItem value="payment">Payment Systems</SelectItem>
                       <SelectItem value="ai_service">AI Services</SelectItem>
                       <SelectItem value="social_media">Social Media</SelectItem>
-                      <SelectItem value="communication">Communication</SelectItem>
+                      <SelectItem value="communication">
+                        Communication
+                      </SelectItem>
                       <SelectItem value="storage">Storage & CDN</SelectItem>
-                      <SelectItem value="analytics">Analytics & Tracking</SelectItem>
+                      <SelectItem value="analytics">
+                        Analytics & Tracking
+                      </SelectItem>
                       <SelectItem value="security">Security</SelectItem>
-                      <SelectItem value="media">Media & Live Streaming</SelectItem>
-                      <SelectItem value="compliance">Compliance & Verification</SelectItem>
-                      <SelectItem value="adult_platforms">Adult Platforms</SelectItem>
-                      <SelectItem value="affiliate">Affiliate Networks</SelectItem>
+                      <SelectItem value="media">
+                        Media & Live Streaming
+                      </SelectItem>
+                      <SelectItem value="compliance">
+                        Compliance & Verification
+                      </SelectItem>
+                      <SelectItem value="adult_platforms">
+                        Adult Platforms
+                      </SelectItem>
+                      <SelectItem value="affiliate">
+                        Affiliate Networks
+                      </SelectItem>
                       <SelectItem value="crypto">Cryptocurrency</SelectItem>
                     </SelectContent>
                   </Select>
 
-                  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <Select
+                    value={selectedStatus}
+                    onValueChange={setSelectedStatus}
+                  >
                     <SelectTrigger className="w-[150px] bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
@@ -1495,7 +1585,9 @@ export default function APIIntegrationManagement() {
                             <div>
                               <div className="flex items-center gap-2 mb-1">
                                 {getCategoryIcon(integration.category)}
-                                <span className="font-medium">{integration.name}</span>
+                                <span className="font-medium">
+                                  {integration.name}
+                                </span>
                                 <Badge variant="outline" className="text-xs">
                                   {integration.version}
                                 </Badge>
@@ -1507,7 +1599,7 @@ export default function APIIntegrationManagement() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className="capitalize">
-                              {integration.category.replace('_', ' ')}
+                              {integration.category.replace("_", " ")}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -1516,14 +1608,24 @@ export default function APIIntegrationManagement() {
                           <TableCell>
                             <div className="space-y-1">
                               <div className="text-sm font-mono">
-                                {integration.callsToday.toLocaleString()} calls today
+                                {integration.callsToday.toLocaleString()} calls
+                                today
                               </div>
-                              <Progress 
-                                value={(integration.quotaUsed / integration.monthlyQuota) * 100} 
-                                className="w-20 h-2" 
+                              <Progress
+                                value={
+                                  (integration.quotaUsed /
+                                    integration.monthlyQuota) *
+                                  100
+                                }
+                                className="w-20 h-2"
                               />
                               <div className="text-xs text-gray-400">
-                                {((integration.quotaUsed / integration.monthlyQuota) * 100).toFixed(1)}% quota used
+                                {(
+                                  (integration.quotaUsed /
+                                    integration.monthlyQuota) *
+                                  100
+                                ).toFixed(1)}
+                                % quota used
                               </div>
                             </div>
                           </TableCell>
@@ -1536,7 +1638,8 @@ export default function APIIntegrationManagement() {
                                 {integration.successRate}% success
                               </div>
                               <div className="text-xs text-gray-400">
-                                {integration.rateLimitRemaining} / {integration.rateLimit} remaining
+                                {integration.rateLimitRemaining} /{" "}
+                                {integration.rateLimit} remaining
                               </div>
                             </div>
                           </TableCell>
@@ -1544,7 +1647,9 @@ export default function APIIntegrationManagement() {
                             <div className="flex items-center gap-2">
                               <Button
                                 size="sm"
-                                onClick={() => handleTestIntegration.mutate(integration.id)}
+                                onClick={() =>
+                                  handleTestIntegration.mutate(integration.id)
+                                }
                                 disabled={handleTestIntegration.isPending}
                                 variant="outline"
                                 data-testid={`button-test-${integration.id}`}
@@ -1553,21 +1658,35 @@ export default function APIIntegrationManagement() {
                               </Button>
                               <Button
                                 size="sm"
-                                onClick={() => handleToggleIntegration.mutate(integration.id)}
+                                onClick={() =>
+                                  handleToggleIntegration.mutate(integration.id)
+                                }
                                 disabled={handleToggleIntegration.isPending}
-                                variant={integration.status === 'active' ? 'destructive' : 'default'}
+                                variant={
+                                  integration.status === "active"
+                                    ? "destructive"
+                                    : "default"
+                                }
                                 data-testid={`button-toggle-${integration.id}`}
                               >
-                                {integration.status === 'active' ? (
+                                {integration.status === "active" ? (
                                   <XCircle className="w-3 h-3" />
                                 ) : (
                                   <CheckCircle className="w-3 h-3" />
                                 )}
                               </Button>
-                              <Button size="sm" variant="outline" data-testid={`button-config-${integration.id}`}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                data-testid={`button-config-${integration.id}`}
+                              >
                                 <Settings className="w-3 h-3" />
                               </Button>
-                              <Button size="sm" variant="outline" data-testid={`button-view-${integration.id}`}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                data-testid={`button-view-${integration.id}`}
+                              >
                                 <Eye className="w-3 h-3" />
                               </Button>
                             </div>
@@ -1584,8 +1703,12 @@ export default function APIIntegrationManagement() {
           <TabsContent value="webhooks" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Webhook Endpoints</CardTitle>
-                <CardDescription>Manage incoming webhook endpoints and event handlers</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Webhook Endpoints
+                </CardTitle>
+                <CardDescription>
+                  Manage incoming webhook endpoints and event handlers
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -1594,8 +1717,12 @@ export default function APIIntegrationManagement() {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-3">
                           <div>
-                            <h3 className="font-semibold text-white">{webhook.name}</h3>
-                            <p className="text-sm text-gray-400 font-mono">{webhook.url}</p>
+                            <h3 className="font-semibold text-white">
+                              {webhook.name}
+                            </h3>
+                            <p className="text-sm text-gray-400 font-mono">
+                              {webhook.url}
+                            </p>
                           </div>
                           {getStatusBadge(webhook.status)}
                         </div>
@@ -1604,7 +1731,11 @@ export default function APIIntegrationManagement() {
                             <p className="text-gray-400">Events:</p>
                             <div className="flex flex-wrap gap-1 mt-1">
                               {webhook.events.map((event) => (
-                                <Badge key={event} variant="secondary" className="text-xs">
+                                <Badge
+                                  key={event}
+                                  variant="secondary"
+                                  className="text-xs"
+                                >
                                   {event}
                                 </Badge>
                               ))}
@@ -1612,12 +1743,18 @@ export default function APIIntegrationManagement() {
                           </div>
                           <div>
                             <p className="text-gray-400">Performance:</p>
-                            <p className="text-green-400">{webhook.successfulCalls} successful</p>
-                            <p className="text-red-400">{webhook.failedCalls} failed</p>
+                            <p className="text-green-400">
+                              {webhook.successfulCalls} successful
+                            </p>
+                            <p className="text-red-400">
+                              {webhook.failedCalls} failed
+                            </p>
                           </div>
                           <div>
                             <p className="text-gray-400">Last Triggered:</p>
-                            <p>{new Date(webhook.lastTriggered).toLocaleString()}</p>
+                            <p>
+                              {new Date(webhook.lastTriggered).toLocaleString()}
+                            </p>
                           </div>
                         </div>
                       </CardContent>
@@ -1631,25 +1768,38 @@ export default function APIIntegrationManagement() {
           <TabsContent value="keys" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">API Key Management</CardTitle>
-                <CardDescription>Secure storage and management of API credentials</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  API Key Management
+                </CardTitle>
+                <CardDescription>
+                  Secure storage and management of API credentials
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
                   <Key className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
-                  <p className="text-lg font-medium text-white mb-2">Secure API Key Storage</p>
+                  <p className="text-lg font-medium text-white mb-2">
+                    Secure API Key Storage
+                  </p>
                   <p className="text-gray-400 mb-6">
-                    All API keys are securely encrypted and stored using enterprise-grade security
+                    All API keys are securely encrypted and stored using
+                    enterprise-grade security
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mt-8">
                     <div className="p-4 bg-gray-800/50 rounded-lg">
                       <Shield className="w-8 h-8 mx-auto mb-2 text-green-400" />
-                      <p className="font-medium text-green-400">8 Active Keys</p>
-                      <p className="text-sm text-gray-400">Encrypted & Secure</p>
+                      <p className="font-medium text-green-400">
+                        8 Active Keys
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        Encrypted & Secure
+                      </p>
                     </div>
                     <div className="p-4 bg-gray-800/50 rounded-lg">
                       <Clock className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
-                      <p className="font-medium text-yellow-400">2 Expiring Soon</p>
+                      <p className="font-medium text-yellow-400">
+                        2 Expiring Soon
+                      </p>
                       <p className="text-sm text-gray-400">Within 30 days</p>
                     </div>
                     <div className="p-4 bg-gray-800/50 rounded-lg">
@@ -1666,20 +1816,36 @@ export default function APIIntegrationManagement() {
           <TabsContent value="monitoring" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">API Performance Monitoring</CardTitle>
-                <CardDescription>Real-time monitoring and analytics for all integrations</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  API Performance Monitoring
+                </CardTitle>
+                <CardDescription>
+                  Real-time monitoring and analytics for all integrations
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="p-6 bg-gray-800/50 rounded-lg">
-                    <h3 className="text-lg font-semibold text-white mb-4">Response Times</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      Response Times
+                    </h3>
                     <div className="space-y-3">
                       {apiIntegrations.slice(0, 5).map((integration) => (
-                        <div key={integration.id} className="flex items-center justify-between">
-                          <span className="text-sm text-gray-400">{integration.name}</span>
+                        <div
+                          key={integration.id}
+                          className="flex items-center justify-between"
+                        >
+                          <span className="text-sm text-gray-400">
+                            {integration.name}
+                          </span>
                           <div className="flex items-center gap-2">
-                            <Progress value={(integration.avgResponseTime / 3) * 100} className="w-16 h-2" />
-                            <span className="text-xs font-mono text-white">{integration.avgResponseTime}s</span>
+                            <Progress
+                              value={(integration.avgResponseTime / 3) * 100}
+                              className="w-16 h-2"
+                            />
+                            <span className="text-xs font-mono text-white">
+                              {integration.avgResponseTime}s
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -1687,14 +1853,26 @@ export default function APIIntegrationManagement() {
                   </div>
 
                   <div className="p-6 bg-gray-800/50 rounded-lg">
-                    <h3 className="text-lg font-semibold text-white mb-4">Success Rates</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      Success Rates
+                    </h3>
                     <div className="space-y-3">
                       {apiIntegrations.slice(0, 5).map((integration) => (
-                        <div key={integration.id} className="flex items-center justify-between">
-                          <span className="text-sm text-gray-400">{integration.name}</span>
+                        <div
+                          key={integration.id}
+                          className="flex items-center justify-between"
+                        >
+                          <span className="text-sm text-gray-400">
+                            {integration.name}
+                          </span>
                           <div className="flex items-center gap-2">
-                            <Progress value={integration.successRate} className="w-16 h-2" />
-                            <span className="text-xs font-mono text-green-400">{integration.successRate}%</span>
+                            <Progress
+                              value={integration.successRate}
+                              className="w-16 h-2"
+                            />
+                            <span className="text-xs font-mono text-green-400">
+                              {integration.successRate}%
+                            </span>
                           </div>
                         </div>
                       ))}

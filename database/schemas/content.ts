@@ -1,16 +1,25 @@
 /**
  * FANZDASH DATABASE SCHEMA - CONTENT MODULE
- * 
+ *
  * Content management, moderation, and security tables for the
  * FanzDash enterprise content moderation platform.
- * 
+ *
  * © 2025 Fanz™ Unlimited Network LLC. All Rights Reserved.
  * Contact: admin@fanzunlimited.com
  * Classification: PRODUCTION-READY | GOVERNMENT-GRADE
  */
 
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, decimal, jsonb, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  varchar,
+  timestamp,
+  integer,
+  decimal,
+  jsonb,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { users } from "./core";
 
 /**
@@ -18,7 +27,9 @@ import { users } from "./core";
  * Central repository for all content requiring moderation
  */
 export const contentItems = pgTable("content_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   type: varchar("type").notNull(), // 'image', 'video', 'text', 'live_stream', 'audio'
   url: text("url"),
   content: text("content"), // for text content
@@ -40,8 +51,12 @@ export const contentItems = pgTable("content_items", {
  * AI and manual moderation analysis results
  */
 export const moderationResults = pgTable("moderation_results", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contentId: varchar("content_id").references(() => contentItems.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .references(() => contentItems.id)
+    .notNull(),
   modelType: varchar("model_type").notNull(), // 'gpt-5', 'gpt-4o', 'nudenet', 'detoxify', 'perspective', 'whisper'
   confidence: decimal("confidence", { precision: 3, scale: 2 }),
   detections: jsonb("detections"), // array of detection objects
@@ -58,9 +73,15 @@ export const moderationResults = pgTable("moderation_results", {
  * User appeals for moderation decisions
  */
 export const appealRequests = pgTable("appeal_requests", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contentId: varchar("content_id").references(() => contentItems.id).notNull(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .references(() => contentItems.id)
+    .notNull(),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
   reason: text("reason").notNull(),
   status: varchar("status").notNull().default("pending"), // 'pending', 'approved', 'denied', 'under_review'
   moderatorId: varchar("moderator_id").references(() => users.id),
@@ -76,17 +97,26 @@ export const appealRequests = pgTable("appeal_requests", {
  * Secure storage for sensitive content evidence
  */
 export const encryptedVault = pgTable("encrypted_vault", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contentId: varchar("content_id").references(() => contentItems.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .references(() => contentItems.id)
+    .notNull(),
   encryptedData: text("encrypted_data").notNull(), // AES encrypted content
   encryptionKey: text("encryption_key").notNull(), // RSA encrypted key
   vaultReason: varchar("vault_reason").notNull(), // 'illegal_content', 'csam', 'terrorism', 'evidence'
   severity: varchar("severity").notNull(), // 'low', 'medium', 'high', 'critical'
-  accessLog: jsonb("access_log").$type<Array<{userId: string, timestamp: string, action: string}>>(),
+  accessLog:
+    jsonb("access_log").$type<
+      Array<{ userId: string; timestamp: string; action: string }>
+    >(),
   retentionDate: timestamp("retention_date"),
   lawEnforcementNotified: boolean("law_enforcement_notified").default(false),
   caseNumber: varchar("case_number"),
-  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -95,7 +125,9 @@ export const encryptedVault = pgTable("encrypted_vault", {
  * Configurable content filtering rules
  */
 export const contentFilters = pgTable("content_filters", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   type: varchar("type").notNull(), // 'keyword', 'hash', 'ai_model', 'regex'
   pattern: text("pattern").notNull(),
@@ -114,11 +146,19 @@ export const contentFilters = pgTable("content_filters", {
  * Configurable thresholds and rules for moderation
  */
 export const moderationSettings = pgTable("moderation_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   type: varchar("type").notNull(), // 'image', 'text', 'video', 'audio', 'live_stream'
-  autoBlockThreshold: decimal("auto_block_threshold", { precision: 3, scale: 2 }),
+  autoBlockThreshold: decimal("auto_block_threshold", {
+    precision: 3,
+    scale: 2,
+  }),
   reviewThreshold: decimal("review_threshold", { precision: 3, scale: 2 }),
-  autoApproveThreshold: decimal("auto_approve_threshold", { precision: 3, scale: 2 }),
+  autoApproveThreshold: decimal("auto_approve_threshold", {
+    precision: 3,
+    scale: 2,
+  }),
   frameSampleRate: integer("frame_sample_rate").default(4),
   autoBlurThreshold: decimal("auto_blur_threshold", { precision: 3, scale: 2 }),
   escalationRules: jsonb("escalation_rules"),
@@ -133,7 +173,9 @@ export const moderationSettings = pgTable("moderation_settings", {
  * Hierarchical content classification system
  */
 export const contentCategories = pgTable("content_categories", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   slug: varchar("slug").notNull().unique(),
   description: text("description"),
@@ -149,8 +191,12 @@ export const contentCategories = pgTable("content_categories", {
  * Detailed AI analysis results and confidence scores
  */
 export const aiAnalysisResults = pgTable("ai_analysis_results", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contentId: varchar("content_id").references(() => contentItems.id).notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .references(() => contentItems.id)
+    .notNull(),
   analysisType: varchar("analysis_type").notNull(), // 'toxicity', 'nudity', 'violence', 'faces', 'objects'
   modelVersion: varchar("model_version").notNull(),
   results: jsonb("results").notNull(),

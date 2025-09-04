@@ -4,8 +4,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, CheckCircle, XCircle, Edit, Clock, AlertTriangle, Filter, Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Eye,
+  CheckCircle,
+  XCircle,
+  Edit,
+  Clock,
+  AlertTriangle,
+  Filter,
+  Search,
+} from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,11 +36,19 @@ export default function ContentReviewPage() {
   });
 
   const moderateContentMutation = useMutation({
-    mutationFn: async ({ contentId, action, reason }: { contentId: string; action: string; reason: string }) => {
-      return apiRequest(`/api/content/${contentId}/status`, "PUT", { 
-        status: action, 
+    mutationFn: async ({
+      contentId,
+      action,
+      reason,
+    }: {
+      contentId: string;
+      action: string;
+      reason: string;
+    }) => {
+      return apiRequest(`/api/content/${contentId}/status`, "PUT", {
+        status: action,
         moderatorId: "current-user",
-        reason 
+        reason,
       });
     },
     onSuccess: (_, variables) => {
@@ -37,24 +60,48 @@ export default function ContentReviewPage() {
     },
   });
 
-  const moderateContent = (contentId: string, action: string, reason?: string) => {
-    moderateContentMutation.mutate({ 
-      contentId, 
-      action, 
-      reason: reason || `Content ${action} by moderator` 
+  const moderateContent = (
+    contentId: string,
+    action: string,
+    reason?: string,
+  ) => {
+    moderateContentMutation.mutate({
+      contentId,
+      action,
+      reason: reason || `Content ${action} by moderator`,
     });
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Pending Review</Badge>;
+        return (
+          <Badge variant="secondary">
+            <Clock className="w-3 h-3 mr-1" />
+            Pending Review
+          </Badge>
+        );
       case "approved":
-        return <Badge variant="default"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>;
+        return (
+          <Badge variant="default">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            Approved
+          </Badge>
+        );
       case "rejected":
-        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
+        return (
+          <Badge variant="destructive">
+            <XCircle className="w-3 h-3 mr-1" />
+            Rejected
+          </Badge>
+        );
       case "needs_editing":
-        return <Badge variant="outline"><Edit className="w-3 h-3 mr-1" />Needs Editing</Badge>;
+        return (
+          <Badge variant="outline">
+            <Edit className="w-3 h-3 mr-1" />
+            Needs Editing
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -88,12 +135,12 @@ export default function ContentReviewPage() {
       createdAt: new Date().toISOString(),
       aiAnalysis: {
         flaggedContent: ["explicit_content", "nudity"],
-        confidence: 0.92
+        confidence: 0.92,
       },
-      contentUrl: "https://via.placeholder.com/300x200?text=Content+Preview"
+      contentUrl: "https://via.placeholder.com/300x200?text=Content+Preview",
     },
     {
-      id: "content-002", 
+      id: "content-002",
       type: "video",
       status: "pending",
       riskScore: 0.45,
@@ -102,24 +149,25 @@ export default function ContentReviewPage() {
       createdAt: new Date(Date.now() - 300000).toISOString(),
       aiAnalysis: {
         flaggedContent: ["potential_violence"],
-        confidence: 0.67
+        confidence: 0.67,
       },
-      contentUrl: "https://via.placeholder.com/300x200?text=Video+Preview"
+      contentUrl: "https://via.placeholder.com/300x200?text=Video+Preview",
     },
     {
       id: "content-003",
-      type: "text", 
+      type: "text",
       status: "pending",
       riskScore: 0.15,
       uploadedBy: "user_55443",
       platform: "FanzSocial Community",
       createdAt: new Date(Date.now() - 600000).toISOString(),
-      textContent: "This is a sample text message that needs moderation review...",
+      textContent:
+        "This is a sample text message that needs moderation review...",
       aiAnalysis: {
         flaggedContent: [],
-        confidence: 0.88
-      }
-    }
+        confidence: 0.88,
+      },
+    },
   ];
 
   return (
@@ -128,7 +176,9 @@ export default function ContentReviewPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Content Review</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Content Review
+            </h1>
             <p className="text-muted-foreground">Manual Approval Workflows</p>
           </div>
           <div className="flex items-center space-x-4">
@@ -162,26 +212,40 @@ export default function ContentReviewPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-yellow-400 cyber-text-glow">23</div>
-              <div className="text-sm text-muted-foreground">Pending Review</div>
+              <div className="text-2xl font-bold text-yellow-400 cyber-text-glow">
+                23
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Pending Review
+              </div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-400 cyber-text-glow">7</div>
+              <div className="text-2xl font-bold text-red-400 cyber-text-glow">
+                7
+              </div>
               <div className="text-sm text-muted-foreground">High Risk</div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 cyber-text-glow">156</div>
-              <div className="text-sm text-muted-foreground">Approved Today</div>
+              <div className="text-2xl font-bold text-green-400 cyber-text-glow">
+                156
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Approved Today
+              </div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-primary cyber-text-glow">2.3m</div>
-              <div className="text-sm text-muted-foreground">Avg Review Time</div>
+              <div className="text-2xl font-bold text-primary cyber-text-glow">
+                2.3m
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Avg Review Time
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -197,36 +261,68 @@ export default function ContentReviewPage() {
           <CardContent>
             <div className="space-y-4">
               {mockContent.map((content) => (
-                <div key={content.id} className="p-6 cyber-card border border-primary/20">
+                <div
+                  key={content.id}
+                  className="p-6 cyber-card border border-primary/20"
+                >
                   <div className="flex items-start justify-between space-x-6">
                     {/* Content Preview */}
                     <div className="flex items-start space-x-4 flex-1">
                       <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center">
-                        {content.type === "image" && <img src={content.contentUrl} alt="Content" className="w-full h-full object-cover rounded-lg" />}
-                        {content.type === "video" && <img src={content.contentUrl} alt="Video" className="w-full h-full object-cover rounded-lg" />}
-                        {content.type === "text" && <div className="text-xs p-2 text-center">TEXT</div>}
+                        {content.type === "image" && (
+                          <img
+                            src={content.contentUrl}
+                            alt="Content"
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        )}
+                        {content.type === "video" && (
+                          <img
+                            src={content.contentUrl}
+                            alt="Video"
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        )}
+                        {content.type === "text" && (
+                          <div className="text-xs p-2 text-center">TEXT</div>
+                        )}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
-                          <Badge variant="outline">{content.type.toUpperCase()}</Badge>
+                          <Badge variant="outline">
+                            {content.type.toUpperCase()}
+                          </Badge>
                           {getStatusBadge(content.status)}
                           <Badge variant="secondary">{content.platform}</Badge>
                         </div>
                         <div className="text-sm text-muted-foreground mb-2">
-                          Uploaded by {content.uploadedBy} • {new Date(content.createdAt).toLocaleString()}
+                          Uploaded by {content.uploadedBy} •{" "}
+                          {new Date(content.createdAt).toLocaleString()}
                         </div>
                         {content.textContent && (
-                          <div className="text-sm bg-muted p-2 rounded mb-2">{content.textContent}</div>
+                          <div className="text-sm bg-muted p-2 rounded mb-2">
+                            {content.textContent}
+                          </div>
                         )}
                         <div className="flex items-center space-x-4 text-xs">
-                          <span>Risk Score: <span className={`font-bold ${getRiskColor(content.riskScore)}`}>
-                            {(content.riskScore * 100).toFixed(1)}%
-                          </span></span>
-                          <span>AI Confidence: {(content.aiAnalysis.confidence * 100).toFixed(1)}%</span>
+                          <span>
+                            Risk Score:{" "}
+                            <span
+                              className={`font-bold ${getRiskColor(content.riskScore)}`}
+                            >
+                              {(content.riskScore * 100).toFixed(1)}%
+                            </span>
+                          </span>
+                          <span>
+                            AI Confidence:{" "}
+                            {(content.aiAnalysis.confidence * 100).toFixed(1)}%
+                          </span>
                           {content.aiAnalysis.flaggedContent.length > 0 && (
                             <div className="flex items-center space-x-1">
                               <AlertTriangle className="w-3 h-3 text-yellow-500" />
-                              <span>{content.aiAnalysis.flaggedContent.join(", ")}</span>
+                              <span>
+                                {content.aiAnalysis.flaggedContent.join(", ")}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -247,7 +343,13 @@ export default function ContentReviewPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => moderateContent(content.id, "needs_editing", "Requires content editing")}
+                        onClick={() =>
+                          moderateContent(
+                            content.id,
+                            "needs_editing",
+                            "Requires content editing",
+                          )
+                        }
                         data-testid={`edit-${content.id}`}
                       >
                         <Edit className="w-4 h-4 mr-1" />
@@ -256,7 +358,13 @@ export default function ContentReviewPage() {
                       <Button
                         size="sm"
                         variant="destructive"
-                        onClick={() => moderateContent(content.id, "rejected", "Content violates platform guidelines")}
+                        onClick={() =>
+                          moderateContent(
+                            content.id,
+                            "rejected",
+                            "Content violates platform guidelines",
+                          )
+                        }
                         data-testid={`reject-${content.id}`}
                       >
                         <XCircle className="w-4 h-4 mr-1" />

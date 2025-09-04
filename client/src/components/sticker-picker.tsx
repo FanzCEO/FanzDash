@@ -22,14 +22,14 @@ export function StickerPicker({
   stickers,
   onStickerSelect,
   className = "",
-  maxHeight = 200
+  maxHeight = 200,
 }: StickerPickerProps) {
   const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
 
   const handleStickerClick = (sticker: Sticker) => {
     setSelectedSticker(sticker.id);
     onStickerSelect(sticker);
-    
+
     // Reset selection after animation
     setTimeout(() => setSelectedSticker(null), 200);
   };
@@ -52,9 +52,9 @@ export function StickerPicker({
               variant="ghost"
               className={cn(
                 "p-2 h-auto aspect-square relative transition-all duration-150",
-                selectedSticker === sticker.id 
-                  ? "bg-primary/20 scale-95 ring-2 ring-primary" 
-                  : "hover:bg-muted/50"
+                selectedSticker === sticker.id
+                  ? "bg-primary/20 scale-95 ring-2 ring-primary"
+                  : "hover:bg-muted/50",
               )}
               onClick={() => handleStickerClick(sticker)}
               data-testid={`sticker-${sticker.id}`}

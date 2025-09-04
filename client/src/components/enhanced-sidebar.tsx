@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { 
+import {
   Home,
   Video,
   User,
@@ -17,7 +17,7 @@ import {
   Bookmark,
   Store,
   Verified,
-  Film
+  Film,
 } from "lucide-react";
 
 interface User {
@@ -43,11 +43,11 @@ interface EnhancedSidebarProps {
   className?: string;
 }
 
-export function EnhancedSidebar({ 
-  currentUser, 
-  settings, 
+export function EnhancedSidebar({
+  currentUser,
+  settings,
   isGuest,
-  className = "" 
+  className = "",
 }: EnhancedSidebarProps) {
   const [location] = useLocation();
   const [collapsed, setCollapsed] = useState(false);
@@ -58,19 +58,19 @@ export function EnhancedSidebar({
       href: "/",
       icon: Home,
       active: location === "/",
-      show: true
+      show: true,
     },
     // Reels - show if enabled and user has access or is guest with public reels
     {
-      name: "Reels", 
+      name: "Reels",
       href: "/reels",
       icon: Video,
       active: location.startsWith("/reels"),
-      show: settings.allowReels && (
-        (currentUser && currentUser.isVerified) || 
-        (isGuest && settings.reelsPublic)
-      ),
-      requiresAuth: isGuest && !settings.reelsPublic
+      show:
+        settings.allowReels &&
+        ((currentUser && currentUser.isVerified) ||
+          (isGuest && settings.reelsPublic)),
+      requiresAuth: isGuest && !settings.reelsPublic,
     },
     // User Profile/Page
     {
@@ -78,15 +78,15 @@ export function EnhancedSidebar({
       href: currentUser ? `/${currentUser.username}` : "/login",
       icon: User,
       active: currentUser ? location === `/${currentUser.username}` : false,
-      show: !!currentUser
+      show: !!currentUser,
     },
     // Dashboard for verified users
     {
       name: "Dashboard",
-      href: "/dashboard", 
+      href: "/dashboard",
       icon: LayoutDashboard,
       active: location === "/dashboard",
-      show: currentUser?.isVerified || false
+      show: currentUser?.isVerified || false,
     },
     // Purchases
     {
@@ -94,7 +94,7 @@ export function EnhancedSidebar({
       href: "/my/purchases",
       icon: ShoppingBag,
       active: location === "/my/purchases",
-      show: !!currentUser
+      show: !!currentUser,
     },
     // Messages
     {
@@ -103,31 +103,32 @@ export function EnhancedSidebar({
       icon: MessageCircle,
       active: location.startsWith("/messages"),
       show: !!currentUser,
-      badge: currentUser?.unreadMessages
+      badge: currentUser?.unreadMessages,
     },
     // Explore (for guests) or authenticated users if not disabled
     {
       name: "Explore",
       href: isGuest ? "/creators" : "/explore",
       icon: Compass,
-      active: location.startsWith("/explore") || location.startsWith("/creators"),
-      show: isGuest || !settings.disableExploreSection
+      active:
+        location.startsWith("/explore") || location.startsWith("/creators"),
+      show: isGuest || !settings.disableExploreSection,
     },
     // Subscriptions
     {
-      name: "Subscriptions", 
+      name: "Subscriptions",
       href: "/my/subscriptions",
       icon: UserCheck,
       active: location === "/my/subscriptions",
-      show: !!currentUser
+      show: !!currentUser,
     },
     // Bookmarks
     {
       name: "Bookmarks",
       href: "/my/bookmarks",
-      icon: Bookmark, 
+      icon: Bookmark,
       active: location === "/my/bookmarks",
-      show: !!currentUser
+      show: !!currentUser,
     },
     // Shop for guests
     {
@@ -135,32 +136,36 @@ export function EnhancedSidebar({
       href: "/shop",
       icon: Store,
       active: location.startsWith("/shop"),
-      show: isGuest && settings.shop
-    }
-  ].filter(item => item.show);
+      show: isGuest && settings.shop,
+    },
+  ].filter((item) => item.show);
 
-  const MenuItem = ({ item }: { item: typeof menuItems[0] }) => (
+  const MenuItem = ({ item }: { item: (typeof menuItems)[0] }) => (
     <Link href={item.href}>
       <Button
         variant="ghost"
         className={cn(
           "w-full justify-start p-3 h-auto transition-all",
-          item.active ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
-          collapsed ? 'px-2' : 'px-3'
+          item.active
+            ? "bg-primary/10 text-primary font-semibold"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+          collapsed ? "px-2" : "px-3",
         )}
         disabled={item.active}
-        data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+        data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, "-")}`}
       >
         <div className="flex items-center space-x-3 w-full">
-          <item.icon className={cn(
-            "h-5 w-5 flex-shrink-0",
-            item.active ? 'text-primary' : 'text-muted-foreground'
-          )} />
-          
+          <item.icon
+            className={cn(
+              "h-5 w-5 flex-shrink-0",
+              item.active ? "text-primary" : "text-muted-foreground",
+            )}
+          />
+
           {!collapsed && (
             <>
               <span className="flex-1 text-left">{item.name}</span>
-              
+
               {item.badge && item.badge > 0 && (
                 <Badge variant="destructive" className="ml-auto">
                   {item.badge > 99 ? "99+" : item.badge}
@@ -174,7 +179,10 @@ export function EnhancedSidebar({
   );
 
   return (
-    <Card className={cn("cyber-border sticky-top", className)} style={{ top: "1rem" }}>
+    <Card
+      className={cn("cyber-border sticky-top", className)}
+      style={{ top: "1rem" }}
+    >
       <CardContent className="p-0">
         {/* Header with user info if logged in */}
         {currentUser && (
@@ -182,9 +190,11 @@ export function EnhancedSidebar({
             <div className="flex items-center space-x-3">
               <Avatar className="h-12 w-12">
                 <AvatarImage src={currentUser.avatar} />
-                <AvatarFallback>{currentUser.name.charAt(0).toUpperCase()}</AvatarFallback>
+                <AvatarFallback>
+                  {currentUser.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
-              
+
               {!collapsed && (
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-1">
@@ -222,7 +232,7 @@ export function EnhancedSidebar({
             className="w-full"
             data-testid="sidebar-collapse-toggle"
           >
-            {collapsed ? "→" : "←"} 
+            {collapsed ? "→" : "←"}
             {!collapsed && <span className="ml-2">Collapse</span>}
           </Button>
         </div>

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Play,
   Plus,
   Users,
@@ -20,7 +20,7 @@ import {
   Crown,
   Sparkles,
   Heart,
-  MessageCircle
+  MessageCircle,
 } from "lucide-react";
 import PostsFeed from "@/components/posts-feed";
 import EnhancedSidebar from "@/components/enhanced-sidebar";
@@ -44,7 +44,7 @@ interface Story {
   avatar?: string;
   media: Array<{
     id: string;
-    type: 'photo' | 'video';
+    type: "photo" | "video";
     url: string;
     thumbnail?: string;
   }>;
@@ -68,8 +68,8 @@ interface HomePageProps {
     homeStyle: number;
     storyStatus: boolean;
     announcement?: string;
-    announcementShow?: 'all' | 'creators';
-    announcementType?: 'primary' | 'success' | 'warning' | 'danger';
+    announcementShow?: "all" | "creators";
+    announcementType?: "primary" | "success" | "warning" | "danger";
     currencySymbol: string;
     showCounter: boolean;
     earningsSimulator: boolean;
@@ -93,17 +93,20 @@ export function HomePage({
   settings,
   stats,
   isGuest,
-  className = ""
+  className = "",
 }: HomePageProps) {
   const [showAnnouncement, setShowAnnouncement] = useState(true);
   const [followers, setFollowers] = useState(1000);
   const [subscriptionPrice, setSubscriptionPrice] = useState(10);
 
-  const showAnnouncementToUser = settings.announcement && 
-    ((settings.announcementShow === 'creators' && user?.isVerified) ||
-     (settings.announcementShow === 'all'));
+  const showAnnouncementToUser =
+    settings.announcement &&
+    ((settings.announcementShow === "creators" && user?.isVerified) ||
+      settings.announcementShow === "all");
 
-  const estimatedEarnings = Math.round((followers * 0.05) * subscriptionPrice * 0.9); // 5% conversion, 90% after fees
+  const estimatedEarnings = Math.round(
+    followers * 0.05 * subscriptionPrice * 0.9,
+  ); // 5% conversion, 90% after fees
 
   // Guest Homepage
   if (isGuest) {
@@ -128,25 +131,26 @@ export function HomePage({
                       Earn.
                     </span>
                   </h1>
-                  
+
                   <p className="text-xl text-muted-foreground max-w-lg">
-                    Join the ultimate platform for creators to monetize their content and connect with their audience.
+                    Join the ultimate platform for creators to monetize their
+                    content and connect with their audience.
                   </p>
                 </div>
 
                 <div className="flex space-x-4">
                   <Link href="/creators">
-                    <Button 
-                      size="lg" 
+                    <Button
+                      size="lg"
                       variant="outline"
                       className="px-8 py-4 text-lg border-2 hover:bg-primary hover:text-primary-foreground"
                     >
                       Explore Creators
                     </Button>
                   </Link>
-                  
+
                   <Link href="/signup">
-                    <Button 
+                    <Button
                       size="lg"
                       className="px-8 py-4 text-lg bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
                     >
@@ -159,8 +163,8 @@ export function HomePage({
 
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-3xl blur-3xl" />
-                <img 
-                  src="/api/placeholder/600/400" 
+                <img
+                  src="/api/placeholder/600/400"
                   alt="Platform Preview"
                   className="relative rounded-3xl shadow-2xl"
                 />
@@ -177,7 +181,8 @@ export function HomePage({
                 Why Choose Our Platform?
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Everything you need to build, grow, and monetize your creative business
+                Everything you need to build, grow, and monetize your creative
+                business
               </p>
             </div>
 
@@ -188,7 +193,8 @@ export function HomePage({
                 </div>
                 <h3 className="text-2xl font-bold mb-4">Build Your Audience</h3>
                 <p className="text-muted-foreground">
-                  Connect with fans who truly appreciate your content and are willing to support your creativity.
+                  Connect with fans who truly appreciate your content and are
+                  willing to support your creativity.
                 </p>
               </Card>
 
@@ -196,9 +202,12 @@ export function HomePage({
                 <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <DollarSign className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">Monetize Your Content</h3>
+                <h3 className="text-2xl font-bold mb-4">
+                  Monetize Your Content
+                </h3>
                 <p className="text-muted-foreground">
-                  Multiple revenue streams including subscriptions, tips, pay-per-view content, and more.
+                  Multiple revenue streams including subscriptions, tips,
+                  pay-per-view content, and more.
                 </p>
               </Card>
 
@@ -206,9 +215,12 @@ export function HomePage({
                 <div className="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <Crown className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">Creator-First Platform</h3>
+                <h3 className="text-2xl font-bold mb-4">
+                  Creator-First Platform
+                </h3>
                 <p className="text-muted-foreground">
-                  Built by creators, for creators. We understand your needs and provide tools that work.
+                  Built by creators, for creators. We understand your needs and
+                  provide tools that work.
                 </p>
               </Card>
             </div>
@@ -234,7 +246,8 @@ export function HomePage({
                 </div>
                 <div>
                   <div className="text-4xl lg:text-5xl font-bold mb-2">
-                    {settings.currencySymbol}{stats.totalEarnings.toLocaleString()}
+                    {settings.currencySymbol}
+                    {stats.totalEarnings.toLocaleString()}
                   </div>
                   <p className="text-lg opacity-90">Creator Earnings</p>
                 </div>
@@ -249,7 +262,9 @@ export function HomePage({
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">
-                  <h2 className="text-4xl font-bold mb-4">Earnings Simulator</h2>
+                  <h2 className="text-4xl font-bold mb-4">
+                    Earnings Simulator
+                  </h2>
                   <p className="text-xl text-muted-foreground">
                     See how much you could earn on our platform
                   </p>
@@ -260,7 +275,9 @@ export function HomePage({
                     <div>
                       <label className="block text-sm font-medium mb-4">
                         Number of Followers
-                        <span className="float-right">#{followers.toLocaleString()}</span>
+                        <span className="float-right">
+                          #{followers.toLocaleString()}
+                        </span>
                       </label>
                       <input
                         type="range"
@@ -276,7 +293,8 @@ export function HomePage({
                       <label className="block text-sm font-medium mb-4">
                         Monthly Subscription Price
                         <span className="float-right">
-                          {settings.currencySymbol}{subscriptionPrice}
+                          {settings.currencySymbol}
+                          {subscriptionPrice}
                         </span>
                       </label>
                       <input
@@ -284,7 +302,9 @@ export function HomePage({
                         min="5"
                         max="100"
                         value={subscriptionPrice}
-                        onChange={(e) => setSubscriptionPrice(parseInt(e.target.value))}
+                        onChange={(e) =>
+                          setSubscriptionPrice(parseInt(e.target.value))
+                        }
                         className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
                       />
                     </div>
@@ -292,7 +312,8 @@ export function HomePage({
 
                   <div className="text-center">
                     <h3 className="text-2xl font-bold mb-2">
-                      Estimated Monthly Earnings: {settings.currencySymbol}{estimatedEarnings.toLocaleString()}
+                      Estimated Monthly Earnings: {settings.currencySymbol}
+                      {estimatedEarnings.toLocaleString()}
                     </h3>
                     <p className="text-muted-foreground text-sm">
                       * Based on 5% follower conversion rate after platform fees
@@ -311,12 +332,13 @@ export function HomePage({
               Ready to Start Your Journey?
             </h2>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join thousands of creators who are already building their business with us
+              Join thousands of creators who are already building their business
+              with us
             </p>
             <div className="flex justify-center space-x-4">
               <Link href="/creators">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   variant="outline"
                   className="px-8 py-4 text-lg border-2"
                 >
@@ -324,7 +346,7 @@ export function HomePage({
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button 
+                <Button
                   size="lg"
                   className="px-8 py-4 text-lg bg-gradient-to-r from-primary to-purple-600"
                 >
@@ -352,7 +374,7 @@ export function HomePage({
                 allowReels: true,
                 disableExploreSection: false,
                 shop: false,
-                reelsPublic: true
+                reelsPublic: true,
               }}
               isGuest={false}
               className="sticky top-6"
@@ -362,7 +384,8 @@ export function HomePage({
           {/* Main Content */}
           <div className="lg:col-span-6">
             {/* Stories Section */}
-            {(stories.length > 0 || (settings.storyStatus && user?.isVerified)) && (
+            {(stories.length > 0 ||
+              (settings.storyStatus && user?.isVerified)) && (
               <Card className="mb-6 bg-gradient-to-r from-primary/5 to-purple-500/5 border-primary/20">
                 <CardContent className="p-4">
                   <div className="flex space-x-4 overflow-x-auto pb-2">
@@ -377,7 +400,9 @@ export function HomePage({
                         <div className="relative">
                           <Avatar className="h-16 w-16 border-2 border-dashed border-primary">
                             <AvatarImage src={user.avatar} />
-                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>
+                              {user.name.charAt(0)}
+                            </AvatarFallback>
                           </Avatar>
                           <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                             <Plus className="h-3 w-3 text-white" />
@@ -396,9 +421,13 @@ export function HomePage({
                         className="flex-shrink-0 flex flex-col items-center space-y-2 p-2"
                         data-testid={`view-story-${story.id}`}
                       >
-                        <Avatar className={`h-16 w-16 border-2 ${story.isViewed ? 'border-muted' : 'border-primary'}`}>
+                        <Avatar
+                          className={`h-16 w-16 border-2 ${story.isViewed ? "border-muted" : "border-primary"}`}
+                        >
                           <AvatarImage src={story.avatar} />
-                          <AvatarFallback>{story.name.charAt(0)}</AvatarFallback>
+                          <AvatarFallback>
+                            {story.name.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                         <span className="text-xs font-medium max-w-16 truncate">
                           {story.name}
@@ -412,12 +441,17 @@ export function HomePage({
 
             {/* Announcement */}
             {showAnnouncementToUser && showAnnouncement && (
-              <Alert className={`mb-6 ${
-                settings.announcementType === 'success' ? 'border-green-200 bg-green-50' :
-                settings.announcementType === 'warning' ? 'border-yellow-200 bg-yellow-50' :
-                settings.announcementType === 'danger' ? 'border-red-200 bg-red-50' :
-                'border-blue-200 bg-blue-50'
-              }`}>
+              <Alert
+                className={`mb-6 ${
+                  settings.announcementType === "success"
+                    ? "border-green-200 bg-green-50"
+                    : settings.announcementType === "warning"
+                      ? "border-yellow-200 bg-yellow-50"
+                      : settings.announcementType === "danger"
+                        ? "border-red-200 bg-red-50"
+                        : "border-blue-200 bg-blue-50"
+                }`}
+              >
                 <Button
                   variant="ghost"
                   size="sm"
@@ -429,7 +463,11 @@ export function HomePage({
                 <Megaphone className="h-4 w-4" />
                 <AlertDescription>
                   <h4 className="font-semibold mb-2">Announcements</h4>
-                  <div dangerouslySetInnerHTML={{ __html: settings.announcement || "" }} />
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: settings.announcement || "",
+                    }}
+                  />
                 </AlertDescription>
               </Alert>
             )}
@@ -451,7 +489,7 @@ export function HomePage({
                       What's on your mind, {user.name}?
                     </Button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between mt-4 pt-4 border-t">
                     <div className="flex space-x-4">
                       <Button variant="ghost" size="sm">
@@ -496,10 +534,15 @@ export function HomePage({
                     </h3>
                     <div className="space-y-3">
                       {featuredCreators.slice(0, 5).map((creator) => (
-                        <div key={creator.id} className="flex items-center space-x-3">
+                        <div
+                          key={creator.id}
+                          className="flex items-center space-x-3"
+                        >
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={creator.avatar} />
-                            <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>
+                              {creator.name.charAt(0)}
+                            </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <Link href={`/${creator.username}`}>
@@ -508,10 +551,16 @@ export function HomePage({
                               </p>
                             </Link>
                             <p className="text-xs text-muted-foreground">
-                              {creator.subscribersCount.toLocaleString()} followers
+                              {creator.subscribersCount.toLocaleString()}{" "}
+                              followers
                             </p>
                           </div>
-                          <Button size="sm" variant={creator.isSubscribed ? "secondary" : "default"}>
+                          <Button
+                            size="sm"
+                            variant={
+                              creator.isSubscribed ? "secondary" : "default"
+                            }
+                          >
                             {creator.isSubscribed ? (
                               <Heart className="h-3 w-3 fill-current" />
                             ) : (
@@ -532,15 +581,21 @@ export function HomePage({
                     <h3 className="font-bold mb-4">Your Stats</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Followers</span>
+                        <span className="text-sm text-muted-foreground">
+                          Followers
+                        </span>
                         <span className="font-semibold">2,431</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Posts</span>
+                        <span className="text-sm text-muted-foreground">
+                          Posts
+                        </span>
                         <span className="font-semibold">48</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">This Month</span>
+                        <span className="text-sm text-muted-foreground">
+                          This Month
+                        </span>
                         <span className="font-semibold text-green-600">
                           {settings.currencySymbol}1,247
                         </span>

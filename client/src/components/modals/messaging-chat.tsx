@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Lock, 
-  Unlock, 
-  Trash2, 
+import {
+  Lock,
+  Unlock,
+  Trash2,
   Download,
   FileArchive,
   Book,
@@ -21,13 +21,13 @@ import {
   Eye,
   EyeOff,
   ArrowUpRight,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface MediaItem {
   id: string;
-  type: 'image' | 'video' | 'music' | 'zip' | 'epub';
+  type: "image" | "video" | "music" | "zip" | "epub";
   file: string;
   fileName?: string;
   fileSize?: string;
@@ -85,7 +85,7 @@ export function MessagingChat({
   onDeleteMessage,
   onDownloadFile,
   settings,
-  className = ""
+  className = "",
 }: MessagingChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -107,10 +107,10 @@ export function MessagingChat({
 
   const getMediaStats = (media: MediaItem[]) => {
     const stats = {
-      images: media.filter(m => m.type === 'image').length,
-      videos: media.filter(m => m.type === 'video').length,
-      audio: media.filter(m => m.type === 'music').length,
-      files: media.filter(m => m.type === 'zip' || m.type === 'epub').length
+      images: media.filter((m) => m.type === "image").length,
+      videos: media.filter((m) => m.type === "video").length,
+      audio: media.filter((m) => m.type === "music").length,
+      files: media.filter((m) => m.type === "zip" || m.type === "epub").length,
     };
     return stats;
   };
@@ -118,20 +118,24 @@ export function MessagingChat({
   const MessageContent = ({ message }: { message: Message }) => {
     const isLocked = message.price > 0 && !message.isPaid;
     const mediaStats = getMediaStats(message.media);
-    const hasImageOrVideo = message.media.some(m => m.type === 'image' || m.type === 'video');
-    const firstMedia = message.media.find(m => m.type === 'image' || m.type === 'video');
+    const hasImageOrVideo = message.media.some(
+      (m) => m.type === "image" || m.type === "video",
+    );
+    const firstMedia = message.media.find(
+      (m) => m.type === "image" || m.type === "video",
+    );
 
     if (isLocked) {
       return (
         <Card className="max-w-md">
-          <CardContent 
+          <CardContent
             className="p-4 text-center text-white relative overflow-hidden"
             style={{
-              background: firstMedia 
-                ? `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${firstMedia.videoPoster || firstMedia.file})` 
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              background: firstMedia
+                ? `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${firstMedia.videoPoster || firstMedia.file})`
+                : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           >
             <div className="space-y-3">
@@ -153,7 +157,8 @@ export function MessagingChat({
                 ) : (
                   <>
                     <Unlock className="h-4 w-4 mr-2" />
-                    Unlock for {settings.currencySymbol}{message.price}
+                    Unlock for {settings.currencySymbol}
+                    {message.price}
                   </>
                 )}
               </Button>
@@ -166,37 +171,45 @@ export function MessagingChat({
                     <span>Text</span>
                   </div>
                 )}
-                
+
                 {mediaStats.images > 0 && (
                   <div className="flex items-center space-x-1">
                     <ImageIcon className="h-3 w-3" />
                     <span>{mediaStats.images}</span>
                   </div>
                 )}
-                
+
                 {mediaStats.videos > 0 && (
                   <div className="flex items-center space-x-1">
                     <Video className="h-3 w-3" />
                     <span>{mediaStats.videos}</span>
-                    {message.media.find(m => m.type === 'video' && m.qualityVideo) && (
+                    {message.media.find(
+                      (m) => m.type === "video" && m.qualityVideo,
+                    ) && (
                       <Badge variant="secondary" className="text-xs ml-1">
-                        {message.media.find(m => m.type === 'video')?.qualityVideo}
+                        {
+                          message.media.find((m) => m.type === "video")
+                            ?.qualityVideo
+                        }
                       </Badge>
                     )}
                   </div>
                 )}
-                
+
                 {mediaStats.audio > 0 && (
                   <div className="flex items-center space-x-1">
                     <Music className="h-3 w-3" />
                     <span>{mediaStats.audio}</span>
                   </div>
                 )}
-                
+
                 {mediaStats.files > 0 && (
                   <div className="flex items-center space-x-1">
                     <FileArchive className="h-3 w-3" />
-                    <span>{message.media.find(m => m.type === 'zip')?.fileSize || 'File'}</span>
+                    <span>
+                      {message.media.find((m) => m.type === "zip")?.fileSize ||
+                        "File"}
+                    </span>
                   </div>
                 )}
               </div>
@@ -212,7 +225,7 @@ export function MessagingChat({
         {message.media.length > 0 && (
           <div className="space-y-2">
             {message.media.map((media) => (
-              <MediaDisplay 
+              <MediaDisplay
                 key={media.id}
                 media={media}
                 messageId={message.id}
@@ -224,11 +237,13 @@ export function MessagingChat({
 
         {/* Text Content */}
         {message.content && (
-          <div className={`p-3 rounded-lg max-w-md break-words ${
-            message.isOwn 
-              ? 'bg-primary text-primary-foreground ml-auto' 
-              : 'bg-muted'
-          }`}>
+          <div
+            className={`p-3 rounded-lg max-w-md break-words ${
+              message.isOwn
+                ? "bg-primary text-primary-foreground ml-auto"
+                : "bg-muted"
+            }`}
+          >
             <div dangerouslySetInnerHTML={{ __html: message.content }} />
           </div>
         )}
@@ -240,7 +255,8 @@ export function MessagingChat({
               <div className="flex items-center space-x-2 text-green-600">
                 <DollarSign className="h-4 w-4" />
                 <span className="font-semibold">
-                  Tip - {message.tip.currency}{message.tip.amount}
+                  Tip - {message.tip.currency}
+                  {message.tip.amount}
                 </span>
               </div>
             </CardContent>
@@ -253,8 +269,8 @@ export function MessagingChat({
             <CardContent className="p-3">
               {message.giftImage && (
                 <div className="text-center mb-2">
-                  <img 
-                    src={message.giftImage} 
+                  <img
+                    src={message.giftImage}
                     alt={message.giftName}
                     className="w-16 h-16 mx-auto object-contain"
                   />
@@ -263,7 +279,8 @@ export function MessagingChat({
               <div className="flex items-center justify-center space-x-2 text-purple-600">
                 <Gift className="h-4 w-4" />
                 <span className="font-semibold">
-                  Gift - {settings.currencySymbol}{message.giftValue}
+                  Gift - {settings.currencySymbol}
+                  {message.giftValue}
                 </span>
               </div>
             </CardContent>
@@ -273,54 +290,65 @@ export function MessagingChat({
     );
   };
 
-  const MediaDisplay = ({ 
-    media, 
+  const MediaDisplay = ({
+    media,
     messageId,
-    onDownload 
-  }: { 
-    media: MediaItem; 
+    onDownload,
+  }: {
+    media: MediaItem;
     messageId: string;
     onDownload: () => void;
   }) => {
     switch (media.type) {
-      case 'image':
+      case "image":
         return (
           <div className="max-w-sm">
-            <img 
+            <img
               src={`/files/messages/${messageId}/${media.file}`}
               alt="Shared image"
               className="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => window.open(`/files/messages/${messageId}/${media.file}`, '_blank')}
+              onClick={() =>
+                window.open(
+                  `/files/messages/${messageId}/${media.file}`,
+                  "_blank",
+                )
+              }
             />
           </div>
         );
 
-      case 'video':
+      case "video":
         return (
           <div className="max-w-sm">
-            <video 
+            <video
               controls
               poster={media.videoPoster}
               className="w-full rounded-lg"
               preload="metadata"
             >
-              <source src={`/files/messages/${messageId}/${media.file}`} type="video/mp4" />
+              <source
+                src={`/files/messages/${messageId}/${media.file}`}
+                type="video/mp4"
+              />
             </video>
           </div>
         );
 
-      case 'music':
+      case "music":
         return (
           <Card className="max-w-sm">
             <CardContent className="p-3">
               <audio controls className="w-full">
-                <source src={`/files/messages/${messageId}/${media.file}`} type="audio/mp3" />
+                <source
+                  src={`/files/messages/${messageId}/${media.file}`}
+                  type="audio/mp3"
+                />
               </audio>
             </CardContent>
           </Card>
         );
 
-      case 'zip':
+      case "zip":
         return (
           <Card className="max-w-sm">
             <CardContent className="p-0">
@@ -333,10 +361,10 @@ export function MessagingChat({
                 <FileArchive className="h-8 w-8 text-primary mr-3" />
                 <div className="text-left">
                   <h6 className="font-semibold text-primary">
-                    {media.fileName || 'Download'}.zip
+                    {media.fileName || "Download"}.zip
                   </h6>
                   <p className="text-sm text-muted-foreground">
-                    {media.fileSize || 'File'}
+                    {media.fileSize || "File"}
                   </p>
                 </div>
                 <Download className="h-4 w-4 ml-auto text-muted-foreground" />
@@ -345,24 +373,24 @@ export function MessagingChat({
           </Card>
         );
 
-      case 'epub':
+      case "epub":
         return (
           <Card className="max-w-sm">
             <CardContent className="p-0">
               <Button
                 variant="ghost"
-                onClick={() => window.open(`/viewer/message/epub/${media.id}`, '_blank')}
+                onClick={() =>
+                  window.open(`/viewer/message/epub/${media.id}`, "_blank")
+                }
                 className="w-full p-4 h-auto justify-start"
                 data-testid={`view-epub-${media.id}`}
               >
                 <Book className="h-8 w-8 text-primary mr-3" />
                 <div className="text-left">
                   <h6 className="font-semibold text-primary">
-                    {media.fileName || 'View Online'}.epub
+                    {media.fileName || "View Online"}.epub
                   </h6>
-                  <p className="text-sm text-muted-foreground">
-                    View Online
-                  </p>
+                  <p className="text-sm text-muted-foreground">View Online</p>
                 </div>
                 <ArrowUpRight className="h-4 w-4 ml-auto text-muted-foreground" />
               </Button>
@@ -401,48 +429,55 @@ export function MessagingChat({
       {/* Messages */}
       <div className="space-y-4">
         {messages.map((message) => (
-          <div 
-            key={message.id} 
-            className={`flex space-x-3 ${message.isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}
+          <div
+            key={message.id}
+            className={`flex space-x-3 ${message.isOwn ? "flex-row-reverse space-x-reverse" : ""}`}
             data-message-id={message.id}
           >
             {/* Avatar (only for received messages) */}
             {!message.isOwn && (
               <Avatar className="h-10 w-10 flex-shrink-0">
                 <AvatarImage src={message.senderAvatar} />
-                <AvatarFallback>{message.senderName.charAt(0).toUpperCase()}</AvatarFallback>
+                <AvatarFallback>
+                  {message.senderName.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
             )}
 
-            <div className={`flex-1 ${message.isOwn ? 'text-right' : ''}`}>
+            <div className={`flex-1 ${message.isOwn ? "text-right" : ""}`}>
               {/* Message Content */}
-              <div className={`inline-block ${message.isOwn ? 'ml-auto' : ''}`}>
+              <div className={`inline-block ${message.isOwn ? "ml-auto" : ""}`}>
                 <MessageContent message={message} />
               </div>
 
               {/* Message Info */}
-              <div className={`flex items-center space-x-2 mt-1 text-xs text-muted-foreground ${
-                message.isOwn ? 'justify-end' : 'justify-start'
-              }`}>
+              <div
+                className={`flex items-center space-x-2 mt-1 text-xs text-muted-foreground ${
+                  message.isOwn ? "justify-end" : "justify-start"
+                }`}
+              >
                 {/* Delete button for own messages */}
-                {message.isOwn && message.canDelete && settings.canDeleteMessages && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDeleteMessage(message.id)}
-                    className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                    data-testid={`delete-message-${message.id}`}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                )}
+                {message.isOwn &&
+                  message.canDelete &&
+                  settings.canDeleteMessages && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDeleteMessage(message.id)}
+                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                      data-testid={`delete-message-${message.id}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  )}
 
                 {/* Price indicator */}
                 {message.price > 0 && (
                   <div className="flex items-center space-x-1">
                     <Lock className="h-3 w-3" />
                     <span>
-                      {settings.currencySymbol}{message.price}
+                      {settings.currencySymbol}
+                      {message.price}
                       {message.isPaid && " (Paid)"}
                     </span>
                   </div>
@@ -450,7 +485,9 @@ export function MessagingChat({
 
                 {/* Timestamp */}
                 <span>
-                  {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(message.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
 
                 {/* Read receipt for sent messages */}

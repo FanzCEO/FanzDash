@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import type { WebSocketMessage } from '@/types/moderation';
+import { useEffect, useRef, useState } from "react";
+import type { WebSocketMessage } from "@/types/moderation";
 
 export function useWebSocket(url: string) {
   const [isConnected, setIsConnected] = useState(false);
@@ -9,11 +9,11 @@ export function useWebSocket(url: string) {
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws`;
-    
+
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
-      console.log('Connected to WebSocket');
+      console.log("Connected to WebSocket");
       setIsConnected(true);
     };
 
@@ -22,17 +22,17 @@ export function useWebSocket(url: string) {
         const message: WebSocketMessage = JSON.parse(event.data);
         setLastMessage(message);
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        console.error("Error parsing WebSocket message:", error);
       }
     };
 
     ws.current.onclose = () => {
-      console.log('Disconnected from WebSocket');
+      console.log("Disconnected from WebSocket");
       setIsConnected(false);
     };
 
     ws.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error("WebSocket error:", error);
       setIsConnected(false);
     };
 

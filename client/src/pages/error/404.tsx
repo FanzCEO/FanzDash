@@ -18,15 +18,19 @@ export default function NotFound404() {
         <Card className="cyber-border bg-white shadow-2xl">
           <CardContent className="p-8 text-center">
             <div className="mb-6">
-              <h1 className="text-8xl font-bold text-primary mb-4 cyber-text-glow">404</h1>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">Page Not Found</h2>
+              <h1 className="text-8xl font-bold text-primary mb-4 cyber-text-glow">
+                404
+              </h1>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                Page Not Found
+              </h2>
               <p className="text-gray-600">
                 The page you're looking for doesn't exist or has been moved.
               </p>
             </div>
 
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={goBack}
                 variant="outline"
                 className="w-full"
@@ -37,16 +41,13 @@ export default function NotFound404() {
               </Button>
 
               <Link href="/">
-                <Button 
-                  className="w-full"
-                  data-testid="button-go-home"
-                >
+                <Button className="w-full" data-testid="button-go-home">
                   <Home className="h-4 w-4 mr-2" />
                   Go Home
                 </Button>
               </Link>
 
-              <Button 
+              <Button
                 onClick={refreshPage}
                 variant="ghost"
                 className="w-full"
@@ -66,17 +67,29 @@ export default function NotFound404() {
           </p>
           <div className="flex justify-center space-x-3">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm" className="text-white hover:text-gray-200">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:text-gray-200"
+              >
                 Dashboard
               </Button>
             </Link>
             <Link href="/user-management">
-              <Button variant="ghost" size="sm" className="text-white hover:text-gray-200">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:text-gray-200"
+              >
                 Users
               </Button>
             </Link>
             <Link href="/settings">
-              <Button variant="ghost" size="sm" className="text-white hover:text-gray-200">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:text-gray-200"
+              >
                 Settings
               </Button>
             </Link>

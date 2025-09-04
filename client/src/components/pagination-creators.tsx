@@ -19,7 +19,7 @@ export function PaginationCreators({
   isLoading,
   onLoadMore,
   filters,
-  className = ""
+  className = "",
 }: PaginationCreatorsProps) {
   if (!hasMorePages) {
     return null;

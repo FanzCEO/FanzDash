@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -15,7 +23,10 @@ import { ArrowLeft, Save, FileImage } from "lucide-react";
 import { Link } from "wouter";
 
 const blogPostSchema = z.object({
-  title: z.string().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(200, "Title must be less than 200 characters"),
   content: z.string().optional(),
   featuredImage: z.string().optional(),
   isPublished: z.boolean().default(false),
@@ -50,18 +61,18 @@ export default function BlogCreate() {
           authorId: "system", // TODO: Get from current user
         }),
       });
-      
+
       if (!response.ok) {
         throw new Error("Failed to create blog post");
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/blog/posts"] });
       toast({
         title: "Success",
-        description: "Blog post created successfully"
+        description: "Blog post created successfully",
       });
       setLocation("/blog");
     },
@@ -69,9 +80,9 @@ export default function BlogCreate() {
       toast({
         title: "Error",
         description: "Failed to create blog post",
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const onSubmit = (data: BlogPostForm) => {
@@ -89,7 +100,9 @@ export default function BlogCreate() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Create New Blog Post</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Create New Blog Post
+            </h1>
             <p className="text-muted-foreground">
               Create a new blog post or article
             </p>

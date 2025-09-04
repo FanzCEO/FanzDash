@@ -1,17 +1,52 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { BarChart, Eye, MousePointer, DollarSign, Play, Pause, Plus, TrendingUp } from "lucide-react";
+import {
+  BarChart,
+  Eye,
+  MousePointer,
+  DollarSign,
+  Play,
+  Pause,
+  Plus,
+  TrendingUp,
+} from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,8 +54,15 @@ interface AdCampaign {
   id: string;
   title: string;
   description: string;
-  type: 'banner' | 'video' | 'sponsored_post' | 'creator_promotion';
-  status: 'draft' | 'pending' | 'approved' | 'active' | 'paused' | 'completed' | 'rejected';
+  type: "banner" | "video" | "sponsored_post" | "creator_promotion";
+  status:
+    | "draft"
+    | "pending"
+    | "approved"
+    | "active"
+    | "paused"
+    | "completed"
+    | "rejected";
   budget: string;
   dailyBudget: string;
   spend: string;
@@ -35,72 +77,111 @@ interface AdCampaign {
 
 export default function AdvertisingManagement() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<AdCampaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<AdCampaign | null>(
+    null,
+  );
   const queryClient = useQueryClient();
 
   // Mock data demonstrating comprehensive advertising ecosystem
   const campaigns = [
     {
-      id: '1', title: 'Summer Creator Boost', description: 'Promote top creators during summer season',
-      type: 'creator_promotion' as const, status: 'active' as const, budget: '5000.00', dailyBudget: '200.00',
-      spend: '1250.00', impressions: 125000, clicks: 2500, conversions: 125,
-      startDate: '2024-06-01T00:00:00Z', endDate: '2024-08-31T23:59:59Z',
-      targetAudience: { age: '18-35', interests: ['adult', 'content'] }, advertiserId: 'admin-1'
+      id: "1",
+      title: "Summer Creator Boost",
+      description: "Promote top creators during summer season",
+      type: "creator_promotion" as const,
+      status: "active" as const,
+      budget: "5000.00",
+      dailyBudget: "200.00",
+      spend: "1250.00",
+      impressions: 125000,
+      clicks: 2500,
+      conversions: 125,
+      startDate: "2024-06-01T00:00:00Z",
+      endDate: "2024-08-31T23:59:59Z",
+      targetAudience: { age: "18-35", interests: ["adult", "content"] },
+      advertiserId: "admin-1",
     },
     {
-      id: '2', title: 'Premium Subscription Banner', description: 'Drive premium subscription conversions',
-      type: 'banner' as const, status: 'active' as const, budget: '2000.00', dailyBudget: '100.00',
-      spend: '780.00', impressions: 78000, clicks: 1560, conversions: 89,
-      startDate: '2024-07-01T00:00:00Z', endDate: '2024-09-30T23:59:59Z',
-      targetAudience: { age: '25-45', interests: ['premium', 'subscriptions'] }, advertiserId: 'admin-1'
+      id: "2",
+      title: "Premium Subscription Banner",
+      description: "Drive premium subscription conversions",
+      type: "banner" as const,
+      status: "active" as const,
+      budget: "2000.00",
+      dailyBudget: "100.00",
+      spend: "780.00",
+      impressions: 78000,
+      clicks: 1560,
+      conversions: 89,
+      startDate: "2024-07-01T00:00:00Z",
+      endDate: "2024-09-30T23:59:59Z",
+      targetAudience: { age: "25-45", interests: ["premium", "subscriptions"] },
+      advertiserId: "admin-1",
     },
     {
-      id: '3', title: 'Live Stream Promotion', description: 'Boost live streaming engagement',
-      type: 'video' as const, status: 'paused' as const, budget: '3000.00', dailyBudget: '150.00',
-      spend: '450.00', impressions: 45000, clicks: 900, conversions: 67,
-      startDate: '2024-08-01T00:00:00Z', endDate: '2024-10-31T23:59:59Z',
-      targetAudience: { age: '18-40', interests: ['live', 'streaming'] }, advertiserId: 'admin-2'
-    }
+      id: "3",
+      title: "Live Stream Promotion",
+      description: "Boost live streaming engagement",
+      type: "video" as const,
+      status: "paused" as const,
+      budget: "3000.00",
+      dailyBudget: "150.00",
+      spend: "450.00",
+      impressions: 45000,
+      clicks: 900,
+      conversions: 67,
+      startDate: "2024-08-01T00:00:00Z",
+      endDate: "2024-10-31T23:59:59Z",
+      targetAudience: { age: "18-40", interests: ["live", "streaming"] },
+      advertiserId: "admin-2",
+    },
   ];
   const isLoading = false;
 
   const { toast } = useToast();
 
   const createCampaignMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/admin/ad-campaigns', 'POST', data),
+    mutationFn: (data: any) =>
+      apiRequest("/api/admin/ad-campaigns", "POST", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/ad-campaigns'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/ad-campaigns"] });
       setIsCreateDialogOpen(false);
       toast({ title: "Campaign created successfully" });
-    }
+    },
   });
 
   const updateCampaignMutation = useMutation({
-    mutationFn: (data: { id: string, updates: any }) =>
-      apiRequest(`/api/admin/ad-campaigns/${data.id}`, 'PATCH', data.updates),
+    mutationFn: (data: { id: string; updates: any }) =>
+      apiRequest(`/api/admin/ad-campaigns/${data.id}`, "PATCH", data.updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/ad-campaigns'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/ad-campaigns"] });
+    },
   });
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
+    const variants: Record<
+      string,
+      "default" | "destructive" | "outline" | "secondary"
+    > = {
       draft: "secondary",
       pending: "outline",
       approved: "default",
       active: "default",
       paused: "secondary",
       completed: "default",
-      rejected: "destructive"
+      rejected: "destructive",
     };
     const colors = {
-      active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-      paused: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-      completed: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+      active:
+        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      paused:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+      completed:
+        "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
     };
-    
+
     return (
-      <Badge 
+      <Badge
         variant={variants[status as keyof typeof variants] || "outline"}
         className={colors[status as keyof typeof colors]}
       >
@@ -111,9 +192,12 @@ export default function AdvertisingManagement() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'video': return <Play className="h-4 w-4" />;
-      case 'creator_promotion': return <TrendingUp className="h-4 w-4" />;
-      default: return <BarChart className="h-4 w-4" />;
+      case "video":
+        return <Play className="h-4 w-4" />;
+      case "creator_promotion":
+        return <TrendingUp className="h-4 w-4" />;
+      default:
+        return <BarChart className="h-4 w-4" />;
     }
   };
 
@@ -129,14 +213,14 @@ export default function AdvertisingManagement() {
 
   const CampaignForm = ({ campaign, onSubmit, onCancel }: any) => {
     const [formData, setFormData] = useState({
-      title: campaign?.title || '',
-      description: campaign?.description || '',
-      type: campaign?.type || 'banner',
-      budget: campaign?.budget || '',
-      dailyBudget: campaign?.dailyBudget || '',
-      startDate: campaign?.startDate || '',
-      endDate: campaign?.endDate || '',
-      targetAudience: campaign?.targetAudience || {}
+      title: campaign?.title || "",
+      description: campaign?.description || "",
+      type: campaign?.type || "banner",
+      budget: campaign?.budget || "",
+      dailyBudget: campaign?.dailyBudget || "",
+      startDate: campaign?.startDate || "",
+      endDate: campaign?.endDate || "",
+      targetAudience: campaign?.targetAudience || {},
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -152,7 +236,9 @@ export default function AdvertisingManagement() {
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               placeholder="Summer Creator Promotion"
               required
               data-testid="input-campaign-title"
@@ -160,7 +246,12 @@ export default function AdvertisingManagement() {
           </div>
           <div>
             <Label htmlFor="type">Campaign Type</Label>
-            <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+            <Select
+              value={formData.type}
+              onValueChange={(value) =>
+                setFormData({ ...formData, type: value })
+              }
+            >
               <SelectTrigger data-testid="select-campaign-type">
                 <SelectValue />
               </SelectTrigger>
@@ -168,7 +259,9 @@ export default function AdvertisingManagement() {
                 <SelectItem value="banner">Banner Ad</SelectItem>
                 <SelectItem value="video">Video Ad</SelectItem>
                 <SelectItem value="sponsored_post">Sponsored Post</SelectItem>
-                <SelectItem value="creator_promotion">Creator Promotion</SelectItem>
+                <SelectItem value="creator_promotion">
+                  Creator Promotion
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -179,7 +272,9 @@ export default function AdvertisingManagement() {
           <Textarea
             id="description"
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             placeholder="Campaign description and objectives..."
             data-testid="textarea-campaign-description"
           />
@@ -193,7 +288,9 @@ export default function AdvertisingManagement() {
               type="number"
               min="1"
               value={formData.budget}
-              onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, budget: e.target.value })
+              }
               placeholder="1000.00"
               required
               data-testid="input-campaign-budget"
@@ -206,7 +303,9 @@ export default function AdvertisingManagement() {
               type="number"
               min="1"
               value={formData.dailyBudget}
-              onChange={(e) => setFormData({ ...formData, dailyBudget: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, dailyBudget: e.target.value })
+              }
               placeholder="50.00"
               data-testid="input-daily-budget"
             />
@@ -220,7 +319,9 @@ export default function AdvertisingManagement() {
               id="startDate"
               type="datetime-local"
               value={formData.startDate}
-              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, startDate: e.target.value })
+              }
               required
               data-testid="input-start-date"
             />
@@ -231,7 +332,9 @@ export default function AdvertisingManagement() {
               id="endDate"
               type="datetime-local"
               value={formData.endDate}
-              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, endDate: e.target.value })
+              }
               required
               data-testid="input-end-date"
             />
@@ -243,20 +346,34 @@ export default function AdvertisingManagement() {
             Cancel
           </Button>
           <Button type="submit" data-testid="button-save-campaign">
-            {campaign ? 'Update' : 'Create'} Campaign
+            {campaign ? "Update" : "Create"} Campaign
           </Button>
         </div>
       </form>
     );
   };
 
-  const activeCampaigns = campaigns.filter((c: AdCampaign) => c.status === 'active');
-  const totalSpend = campaigns.reduce((sum: number, c: AdCampaign) => sum + parseFloat(c.spend || '0'), 0);
-  const totalImpressions = campaigns.reduce((sum: number, c: AdCampaign) => sum + c.impressions, 0);
-  const totalClicks = campaigns.reduce((sum: number, c: AdCampaign) => sum + c.clicks, 0);
+  const activeCampaigns = campaigns.filter(
+    (c: AdCampaign) => c.status === "active",
+  );
+  const totalSpend = campaigns.reduce(
+    (sum: number, c: AdCampaign) => sum + parseFloat(c.spend || "0"),
+    0,
+  );
+  const totalImpressions = campaigns.reduce(
+    (sum: number, c: AdCampaign) => sum + c.impressions,
+    0,
+  );
+  const totalClicks = campaigns.reduce(
+    (sum: number, c: AdCampaign) => sum + c.clicks,
+    0,
+  );
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="advertising-management">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="advertising-management"
+    >
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Advertising Management</h1>
@@ -290,14 +407,14 @@ export default function AdvertisingManagement() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Campaigns
+            </CardTitle>
             <BarChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeCampaigns.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Running now
-            </p>
+            <p className="text-xs text-muted-foreground">Running now</p>
           </CardContent>
         </Card>
         <Card>
@@ -318,10 +435,10 @@ export default function AdvertisingManagement() {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalImpressions.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Total views
-            </p>
+            <div className="text-2xl font-bold">
+              {totalImpressions.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">Total views</p>
           </CardContent>
         </Card>
         <Card>
@@ -330,18 +447,22 @@ export default function AdvertisingManagement() {
             <MousePointer className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{calculateCTR(totalClicks, totalImpressions)}%</div>
-            <p className="text-xs text-muted-foreground">
-              Average CTR
-            </p>
+            <div className="text-2xl font-bold">
+              {calculateCTR(totalClicks, totalImpressions)}%
+            </div>
+            <p className="text-xs text-muted-foreground">Average CTR</p>
           </CardContent>
         </Card>
       </div>
 
       <Tabs defaultValue="campaigns" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="campaigns">All Campaigns ({campaigns.length})</TabsTrigger>
-          <TabsTrigger value="active">Active ({activeCampaigns.length})</TabsTrigger>
+          <TabsTrigger value="campaigns">
+            All Campaigns ({campaigns.length})
+          </TabsTrigger>
+          <TabsTrigger value="active">
+            Active ({activeCampaigns.length})
+          </TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
@@ -380,12 +501,16 @@ export default function AdvertisingManagement() {
                       <TableCell>
                         <div className="flex items-center">
                           {getTypeIcon(campaign.type)}
-                          <span className="ml-2 capitalize">{campaign.type.replace('_', ' ')}</span>
+                          <span className="ml-2 capitalize">
+                            {campaign.type.replace("_", " ")}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium">${campaign.budget}</span>
+                          <span className="font-medium">
+                            ${campaign.budget}
+                          </span>
                           {campaign.dailyBudget && (
                             <span className="text-sm text-muted-foreground">
                               ${campaign.dailyBudget}/day
@@ -396,51 +521,66 @@ export default function AdvertisingManagement() {
                       <TableCell>
                         <div className="flex flex-col">
                           <span className="font-medium">${campaign.spend}</span>
-                          <Progress 
-                            value={(parseFloat(campaign.spend) / parseFloat(campaign.budget)) * 100} 
+                          <Progress
+                            value={
+                              (parseFloat(campaign.spend) /
+                                parseFloat(campaign.budget)) *
+                              100
+                            }
                             className="w-16 h-2 mt-1"
                           />
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col text-sm">
-                          <span>{campaign.impressions.toLocaleString()} views</span>
+                          <span>
+                            {campaign.impressions.toLocaleString()} views
+                          </span>
                           <span>{campaign.clicks} clicks</span>
                           <span className="text-muted-foreground">
-                            CTR: {calculateCTR(campaign.clicks, campaign.impressions)}%
+                            CTR:{" "}
+                            {calculateCTR(
+                              campaign.clicks,
+                              campaign.impressions,
+                            )}
+                            %
                           </span>
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(campaign.status)}</TableCell>
                       <TableCell>
                         <div className="flex space-x-1">
-                          {campaign.status === 'active' ? (
-                            <Button 
-                              variant="outline" 
+                          {campaign.status === "active" ? (
+                            <Button
+                              variant="outline"
                               size="sm"
-                              onClick={() => updateCampaignMutation.mutate({ 
-                                id: campaign.id, 
-                                updates: { status: 'paused' } 
-                              })}
+                              onClick={() =>
+                                updateCampaignMutation.mutate({
+                                  id: campaign.id,
+                                  updates: { status: "paused" },
+                                })
+                              }
                               data-testid={`button-pause-${campaign.id}`}
                             >
                               <Pause className="h-4 w-4" />
                             </Button>
                           ) : (
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
-                              onClick={() => updateCampaignMutation.mutate({ 
-                                id: campaign.id, 
-                                updates: { status: 'active' } 
-                              })}
+                              onClick={() =>
+                                updateCampaignMutation.mutate({
+                                  id: campaign.id,
+                                  updates: { status: "active" },
+                                })
+                              }
                               data-testid={`button-play-${campaign.id}`}
                             >
                               <Play className="h-4 w-4" />
                             </Button>
                           )}
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => setSelectedCampaign(campaign)}
                             data-testid={`button-view-${campaign.id}`}
@@ -469,13 +609,15 @@ export default function AdvertisingManagement() {
                     </CardTitle>
                     <div className="flex items-center space-x-2">
                       {getStatusBadge(campaign.status)}
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
-                        onClick={() => updateCampaignMutation.mutate({ 
-                          id: campaign.id, 
-                          updates: { status: 'paused' } 
-                        })}
+                        onClick={() =>
+                          updateCampaignMutation.mutate({
+                            id: campaign.id,
+                            updates: { status: "paused" },
+                          })
+                        }
                       >
                         <Pause className="h-4 w-4 mr-1" />
                         Pause
@@ -486,9 +628,15 @@ export default function AdvertisingManagement() {
                 <CardContent>
                   <div className="grid grid-cols-4 gap-4">
                     <div>
-                      <p className="text-sm text-muted-foreground">Budget Progress</p>
-                      <Progress 
-                        value={(parseFloat(campaign.spend) / parseFloat(campaign.budget)) * 100} 
+                      <p className="text-sm text-muted-foreground">
+                        Budget Progress
+                      </p>
+                      <Progress
+                        value={
+                          (parseFloat(campaign.spend) /
+                            parseFloat(campaign.budget)) *
+                          100
+                        }
                         className="mt-2"
                       />
                       <p className="text-sm mt-1">
@@ -496,8 +644,12 @@ export default function AdvertisingManagement() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Impressions</p>
-                      <p className="text-2xl font-bold">{campaign.impressions.toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Impressions
+                      </p>
+                      <p className="text-2xl font-bold">
+                        {campaign.impressions.toLocaleString()}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Clicks</p>
@@ -505,7 +657,9 @@ export default function AdvertisingManagement() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">CTR</p>
-                      <p className="text-2xl font-bold">{calculateCTR(campaign.clicks, campaign.impressions)}%</p>
+                      <p className="text-2xl font-bold">
+                        {calculateCTR(campaign.clicks, campaign.impressions)}%
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -527,25 +681,45 @@ export default function AdvertisingManagement() {
                 <div className="space-y-2">
                   <h3 className="font-medium">Cost Per Mille (CPM)</h3>
                   <p className="text-2xl font-bold">
-                    ${totalImpressions > 0 ? calculateCPM(totalSpend.toString(), totalImpressions) : '0.00'}
+                    $
+                    {totalImpressions > 0
+                      ? calculateCPM(totalSpend.toString(), totalImpressions)
+                      : "0.00"}
                   </p>
-                  <p className="text-sm text-muted-foreground">Average cost per 1,000 impressions</p>
+                  <p className="text-sm text-muted-foreground">
+                    Average cost per 1,000 impressions
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <h3 className="font-medium">Cost Per Click (CPC)</h3>
                   <p className="text-2xl font-bold">
-                    ${totalClicks > 0 ? (totalSpend / totalClicks).toFixed(2) : '0.00'}
+                    $
+                    {totalClicks > 0
+                      ? (totalSpend / totalClicks).toFixed(2)
+                      : "0.00"}
                   </p>
-                  <p className="text-sm text-muted-foreground">Average cost per click</p>
+                  <p className="text-sm text-muted-foreground">
+                    Average cost per click
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <h3 className="font-medium">Conversion Rate</h3>
                   <p className="text-2xl font-bold">
-                    {totalClicks > 0 ? 
-                      ((campaigns.reduce((sum: number, c: AdCampaign) => sum + c.conversions, 0) / totalClicks) * 100).toFixed(2) 
-                      : '0.00'}%
+                    {totalClicks > 0
+                      ? (
+                          (campaigns.reduce(
+                            (sum: number, c: AdCampaign) => sum + c.conversions,
+                            0,
+                          ) /
+                            totalClicks) *
+                          100
+                        ).toFixed(2)
+                      : "0.00"}
+                    %
                   </p>
-                  <p className="text-sm text-muted-foreground">Clicks that converted</p>
+                  <p className="text-sm text-muted-foreground">
+                    Clicks that converted
+                  </p>
                 </div>
               </div>
             </CardContent>

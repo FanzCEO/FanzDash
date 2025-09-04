@@ -1,28 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'wouter';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Shield, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "wouter";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Shield, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function DeviceVerification() {
   const [, navigate] = useNavigate();
   const [location] = useLocation();
   const { toast } = useToast();
-  
-  const [verificationCode, setVerificationCode] = useState('');
+
+  const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Extract token from URL params
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.split('?')[1] || '');
-    const token = urlParams.get('token');
-    
+    const urlParams = new URLSearchParams(location.split("?")[1] || "");
+    const token = urlParams.get("token");
+
     if (token) {
       // Auto-verify if token is in URL
       handleAutoVerification(token);
@@ -31,37 +37,40 @@ export default function DeviceVerification() {
 
   const handleAutoVerification = async (token: string) => {
     setIsLoading(true);
-    
+
     try {
-      const response = await apiRequest('POST', '/auth/verify-device', { token });
-      
+      const response = await apiRequest("POST", "/auth/verify-device", {
+        token,
+      });
+
       if (response.success) {
-        localStorage.setItem('authToken', response.token);
+        localStorage.setItem("authToken", response.token);
         setIsVerified(true);
-        
+
         toast({
-          title: 'Device Verified Successfully',
-          description: 'Your device has been trusted. Redirecting to dashboard...',
-          variant: 'default'
+          title: "Device Verified Successfully",
+          description:
+            "Your device has been trusted. Redirecting to dashboard...",
+          variant: "default",
         });
-        
+
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate("/dashboard");
         }, 2000);
       } else {
-        setError(response.error || 'Verification failed');
+        setError(response.error || "Verification failed");
         toast({
-          title: 'Verification Failed',
-          description: response.error || 'Invalid or expired token',
-          variant: 'destructive'
+          title: "Verification Failed",
+          description: response.error || "Invalid or expired token",
+          variant: "destructive",
         });
       }
     } catch (error: any) {
-      setError(error.message || 'Verification failed');
+      setError(error.message || "Verification failed");
       toast({
-        title: 'Verification Error',
-        description: error.message || 'Failed to verify device',
-        variant: 'destructive'
+        title: "Verification Error",
+        description: error.message || "Failed to verify device",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -71,40 +80,41 @@ export default function DeviceVerification() {
   const handleManualVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await apiRequest('POST', '/auth/verify-device', {
-        token: verificationCode
+      const response = await apiRequest("POST", "/auth/verify-device", {
+        token: verificationCode,
       });
 
       if (response.success) {
-        localStorage.setItem('authToken', response.token);
+        localStorage.setItem("authToken", response.token);
         setIsVerified(true);
-        
+
         toast({
-          title: 'Device Verified Successfully',
-          description: 'Your device has been trusted. Redirecting to dashboard...',
-          variant: 'default'
+          title: "Device Verified Successfully",
+          description:
+            "Your device has been trusted. Redirecting to dashboard...",
+          variant: "default",
         });
-        
+
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate("/dashboard");
         }, 2000);
       } else {
-        setError(response.error || 'Verification failed');
+        setError(response.error || "Verification failed");
         toast({
-          title: 'Verification Failed',
-          description: response.error || 'Invalid verification code',
-          variant: 'destructive'
+          title: "Verification Failed",
+          description: response.error || "Invalid verification code",
+          variant: "destructive",
         });
       }
     } catch (error: any) {
-      setError(error.message || 'Verification failed');
+      setError(error.message || "Verification failed");
       toast({
-        title: 'Verification Error',
-        description: error.message || 'Failed to verify device',
-        variant: 'destructive'
+        title: "Verification Error",
+        description: error.message || "Failed to verify device",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -119,7 +129,9 @@ export default function DeviceVerification() {
             <div className="mx-auto w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="w-8 h-8 text-white" />
             </div>
-            <CardTitle className="text-white text-xl">Device Verified!</CardTitle>
+            <CardTitle className="text-white text-xl">
+              Device Verified!
+            </CardTitle>
             <CardDescription className="text-gray-300">
               Your device has been successfully verified and trusted.
             </CardDescription>
@@ -127,7 +139,10 @@ export default function DeviceVerification() {
           <CardContent className="text-center">
             <p className="text-green-400 mb-4">Redirecting to dashboard...</p>
             <div className="w-full bg-gray-700 rounded-full h-2">
-              <div className="bg-green-600 h-2 rounded-full animate-pulse" style={{ width: '100%' }}></div>
+              <div
+                className="bg-green-600 h-2 rounded-full animate-pulse"
+                style={{ width: "100%" }}
+              ></div>
             </div>
           </CardContent>
         </Card>
@@ -142,12 +157,15 @@ export default function DeviceVerification() {
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-4">
             <Shield className="w-6 h-6 text-white" />
           </div>
-          <CardTitle className="text-white">Device Verification Required</CardTitle>
+          <CardTitle className="text-white">
+            Device Verification Required
+          </CardTitle>
           <CardDescription className="text-gray-300">
-            We detected a login from a new device or location. Please verify this is you.
+            We detected a login from a new device or location. Please verify
+            this is you.
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <div className="mb-6 p-4 bg-yellow-900/30 border border-yellow-600/50 rounded-lg">
             <div className="flex items-start space-x-3">
@@ -155,7 +173,8 @@ export default function DeviceVerification() {
               <div>
                 <h4 className="text-yellow-400 font-medium">Security Notice</h4>
                 <p className="text-yellow-200 text-sm mt-1">
-                  If this wasn't you, please secure your account immediately by changing your password.
+                  If this wasn't you, please secure your account immediately by
+                  changing your password.
                 </p>
               </div>
             </div>
@@ -183,21 +202,21 @@ export default function DeviceVerification() {
                 </p>
               )}
             </div>
-            
-            <Button 
-              type="submit" 
+
+            <Button
+              type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700"
               disabled={isLoading}
               data-testid="button-verify-device"
             >
-              {isLoading ? 'Verifying...' : 'Verify Device'}
+              {isLoading ? "Verifying..." : "Verify Device"}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <Button
               variant="link"
-              onClick={() => navigate('/auth/login')}
+              onClick={() => navigate("/auth/login")}
               className="text-gray-400 hover:text-white"
               data-testid="link-back-to-login"
             >

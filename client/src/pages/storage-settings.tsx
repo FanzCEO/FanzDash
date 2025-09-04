@@ -1,21 +1,33 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  HardDrive, 
-  Cloud, 
-  Shield, 
-  Globe, 
-  Settings, 
+import {
+  HardDrive,
+  Cloud,
+  Shield,
+  Globe,
+  Settings,
   CheckCircle,
   XCircle,
   AlertTriangle,
@@ -24,13 +36,22 @@ import {
   BarChart3,
   Zap,
   Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface StorageProvider {
   id: string;
-  provider: 's3' | 'dospace' | 'wasabi' | 'backblaze' | 'vultr' | 'r2' | 'pushr' | 'idrive' | 'default';
+  provider:
+    | "s3"
+    | "dospace"
+    | "wasabi"
+    | "backblaze"
+    | "vultr"
+    | "r2"
+    | "pushr"
+    | "idrive"
+    | "default";
   name: string;
   isDefault: boolean;
   isEnabled: boolean;
@@ -69,7 +90,7 @@ export default function StorageSettings() {
       isEnabled: true,
       cdnEnabled: false,
       forceHttps: true,
-      additionalConfig: {}
+      additionalConfig: {},
     },
     {
       id: "2",
@@ -79,13 +100,13 @@ export default function StorageSettings() {
       isEnabled: true,
       region: "us-east-1",
       bucket: "fanzdash-content",
-      accessKey: "AKIAIOSFODNN7EXAMPLE",
-      secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      accessKey: process.env.VITE_AWS_ACCESS_KEY || '',
+      secretKey: process.env.VITE_AWS_SECRET_KEY || '',
       endpoint: "s3.amazonaws.com",
       cdnEnabled: true,
       cdnUrl: "https://d123456789.cloudfront.net",
       forceHttps: true,
-      additionalConfig: {}
+      additionalConfig: {},
     },
     {
       id: "3",
@@ -95,13 +116,13 @@ export default function StorageSettings() {
       isEnabled: false,
       region: "nyc3",
       bucket: "fanzdash-spaces",
-      accessKey: "DO00EXAMPLE123456789",
-      secretKey: "DOExampleSecretKey123456789abcdefgh",
+      accessKey: process.env.VITE_DO_ACCESS_KEY || '',
+      secretKey: process.env.VITE_DO_SECRET_KEY || '',
       endpoint: "nyc3.digitaloceanspaces.com",
       cdnEnabled: true,
       cdnUrl: "https://fanzdash-spaces.nyc3.cdn.digitaloceanspaces.com",
       forceHttps: true,
-      additionalConfig: {}
+      additionalConfig: {},
     },
     {
       id: "4",
@@ -111,12 +132,12 @@ export default function StorageSettings() {
       isEnabled: false,
       region: "us-east-1",
       bucket: "fanzdash-wasabi",
-      accessKey: "WASABI_ACCESS_KEY_ID",
-      secretKey: "WASABI_SECRET_ACCESS_KEY",
+      accessKey: process.env.VITE_WASABI_ACCESS_KEY || '',
+      secretKey: process.env.VITE_WASABI_SECRET_KEY || '',
       endpoint: "s3.wasabisys.com",
       cdnEnabled: false,
       forceHttps: true,
-      additionalConfig: {}
+      additionalConfig: {},
     },
     {
       id: "5",
@@ -126,14 +147,14 @@ export default function StorageSettings() {
       isEnabled: false,
       region: "auto",
       bucket: "fanzdash-r2",
-      accessKey: "R2_ACCESS_KEY_ID",
-      secretKey: "R2_SECRET_ACCESS_KEY",
+      accessKey: process.env.VITE_R2_ACCESS_KEY || '',
+      secretKey: process.env.VITE_R2_SECRET_KEY || '',
       endpoint: "1234567890abcdef.r2.cloudflarestorage.com",
       cdnEnabled: true,
       cdnUrl: "https://fanzdash.example.com",
       forceHttps: true,
-      additionalConfig: {}
-    }
+      additionalConfig: {},
+    },
   ];
 
   // Mock storage stats
@@ -142,55 +163,59 @@ export default function StorageSettings() {
     totalSize: 512000000000, // 512 GB
     bandwidthUsed: 1200000000000, // 1.2 TB
     requestCount: 1250000,
-    cost: 89.50
+    cost: 89.5,
   };
 
   const isLoading = false;
 
   const updateProviderMutation = useMutation({
-    mutationFn: (data: { id: string, updates: Partial<StorageProvider> }) =>
-      apiRequest(`/api/admin/storage/${data.id}`, 'PATCH', data.updates),
+    mutationFn: (data: { id: string; updates: Partial<StorageProvider> }) =>
+      apiRequest(`/api/admin/storage/${data.id}`, "PATCH", data.updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/storage'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/storage"] });
       toast({ title: "Storage provider updated successfully" });
-    }
+    },
   });
 
   const testConnectionMutation = useMutation({
     mutationFn: (providerId: string) =>
-      apiRequest(`/api/admin/storage/${providerId}/test`, 'POST'),
+      apiRequest(`/api/admin/storage/${providerId}/test`, "POST"),
     onSuccess: (data, providerId) => {
-      toast({ 
-        title: "Connection test successful", 
-        description: `Storage provider connection is working correctly`
+      toast({
+        title: "Connection test successful",
+        description: `Storage provider connection is working correctly`,
       });
     },
     onError: (error, providerId) => {
-      toast({ 
-        title: "Connection test failed", 
+      toast({
+        title: "Connection test failed",
         description: `Unable to connect to storage provider. Please check your credentials.`,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const setAsDefaultMutation = useMutation({
     mutationFn: (providerId: string) =>
-      apiRequest(`/api/admin/storage/${providerId}/set-default`, 'POST'),
+      apiRequest(`/api/admin/storage/${providerId}/set-default`, "POST"),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/storage'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/storage"] });
       toast({ title: "Default storage provider updated" });
-    }
+    },
   });
 
-  const handleProviderUpdate = (id: string, field: keyof StorageProvider, value: any) => {
+  const handleProviderUpdate = (
+    id: string,
+    field: keyof StorageProvider,
+    value: any,
+  ) => {
     updateProviderMutation.mutate({ id, updates: { [field]: value } });
   };
 
   const toggleSecretVisibility = (providerId: string) => {
-    setShowSecrets(prev => ({
+    setShowSecrets((prev) => ({
       ...prev,
-      [providerId]: !prev[providerId]
+      [providerId]: !prev[providerId],
     }));
   };
 
@@ -201,47 +226,67 @@ export default function StorageSettings() {
 
   const getProviderIcon = (provider: string) => {
     switch (provider) {
-      case 'default': return <HardDrive className="h-5 w-5 text-gray-600" />;
-      case 's3': return <Cloud className="h-5 w-5 text-orange-500" />;
-      case 'dospace': return <Cloud className="h-5 w-5 text-blue-500" />;
-      case 'wasabi': return <Cloud className="h-5 w-5 text-green-500" />;
-      case 'backblaze': return <Cloud className="h-5 w-5 text-red-500" />;
-      case 'vultr': return <Cloud className="h-5 w-5 text-purple-500" />;
-      case 'r2': return <Cloud className="h-5 w-5 text-yellow-500" />;
-      case 'pushr': return <Cloud className="h-5 w-5 text-pink-500" />;
-      case 'idrive': return <Cloud className="h-5 w-5 text-indigo-500" />;
-      default: return <Cloud className="h-5 w-5" />;
+      case "default":
+        return <HardDrive className="h-5 w-5 text-gray-600" />;
+      case "s3":
+        return <Cloud className="h-5 w-5 text-orange-500" />;
+      case "dospace":
+        return <Cloud className="h-5 w-5 text-blue-500" />;
+      case "wasabi":
+        return <Cloud className="h-5 w-5 text-green-500" />;
+      case "backblaze":
+        return <Cloud className="h-5 w-5 text-red-500" />;
+      case "vultr":
+        return <Cloud className="h-5 w-5 text-purple-500" />;
+      case "r2":
+        return <Cloud className="h-5 w-5 text-yellow-500" />;
+      case "pushr":
+        return <Cloud className="h-5 w-5 text-pink-500" />;
+      case "idrive":
+        return <Cloud className="h-5 w-5 text-indigo-500" />;
+      default:
+        return <Cloud className="h-5 w-5" />;
     }
   };
 
   const getProviderColor = (provider: string) => {
     switch (provider) {
-      case 'default': return 'bg-gray-50 border-gray-200';
-      case 's3': return 'bg-orange-50 border-orange-200';
-      case 'dospace': return 'bg-blue-50 border-blue-200';
-      case 'wasabi': return 'bg-green-50 border-green-200';
-      case 'backblaze': return 'bg-red-50 border-red-200';
-      case 'vultr': return 'bg-purple-50 border-purple-200';
-      case 'r2': return 'bg-yellow-50 border-yellow-200';
-      case 'pushr': return 'bg-pink-50 border-pink-200';
-      case 'idrive': return 'bg-indigo-50 border-indigo-200';
-      default: return 'bg-gray-50 border-gray-200';
+      case "default":
+        return "bg-gray-50 border-gray-200";
+      case "s3":
+        return "bg-orange-50 border-orange-200";
+      case "dospace":
+        return "bg-blue-50 border-blue-200";
+      case "wasabi":
+        return "bg-green-50 border-green-200";
+      case "backblaze":
+        return "bg-red-50 border-red-200";
+      case "vultr":
+        return "bg-purple-50 border-purple-200";
+      case "r2":
+        return "bg-yellow-50 border-yellow-200";
+      case "pushr":
+        return "bg-pink-50 border-pink-200";
+      case "idrive":
+        return "bg-indigo-50 border-indigo-200";
+      default:
+        return "bg-gray-50 border-gray-200";
     }
   };
 
   const formatFileSize = (bytes: number) => {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    if (bytes === 0) return '0 Bytes';
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    if (bytes === 0) return "0 Bytes";
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
 
   const getEnabledProvidersCount = () => {
-    return storageProviders.filter(p => p.isEnabled).length;
+    return storageProviders.filter((p) => p.isEnabled).length;
   };
 
   const getDefaultProvider = () => {
-    return storageProviders.find(p => p.isDefault);
+    return storageProviders.find((p) => p.isDefault);
   };
 
   const getSetupInstructions = (provider: string) => {
@@ -253,9 +298,9 @@ export default function StorageSettings() {
           "Create a new IAM user with S3 permissions",
           "Generate access key and secret key",
           "Create S3 bucket in desired region",
-          "Configure bucket permissions and CORS"
+          "Configure bucket permissions and CORS",
         ],
-        docsUrl: "https://docs.aws.amazon.com/s3/"
+        docsUrl: "https://docs.aws.amazon.com/s3/",
       },
       dospace: {
         title: "DigitalOcean Spaces Setup",
@@ -264,9 +309,9 @@ export default function StorageSettings() {
           "Go to Spaces section in control panel",
           "Create a new Space in desired region",
           "Generate API key in API section",
-          "Configure CORS settings if needed"
+          "Configure CORS settings if needed",
         ],
-        docsUrl: "https://docs.digitalocean.com/products/spaces/"
+        docsUrl: "https://docs.digitalocean.com/products/spaces/",
       },
       wasabi: {
         title: "Wasabi Hot Cloud Storage Setup",
@@ -275,31 +320,36 @@ export default function StorageSettings() {
           "Create a new bucket",
           "Generate access key and secret key",
           "Note: Trial accounts may not support public files",
-          "Contact support@wasabi.com to enable public files"
+          "Contact support@wasabi.com to enable public files",
         ],
-        docsUrl: "https://wasabi.com/wp-content/themes/wasabi/docs/"
+        docsUrl: "https://wasabi.com/wp-content/themes/wasabi/docs/",
       },
       r2: {
-        title: "Cloudflare R2 Setup", 
+        title: "Cloudflare R2 Setup",
         steps: [
           "Create Cloudflare account",
           "Navigate to R2 Object Storage",
           "Create a new R2 bucket",
           "Generate R2 API token",
-          "Configure custom domain if needed"
+          "Configure custom domain if needed",
         ],
-        docsUrl: "https://developers.cloudflare.com/r2/"
-      }
+        docsUrl: "https://developers.cloudflare.com/r2/",
+      },
     };
-    
+
     return instructions[provider as keyof typeof instructions];
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="storage-settings">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="storage-settings"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold cyber-text-glow">Storage Settings</h1>
+          <h1 className="text-3xl font-bold cyber-text-glow">
+            Storage Settings
+          </h1>
           <p className="text-muted-foreground">
             Configure cloud storage providers and file management settings
           </p>
@@ -320,7 +370,9 @@ export default function StorageSettings() {
               <HardDrive className="h-8 w-8 text-primary" />
               <div>
                 <p className="text-sm font-medium">Total Files</p>
-                <p className="text-2xl font-bold">{storageStats.totalFiles.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  {storageStats.totalFiles.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -332,7 +384,9 @@ export default function StorageSettings() {
               <BarChart3 className="h-8 w-8 text-blue-500" />
               <div>
                 <p className="text-sm font-medium">Storage Used</p>
-                <p className="text-2xl font-bold">{formatFileSize(storageStats.totalSize)}</p>
+                <p className="text-2xl font-bold">
+                  {formatFileSize(storageStats.totalSize)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -344,7 +398,9 @@ export default function StorageSettings() {
               <Zap className="h-8 w-8 text-green-500" />
               <div>
                 <p className="text-sm font-medium">Bandwidth</p>
-                <p className="text-2xl font-bold">{formatFileSize(storageStats.bandwidthUsed)}</p>
+                <p className="text-2xl font-bold">
+                  {formatFileSize(storageStats.bandwidthUsed)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -356,7 +412,9 @@ export default function StorageSettings() {
               <Globe className="h-8 w-8 text-yellow-500" />
               <div>
                 <p className="text-sm font-medium">Monthly Cost</p>
-                <p className="text-2xl font-bold">${storageStats.cost.toFixed(2)}</p>
+                <p className="text-2xl font-bold">
+                  ${storageStats.cost.toFixed(2)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -378,7 +436,9 @@ export default function StorageSettings() {
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-green-600" />
                   <div>
-                    <CardTitle className="text-green-800">Default Storage Provider</CardTitle>
+                    <CardTitle className="text-green-800">
+                      Default Storage Provider
+                    </CardTitle>
                     <CardDescription className="text-green-700">
                       Currently using: {getDefaultProvider()?.name}
                     </CardDescription>
@@ -392,9 +452,12 @@ export default function StorageSettings() {
           <div className="space-y-4">
             {storageProviders.map((provider) => {
               const instructions = getSetupInstructions(provider.provider);
-              
+
               return (
-                <Card key={provider.id} className={`cyber-border ${getProviderColor(provider.provider)}`}>
+                <Card
+                  key={provider.id}
+                  className={`cyber-border ${getProviderColor(provider.provider)}`}
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
@@ -407,40 +470,55 @@ export default function StorageSettings() {
                             )}
                           </CardTitle>
                           <CardDescription>
-                            {provider.provider === 'default' 
-                              ? 'Local file storage on server disk'
-                              : `Cloud storage provider: ${provider.provider.toUpperCase()}`
-                            }
+                            {provider.provider === "default"
+                              ? "Local file storage on server disk"
+                              : `Cloud storage provider: ${provider.provider.toUpperCase()}`}
                           </CardDescription>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Badge variant={provider.isEnabled ? "default" : "secondary"}>
+                        <Badge
+                          variant={provider.isEnabled ? "default" : "secondary"}
+                        >
                           {provider.isEnabled ? "Enabled" : "Disabled"}
                         </Badge>
-                        {provider.provider !== 'default' && (
+                        {provider.provider !== "default" && (
                           <Switch
                             checked={provider.isEnabled}
-                            onCheckedChange={(checked) => handleProviderUpdate(provider.id, 'isEnabled', checked)}
+                            onCheckedChange={(checked) =>
+                              handleProviderUpdate(
+                                provider.id,
+                                "isEnabled",
+                                checked,
+                              )
+                            }
                             data-testid={`switch-${provider.provider}-enabled`}
                           />
                         )}
                       </div>
                     </div>
                   </CardHeader>
-                  
-                  {provider.provider !== 'default' && (
+
+                  {provider.provider !== "default" && (
                     <CardContent className="space-y-6">
                       {/* Configuration Fields */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor={`${provider.provider}-access-key`}>Access Key</Label>
+                          <Label htmlFor={`${provider.provider}-access-key`}>
+                            Access Key
+                          </Label>
                           <div className="relative">
                             <Input
                               id={`${provider.provider}-access-key`}
                               type="text"
-                              value={provider.accessKey || ''}
-                              onChange={(e) => handleProviderUpdate(provider.id, 'accessKey', e.target.value)}
+                              value={provider.accessKey || ""}
+                              onChange={(e) =>
+                                handleProviderUpdate(
+                                  provider.id,
+                                  "accessKey",
+                                  e.target.value,
+                                )
+                              }
                               placeholder="Enter access key"
                               data-testid={`input-${provider.provider}-access-key`}
                             />
@@ -449,7 +527,9 @@ export default function StorageSettings() {
                                 variant="ghost"
                                 size="sm"
                                 className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
-                                onClick={() => copyToClipboard(provider.accessKey!)}
+                                onClick={() =>
+                                  copyToClipboard(provider.accessKey!)
+                                }
                               >
                                 <Copy className="h-3 w-3" />
                               </Button>
@@ -458,13 +538,23 @@ export default function StorageSettings() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor={`${provider.provider}-secret-key`}>Secret Key</Label>
+                          <Label htmlFor={`${provider.provider}-secret-key`}>
+                            Secret Key
+                          </Label>
                           <div className="relative">
                             <Input
                               id={`${provider.provider}-secret-key`}
-                              type={showSecrets[provider.id] ? "text" : "password"}
-                              value={provider.secretKey || ''}
-                              onChange={(e) => handleProviderUpdate(provider.id, 'secretKey', e.target.value)}
+                              type={
+                                showSecrets[provider.id] ? "text" : "password"
+                              }
+                              value={provider.secretKey || ""}
+                              onChange={(e) =>
+                                handleProviderUpdate(
+                                  provider.id,
+                                  "secretKey",
+                                  e.target.value,
+                                )
+                              }
                               placeholder="Enter secret key"
                               data-testid={`input-${provider.provider}-secret-key`}
                             />
@@ -473,17 +563,25 @@ export default function StorageSettings() {
                                 variant="ghost"
                                 size="sm"
                                 className="h-6 w-6 p-0"
-                                onClick={() => toggleSecretVisibility(provider.id)}
+                                onClick={() =>
+                                  toggleSecretVisibility(provider.id)
+                                }
                                 data-testid={`button-toggle-${provider.provider}-secret`}
                               >
-                                {showSecrets[provider.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                                {showSecrets[provider.id] ? (
+                                  <EyeOff className="h-3 w-3" />
+                                ) : (
+                                  <Eye className="h-3 w-3" />
+                                )}
                               </Button>
                               {provider.secretKey && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="h-6 w-6 p-0"
-                                  onClick={() => copyToClipboard(provider.secretKey!)}
+                                  onClick={() =>
+                                    copyToClipboard(provider.secretKey!)
+                                  }
                                 >
                                   <Copy className="h-3 w-3" />
                                 </Button>
@@ -493,24 +591,40 @@ export default function StorageSettings() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor={`${provider.provider}-region`}>Region</Label>
+                          <Label htmlFor={`${provider.provider}-region`}>
+                            Region
+                          </Label>
                           <Input
                             id={`${provider.provider}-region`}
                             type="text"
-                            value={provider.region || ''}
-                            onChange={(e) => handleProviderUpdate(provider.id, 'region', e.target.value)}
+                            value={provider.region || ""}
+                            onChange={(e) =>
+                              handleProviderUpdate(
+                                provider.id,
+                                "region",
+                                e.target.value,
+                              )
+                            }
                             placeholder="e.g., us-east-1"
                             data-testid={`input-${provider.provider}-region`}
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor={`${provider.provider}-bucket`}>Bucket Name</Label>
+                          <Label htmlFor={`${provider.provider}-bucket`}>
+                            Bucket Name
+                          </Label>
                           <Input
                             id={`${provider.provider}-bucket`}
                             type="text"
-                            value={provider.bucket || ''}
-                            onChange={(e) => handleProviderUpdate(provider.id, 'bucket', e.target.value)}
+                            value={provider.bucket || ""}
+                            onChange={(e) =>
+                              handleProviderUpdate(
+                                provider.id,
+                                "bucket",
+                                e.target.value,
+                              )
+                            }
                             placeholder="Enter bucket name"
                             data-testid={`input-${provider.provider}-bucket`}
                           />
@@ -521,27 +635,44 @@ export default function StorageSettings() {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div className="space-y-0.5">
-                            <Label htmlFor={`${provider.provider}-cdn`}>Enable CDN</Label>
+                            <Label htmlFor={`${provider.provider}-cdn`}>
+                              Enable CDN
+                            </Label>
                             <p className="text-sm text-muted-foreground">
-                              Use content delivery network for faster file access
+                              Use content delivery network for faster file
+                              access
                             </p>
                           </div>
                           <Switch
                             id={`${provider.provider}-cdn`}
                             checked={provider.cdnEnabled}
-                            onCheckedChange={(checked) => handleProviderUpdate(provider.id, 'cdnEnabled', checked)}
+                            onCheckedChange={(checked) =>
+                              handleProviderUpdate(
+                                provider.id,
+                                "cdnEnabled",
+                                checked,
+                              )
+                            }
                             data-testid={`switch-${provider.provider}-cdn`}
                           />
                         </div>
 
                         {provider.cdnEnabled && (
                           <div className="space-y-2">
-                            <Label htmlFor={`${provider.provider}-cdn-url`}>CDN URL</Label>
+                            <Label htmlFor={`${provider.provider}-cdn-url`}>
+                              CDN URL
+                            </Label>
                             <Input
                               id={`${provider.provider}-cdn-url`}
                               type="text"
-                              value={provider.cdnUrl || ''}
-                              onChange={(e) => handleProviderUpdate(provider.id, 'cdnUrl', e.target.value)}
+                              value={provider.cdnUrl || ""}
+                              onChange={(e) =>
+                                handleProviderUpdate(
+                                  provider.id,
+                                  "cdnUrl",
+                                  e.target.value,
+                                )
+                              }
                               placeholder="https://cdn.example.com"
                               data-testid={`input-${provider.provider}-cdn-url`}
                             />
@@ -554,8 +685,14 @@ export default function StorageSettings() {
                         <div className="flex items-center space-x-4">
                           <Button
                             variant="outline"
-                            onClick={() => testConnectionMutation.mutate(provider.id)}
-                            disabled={!provider.accessKey || !provider.secretKey || testConnectionMutation.isPending}
+                            onClick={() =>
+                              testConnectionMutation.mutate(provider.id)
+                            }
+                            disabled={
+                              !provider.accessKey ||
+                              !provider.secretKey ||
+                              testConnectionMutation.isPending
+                            }
                             data-testid={`button-test-${provider.provider}`}
                           >
                             {testConnectionMutation.isPending ? (
@@ -566,21 +703,28 @@ export default function StorageSettings() {
                             Test Connection
                           </Button>
 
-                          {!provider.isDefault && provider.isEnabled && provider.accessKey && provider.secretKey && (
-                            <Button
-                              variant="default"
-                              onClick={() => setAsDefaultMutation.mutate(provider.id)}
-                              disabled={setAsDefaultMutation.isPending}
-                              data-testid={`button-set-default-${provider.provider}`}
-                            >
-                              Set as Default
-                            </Button>
-                          )}
+                          {!provider.isDefault &&
+                            provider.isEnabled &&
+                            provider.accessKey &&
+                            provider.secretKey && (
+                              <Button
+                                variant="default"
+                                onClick={() =>
+                                  setAsDefaultMutation.mutate(provider.id)
+                                }
+                                disabled={setAsDefaultMutation.isPending}
+                                data-testid={`button-set-default-${provider.provider}`}
+                              >
+                                Set as Default
+                              </Button>
+                            )}
 
                           {instructions && (
                             <Button
                               variant="ghost"
-                              onClick={() => window.open(instructions.docsUrl, '_blank')}
+                              onClick={() =>
+                                window.open(instructions.docsUrl, "_blank")
+                              }
                               data-testid={`button-docs-${provider.provider}`}
                             >
                               <ExternalLink className="h-4 w-4 mr-2" />
@@ -590,7 +734,9 @@ export default function StorageSettings() {
                         </div>
 
                         <div className="flex items-center space-x-2">
-                          {provider.accessKey && provider.secretKey && provider.bucket ? (
+                          {provider.accessKey &&
+                          provider.secretKey &&
+                          provider.bucket ? (
                             <div className="flex items-center space-x-1 text-green-600">
                               <CheckCircle className="h-4 w-4" />
                               <span className="text-sm">Configured</span>
@@ -607,7 +753,9 @@ export default function StorageSettings() {
                       {/* Setup Instructions */}
                       {instructions && (
                         <div className="bg-muted/50 rounded-lg p-4 mt-4">
-                          <h4 className="font-medium mb-2">{instructions.title}</h4>
+                          <h4 className="font-medium mb-2">
+                            {instructions.title}
+                          </h4>
                           <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
                             {instructions.steps.map((step, index) => (
                               <li key={index}>{step}</li>
@@ -703,25 +851,38 @@ export default function StorageSettings() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {storageProviders.filter(p => p.isEnabled).map((provider) => (
-                    <div key={provider.id} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {getProviderIcon(provider.provider)}
-                        <span>{provider.name}</span>
-                        {provider.isDefault && <Badge variant="outline">Default</Badge>}
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">
-                          {provider.provider === 'default' ? '128 GB' : 
-                           provider.provider === 's3' ? '384 GB' : '0 GB'}
+                  {storageProviders
+                    .filter((p) => p.isEnabled)
+                    .map((provider) => (
+                      <div
+                        key={provider.id}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center space-x-2">
+                          {getProviderIcon(provider.provider)}
+                          <span>{provider.name}</span>
+                          {provider.isDefault && (
+                            <Badge variant="outline">Default</Badge>
+                          )}
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          {provider.provider === 'default' ? '12.5k files' : 
-                           provider.provider === 's3' ? '13.3k files' : '0 files'}
+                        <div className="text-right">
+                          <div className="font-medium">
+                            {provider.provider === "default"
+                              ? "128 GB"
+                              : provider.provider === "s3"
+                                ? "384 GB"
+                                : "0 GB"}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {provider.provider === "default"
+                              ? "12.5k files"
+                              : provider.provider === "s3"
+                                ? "13.3k files"
+                                : "0 files"}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>

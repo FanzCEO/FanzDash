@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, useParams } from "wouter";
@@ -15,7 +23,10 @@ import { ArrowLeft, Save, FileImage } from "lucide-react";
 import { Link } from "wouter";
 
 const blogPostSchema = z.object({
-  title: z.string().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(200, "Title must be less than 200 characters"),
   content: z.string().optional(),
   featuredImage: z.string().optional(),
   isPublished: z.boolean().default(false),
@@ -49,8 +60,11 @@ export default function BlogEdit() {
 
   const { data: post, isLoading } = useQuery({
     queryKey: ["/api/blog/posts", blogId],
-    queryFn: () => fetch(`/api/blog/posts/${blogId}`).then(res => res.json()) as Promise<BlogPost>,
-    enabled: !!blogId
+    queryFn: () =>
+      fetch(`/api/blog/posts/${blogId}`).then((res) =>
+        res.json(),
+      ) as Promise<BlogPost>,
+    enabled: !!blogId,
   });
 
   const form = useForm<BlogPostForm>({
@@ -84,11 +98,11 @@ export default function BlogEdit() {
         },
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         throw new Error("Failed to update blog post");
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -96,7 +110,7 @@ export default function BlogEdit() {
       queryClient.invalidateQueries({ queryKey: ["/api/blog/posts", blogId] });
       toast({
         title: "Success",
-        description: "Blog post updated successfully"
+        description: "Blog post updated successfully",
       });
       setLocation("/blog");
     },
@@ -104,9 +118,9 @@ export default function BlogEdit() {
       toast({
         title: "Error",
         description: "Failed to update blog post",
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const onSubmit = (data: BlogPostForm) => {
@@ -134,7 +148,9 @@ export default function BlogEdit() {
       <div className="p-6">
         <div className="text-center py-8">
           <h2 className="text-2xl font-bold mb-2">Blog Post Not Found</h2>
-          <p className="text-muted-foreground mb-4">The blog post you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground mb-4">
+            The blog post you're looking for doesn't exist.
+          </p>
           <Link href="/blog">
             <Button>Back to Blog</Button>
           </Link>
@@ -154,10 +170,10 @@ export default function BlogEdit() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Edit Blog Post</h1>
-            <p className="text-muted-foreground">
-              Edit "{post.title}"
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Edit Blog Post
+            </h1>
+            <p className="text-muted-foreground">Edit "{post.title}"</p>
           </div>
         </div>
       </div>
@@ -212,7 +228,8 @@ export default function BlogEdit() {
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Recommended size: 650x430px. Current: {post.featuredImage || "No image"}
+                      Recommended size: 650x430px. Current:{" "}
+                      {post.featuredImage || "No image"}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

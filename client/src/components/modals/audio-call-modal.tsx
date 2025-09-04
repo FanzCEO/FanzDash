@@ -3,21 +3,21 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Phone, 
-  PhoneOff, 
-  Mic, 
+import {
+  Phone,
+  PhoneOff,
+  Mic,
   MicOff,
   Volume2,
   VolumeX,
   Clock,
-  DollarSign
+  DollarSign,
 } from "lucide-react";
 
 interface AudioCallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  callType: 'incoming' | 'outgoing' | 'active';
+  callType: "incoming" | "outgoing" | "active";
   caller: {
     id: string;
     username: string;
@@ -53,17 +53,17 @@ export function AudioCallModal({
   onToggleVolume,
   isMuted = false,
   isVolumeOff = false,
-  className = ""
+  className = "",
 }: AudioCallModalProps) {
   const [callDuration, setCallDuration] = useState(0);
   const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
-    if (callType === 'active') {
+
+    if (callType === "active") {
       interval = setInterval(() => {
-        setCallDuration(prev => prev + 1);
+        setCallDuration((prev) => prev + 1);
       }, 1000);
     }
 
@@ -75,7 +75,7 @@ export function AudioCallModal({
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleAccept = () => {
@@ -95,14 +95,14 @@ export function AudioCallModal({
 
   const getCallStatus = () => {
     switch (callType) {
-      case 'incoming':
+      case "incoming":
         return `${caller.username} is calling you`;
-      case 'outgoing':
-        return isConnecting ? 'Connecting...' : 'Please wait for answer';
-      case 'active':
+      case "outgoing":
+        return isConnecting ? "Connecting..." : "Please wait for answer";
+      case "active":
         return `Connected - ${formatDuration(callDuration)}`;
       default:
-        return '';
+        return "";
     }
   };
 
@@ -118,9 +118,9 @@ export function AudioCallModal({
                 {caller.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            
+
             {/* Call status indicator */}
-            {callType === 'active' && (
+            {callType === "active" && (
               <div className="absolute -bottom-2 -right-2">
                 <Badge variant="default" className="bg-green-500 animate-pulse">
                   <div className="w-2 h-2 bg-white rounded-full mr-1" />
@@ -133,31 +133,31 @@ export function AudioCallModal({
           {/* Caller Info */}
           <div className="space-y-2">
             <h3 className="text-xl font-semibold text-gray-900">
-              {callType === 'incoming' ? 'Incoming Audio Call' : caller.name}
+              {callType === "incoming" ? "Incoming Audio Call" : caller.name}
             </h3>
-            <p className="text-gray-600">
-              {getCallStatus()}
-            </p>
+            <p className="text-gray-600">{getCallStatus()}</p>
 
             {/* Call pricing info */}
-            {callData && callType === 'incoming' && (
+            {callData && callType === "incoming" && (
               <div className="bg-white p-3 rounded-lg">
                 <div className="flex items-center justify-center space-x-1 text-primary">
                   <DollarSign className="h-4 w-4" />
                   <span className="font-semibold">
-                    {callData.currencySymbol}{callData.totalAmount?.toFixed(2)}
+                    {callData.currencySymbol}
+                    {callData.totalAmount?.toFixed(2)}
                   </span>
                 </div>
                 {callData.pricePerMinute && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    {callData.currencySymbol}{callData.pricePerMinute}/minute
+                    {callData.currencySymbol}
+                    {callData.pricePerMinute}/minute
                   </p>
                 )}
               </div>
             )}
 
             {/* Active call timer */}
-            {callType === 'active' && (
+            {callType === "active" && (
               <div className="bg-white p-3 rounded-lg">
                 <div className="flex items-center justify-center space-x-2">
                   <Clock className="h-4 w-4 text-primary" />
@@ -167,14 +167,15 @@ export function AudioCallModal({
                 </div>
                 {callData?.pricePerMinute && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Rate: {callData.currencySymbol}{callData.pricePerMinute}/minute
+                    Rate: {callData.currencySymbol}
+                    {callData.pricePerMinute}/minute
                   </p>
                 )}
               </div>
             )}
 
             {/* Warning for incoming calls */}
-            {callType === 'incoming' && (
+            {callType === "incoming" && (
               <p className="text-xs text-gray-500">
                 Audio calls are recorded for quality assurance
               </p>
@@ -183,7 +184,7 @@ export function AudioCallModal({
 
           {/* Call Controls */}
           <div className="flex justify-center space-x-4">
-            {callType === 'incoming' && (
+            {callType === "incoming" && (
               <>
                 <Button
                   variant="destructive"
@@ -194,7 +195,7 @@ export function AudioCallModal({
                 >
                   <PhoneOff className="h-6 w-6" />
                 </Button>
-                
+
                 <Button
                   variant="default"
                   size="lg"
@@ -208,7 +209,7 @@ export function AudioCallModal({
               </>
             )}
 
-            {callType === 'outgoing' && (
+            {callType === "outgoing" && (
               <Button
                 variant="destructive"
                 size="lg"
@@ -220,7 +221,7 @@ export function AudioCallModal({
               </Button>
             )}
 
-            {callType === 'active' && (
+            {callType === "active" && (
               <>
                 {/* Mic Toggle */}
                 <Button

@@ -1,9 +1,13 @@
-import crypto from 'crypto';
-import { db } from '../db';
-import { trustedDevices, emailVerificationTokens, securityAuditLog } from '@shared/schema';
-import { eq, and, gt } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
-import nodemailer from 'nodemailer';
+import crypto from "crypto";
+import { db } from "../db";
+import {
+  trustedDevices,
+  emailVerificationTokens,
+  securityAuditLog,
+} from "@shared/schema";
+import { eq, and, gt } from "drizzle-orm";
+import { nanoid } from "nanoid";
+import nodemailer from "nodemailer";
 
 export interface DeviceInfo {
   fingerprint: string;
@@ -27,24 +31,23 @@ export interface SecurityResult {
 }
 
 export class DeviceSecurityService {
-  
   // Generate device fingerprint from request info
   static generateDeviceFingerprint(req: any): string {
-    const userAgent = req.headers['user-agent'] || '';
-    const acceptLanguage = req.headers['accept-language'] || '';
-    const acceptEncoding = req.headers['accept-encoding'] || '';
+    const userAgent = req.headers["user-agent"] || "";
+    const acceptLanguage = req.headers["accept-language"] || "";
+    const acceptEncoding = req.headers["accept-encoding"] || "";
     const ipAddress = this.getClientIP(req);
-    
+
     // Create a unique fingerprint based on device characteristics
     const fingerprintData = `${userAgent}|${acceptLanguage}|${acceptEncoding}|${ipAddress}`;
-    return crypto.createHash('sha256').update(fingerprintData).digest('hex');
+    return crypto.createHash("sha256").update(fingerprintData).digest("hex");
   }
 
   // Extract device info from request
   static extractDeviceInfo(req: any): DeviceInfo {
-    const userAgent = req.headers['user-agent'] || '';
+    const userAgent = req.headers["user-agent"] || "";
     const ipAddress = this.getClientIP(req);
-    
+
     return {
       fingerprint: this.generateDeviceFingerprint(req),
       browser: this.extractBrowser(userAgent),
@@ -57,32 +60,34 @@ export class DeviceSecurityService {
 
   // Get client IP address
   private static getClientIP(req: any): string {
-    return req.ip || 
-           req.connection?.remoteAddress || 
-           req.socket?.remoteAddress ||
-           req.headers['x-forwarded-for']?.split(',')[0] ||
-           req.headers['x-real-ip'] ||
-           'unknown';
+    return (
+      req.ip ||
+      req.connection?.remoteAddress ||
+      req.socket?.remoteAddress ||
+      req.headers["x-forwarded-for"]?.split(",")[0] ||
+      req.headers["x-real-ip"] ||
+      "unknown"
+    );
   }
 
   // Extract browser from user agent
   private static extractBrowser(userAgent: string): string {
-    if (userAgent.includes('Chrome')) return 'Chrome';
-    if (userAgent.includes('Firefox')) return 'Firefox';
-    if (userAgent.includes('Safari')) return 'Safari';
-    if (userAgent.includes('Edge')) return 'Edge';
-    if (userAgent.includes('Opera')) return 'Opera';
-    return 'Unknown';
+    if (userAgent.includes("Chrome")) return "Chrome";
+    if (userAgent.includes("Firefox")) return "Firefox";
+    if (userAgent.includes("Safari")) return "Safari";
+    if (userAgent.includes("Edge")) return "Edge";
+    if (userAgent.includes("Opera")) return "Opera";
+    return "Unknown";
   }
 
   // Extract OS from user agent
   private static extractOS(userAgent: string): string {
-    if (userAgent.includes('Windows')) return 'Windows';
-    if (userAgent.includes('Mac OS X')) return 'macOS';
-    if (userAgent.includes('Linux')) return 'Linux';
-    if (userAgent.includes('Android')) return 'Android';
-    if (userAgent.includes('iOS')) return 'iOS';
-    return 'Unknown';
+    if (userAgent.includes("Windows")) return "Windows";
+    if (userAgent.includes("Mac OS X")) return "macOS";
+    if (userAgent.includes("Linux")) return "Linux";
+    if (userAgent.includes("Android")) return "Android";
+    if (userAgent.includes("iOS")) return "iOS";
+    return "Unknown";
   }
 
   // Get approximate location from IP (simplified - in production use GeoIP service)
@@ -90,21 +95,27 @@ export class DeviceSecurityService {
     // This is a simplified implementation
     // In production, use a service like MaxMind GeoIP2 or ipinfo.io
     return {
-      city: 'Unknown',
-      country: 'Unknown',
-      coordinates: null
+      city: "Unknown",
+      country: "Unknown",
+      coordinates: null,
     };
   }
 
   // Check if device is trusted
-  static async isDeviceTrusted(userId: string, deviceFingerprint: string): Promise<boolean> {
-    const trustedDevice = await db.select()
+  static async isDeviceTrusted(
+    userId: string,
+    deviceFingerprint: string,
+  ): Promise<boolean> {
+    const trustedDevice = await db
+      .select()
       .from(trustedDevices)
-      .where(and(
-        eq(trustedDevices.userId, userId),
-        eq(trustedDevices.deviceFingerprint, deviceFingerprint),
-        eq(trustedDevices.isTrusted, true)
-      ))
+      .where(
+        and(
+          eq(trustedDevices.userId, userId),
+          eq(trustedDevices.deviceFingerprint, deviceFingerprint),
+          eq(trustedDevices.isTrusted, true),
+        ),
+      )
       .limit(1);
 
     return trustedDevice.length > 0;
@@ -112,28 +123,33 @@ export class DeviceSecurityService {
 
   // Analyze login security and determine if verification is needed
   static async analyzeLoginSecurity(
-    userId: string, 
+    userId: string,
     deviceInfo: DeviceInfo,
-    req: any
+    req: any,
   ): Promise<SecurityResult> {
     let riskScore = 0;
     const reasons: string[] = [];
-    
+
     // Check if device is already trusted
-    const isKnownDevice = await this.isDeviceTrusted(userId, deviceInfo.fingerprint);
-    
+    const isKnownDevice = await this.isDeviceTrusted(
+      userId,
+      deviceInfo.fingerprint,
+    );
+
     if (!isKnownDevice) {
       riskScore += 50;
-      reasons.push('New device detected');
+      reasons.push("New device detected");
     }
 
     // Check for suspicious IP patterns
     const recentLogins = await this.getRecentLoginsByUser(userId, 24); // Last 24 hours
-    const sameIPLogins = recentLogins.filter(login => login.ipAddress === deviceInfo.ipAddress);
-    
+    const sameIPLogins = recentLogins.filter(
+      (login) => login.ipAddress === deviceInfo.ipAddress,
+    );
+
     if (sameIPLogins.length === 0 && recentLogins.length > 0) {
       riskScore += 30;
-      reasons.push('Login from new IP address');
+      reasons.push("Login from new IP address");
     }
 
     // Check for rapid location changes (if we had proper GeoIP)
@@ -143,14 +159,14 @@ export class DeviceSecurityService {
       // For now, just check if IP is different
       if (lastLogin.ipAddress !== deviceInfo.ipAddress) {
         riskScore += 20;
-        reasons.push('Location change detected');
+        reasons.push("Location change detected");
       }
     }
 
     // Check login frequency (velocity checks)
     if (recentLogins.length > 5) {
       riskScore += 25;
-      reasons.push('High login frequency detected');
+      reasons.push("High login frequency detected");
     }
 
     // Determine if verification is required
@@ -159,26 +175,26 @@ export class DeviceSecurityService {
     let verificationToken;
     if (requiresVerification) {
       verificationToken = await this.createVerificationToken(
-        userId, 
-        'device_verification',
-        deviceInfo
+        userId,
+        "device_verification",
+        deviceInfo,
       );
     }
 
     // Log the security analysis
-    await this.logSecurityEvent(userId, 'security_analysis', {
+    await this.logSecurityEvent(userId, "security_analysis", {
       riskScore,
       reasons,
       requiresVerification,
       deviceInfo,
-      success: true
+      success: true,
     });
 
     return {
       requiresVerification,
       riskScore,
       reasons,
-      verificationToken
+      verificationToken,
     };
   }
 
@@ -186,7 +202,7 @@ export class DeviceSecurityService {
   static async createVerificationToken(
     userId: string,
     purpose: string,
-    deviceInfo: DeviceInfo
+    deviceInfo: DeviceInfo,
   ): Promise<string> {
     const token = nanoid(32); // Generate secure random token
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
@@ -194,7 +210,7 @@ export class DeviceSecurityService {
     await db.insert(emailVerificationTokens).values({
       userId,
       token,
-      email: '', // Will be filled when sending email
+      email: "", // Will be filled when sending email
       purpose,
       deviceFingerprint: deviceInfo.fingerprint,
       ipAddress: deviceInfo.ipAddress,
@@ -209,19 +225,20 @@ export class DeviceSecurityService {
     userEmail: string,
     userName: string,
     token: string,
-    deviceInfo: DeviceInfo
+    deviceInfo: DeviceInfo,
   ): Promise<boolean> {
     try {
       // Update token with email
-      await db.update(emailVerificationTokens)
+      await db
+        .update(emailVerificationTokens)
         .set({ email: userEmail })
         .where(eq(emailVerificationTokens.token, token));
 
       // Create email transporter (configure with your email service)
       const transporter = nodemailer.createTransport({
         // Configure your email service here
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.SMTP_PORT || '587'),
+        host: process.env.SMTP_HOST || "smtp.gmail.com",
+        port: parseInt(process.env.SMTP_PORT || "587"),
         secure: false,
         auth: {
           user: process.env.SMTP_USER,
@@ -229,7 +246,7 @@ export class DeviceSecurityService {
         },
       });
 
-      const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/verify-device?token=${token}`;
+      const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/auth/verify-device?token=${token}`;
 
       const emailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -251,7 +268,7 @@ export class DeviceSecurityService {
               <p style="margin: 5px 0; color: #666;"><strong>Browser:</strong> ${deviceInfo.browser}</p>
               <p style="margin: 5px 0; color: #666;"><strong>Operating System:</strong> ${deviceInfo.os}</p>
               <p style="margin: 5px 0; color: #666;"><strong>IP Address:</strong> ${deviceInfo.ipAddress}</p>
-              <p style="margin: 5px 0; color: #666;"><strong>Location:</strong> ${deviceInfo.location?.city || 'Unknown'}, ${deviceInfo.location?.country || 'Unknown'}</p>
+              <p style="margin: 5px 0; color: #666;"><strong>Location:</strong> ${deviceInfo.location?.city || "Unknown"}, ${deviceInfo.location?.country || "Unknown"}</p>
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
@@ -293,37 +310,43 @@ export class DeviceSecurityService {
       await transporter.sendMail({
         from: `"FanzDash Security" <security@fanzunlimited.com>`,
         to: userEmail,
-        subject: '🔒 Device Verification Required - FanzDash',
+        subject: "🔒 Device Verification Required - FanzDash",
         html: emailHtml,
       });
 
       return true;
     } catch (error) {
-      console.error('Failed to send verification email:', error);
+      console.error("Failed to send verification email:", error);
       return false;
     }
   }
 
   // Verify device verification token
-  static async verifyDeviceToken(token: string): Promise<{ success: boolean; userId?: string; error?: string }> {
+  static async verifyDeviceToken(
+    token: string,
+  ): Promise<{ success: boolean; userId?: string; error?: string }> {
     try {
-      const tokenRecord = await db.select()
+      const tokenRecord = await db
+        .select()
         .from(emailVerificationTokens)
-        .where(and(
-          eq(emailVerificationTokens.token, token),
-          eq(emailVerificationTokens.purpose, 'device_verification'),
-          gt(emailVerificationTokens.expiresAt, new Date())
-        ))
+        .where(
+          and(
+            eq(emailVerificationTokens.token, token),
+            eq(emailVerificationTokens.purpose, "device_verification"),
+            gt(emailVerificationTokens.expiresAt, new Date()),
+          ),
+        )
         .limit(1);
 
       if (tokenRecord.length === 0) {
-        return { success: false, error: 'Invalid or expired token' };
+        return { success: false, error: "Invalid or expired token" };
       }
 
       const record = tokenRecord[0];
 
       // Mark token as used
-      await db.update(emailVerificationTokens)
+      await db
+        .update(emailVerificationTokens)
         .set({ usedAt: new Date() })
         .where(eq(emailVerificationTokens.id, record.id));
 
@@ -337,29 +360,35 @@ export class DeviceSecurityService {
       });
 
       // Log successful verification
-      await this.logSecurityEvent(record.userId, 'device_verified', {
+      await this.logSecurityEvent(record.userId, "device_verified", {
         deviceFingerprint: record.deviceFingerprint,
-        success: true
+        success: true,
       });
 
       return { success: true, userId: record.userId };
     } catch (error) {
-      console.error('Device verification error:', error);
-      return { success: false, error: 'Verification failed' };
+      console.error("Device verification error:", error);
+      return { success: false, error: "Verification failed" };
     }
   }
 
   // Get recent logins for a user
-  private static async getRecentLoginsByUser(userId: string, hours: number = 24): Promise<any[]> {
+  private static async getRecentLoginsByUser(
+    userId: string,
+    hours: number = 24,
+  ): Promise<any[]> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000);
-    
-    return await db.select()
+
+    return await db
+      .select()
       .from(securityAuditLog)
-      .where(and(
-        eq(securityAuditLog.userId, userId),
-        eq(securityAuditLog.event, 'login_success'),
-        gt(securityAuditLog.createdAt, since)
-      ))
+      .where(
+        and(
+          eq(securityAuditLog.userId, userId),
+          eq(securityAuditLog.event, "login_success"),
+          gt(securityAuditLog.createdAt, since),
+        ),
+      )
       .orderBy(securityAuditLog.createdAt);
   }
 
@@ -367,7 +396,7 @@ export class DeviceSecurityService {
   private static async logSecurityEvent(
     userId: string,
     event: string,
-    details: any
+    details: any,
   ): Promise<void> {
     try {
       await db.insert(securityAuditLog).values({
@@ -376,74 +405,90 @@ export class DeviceSecurityService {
         details,
         ipAddress: details.deviceInfo?.ipAddress || details.ipAddress,
         userAgent: details.deviceInfo?.userAgent,
-        deviceFingerprint: details.deviceInfo?.fingerprint || details.deviceFingerprint,
+        deviceFingerprint:
+          details.deviceInfo?.fingerprint || details.deviceFingerprint,
         location: details.deviceInfo?.location,
         riskScore: details.riskScore || 0,
         success: details.success || false,
       });
     } catch (error) {
-      console.error('Failed to log security event:', error);
+      console.error("Failed to log security event:", error);
     }
   }
 
   // Clean up expired tokens
   static async cleanupExpiredTokens(): Promise<void> {
     try {
-      await db.delete(emailVerificationTokens)
-        .where(and(
-          gt(emailVerificationTokens.expiresAt, new Date()),
-          eq(emailVerificationTokens.usedAt, null)
-        ));
+      await db
+        .delete(emailVerificationTokens)
+        .where(
+          and(
+            gt(emailVerificationTokens.expiresAt, new Date()),
+            eq(emailVerificationTokens.usedAt, null),
+          ),
+        );
     } catch (error) {
-      console.error('Failed to cleanup expired tokens:', error);
+      console.error("Failed to cleanup expired tokens:", error);
     }
   }
 
   // Trust a device manually (for admin use)
-  static async trustDevice(userId: string, deviceFingerprint: string): Promise<boolean> {
+  static async trustDevice(
+    userId: string,
+    deviceFingerprint: string,
+  ): Promise<boolean> {
     try {
-      await db.insert(trustedDevices).values({
-        userId,
-        deviceFingerprint,
-        isTrusted: true,
-        lastUsedAt: new Date(),
-      }).onConflictDoUpdate({
-        target: trustedDevices.deviceFingerprint,
-        set: {
+      await db
+        .insert(trustedDevices)
+        .values({
+          userId,
+          deviceFingerprint,
           isTrusted: true,
           lastUsedAt: new Date(),
-        },
-      });
+        })
+        .onConflictDoUpdate({
+          target: trustedDevices.deviceFingerprint,
+          set: {
+            isTrusted: true,
+            lastUsedAt: new Date(),
+          },
+        });
 
-      await this.logSecurityEvent(userId, 'device_trusted_manually', {
+      await this.logSecurityEvent(userId, "device_trusted_manually", {
         deviceFingerprint,
-        success: true
+        success: true,
       });
 
       return true;
     } catch (error) {
-      console.error('Failed to trust device:', error);
+      console.error("Failed to trust device:", error);
       return false;
     }
   }
 
   // Remove trusted device
-  static async removeTrustedDevice(userId: string, deviceFingerprint: string): Promise<boolean> {
+  static async removeTrustedDevice(
+    userId: string,
+    deviceFingerprint: string,
+  ): Promise<boolean> {
     try {
-      await db.delete(trustedDevices)
-        .where(and(
-          eq(trustedDevices.userId, userId),
-          eq(trustedDevices.deviceFingerprint, deviceFingerprint)
-        ));
+      await db
+        .delete(trustedDevices)
+        .where(
+          and(
+            eq(trustedDevices.userId, userId),
+            eq(trustedDevices.deviceFingerprint, deviceFingerprint),
+          ),
+        );
 
-      await this.logSecurityEvent(userId, 'device_untrusted', {
+      await this.logSecurityEvent(userId, "device_untrusted", {
         deviceFingerprint,
-        success: true
+        success: true,
       });
 
       return true;
     } catch (error) {
-      console.error('Failed to remove trusted device:', error);
+      console.error("Failed to remove trusted device:", error);
       return false;
     }
   }

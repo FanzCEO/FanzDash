@@ -46,11 +46,11 @@ interface GifPickerProps {
   className?: string;
 }
 
-export function GifPicker({ 
-  onSelectGif, 
-  isOpen, 
-  onClose, 
-  className = "" 
+export function GifPicker({
+  onSelectGif,
+  isOpen,
+  onClose,
+  className = "",
 }: GifPickerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [gifs, setGifs] = useState<GifItem[]>([]);
@@ -63,56 +63,128 @@ export function GifPicker({
       id: "1",
       title: "Happy Dance",
       images: {
-        fixed_height: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        fixed_width: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        original: { url: "/api/placeholder/400/300", width: "400", height: "300" }
-      }
+        fixed_height: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        fixed_width: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        original: {
+          url: "/api/placeholder/400/300",
+          width: "400",
+          height: "300",
+        },
+      },
     },
     {
-      id: "2", 
+      id: "2",
       title: "Thumbs Up",
       images: {
-        fixed_height: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        fixed_width: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        original: { url: "/api/placeholder/400/300", width: "400", height: "300" }
-      }
+        fixed_height: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        fixed_width: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        original: {
+          url: "/api/placeholder/400/300",
+          width: "400",
+          height: "300",
+        },
+      },
     },
     {
       id: "3",
       title: "Celebration",
       images: {
-        fixed_height: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        fixed_width: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        original: { url: "/api/placeholder/400/300", width: "400", height: "300" }
-      }
+        fixed_height: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        fixed_width: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        original: {
+          url: "/api/placeholder/400/300",
+          width: "400",
+          height: "300",
+        },
+      },
     },
     {
       id: "4",
       title: "Love Heart",
       images: {
-        fixed_height: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        fixed_width: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        original: { url: "/api/placeholder/400/300", width: "400", height: "300" }
-      }
+        fixed_height: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        fixed_width: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        original: {
+          url: "/api/placeholder/400/300",
+          width: "400",
+          height: "300",
+        },
+      },
     },
     {
       id: "5",
       title: "Funny Cat",
       images: {
-        fixed_height: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        fixed_width: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        original: { url: "/api/placeholder/400/300", width: "400", height: "300" }
-      }
+        fixed_height: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        fixed_width: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        original: {
+          url: "/api/placeholder/400/300",
+          width: "400",
+          height: "300",
+        },
+      },
     },
     {
       id: "6",
       title: "Wow Reaction",
       images: {
-        fixed_height: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        fixed_width: { url: "/api/placeholder/200/150", width: "200", height: "150" },
-        original: { url: "/api/placeholder/400/300", width: "400", height: "300" }
-      }
-    }
+        fixed_height: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        fixed_width: {
+          url: "/api/placeholder/200/150",
+          width: "200",
+          height: "150",
+        },
+        original: {
+          url: "/api/placeholder/400/300",
+          width: "400",
+          height: "300",
+        },
+      },
+    },
   ];
 
   const searchGifs = useCallback(
@@ -127,13 +199,13 @@ export function GifPicker({
 
       try {
         // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         // Filter mock data based on search query
-        const filteredGifs = mockGifs.filter(gif => 
-          gif.title.toLowerCase().includes(query.toLowerCase())
+        const filteredGifs = mockGifs.filter((gif) =>
+          gif.title.toLowerCase().includes(query.toLowerCase()),
         );
-        
+
         setGifs(filteredGifs);
       } catch (err) {
         setError("Failed to search GIFs. Please try again.");
@@ -142,7 +214,7 @@ export function GifPicker({
         setIsLoading(false);
       }
     }, 300),
-    [mockGifs]
+    [mockGifs],
   );
 
   const handleSearch = (query: string) => {
@@ -163,7 +235,9 @@ export function GifPicker({
   if (!isOpen) return null;
 
   return (
-    <Card className={`absolute z-50 w-80 max-h-96 overflow-hidden ${className}`}>
+    <Card
+      className={`absolute z-50 w-80 max-h-96 overflow-hidden ${className}`}
+    >
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center justify-between">
           <span>Choose a GIF</span>
@@ -176,7 +250,7 @@ export function GifPicker({
             ×
           </Button>
         </CardTitle>
-        
+
         <div className="relative">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
@@ -187,21 +261,21 @@ export function GifPicker({
           />
         </div>
       </CardHeader>
-      
+
       <CardContent className="p-0">
         {error && (
           <Alert variant="destructive" className="m-3">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        
+
         {isLoading ? (
           <div className="flex items-center justify-center p-8">
             <Loader2 className="h-6 w-6 animate-spin mr-2" />
             <span>Searching GIFs...</span>
           </div>
         ) : gifs.length > 0 ? (
-          <div 
+          <div
             className="grid grid-cols-2 gap-2 p-3 max-h-64 overflow-y-auto custom-scrollbar"
             style={{ maxHeight: "16rem" }}
           >

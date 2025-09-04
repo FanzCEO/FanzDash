@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Eye, 
-  X,
-  RefreshCw,
-  Clock,
-  Users
-} from "lucide-react";
+import { Eye, X, RefreshCw, Clock, Users } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface StoryViewer {
@@ -36,7 +35,7 @@ export function StoryViewsModal({
   onClose,
   storyId,
   onLoadViewers,
-  className = ""
+  className = "",
 }: StoryViewsModalProps) {
   const [viewers, setViewers] = useState<StoryViewer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +50,7 @@ export function StoryViewsModal({
   const loadViewers = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const viewersData = await onLoadViewers(storyId);
       setViewers(viewersData);
@@ -78,9 +77,7 @@ export function StoryViewsModal({
               <Eye className="h-5 w-5 text-primary" />
               <span>Story Views</span>
               {viewers.length > 0 && (
-                <Badge variant="secondary">
-                  {viewers.length}
-                </Badge>
+                <Badge variant="secondary">{viewers.length}</Badge>
               )}
             </div>
             <Button
@@ -100,7 +97,9 @@ export function StoryViewsModal({
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-8">
               <RefreshCw className="h-8 w-8 animate-spin text-primary mb-2" />
-              <p className="text-sm text-muted-foreground">Loading viewers...</p>
+              <p className="text-sm text-muted-foreground">
+                Loading viewers...
+              </p>
             </div>
           )}
 
@@ -111,7 +110,12 @@ export function StoryViewsModal({
                 <X className="h-8 w-8 text-red-500" />
               </div>
               <p className="text-sm text-red-600 mb-3">{error}</p>
-              <Button variant="outline" onClick={loadViewers} size="sm" data-testid="retry-load-viewers">
+              <Button
+                variant="outline"
+                onClick={loadViewers}
+                size="sm"
+                data-testid="retry-load-viewers"
+              >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Try Again
               </Button>
@@ -141,7 +145,10 @@ export function StoryViewsModal({
                           {viewer.name}
                         </h6>
                         {viewer.isVerified && (
-                          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-600">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-blue-100 text-blue-600"
+                          >
                             ✓
                           </Badge>
                         )}
@@ -151,7 +158,7 @@ export function StoryViewsModal({
                           </Badge>
                         )}
                       </div>
-                      
+
                       <p className="text-xs text-muted-foreground truncate">
                         @{viewer.username}
                       </p>
@@ -161,7 +168,9 @@ export function StoryViewsModal({
                       <div className="flex items-center text-xs text-muted-foreground">
                         <Clock className="h-3 w-3 mr-1" />
                         <span>
-                          {formatDistanceToNow(new Date(viewer.viewedAt), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(viewer.viewedAt), {
+                            addSuffix: true,
+                          })}
                         </span>
                       </div>
                     </div>

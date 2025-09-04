@@ -4,16 +4,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Clock, Upload, FileText, User, Calendar, Shield } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  Upload,
+  FileText,
+  User,
+  Calendar,
+  Shield,
+} from "lucide-react";
 
 const verification2257Schema = z.object({
   stageName: z.string().min(1, "Stage name is required"),
@@ -39,7 +67,7 @@ interface Verification2257 {
   city: string;
   country: string;
   postalCode: string;
-  status: 'pending' | 'verified' | 'declined';
+  status: "pending" | "verified" | "declined";
   actionTakenBy?: string;
   actionReason?: string;
   actionType?: string;
@@ -55,7 +83,9 @@ interface Verification2257 {
 export default function Verification2257() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedVerification, setSelectedVerification] = useState<string | null>(null);
+  const [selectedVerification, setSelectedVerification] = useState<
+    string | null
+  >(null);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
 
   const form = useForm<Verification2257Form>({
@@ -97,8 +127,19 @@ export default function Verification2257() {
   });
 
   const updateVerificationMutation = useMutation({
-    mutationFn: async ({ id, status, reason }: { id: string; status: string; reason?: string }) => {
-      return apiRequest("PATCH", `/api/2257-verifications/${id}`, { status, actionReason: reason });
+    mutationFn: async ({
+      id,
+      status,
+      reason,
+    }: {
+      id: string;
+      status: string;
+      reason?: string;
+    }) => {
+      return apiRequest("PATCH", `/api/2257-verifications/${id}`, {
+        status,
+        actionReason: reason,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/2257-verifications"] });
@@ -116,18 +157,19 @@ export default function Verification2257() {
     },
   });
 
-  const handleFileUpload = (fieldName: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // For now, just store the file name as a placeholder
-      // In a real app, you'd upload to a server and get a URL back
-      form.setValue(fieldName as keyof Verification2257Form, file.name);
-      toast({
-        title: "File Selected",
-        description: `${fieldName} selected: ${file.name}`,
-      });
-    }
-  };
+  const handleFileUpload =
+    (fieldName: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        // For now, just store the file name as a placeholder
+        // In a real app, you'd upload to a server and get a URL back
+        form.setValue(fieldName as keyof Verification2257Form, file.name);
+        toast({
+          title: "File Selected",
+          description: `${fieldName} selected: ${file.name}`,
+        });
+      }
+    };
 
   const handleApprove = (id: string) => {
     updateVerificationMutation.mutate({ id, status: "verified" });
@@ -144,12 +186,27 @@ export default function Verification2257() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "verified":
-        return <Badge className="bg-green-600"><CheckCircle className="w-3 h-3 mr-1" />Verified</Badge>;
+        return (
+          <Badge className="bg-green-600">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            Verified
+          </Badge>
+        );
       case "declined":
-        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Declined</Badge>;
+        return (
+          <Badge variant="destructive">
+            <XCircle className="w-3 h-3 mr-1" />
+            Declined
+          </Badge>
+        );
       case "pending":
       default:
-        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+        return (
+          <Badge variant="secondary">
+            <Clock className="w-3 h-3 mr-1" />
+            Pending
+          </Badge>
+        );
     }
   };
 
@@ -170,8 +227,12 @@ export default function Verification2257() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">2257 Record Verification</h1>
-            <p className="text-muted-foreground">Age Verification & Compliance Documentation</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              2257 Record Verification
+            </h1>
+            <p className="text-muted-foreground">
+              Age Verification & Compliance Documentation
+            </p>
           </div>
           <Badge variant="outline" className="border-cyan-500 text-cyan-400">
             <Shield className="w-4 h-4 mr-2" />
@@ -182,23 +243,34 @@ export default function Verification2257() {
         {/* Verification Form */}
         <Card className="bg-gray-900/50 border-cyan-500/20">
           <CardHeader>
-            <CardTitle className="text-cyan-400">Submit New Verification</CardTitle>
+            <CardTitle className="text-cyan-400">
+              Submit New Verification
+            </CardTitle>
             <CardDescription className="text-gray-400">
               Complete age verification and compliance documentation
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="stageName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-cyan-400">Stage/Performance Name</FormLabel>
+                        <FormLabel className="text-cyan-400">
+                          Stage/Performance Name
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-stage-name" />
+                          <Input
+                            {...field}
+                            className="bg-gray-800 border-gray-700"
+                            data-testid="input-stage-name"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -210,9 +282,15 @@ export default function Verification2257() {
                     name="legalName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-cyan-400">Legal Full Name</FormLabel>
+                        <FormLabel className="text-cyan-400">
+                          Legal Full Name
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-legal-name" />
+                          <Input
+                            {...field}
+                            className="bg-gray-800 border-gray-700"
+                            data-testid="input-legal-name"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -224,9 +302,16 @@ export default function Verification2257() {
                     name="dateOfBirth"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-cyan-400">Date of Birth</FormLabel>
+                        <FormLabel className="text-cyan-400">
+                          Date of Birth
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} type="date" className="bg-gray-800 border-gray-700" data-testid="input-dob" />
+                          <Input
+                            {...field}
+                            type="date"
+                            className="bg-gray-800 border-gray-700"
+                            data-testid="input-dob"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -240,7 +325,11 @@ export default function Verification2257() {
                       <FormItem>
                         <FormLabel className="text-cyan-400">Country</FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-country" />
+                          <Input
+                            {...field}
+                            className="bg-gray-800 border-gray-700"
+                            data-testid="input-country"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -256,7 +345,11 @@ export default function Verification2257() {
                       <FormItem>
                         <FormLabel className="text-cyan-400">Address</FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-address" />
+                          <Input
+                            {...field}
+                            className="bg-gray-800 border-gray-700"
+                            data-testid="input-address"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -270,7 +363,11 @@ export default function Verification2257() {
                       <FormItem>
                         <FormLabel className="text-cyan-400">City</FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-city" />
+                          <Input
+                            {...field}
+                            className="bg-gray-800 border-gray-700"
+                            data-testid="input-city"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -282,9 +379,15 @@ export default function Verification2257() {
                     name="postalCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-cyan-400">Postal/ZIP Code</FormLabel>
+                        <FormLabel className="text-cyan-400">
+                          Postal/ZIP Code
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-postal-code" />
+                          <Input
+                            {...field}
+                            className="bg-gray-800 border-gray-700"
+                            data-testid="input-postal-code"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -294,7 +397,9 @@ export default function Verification2257() {
 
                 {/* Document Upload Section */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-cyan-400">Required Documentation</h3>
+                  <h3 className="text-lg font-semibold text-cyan-400">
+                    Required Documentation
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <Label className="text-cyan-400">ID Front Image</Label>
@@ -306,7 +411,9 @@ export default function Verification2257() {
                         data-testid="input-id-front"
                       />
                       {form.watch("idFrontImageUrl") && (
-                        <p className="text-green-400 text-sm">✓ ID front selected</p>
+                        <p className="text-green-400 text-sm">
+                          ✓ ID front selected
+                        </p>
                       )}
                     </div>
 
@@ -320,7 +427,9 @@ export default function Verification2257() {
                         data-testid="input-id-back"
                       />
                       {form.watch("idBackImageUrl") && (
-                        <p className="text-green-400 text-sm">✓ ID back selected</p>
+                        <p className="text-green-400 text-sm">
+                          ✓ ID back selected
+                        </p>
                       )}
                     </div>
 
@@ -334,12 +443,16 @@ export default function Verification2257() {
                         data-testid="input-holding-id"
                       />
                       {form.watch("holdingIdImageUrl") && (
-                        <p className="text-green-400 text-sm">✓ Holding ID photo selected</p>
+                        <p className="text-green-400 text-sm">
+                          ✓ Holding ID photo selected
+                        </p>
                       )}
                     </div>
 
                     <div className="space-y-4">
-                      <Label className="text-cyan-400">W-9 Form (Optional)</Label>
+                      <Label className="text-cyan-400">
+                        W-9 Form (Optional)
+                      </Label>
                       <Input
                         type="file"
                         accept=".pdf,.doc,.docx"
@@ -348,19 +461,23 @@ export default function Verification2257() {
                         data-testid="input-w9-form"
                       />
                       {form.watch("w9FormUrl") && (
-                        <p className="text-green-400 text-sm">✓ W-9 form selected</p>
+                        <p className="text-green-400 text-sm">
+                          ✓ W-9 form selected
+                        </p>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
                   disabled={createVerificationMutation.isPending}
                   data-testid="button-submit-verification"
                 >
-                  {createVerificationMutation.isPending ? "Submitting..." : "Submit Verification"}
+                  {createVerificationMutation.isPending
+                    ? "Submitting..."
+                    : "Submit Verification"}
                 </Button>
               </form>
             </Form>
@@ -370,7 +487,9 @@ export default function Verification2257() {
         {/* Verification List */}
         <Card className="bg-gray-900/50 border-cyan-500/20">
           <CardHeader>
-            <CardTitle className="text-cyan-400">Recent Verifications</CardTitle>
+            <CardTitle className="text-cyan-400">
+              Recent Verifications
+            </CardTitle>
             <CardDescription className="text-gray-400">
               Review and manage 2257 form submissions
             </CardDescription>
@@ -378,21 +497,31 @@ export default function Verification2257() {
           <CardContent>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {verifications.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">No verifications submitted yet</p>
+                <p className="text-gray-400 text-center py-8">
+                  No verifications submitted yet
+                </p>
               ) : (
                 verifications.map((verification) => (
-                  <div key={verification.id} className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <div
+                    key={verification.id}
+                    className="p-4 bg-gray-800/50 rounded-lg border border-gray-700"
+                  >
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h3 className="font-semibold text-white">{verification.stageName}</h3>
-                        <p className="text-sm text-gray-400">{verification.legalName}</p>
+                        <h3 className="font-semibold text-white">
+                          {verification.stageName}
+                        </h3>
+                        <p className="text-sm text-gray-400">
+                          {verification.legalName}
+                        </p>
                       </div>
                       {getStatusBadge(verification.status)}
                     </div>
                     <p className="text-sm text-gray-400 mb-3">
-                      Submitted: {new Date(verification.submittedAt).toLocaleDateString()}
+                      Submitted:{" "}
+                      {new Date(verification.submittedAt).toLocaleDateString()}
                     </p>
-                    
+
                     {verification.status === "pending" && (
                       <div className="flex gap-2">
                         <Button
@@ -408,7 +537,12 @@ export default function Verification2257() {
                           size="sm"
                           variant="outline"
                           className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
-                          onClick={() => handleDecline(verification.id, "Documentation incomplete")}
+                          onClick={() =>
+                            handleDecline(
+                              verification.id,
+                              "Documentation incomplete",
+                            )
+                          }
                           data-testid={`button-decline-${verification.id}`}
                         >
                           <XCircle className="w-3 h-3 mr-1" />

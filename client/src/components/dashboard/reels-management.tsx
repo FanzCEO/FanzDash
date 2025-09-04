@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Play,
   Pause,
   Volume2,
@@ -31,7 +31,7 @@ import {
   Download,
   Share,
   Ban,
-  CheckCircle
+  CheckCircle,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -57,8 +57,8 @@ interface Reel {
     comments: number;
     shares: number;
   };
-  type: 'public' | 'private' | 'unlockable';
-  status: 'active' | 'pending' | 'reported' | 'banned';
+  type: "public" | "private" | "unlockable";
+  status: "active" | "pending" | "reported" | "banned";
   createdAt: string;
   reported: boolean;
   reportCount: number;
@@ -92,7 +92,7 @@ export function ReelsManagement({
   hasMorePages,
   isLoading,
   stats,
-  className = ""
+  className = "",
 }: ReelsManagementProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -100,13 +100,14 @@ export function ReelsManagement({
   const [mutedReels, setMutedReels] = useState<Set<string>>(new Set());
   const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
 
-  const filteredReels = reels.filter(reel => {
-    const matchesSearch = 
+  const filteredReels = reels.filter((reel) => {
+    const matchesSearch =
       reel.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       reel.user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       reel.user.name.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesFilter = filterStatus === "all" || reel.status === filterStatus;
+
+    const matchesFilter =
+      filterStatus === "all" || reel.status === filterStatus;
 
     return matchesSearch && matchesFilter;
   });
@@ -116,26 +117,26 @@ export function ReelsManagement({
     if (!video) return;
 
     const newPlayingReels = new Set(playingReels);
-    
+
     try {
       if (playingReels.has(reelId)) {
         video.pause();
         newPlayingReels.delete(reelId);
       } else {
         // Pause all other videos
-        playingReels.forEach(id => {
+        playingReels.forEach((id) => {
           const otherVideo = videoRefs.current.get(id);
           if (otherVideo) otherVideo.pause();
         });
-        
+
         await video.play();
         newPlayingReels.clear();
         newPlayingReels.add(reelId);
       }
-      
+
       setPlayingReels(newPlayingReels);
     } catch (error) {
-      console.error('Error playing/pausing video:', error);
+      console.error("Error playing/pausing video:", error);
       // Don't update state if video operation failed
     }
   };
@@ -145,7 +146,7 @@ export function ReelsManagement({
     if (!video) return;
 
     const newMutedReels = new Set(mutedReels);
-    
+
     if (mutedReels.has(reelId)) {
       video.muted = false;
       newMutedReels.delete(reelId);
@@ -153,39 +154,55 @@ export function ReelsManagement({
       video.muted = true;
       newMutedReels.add(reelId);
     }
-    
+
     setMutedReels(newMutedReels);
   };
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const getStatusBadge = (status: Reel['status']) => {
+  const getStatusBadge = (status: Reel["status"]) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <Badge className="bg-green-500">Active</Badge>;
-      case 'pending':
+      case "pending":
         return <Badge className="bg-yellow-500">Pending</Badge>;
-      case 'reported':
+      case "reported":
         return <Badge variant="destructive">Reported</Badge>;
-      case 'banned':
-        return <Badge variant="outline" className="bg-red-100 text-red-700">Banned</Badge>;
+      case "banned":
+        return (
+          <Badge variant="outline" className="bg-red-100 text-red-700">
+            Banned
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
-  const getTypeBadge = (type: Reel['type']) => {
+  const getTypeBadge = (type: Reel["type"]) => {
     switch (type) {
-      case 'public':
-        return <Badge variant="outline" className="bg-blue-100 text-blue-700">Public</Badge>;
-      case 'private':
-        return <Badge variant="outline" className="bg-gray-100 text-gray-700">Private</Badge>;
-      case 'unlockable':
-        return <Badge variant="outline" className="bg-purple-100 text-purple-700">Unlockable</Badge>;
+      case "public":
+        return (
+          <Badge variant="outline" className="bg-blue-100 text-blue-700">
+            Public
+          </Badge>
+        );
+      case "private":
+        return (
+          <Badge variant="outline" className="bg-gray-100 text-gray-700">
+            Private
+          </Badge>
+        );
+      case "unlockable":
+        return (
+          <Badge variant="outline" className="bg-purple-100 text-purple-700">
+            Unlockable
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{type}</Badge>;
     }
@@ -203,7 +220,7 @@ export function ReelsManagement({
                   if (el) videoRefs.current.set(reel.id, el);
                 }}
                 src={`/api/media/reels/${reel.media.name}`}
-                poster={reel.media.thumbnail || '/api/placeholder/300/200'}
+                poster={reel.media.thumbnail || "/api/placeholder/300/200"}
                 className="w-full h-full object-cover"
                 loop
                 muted={mutedReels.has(reel.id)}
@@ -213,11 +230,11 @@ export function ReelsManagement({
                     newPlayingReels.delete(reel.id);
                     setPlayingReels(newPlayingReels);
                   } catch (error) {
-                    console.error('Error handling video end:', error);
+                    console.error("Error handling video end:", error);
                   }
                 }}
               />
-              
+
               {/* Video Controls Overlay */}
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <div className="flex items-center space-x-2">
@@ -233,7 +250,7 @@ export function ReelsManagement({
                       <Play className="h-4 w-4" />
                     )}
                   </Button>
-                  
+
                   <Button
                     size="sm"
                     variant="secondary"
@@ -259,9 +276,13 @@ export function ReelsManagement({
           {/* Reel Info */}
           <div className="col-span-12 sm:col-span-6 space-y-3">
             <div>
-              <h3 className="font-semibold text-lg line-clamp-2">{reel.title}</h3>
+              <h3 className="font-semibold text-lg line-clamp-2">
+                {reel.title}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                {formatDistanceToNow(new Date(reel.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(reel.createdAt), {
+                  addSuffix: true,
+                })}
               </p>
             </div>
 
@@ -278,7 +299,9 @@ export function ReelsManagement({
                     <CheckCircle className="h-3 w-3 text-blue-500 fill-current" />
                   )}
                 </p>
-                <p className="text-xs text-muted-foreground">@{reel.user.username}</p>
+                <p className="text-xs text-muted-foreground">
+                  @{reel.user.username}
+                </p>
               </div>
             </div>
 
@@ -300,28 +323,36 @@ export function ReelsManagement({
             {/* Stats */}
             <div className="grid grid-cols-2 gap-2 mb-4 text-center">
               <div>
-                <p className="text-lg font-bold">{reel.stats.views.toLocaleString()}</p>
+                <p className="text-lg font-bold">
+                  {reel.stats.views.toLocaleString()}
+                </p>
                 <p className="text-xs text-muted-foreground flex items-center justify-center">
                   <Eye className="h-3 w-3 mr-1" />
                   Views
                 </p>
               </div>
               <div>
-                <p className="text-lg font-bold">{reel.stats.likes.toLocaleString()}</p>
+                <p className="text-lg font-bold">
+                  {reel.stats.likes.toLocaleString()}
+                </p>
                 <p className="text-xs text-muted-foreground flex items-center justify-center">
                   <Heart className="h-3 w-3 mr-1" />
                   Likes
                 </p>
               </div>
               <div>
-                <p className="text-lg font-bold">{reel.stats.comments.toLocaleString()}</p>
+                <p className="text-lg font-bold">
+                  {reel.stats.comments.toLocaleString()}
+                </p>
                 <p className="text-xs text-muted-foreground flex items-center justify-center">
                   <MessageCircle className="h-3 w-3 mr-1" />
                   Comments
                 </p>
               </div>
               <div>
-                <p className="text-lg font-bold">{reel.stats.shares.toLocaleString()}</p>
+                <p className="text-lg font-bold">
+                  {reel.stats.shares.toLocaleString()}
+                </p>
                 <p className="text-xs text-muted-foreground flex items-center justify-center">
                   <Share className="h-3 w-3 mr-1" />
                   Shares
@@ -331,7 +362,7 @@ export function ReelsManagement({
 
             {/* Actions */}
             <div className="space-y-2">
-              {reel.status === 'pending' && (
+              {reel.status === "pending" && (
                 <div className="flex space-x-1">
                   <Button
                     size="sm"
@@ -372,14 +403,14 @@ export function ReelsManagement({
                     Share Link
                   </DropdownMenuItem>
                   <Separator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => onBan(reel.id)}
                     className="text-red-600"
                   >
                     <Ban className="h-4 w-4 mr-2" />
                     Ban Reel
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => onDelete(reel.id)}
                     className="text-red-600"
                   >
@@ -420,7 +451,9 @@ export function ReelsManagement({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Reels</p>
-                <p className="text-2xl font-bold">{stats.total.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  {stats.total.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -434,7 +467,9 @@ export function ReelsManagement({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pending Review</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pending.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {stats.pending.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -448,7 +483,9 @@ export function ReelsManagement({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Reported</p>
-                <p className="text-2xl font-bold text-red-600">{stats.reported.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {stats.reported.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -462,7 +499,9 @@ export function ReelsManagement({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Active</p>
-                <p className="text-2xl font-bold text-green-600">{stats.active.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {stats.active.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -491,23 +530,23 @@ export function ReelsManagement({
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">
                     <Filter className="h-4 w-4 mr-2" />
-                    Status: {filterStatus === 'all' ? 'All' : filterStatus}
+                    Status: {filterStatus === "all" ? "All" : filterStatus}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setFilterStatus('all')}>
+                  <DropdownMenuItem onClick={() => setFilterStatus("all")}>
                     All Statuses
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterStatus('pending')}>
+                  <DropdownMenuItem onClick={() => setFilterStatus("pending")}>
                     Pending Review
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterStatus('reported')}>
+                  <DropdownMenuItem onClick={() => setFilterStatus("reported")}>
                     Reported
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterStatus('active')}>
+                  <DropdownMenuItem onClick={() => setFilterStatus("active")}>
                     Active
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterStatus('banned')}>
+                  <DropdownMenuItem onClick={() => setFilterStatus("banned")}>
                     Banned
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -554,10 +593,9 @@ export function ReelsManagement({
               <Play className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">No Reels Found</h3>
               <p className="text-muted-foreground">
-                {searchQuery 
+                {searchQuery
                   ? `No reels match your search for "${searchQuery}"`
-                  : "No reels have been uploaded yet"
-                }
+                  : "No reels have been uploaded yet"}
               </p>
             </CardContent>
           </Card>

@@ -1,14 +1,14 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Shield, 
-  Globe, 
-  Brain, 
-  BarChart3, 
-  Settings, 
-  Users, 
-  FileText, 
+import {
+  Shield,
+  Globe,
+  Brain,
+  BarChart3,
+  Settings,
+  Users,
+  FileText,
   AlertTriangle,
   Activity,
   Database,
@@ -45,7 +45,7 @@ import {
   ChevronRight,
   Search,
   Film,
-  Calculator as CalculatorIcon
+  Calculator as CalculatorIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -82,7 +82,7 @@ const navigationCategories: NavigationCategory[] = [
         icon: Shield,
         description: "AI-powered content moderation with 2257 compliance",
         requiresCompliance: true,
-        complianceLevel: "2257_OFFICER"
+        complianceLevel: "2257_OFFICER",
       },
       {
         name: "Media Review Queue",
@@ -90,7 +90,7 @@ const navigationCategories: NavigationCategory[] = [
         icon: Eye,
         description: "Manual approval workflows with audit trails",
         requiresCompliance: true,
-        complianceLevel: "MODERATOR"
+        complianceLevel: "MODERATOR",
       },
       {
         name: "Live Stream Monitoring",
@@ -98,7 +98,7 @@ const navigationCategories: NavigationCategory[] = [
         icon: Activity,
         description: "Real-time stream surveillance & moderation",
         requiresCompliance: true,
-        complianceLevel: "MODERATOR"
+        complianceLevel: "MODERATOR",
       },
       {
         name: "Co-Star Verification",
@@ -107,9 +107,9 @@ const navigationCategories: NavigationCategory[] = [
         description: "18 U.S.C. § 2257 co-star verification system",
         requiresCompliance: true,
         complianceLevel: "2257_OFFICER",
-        requiresSuperAdmin: true
-      }
-    ]
+        requiresSuperAdmin: true,
+      },
+    ],
   },
   {
     id: "compliance-legal",
@@ -123,7 +123,7 @@ const navigationCategories: NavigationCategory[] = [
         icon: Shield,
         description: "Military-grade compliance bot with violation prevention",
         requiresCompliance: true,
-        complianceLevel: "COMPLIANCE_OFFICER"
+        complianceLevel: "COMPLIANCE_OFFICER",
       },
       {
         name: "Compliance Monitoring",
@@ -131,7 +131,7 @@ const navigationCategories: NavigationCategory[] = [
         icon: CheckCircle2,
         description: "GDPR, CCPA, 2257 compliance tracking",
         requiresCompliance: true,
-        complianceLevel: "COMPLIANCE_OFFICER"
+        complianceLevel: "COMPLIANCE_OFFICER",
       },
       {
         name: "Audit Logs",
@@ -139,7 +139,7 @@ const navigationCategories: NavigationCategory[] = [
         icon: FileText,
         description: "Immutable 7-year audit trail system",
         requiresCompliance: true,
-        complianceLevel: "COMPLIANCE_OFFICER"
+        complianceLevel: "COMPLIANCE_OFFICER",
       },
       {
         name: "Crisis Management",
@@ -148,7 +148,7 @@ const navigationCategories: NavigationCategory[] = [
         description: "Emergency response & CSAM escalation",
         requiresCompliance: true,
         complianceLevel: "CRISIS_MANAGER",
-        requiresSuperAdmin: true
+        requiresSuperAdmin: true,
       },
       {
         name: "Legal Hold Management",
@@ -157,13 +157,13 @@ const navigationCategories: NavigationCategory[] = [
         description: "Data preservation during investigations",
         requiresCompliance: true,
         complianceLevel: "LEGAL_TEAM",
-        requiresSuperAdmin: true
-      }
-    ]
+        requiresSuperAdmin: true,
+      },
+    ],
   },
   {
     id: "database-storage",
-    name: "DATABASE/STORAGE", 
+    name: "DATABASE/STORAGE",
     icon: Database,
     description: "Data management & retention policies",
     items: [
@@ -171,13 +171,13 @@ const navigationCategories: NavigationCategory[] = [
         name: "Data Management",
         href: "/data",
         icon: Database,
-        description: "Database operations with retention policies"
+        description: "Database operations with retention policies",
       },
       {
         name: "Storage Settings",
         href: "/storage-settings",
         icon: Cloud,
-        description: "Cloud storage & secure deletion protocols"
+        description: "Cloud storage & secure deletion protocols",
       },
       {
         name: "Security Vault",
@@ -185,9 +185,9 @@ const navigationCategories: NavigationCategory[] = [
         icon: Lock,
         description: "Encrypted forensic content storage",
         requiresCompliance: true,
-        complianceLevel: "SECURITY_OFFICER"
-      }
-    ]
+        complianceLevel: "SECURITY_OFFICER",
+      },
+    ],
   },
   {
     id: "platform-connections",
@@ -199,21 +199,21 @@ const navigationCategories: NavigationCategory[] = [
         name: "Platform Manager",
         href: "/platforms",
         icon: Globe,
-        description: "Fanz ecosystem platform management"
+        description: "Fanz ecosystem platform management",
       },
       {
         name: "API Integration Management",
-        href: "/api-integration-management", 
+        href: "/api-integration-management",
         icon: Webhook,
-        description: "External API connections & monitoring"
+        description: "External API connections & monitoring",
       },
       {
         name: "Plugin Management",
         href: "/plugin-management",
         icon: Puzzle,
-        description: "FanzOS plugins and integrations"
-      }
-    ]
+        description: "FanzOS plugins and integrations",
+      },
+    ],
   },
   {
     id: "ai-intelligence",
@@ -225,7 +225,7 @@ const navigationCategories: NavigationCategory[] = [
         name: "AI Analysis Engine",
         href: "/ai-analysis",
         icon: Brain,
-        description: "ChatGPT-4o/GPT-5 content analysis"
+        description: "ChatGPT-4o/GPT-5 content analysis",
       },
       {
         name: "Threat Center",
@@ -233,53 +233,55 @@ const navigationCategories: NavigationCategory[] = [
         icon: AlertTriangle,
         description: "AI-powered threat detection & CSAM scanning",
         requiresCompliance: true,
-        complianceLevel: "SECURITY_OFFICER"
+        complianceLevel: "SECURITY_OFFICER",
       },
       {
         name: "Risk Management",
         href: "/risk-management",
         icon: AlertTriangle,
-        description: "Predictive threat assessment"
+        description: "Predictive threat assessment",
       },
       {
         name: "AI CFO & Financial Copilot",
         href: "/ai-cfo",
         icon: CalculatorIcon,
-        description: "AI-powered financial analysis and automated ecosystem maintenance"
+        description:
+          "AI-powered financial analysis and automated ecosystem maintenance",
       },
       {
         name: "Starz Studio Admin Panel",
         href: "/starz-studio",
         icon: Film,
-        description: "AI-powered content production service for multi-platform publishing"
-      }
-    ]
+        description:
+          "AI-powered content production service for multi-platform publishing",
+      },
+    ],
   },
   {
     id: "user-financial",
     name: "USER/FINANCIAL",
     icon: Users,
-    description: "User accounts & financial operations", 
+    description: "User accounts & financial operations",
     items: [
       {
         name: "User Management",
         href: "/users",
         icon: Users,
-        description: "Creator & subscriber account management"
+        description: "Creator & subscriber account management",
       },
       {
         name: "Transaction Management",
         href: "/transaction-management",
         icon: Receipt,
-        description: "Payment processing & financial audits"
+        description: "Payment processing & financial audits",
       },
       {
         name: "Withdrawal Management",
         href: "/withdrawal-management",
         icon: Receipt,
-        description: "Creator payout verification & processing"
-      }
-    ]
+        description: "Creator payout verification & processing",
+      },
+    ],
   },
   {
     id: "system-admin",
@@ -288,49 +290,52 @@ const navigationCategories: NavigationCategory[] = [
     description: "System configuration & administration",
     items: [
       {
-        name: "Neural Dashboard", 
+        name: "Neural Dashboard",
         href: "/",
         icon: Shield,
-        description: "Main command center with real-time metrics"
+        description: "Main command center with real-time metrics",
       },
       {
         name: "Analytics Dashboard",
         href: "/analytics",
         icon: BarChart3,
-        description: "Performance metrics & compliance reporting"
+        description: "Performance metrics & compliance reporting",
       },
       {
         name: "SEO Configuration",
         href: "/seo-configuration",
         icon: Search,
-        description: "Search engine optimization settings"
+        description: "Search engine optimization settings",
       },
       {
-        name: "AEO Configuration", 
+        name: "AEO Configuration",
         href: "/aeo-configuration",
         icon: Brain,
-        description: "Answer Engine Optimization for AI platforms"
+        description: "Answer Engine Optimization for AI platforms",
       },
       {
         name: "System Settings",
         href: "/settings",
         icon: Settings,
         description: "Platform configuration & security settings",
-        requiresSuperAdmin: true
-      }
-    ]
-  }
+        requiresSuperAdmin: true,
+      },
+    ],
+  },
 ];
 
 export function CategorizedNavigation() {
   const [location] = useLocation();
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(['media-content', 'compliance-legal']);
-  
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([
+    "media-content",
+    "compliance-legal",
+  ]);
+
   const toggleCategory = (categoryId: string) => {
-    setExpandedCategories(prev => 
-      prev.includes(categoryId) 
-        ? prev.filter(id => id !== categoryId)
-        : [...prev, categoryId]
+    setExpandedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId],
     );
   };
 
@@ -341,21 +346,23 @@ export function CategorizedNavigation() {
   const canAccessItem = (item: NavigationItem) => {
     if (item.requiresSuperAdmin && !isSuperAdmin) return false;
     if (!item.requiresCompliance) return true;
-    
+
     // Role hierarchy check
     const roleHierarchy = {
-      'MODERATOR': 1,
-      '2257_OFFICER': 2,
-      'COMPLIANCE_OFFICER': 3,
-      'SECURITY_OFFICER': 3,
-      'CRISIS_MANAGER': 4,
-      'LEGAL_TEAM': 5,
-      'SUPER_ADMIN': 6
+      MODERATOR: 1,
+      "2257_OFFICER": 2,
+      COMPLIANCE_OFFICER: 3,
+      SECURITY_OFFICER: 3,
+      CRISIS_MANAGER: 4,
+      LEGAL_TEAM: 5,
+      SUPER_ADMIN: 6,
     };
 
-    const userLevel = roleHierarchy[userRole as keyof typeof roleHierarchy] || 0;
-    const requiredLevel = roleHierarchy[item.complianceLevel as keyof typeof roleHierarchy] || 1;
-    
+    const userLevel =
+      roleHierarchy[userRole as keyof typeof roleHierarchy] || 0;
+    const requiredLevel =
+      roleHierarchy[item.complianceLevel as keyof typeof roleHierarchy] || 1;
+
     return userLevel >= requiredLevel;
   };
 
@@ -369,9 +376,14 @@ export function CategorizedNavigation() {
           </div>
           <div>
             <h1 className="text-xl font-bold cyber-text-glow">FanzDash</h1>
-            <p className="text-xs text-muted-foreground">Enterprise Creator Platform</p>
-            <Badge variant="outline" className="text-xs text-cyan-400 border-cyan-400 mt-1">
-              {userRole.replace('_', ' ')}
+            <p className="text-xs text-muted-foreground">
+              Enterprise Creator Platform
+            </p>
+            <Badge
+              variant="outline"
+              className="text-xs text-cyan-400 border-cyan-400 mt-1"
+            >
+              {userRole.replace("_", " ")}
             </Badge>
           </div>
         </div>
@@ -381,7 +393,7 @@ export function CategorizedNavigation() {
           {navigationCategories.map((category) => {
             const isExpanded = expandedCategories.includes(category.id);
             const CategoryIcon = category.icon;
-            
+
             return (
               <div key={category.id} className="space-y-1">
                 {/* Category Header */}
@@ -413,48 +425,68 @@ export function CategorizedNavigation() {
                   <div className="ml-4 space-y-1 border-l border-primary/20">
                     {category.items.map((item) => {
                       if (!canAccessItem(item)) return null;
-                      
+
                       const isActive = location === item.href;
                       const Icon = item.icon;
-                      
+
                       return (
                         <Link key={item.href} href={item.href}>
                           <Button
                             variant={isActive ? "default" : "ghost"}
                             className={cn(
                               "w-full justify-start ml-4 h-auto py-2 px-3 text-left group transition-all duration-300",
-                              isActive 
-                                ? "bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/50 cyber-glow" 
+                              isActive
+                                ? "bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/50 cyber-glow"
                                 : "hover:bg-primary/10 hover:border-primary/30",
-                              item.requiresCompliance && "border-l-2 border-l-amber-500",
-                              item.requiresSuperAdmin && "border-l-2 border-l-red-500"
+                              item.requiresCompliance &&
+                                "border-l-2 border-l-amber-500",
+                              item.requiresSuperAdmin &&
+                                "border-l-2 border-l-red-500",
                             )}
-                            data-testid={`nav-${item.href.replace('/', '')}`}
+                            data-testid={`nav-${item.href.replace("/", "")}`}
                           >
                             <div className="flex items-center space-x-3 flex-1">
-                              <Icon className={cn(
-                                "w-4 h-4 transition-colors duration-200",
-                                isActive ? "text-white" : "text-gray-400 group-hover:text-cyan-400"
-                              )} />
+                              <Icon
+                                className={cn(
+                                  "w-4 h-4 transition-colors duration-200",
+                                  isActive
+                                    ? "text-white"
+                                    : "text-gray-400 group-hover:text-cyan-400",
+                                )}
+                              />
                               <div className="flex-1 min-w-0">
-                                <div className={cn(
-                                  "text-sm font-medium truncate transition-colors duration-200",
-                                  isActive ? "text-white cyber-text-glow" : "text-gray-300 group-hover:text-white"
-                                )}>
+                                <div
+                                  className={cn(
+                                    "text-sm font-medium truncate transition-colors duration-200",
+                                    isActive
+                                      ? "text-white cyber-text-glow"
+                                      : "text-gray-300 group-hover:text-white",
+                                  )}
+                                >
                                   {item.name}
                                 </div>
                                 <div className="text-xs text-gray-500 truncate">
                                   {item.description}
                                 </div>
-                                {(item.requiresCompliance || item.requiresSuperAdmin) && (
+                                {(item.requiresCompliance ||
+                                  item.requiresSuperAdmin) && (
                                   <div className="flex gap-1 mt-1">
                                     {item.requiresCompliance && (
-                                      <Badge variant="outline" className="text-xs py-0 px-1 text-amber-400 border-amber-400">
-                                        {item.complianceLevel?.replace('_', ' ') || 'COMPLIANCE'}
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs py-0 px-1 text-amber-400 border-amber-400"
+                                      >
+                                        {item.complianceLevel?.replace(
+                                          "_",
+                                          " ",
+                                        ) || "COMPLIANCE"}
                                       </Badge>
                                     )}
                                     {item.requiresSuperAdmin && (
-                                      <Badge variant="outline" className="text-xs py-0 px-1 text-red-400 border-red-400">
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs py-0 px-1 text-red-400 border-red-400"
+                                      >
                                         SUPER ADMIN
                                       </Badge>
                                     )}
@@ -478,9 +510,13 @@ export function CategorizedNavigation() {
           <div className="flex items-start space-x-2">
             <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5" />
             <div>
-              <div className="text-xs font-semibold text-amber-400">COMPLIANCE NOTICE</div>
+              <div className="text-xs font-semibold text-amber-400">
+                COMPLIANCE NOTICE
+              </div>
               <div className="text-xs text-amber-300 mt-1">
-                Actions marked with compliance badges require proper authorization and create immutable audit logs per 18 U.S.C. § 2257 requirements.
+                Actions marked with compliance badges require proper
+                authorization and create immutable audit logs per 18 U.S.C. §
+                2257 requirements.
               </div>
             </div>
           </div>

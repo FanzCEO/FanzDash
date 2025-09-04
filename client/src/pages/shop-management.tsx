@@ -1,28 +1,47 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Store, 
-  Package, 
-  ShoppingCart, 
-  DollarSign, 
-  Image, 
+import {
+  Store,
+  Package,
+  ShoppingCart,
+  DollarSign,
+  Image,
   ExternalLink,
   Plus,
   Edit,
   Trash2,
   Eye,
-  Settings
+  Settings,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -44,7 +63,7 @@ interface ShopProduct {
   sellerId: string;
   title: string;
   description?: string;
-  type: 'digital' | 'physical' | 'custom_content';
+  type: "digital" | "physical" | "custom_content";
   category?: string;
   price: string;
   currency: string;
@@ -75,7 +94,7 @@ export default function ShopManagement() {
     physicalProductsEnabled: false,
     minPriceProduct: "5.00",
     maxPriceProduct: "500.00",
-    commissionRate: "0.15"
+    commissionRate: "0.15",
   };
 
   // Mock products data
@@ -95,7 +114,7 @@ export default function ShopManagement() {
       isActive: true,
       totalSales: 47,
       tags: ["premium", "photos", "exclusive"],
-      createdAt: "2025-01-15T10:00:00Z"
+      createdAt: "2025-01-15T10:00:00Z",
     },
     {
       id: "2",
@@ -110,7 +129,7 @@ export default function ShopManagement() {
       isActive: true,
       totalSales: 23,
       tags: ["custom", "video", "personal"],
-      createdAt: "2025-01-14T15:30:00Z"
+      createdAt: "2025-01-14T15:30:00Z",
     },
     {
       id: "3",
@@ -126,19 +145,19 @@ export default function ShopManagement() {
       isActive: true,
       totalSales: 8,
       tags: ["physical", "adult", "toys"],
-      createdAt: "2025-01-13T12:00:00Z"
-    }
+      createdAt: "2025-01-13T12:00:00Z",
+    },
   ];
 
   const isLoading = false;
 
   const updateSettingsMutation = useMutation({
     mutationFn: (data: Partial<ShopSettings>) =>
-      apiRequest('/api/admin/shop/settings', 'PATCH', data),
+      apiRequest("/api/admin/shop/settings", "PATCH", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/shop/settings'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/shop/settings"] });
       toast({ title: "Shop settings updated successfully" });
-    }
+    },
   });
 
   const handleSettingsChange = (field: keyof ShopSettings, value: any) => {
@@ -147,47 +166,57 @@ export default function ShopManagement() {
 
   const getProductTypeIcon = (type: string) => {
     switch (type) {
-      case 'digital': return <Package className="h-4 w-4" />;
-      case 'physical': return <ShoppingCart className="h-4 w-4" />;
-      case 'custom_content': return <Image className="h-4 w-4" />;
-      default: return <Package className="h-4 w-4" />;
+      case "digital":
+        return <Package className="h-4 w-4" />;
+      case "physical":
+        return <ShoppingCart className="h-4 w-4" />;
+      case "custom_content":
+        return <Image className="h-4 w-4" />;
+      default:
+        return <Package className="h-4 w-4" />;
     }
   };
 
   const getProductTypeBadge = (type: string) => {
     const variants = {
       digital: "default",
-      physical: "secondary", 
-      custom_content: "outline"
+      physical: "secondary",
+      custom_content: "outline",
     } as const;
-    
+
     return (
       <Badge variant={variants[type as keyof typeof variants] || "default"}>
-        {type.replace('_', ' ')}
+        {type.replace("_", " ")}
       </Badge>
     );
   };
 
   const formatFileSize = (bytes?: number) => {
-    if (!bytes) return 'N/A';
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    if (!bytes) return "N/A";
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
 
   const calculateRevenue = () => {
     return shopProducts.reduce((total, product) => {
-      return total + (parseFloat(product.price) * product.totalSales);
+      return total + parseFloat(product.price) * product.totalSales;
     }, 0);
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="shop-management">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="shop-management"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold cyber-text-glow">Shop Management</h1>
+          <h1 className="text-3xl font-bold cyber-text-glow">
+            Shop Management
+          </h1>
           <p className="text-muted-foreground">
-            Manage digital products, physical items, and custom content marketplace
+            Manage digital products, physical items, and custom content
+            marketplace
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -207,7 +236,7 @@ export default function ShopManagement() {
               <div>
                 <p className="text-sm font-medium">Shop Status</p>
                 <p className="text-2xl font-bold">
-                  {shopSettings.shopEnabled ? 'Active' : 'Disabled'}
+                  {shopSettings.shopEnabled ? "Active" : "Disabled"}
                 </p>
               </div>
             </div>
@@ -246,7 +275,9 @@ export default function ShopManagement() {
               <DollarSign className="h-8 w-8 text-yellow-500" />
               <div>
                 <p className="text-sm font-medium">Revenue</p>
-                <p className="text-2xl font-bold">${calculateRevenue().toFixed(2)}</p>
+                <p className="text-2xl font-bold">
+                  ${calculateRevenue().toFixed(2)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -256,7 +287,9 @@ export default function ShopManagement() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="settings">Shop Settings</TabsTrigger>
-          <TabsTrigger value="products">Products ({shopProducts.length})</TabsTrigger>
+          <TabsTrigger value="products">
+            Products ({shopProducts.length})
+          </TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
@@ -284,7 +317,9 @@ export default function ShopManagement() {
                   <Switch
                     id="shop-enabled"
                     checked={shopSettings.shopEnabled}
-                    onCheckedChange={(checked) => handleSettingsChange('shopEnabled', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("shopEnabled", checked)
+                    }
                     data-testid="switch-shop-enabled"
                   />
                 </div>
@@ -299,7 +334,9 @@ export default function ShopManagement() {
                   <Switch
                     id="allow-free"
                     checked={shopSettings.allowFreeItems}
-                    onCheckedChange={(checked) => handleSettingsChange('allowFreeItems', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("allowFreeItems", checked)
+                    }
                     data-testid="switch-allow-free"
                   />
                 </div>
@@ -314,7 +351,9 @@ export default function ShopManagement() {
                   <Switch
                     id="allow-external"
                     checked={shopSettings.allowExternalLinks}
-                    onCheckedChange={(checked) => handleSettingsChange('allowExternalLinks', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("allowExternalLinks", checked)
+                    }
                     data-testid="switch-allow-external"
                   />
                 </div>
@@ -323,7 +362,7 @@ export default function ShopManagement() {
               {/* Product Types */}
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Product Types</h3>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="digital-products">Digital Products</Label>
@@ -334,7 +373,9 @@ export default function ShopManagement() {
                   <Switch
                     id="digital-products"
                     checked={shopSettings.digitalProductsEnabled}
-                    onCheckedChange={(checked) => handleSettingsChange('digitalProductsEnabled', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("digitalProductsEnabled", checked)
+                    }
                     data-testid="switch-digital-products"
                   />
                 </div>
@@ -349,7 +390,9 @@ export default function ShopManagement() {
                   <Switch
                     id="custom-content"
                     checked={shopSettings.customContentEnabled}
-                    onCheckedChange={(checked) => handleSettingsChange('customContentEnabled', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("customContentEnabled", checked)
+                    }
                     data-testid="switch-custom-content"
                   />
                 </div>
@@ -364,7 +407,9 @@ export default function ShopManagement() {
                   <Switch
                     id="physical-products"
                     checked={shopSettings.physicalProductsEnabled}
-                    onCheckedChange={(checked) => handleSettingsChange('physicalProductsEnabled', checked)}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("physicalProductsEnabled", checked)
+                    }
                     data-testid="switch-physical-products"
                   />
                 </div>
@@ -382,7 +427,9 @@ export default function ShopManagement() {
                       min="0"
                       step="0.01"
                       value={shopSettings.minPriceProduct}
-                      onChange={(e) => handleSettingsChange('minPriceProduct', e.target.value)}
+                      onChange={(e) =>
+                        handleSettingsChange("minPriceProduct", e.target.value)
+                      }
                       className="pl-9"
                       data-testid="input-min-price"
                     />
@@ -399,7 +446,9 @@ export default function ShopManagement() {
                       min="0"
                       step="0.01"
                       value={shopSettings.maxPriceProduct}
-                      onChange={(e) => handleSettingsChange('maxPriceProduct', e.target.value)}
+                      onChange={(e) =>
+                        handleSettingsChange("maxPriceProduct", e.target.value)
+                      }
                       className="pl-9"
                       data-testid="input-max-price"
                     />
@@ -408,15 +457,24 @@ export default function ShopManagement() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="commission-rate">Platform Commission Rate (%)</Label>
+                <Label htmlFor="commission-rate">
+                  Platform Commission Rate (%)
+                </Label>
                 <Input
                   id="commission-rate"
                   type="number"
                   min="0"
                   max="50"
                   step="0.01"
-                  value={(parseFloat(shopSettings.commissionRate) * 100).toFixed(2)}
-                  onChange={(e) => handleSettingsChange('commissionRate', (parseFloat(e.target.value) / 100).toString())}
+                  value={(
+                    parseFloat(shopSettings.commissionRate) * 100
+                  ).toFixed(2)}
+                  onChange={(e) =>
+                    handleSettingsChange(
+                      "commissionRate",
+                      (parseFloat(e.target.value) / 100).toString(),
+                    )
+                  }
                   data-testid="input-commission-rate"
                 />
                 <p className="text-sm text-muted-foreground">
@@ -464,14 +522,14 @@ export default function ShopManagement() {
                           <div>
                             <div className="font-medium">{product.title}</div>
                             <div className="text-sm text-muted-foreground">
-                              {product.category || 'Uncategorized'}
+                              {product.category || "Uncategorized"}
                             </div>
-                            {product.type === 'digital' && (
+                            {product.type === "digital" && (
                               <div className="text-xs text-muted-foreground">
                                 {formatFileSize(product.fileSize)}
                               </div>
                             )}
-                            {product.type === 'physical' && (
+                            {product.type === "physical" && (
                               <div className="text-xs text-muted-foreground">
                                 Stock: {product.stock || 0}
                               </div>
@@ -482,29 +540,49 @@ export default function ShopManagement() {
                       <TableCell>{getProductTypeBadge(product.type)}</TableCell>
                       <TableCell>
                         <div className="font-medium">${product.price}</div>
-                        <div className="text-sm text-muted-foreground">{product.currency}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {product.currency}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="font-medium">{product.totalSales}</div>
                         <div className="text-sm text-muted-foreground">
-                          ${(parseFloat(product.price) * product.totalSales).toFixed(2)} revenue
+                          $
+                          {(
+                            parseFloat(product.price) * product.totalSales
+                          ).toFixed(2)}{" "}
+                          revenue
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={product.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={product.isActive ? "default" : "secondary"}
+                        >
                           {product.isActive ? "Active" : "Inactive"}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm" data-testid={`button-view-${product.id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            data-testid={`button-view-${product.id}`}
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="sm" data-testid={`button-edit-${product.id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            data-testid={`button-edit-${product.id}`}
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
                           {product.externalUrl && (
-                            <Button variant="outline" size="sm" data-testid={`button-external-${product.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              data-testid={`button-external-${product.id}`}
+                            >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
                           )}
@@ -526,20 +604,35 @@ export default function ShopManagement() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {['digital', 'custom_content', 'physical'].map((type) => {
-                    const typeProducts = shopProducts.filter(p => p.type === type);
-                    const totalSales = typeProducts.reduce((sum, p) => sum + p.totalSales, 0);
-                    const revenue = typeProducts.reduce((sum, p) => sum + (parseFloat(p.price) * p.totalSales), 0);
-                    
+                  {["digital", "custom_content", "physical"].map((type) => {
+                    const typeProducts = shopProducts.filter(
+                      (p) => p.type === type,
+                    );
+                    const totalSales = typeProducts.reduce(
+                      (sum, p) => sum + p.totalSales,
+                      0,
+                    );
+                    const revenue = typeProducts.reduce(
+                      (sum, p) => sum + parseFloat(p.price) * p.totalSales,
+                      0,
+                    );
+
                     return (
-                      <div key={type} className="flex items-center justify-between">
+                      <div
+                        key={type}
+                        className="flex items-center justify-between"
+                      >
                         <div className="flex items-center space-x-2">
                           {getProductTypeIcon(type)}
-                          <span className="capitalize">{type.replace('_', ' ')}</span>
+                          <span className="capitalize">
+                            {type.replace("_", " ")}
+                          </span>
                         </div>
                         <div className="text-right">
                           <div className="font-medium">{totalSales} sales</div>
-                          <div className="text-sm text-muted-foreground">${revenue.toFixed(2)}</div>
+                          <div className="text-sm text-muted-foreground">
+                            ${revenue.toFixed(2)}
+                          </div>
                         </div>
                       </div>
                     );
@@ -558,18 +651,28 @@ export default function ShopManagement() {
                     .sort((a, b) => b.totalSales - a.totalSales)
                     .slice(0, 5)
                     .map((product) => (
-                      <div key={product.id} className="flex items-center justify-between">
+                      <div
+                        key={product.id}
+                        className="flex items-center justify-between"
+                      >
                         <div className="flex items-center space-x-2">
                           {getProductTypeIcon(product.type)}
                           <div>
                             <div className="font-medium">{product.title}</div>
-                            <div className="text-sm text-muted-foreground">${product.price}</div>
+                            <div className="text-sm text-muted-foreground">
+                              ${product.price}
+                            </div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-medium">{product.totalSales} sales</div>
+                          <div className="font-medium">
+                            {product.totalSales} sales
+                          </div>
                           <div className="text-sm text-muted-foreground">
-                            ${(parseFloat(product.price) * product.totalSales).toFixed(2)}
+                            $
+                            {(
+                              parseFloat(product.price) * product.totalSales
+                            ).toFixed(2)}
                           </div>
                         </div>
                       </div>

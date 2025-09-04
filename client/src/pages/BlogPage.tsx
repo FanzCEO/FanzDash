@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Calendar, User, ArrowRight, BookOpen, ExternalLink } from "lucide-react";
+import {
+  Search,
+  Calendar,
+  User,
+  ArrowRight,
+  BookOpen,
+  ExternalLink,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface BlogPost {
@@ -43,7 +50,7 @@ export function BlogPage({
   onSearch,
   hasMorePages,
   isLoading,
-  className = ""
+  className = "",
 }: BlogPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>(posts);
@@ -64,10 +71,13 @@ export function BlogPage({
     if (query.trim() === "") {
       setFilteredPosts(posts);
     } else {
-      const filtered = posts.filter(post =>
-        post.title.toLowerCase().includes(query.toLowerCase()) ||
-        post.content.toLowerCase().includes(query.toLowerCase()) ||
-        post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+      const filtered = posts.filter(
+        (post) =>
+          post.title.toLowerCase().includes(query.toLowerCase()) ||
+          post.content.toLowerCase().includes(query.toLowerCase()) ||
+          post.tags.some((tag) =>
+            tag.toLowerCase().includes(query.toLowerCase()),
+          ),
       );
       setFilteredPosts(filtered);
     }
@@ -77,7 +87,7 @@ export function BlogPage({
     <Card className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-0 bg-gradient-to-br from-background to-muted/20">
       <div className="relative overflow-hidden">
         {post.image ? (
-          <div 
+          <div
             className="w-full h-64 bg-cover bg-center group-hover:scale-105 transition-transform duration-300"
             style={{ backgroundImage: `url(${post.image})` }}
           />
@@ -86,9 +96,12 @@ export function BlogPage({
             <BookOpen className="h-16 w-16 text-muted-foreground/50" />
           </div>
         )}
-        
+
         <div className="absolute top-4 right-4">
-          <Badge variant="secondary" className="bg-black/70 text-white border-0">
+          <Badge
+            variant="secondary"
+            className="bg-black/70 text-white border-0"
+          >
             {post.readTime} min read
           </Badge>
         </div>
@@ -96,8 +109,8 @@ export function BlogPage({
 
       <CardContent className="p-6">
         <div className="flex items-center space-x-2 mb-3">
-          <img 
-            src={post.authorAvatar || "/api/placeholder/32/32"} 
+          <img
+            src={post.authorAvatar || "/api/placeholder/32/32"}
             alt={post.authorName}
             className="w-8 h-8 rounded-full"
           />
@@ -105,7 +118,11 @@ export function BlogPage({
             <p className="text-sm font-medium truncate">{post.authorName}</p>
             <div className="flex items-center space-x-2 text-xs text-muted-foreground">
               <Calendar className="h-3 w-3" />
-              <span>{formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })}</span>
+              <span>
+                {formatDistanceToNow(new Date(post.publishedAt), {
+                  addSuffix: true,
+                })}
+              </span>
             </div>
           </div>
         </div>
@@ -134,8 +151,8 @@ export function BlogPage({
         )}
 
         <Link href={`/blog/${post.id}/${post.slug}`}>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
             data-testid={`read-post-${post.id}`}
           >
@@ -167,20 +184,23 @@ export function BlogPage({
   );
 
   return (
-    <section className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}>
+    <section
+      className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}
+    >
       <div className="container mx-auto px-4 py-12">
         {/* Header Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6">
             <BookOpen className="h-10 w-10 text-primary" />
           </div>
-          
+
           <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-4">
             Latest Blog
           </h1>
-          
+
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Stay updated with insights, tutorials, and stories from our community
+            Stay updated with insights, tutorials, and stories from our
+            community
           </p>
         </div>
 
@@ -215,7 +235,7 @@ export function BlogPage({
           </div>
           <div className="flex items-center space-x-2">
             <User className="h-4 w-4" />
-            <span>{new Set(posts.map(p => p.authorId)).size} authors</span>
+            <span>{new Set(posts.map((p) => p.authorId)).size} authors</span>
           </div>
         </div>
 
@@ -254,41 +274,38 @@ export function BlogPage({
               </div>
             )}
           </>
+        ) : /* Loading State */
+        isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <LoadingSkeleton key={index} />
+            ))}
+          </div>
         ) : (
-          /* Loading State */
-          isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <LoadingSkeleton key={index} />
-              ))}
+          /* Empty State */
+          <div className="text-center py-16">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-muted/20 rounded-2xl mb-6">
+              <BookOpen className="h-12 w-12 text-muted-foreground" />
             </div>
-          ) : (
-            /* Empty State */
-            <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-muted/20 rounded-2xl mb-6">
-                <BookOpen className="h-12 w-12 text-muted-foreground" />
-              </div>
-              
-              <h3 className="text-2xl font-bold mb-4">No Articles Found</h3>
-              
-              <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                {searchQuery ? 
-                  `No articles match your search for "${searchQuery}". Try different keywords.` :
-                  "No blog posts have been published yet. Check back soon for fresh content!"
-                }
-              </p>
 
-              {searchQuery && (
-                <Button
-                  onClick={() => handleLocalSearch("")}
-                  variant="outline"
-                  data-testid="clear-search-btn"
-                >
-                  Clear Search
-                </Button>
-              )}
-            </div>
-          )
+            <h3 className="text-2xl font-bold mb-4">No Articles Found</h3>
+
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+              {searchQuery
+                ? `No articles match your search for "${searchQuery}". Try different keywords.`
+                : "No blog posts have been published yet. Check back soon for fresh content!"}
+            </p>
+
+            {searchQuery && (
+              <Button
+                onClick={() => handleLocalSearch("")}
+                variant="outline"
+                data-testid="clear-search-btn"
+              >
+                Clear Search
+              </Button>
+            )}
+          </div>
         )}
 
         {/* Newsletter CTA */}
@@ -297,10 +314,11 @@ export function BlogPage({
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
               <p className="text-muted-foreground mb-6">
-                Get the latest articles and insights delivered directly to your inbox
+                Get the latest articles and insights delivered directly to your
+                inbox
               </p>
               <div className="flex space-x-4">
-                <Input 
+                <Input
                   placeholder="Enter your email"
                   className="flex-1"
                   data-testid="newsletter-email-input"

@@ -4,18 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Heart, 
-  MessageCircle, 
-  MoreHorizontal, 
-  Edit, 
-  Trash2, 
+import {
+  Heart,
+  MessageCircle,
+  MoreHorizontal,
+  Edit,
+  Trash2,
   Flag,
   Smile,
   Image as ImageIcon,
   Send,
   Verified,
-  Reply
+  Reply,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -68,7 +68,11 @@ interface CommentSystemProps {
   onAddComment?: (content: string, sticker?: string, gif?: string) => void;
   onAddReply?: (commentId: string, content: string, username: string) => void;
   onLikeComment?: (commentId: string, isReply?: boolean) => void;
-  onEditComment?: (commentId: string, content: string, isReply?: boolean) => void;
+  onEditComment?: (
+    commentId: string,
+    content: string,
+    isReply?: boolean,
+  ) => void;
   onDeleteComment?: (commentId: string, isReply?: boolean) => void;
   onReportComment?: (commentId: string, isReply?: boolean) => void;
   className?: string;
@@ -85,7 +89,7 @@ export function CommentSystem({
   onEditComment,
   onDeleteComment,
   onReportComment,
-  className = ""
+  className = "",
 }: CommentSystemProps) {
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -96,7 +100,24 @@ export function CommentSystem({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Mock emoji data
-  const emojis = ["😀", "😂", "😍", "👍", "❤️", "😢", "😮", "😡", "🔥", "💯", "🎉", "👏", "🙌", "💪", "🤔", "😎"];
+  const emojis = [
+    "😀",
+    "😂",
+    "😍",
+    "👍",
+    "❤️",
+    "😢",
+    "😮",
+    "😡",
+    "🔥",
+    "💯",
+    "🎉",
+    "👏",
+    "🙌",
+    "💪",
+    "🤔",
+    "😎",
+  ];
 
   const handleSubmitComment = () => {
     if (newComment.trim() && onAddComment) {
@@ -133,15 +154,24 @@ export function CommentSystem({
 
   const insertEmoji = (emoji: string) => {
     if (replyingTo) {
-      setReplyContent(prev => prev + emoji);
+      setReplyContent((prev) => prev + emoji);
     } else {
-      setNewComment(prev => prev + emoji);
+      setNewComment((prev) => prev + emoji);
     }
     setShowEmojis(false);
   };
 
-  const CommentItem = ({ comment, isReply = false }: { comment: Comment | Reply, isReply?: boolean }) => (
-    <div className={`flex space-x-3 ${isReply ? 'ml-12 mt-3' : 'mb-4'}`} data-comment-id={comment.id}>
+  const CommentItem = ({
+    comment,
+    isReply = false,
+  }: {
+    comment: Comment | Reply;
+    isReply?: boolean;
+  }) => (
+    <div
+      className={`flex space-x-3 ${isReply ? "ml-12 mt-3" : "mb-4"}`}
+      data-comment-id={comment.id}
+    >
       <Avatar className="h-10 w-10 flex-shrink-0">
         <AvatarImage src={comment.avatar} />
         <AvatarFallback>{comment.name.charAt(0).toUpperCase()}</AvatarFallback>
@@ -154,7 +184,9 @@ export function CommentSystem({
             <Verified className="h-4 w-4 text-blue-500 fill-current" />
           )}
           <span className="text-xs text-muted-foreground">
-            {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+            {formatDistanceToNow(new Date(comment.createdAt), {
+              addSuffix: true,
+            })}
           </span>
         </div>
 
@@ -170,9 +202,9 @@ export function CommentSystem({
               <Button size="sm" onClick={() => handleEditComment(comment.id)}>
                 Save
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 onClick={() => setEditingComment(null)}
               >
                 Cancel
@@ -183,16 +215,24 @@ export function CommentSystem({
           <>
             <div className="text-sm mb-2">
               <p className="break-words">{comment.content}</p>
-              
+
               {comment.sticker && (
                 <div className="mt-2">
-                  <img src={comment.sticker} alt="Sticker" className="w-16 h-16 object-contain" />
+                  <img
+                    src={comment.sticker}
+                    alt="Sticker"
+                    className="w-16 h-16 object-contain"
+                  />
                 </div>
               )}
-              
+
               {comment.gifImage && (
                 <div className="mt-2">
-                  <img src={comment.gifImage} alt="GIF" className="max-w-48 rounded" />
+                  <img
+                    src={comment.gifImage}
+                    alt="GIF"
+                    className="max-w-48 rounded"
+                  />
                 </div>
               )}
             </div>
@@ -202,9 +242,11 @@ export function CommentSystem({
                 variant="ghost"
                 size="sm"
                 onClick={() => onLikeComment?.(comment.id, isReply)}
-                className={`h-6 px-2 ${comment.isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
+                className={`h-6 px-2 ${comment.isLiked ? "text-red-500" : "text-muted-foreground"}`}
               >
-                <Heart className={`h-3 w-3 mr-1 ${comment.isLiked ? 'fill-current' : ''}`} />
+                <Heart
+                  className={`h-3 w-3 mr-1 ${comment.isLiked ? "fill-current" : ""}`}
+                />
                 {comment.likes > 0 && comment.likes}
               </Button>
 
@@ -220,12 +262,15 @@ export function CommentSystem({
                 </Button>
               )}
 
-              {(comment.canEdit || comment.canDelete || (!currentUser || currentUser.id !== comment.userId)) && (
+              {(comment.canEdit ||
+                comment.canDelete ||
+                !currentUser ||
+                currentUser.id !== comment.userId) && (
                 <div className="relative">
                   <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                     <MoreHorizontal className="h-3 w-3" />
                   </Button>
-                  
+
                   <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg border py-1 z-50 hidden group-hover:block">
                     {comment.canEdit && (
                       <button
@@ -236,7 +281,7 @@ export function CommentSystem({
                         Edit
                       </button>
                     )}
-                    
+
                     {comment.canDelete && (
                       <button
                         onClick={() => onDeleteComment?.(comment.id, isReply)}
@@ -246,7 +291,7 @@ export function CommentSystem({
                         Delete
                       </button>
                     )}
-                    
+
                     {currentUser && currentUser.id !== comment.userId && (
                       <button
                         onClick={() => onReportComment?.(comment.id, isReply)}
@@ -273,17 +318,17 @@ export function CommentSystem({
               placeholder={`Reply to @${comment.username}...`}
             />
             <div className="flex space-x-2">
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 onClick={() => handleSubmitReply(comment.id, comment.username)}
                 disabled={!replyContent.trim()}
               >
                 <Send className="h-3 w-3 mr-1" />
                 Reply
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 onClick={() => setReplyingTo(null)}
               >
                 Cancel
@@ -293,7 +338,7 @@ export function CommentSystem({
         )}
 
         {/* Replies */}
-        {!isReply && 'replies' in comment && comment.replies?.length > 0 && (
+        {!isReply && "replies" in comment && comment.replies?.length > 0 && (
           <div className="mt-4">
             {comment.replies.map((reply) => (
               <CommentItem key={reply.id} comment={reply} isReply={true} />
@@ -313,9 +358,11 @@ export function CommentSystem({
             <div className="flex space-x-3">
               <Avatar className="h-10 w-10 flex-shrink-0">
                 <AvatarImage src={currentUser.avatar} />
-                <AvatarFallback>{currentUser.name.charAt(0).toUpperCase()}</AvatarFallback>
+                <AvatarFallback>
+                  {currentUser.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
-              
+
               <div className="flex-1 space-y-3">
                 <Textarea
                   ref={textareaRef}
@@ -324,7 +371,7 @@ export function CommentSystem({
                   className="min-h-[80px] resize-none"
                   placeholder="Write a comment..."
                 />
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex space-x-2">
                     <Button
@@ -335,17 +382,13 @@ export function CommentSystem({
                     >
                       <Smile className="h-4 w-4" />
                     </Button>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                    >
+
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                       <ImageIcon className="h-4 w-4" />
                     </Button>
                   </div>
-                  
-                  <Button 
+
+                  <Button
                     onClick={handleSubmitComment}
                     disabled={!newComment.trim()}
                     size="sm"
@@ -382,7 +425,7 @@ export function CommentSystem({
         {comments.map((comment) => (
           <CommentItem key={comment.id} comment={comment} />
         ))}
-        
+
         {comments.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />

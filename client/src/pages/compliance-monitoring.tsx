@@ -1,16 +1,35 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
+import {
   Shield,
   FileText,
   CheckCircle,
@@ -38,23 +57,29 @@ import {
   Users,
   CreditCard,
   Database,
-  Zap
+  Zap,
 } from "lucide-react";
 
 interface ComplianceRecord {
   id: string;
-  recordType: '2257' | 'gdpr' | 'ccpa' | 'age_verification' | 'content_labeling' | 'terms_agreement';
+  recordType:
+    | "2257"
+    | "gdpr"
+    | "ccpa"
+    | "age_verification"
+    | "content_labeling"
+    | "terms_agreement";
   userId: string;
   username: string;
   platform: string;
-  status: 'compliant' | 'pending' | 'expired' | 'missing' | 'invalid';
+  status: "compliant" | "pending" | "expired" | "missing" | "invalid";
   documentUrl?: string;
   verificationDate: string;
   expiryDate?: string;
   verifiedBy: string;
   notes?: string;
   region: string;
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  riskLevel: "low" | "medium" | "high" | "critical";
 }
 
 interface ComplianceRule {
@@ -62,9 +87,14 @@ interface ComplianceRule {
   name: string;
   description: string;
   jurisdiction: string;
-  category: 'age_verification' | 'data_privacy' | 'content_regulation' | 'financial_compliance' | 'platform_safety';
+  category:
+    | "age_verification"
+    | "data_privacy"
+    | "content_regulation"
+    | "financial_compliance"
+    | "platform_safety";
   isActive: boolean;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   autoEnforcement: boolean;
   lastUpdated: string;
   nextReview: string;
@@ -72,11 +102,11 @@ interface ComplianceRule {
 
 interface ComplianceAudit {
   id: string;
-  auditType: 'internal' | 'external' | 'regulatory' | 'automated';
+  auditType: "internal" | "external" | "regulatory" | "automated";
   platform: string;
   startDate: string;
   endDate: string;
-  status: 'in_progress' | 'completed' | 'failed' | 'scheduled';
+  status: "in_progress" | "completed" | "failed" | "scheduled";
   findings: number;
   criticalIssues: number;
   auditor: string;
@@ -105,7 +135,7 @@ export default function ComplianceMonitoring() {
       verifiedBy: "compliance_officer_001",
       notes: "Age verification documents verified, model over 21",
       region: "US",
-      riskLevel: "low"
+      riskLevel: "low",
     },
     {
       id: "rec_002",
@@ -118,7 +148,7 @@ export default function ComplianceMonitoring() {
       verifiedBy: "ai_verification",
       notes: "Automated age verification in progress",
       region: "CA",
-      riskLevel: "medium"
+      riskLevel: "medium",
     },
     {
       id: "rec_003",
@@ -132,7 +162,7 @@ export default function ComplianceMonitoring() {
       verifiedBy: "gdpr_compliance_bot",
       notes: "GDPR consent recorded and verified",
       region: "EU",
-      riskLevel: "low"
+      riskLevel: "low",
     },
     {
       id: "rec_004",
@@ -146,7 +176,7 @@ export default function ComplianceMonitoring() {
       verifiedBy: "compliance_officer_002",
       notes: "CCPA consent expired, requires renewal",
       region: "CA-US",
-      riskLevel: "high"
+      riskLevel: "high",
     },
     {
       id: "rec_005",
@@ -159,8 +189,8 @@ export default function ComplianceMonitoring() {
       verifiedBy: "content_review_team",
       notes: "Adult content labeling requirements not met",
       region: "US",
-      riskLevel: "critical"
-    }
+      riskLevel: "critical",
+    },
   ];
 
   // Mock compliance rules
@@ -168,38 +198,41 @@ export default function ComplianceMonitoring() {
     {
       id: "rule_001",
       name: "USC 2257 Record Keeping",
-      description: "Federal requirement for age verification records for adult content creators",
+      description:
+        "Federal requirement for age verification records for adult content creators",
       jurisdiction: "United States",
       category: "age_verification",
       isActive: true,
       severity: "critical",
       autoEnforcement: true,
       lastUpdated: "2025-01-01T00:00:00Z",
-      nextReview: "2025-07-01T00:00:00Z"
+      nextReview: "2025-07-01T00:00:00Z",
     },
     {
-      id: "rule_002", 
+      id: "rule_002",
       name: "GDPR Data Processing",
-      description: "European Union General Data Protection Regulation compliance",
+      description:
+        "European Union General Data Protection Regulation compliance",
       jurisdiction: "European Union",
       category: "data_privacy",
       isActive: true,
       severity: "high",
       autoEnforcement: true,
       lastUpdated: "2025-01-01T00:00:00Z",
-      nextReview: "2025-06-01T00:00:00Z"
+      nextReview: "2025-06-01T00:00:00Z",
     },
     {
       id: "rule_003",
       name: "CCPA Consumer Privacy",
-      description: "California Consumer Privacy Act data protection requirements",
+      description:
+        "California Consumer Privacy Act data protection requirements",
       jurisdiction: "California",
       category: "data_privacy",
       isActive: true,
-      severity: "high", 
+      severity: "high",
       autoEnforcement: true,
       lastUpdated: "2025-01-01T00:00:00Z",
-      nextReview: "2025-08-01T00:00:00Z"
+      nextReview: "2025-08-01T00:00:00Z",
     },
     {
       id: "rule_004",
@@ -210,8 +243,8 @@ export default function ComplianceMonitoring() {
       isActive: true,
       severity: "medium",
       autoEnforcement: true,
-      lastUpdated: "2025-01-01T00:00:00Z", 
-      nextReview: "2025-04-01T00:00:00Z"
+      lastUpdated: "2025-01-01T00:00:00Z",
+      nextReview: "2025-04-01T00:00:00Z",
     },
     {
       id: "rule_005",
@@ -223,8 +256,8 @@ export default function ComplianceMonitoring() {
       severity: "critical",
       autoEnforcement: false,
       lastUpdated: "2025-01-01T00:00:00Z",
-      nextReview: "2025-03-01T00:00:00Z"
-    }
+      nextReview: "2025-03-01T00:00:00Z",
+    },
   ];
 
   // Mock compliance audits
@@ -239,19 +272,19 @@ export default function ComplianceMonitoring() {
       findings: 23,
       criticalIssues: 2,
       auditor: "automated_compliance_system",
-      complianceScore: 94
+      complianceScore: 94,
     },
     {
       id: "audit_002",
       auditType: "internal",
       platform: "GirlFanz",
-      startDate: "2025-01-10T00:00:00Z", 
+      startDate: "2025-01-10T00:00:00Z",
       endDate: "2025-01-12T23:59:59Z",
       status: "completed",
       findings: 8,
       criticalIssues: 1,
       auditor: "compliance_team",
-      complianceScore: 97
+      complianceScore: 97,
     },
     {
       id: "audit_003",
@@ -263,7 +296,7 @@ export default function ComplianceMonitoring() {
       findings: 0,
       criticalIssues: 0,
       auditor: "external_compliance_firm",
-      complianceScore: 0
+      complianceScore: 0,
     },
     {
       id: "audit_004",
@@ -275,44 +308,47 @@ export default function ComplianceMonitoring() {
       findings: 0,
       criticalIssues: 0,
       auditor: "regulatory_authority",
-      complianceScore: 0
-    }
+      complianceScore: 0,
+    },
   ];
 
   const handleUpdateComplianceStatus = useMutation({
-    mutationFn: ({ recordId, status }: { recordId: string, status: string }) =>
+    mutationFn: ({ recordId, status }: { recordId: string; status: string }) =>
       apiRequest("POST", `/api/compliance/${recordId}/status`, { status }),
     onSuccess: (_, { recordId, status }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/compliance"] });
-      const record = complianceRecords.find(r => r.id === recordId);
+      const record = complianceRecords.find((r) => r.id === recordId);
       toast({
         title: "Compliance status updated",
-        description: `${record?.username} compliance status updated to ${status}`
+        description: `${record?.username} compliance status updated to ${status}`,
       });
-    }
+    },
   });
 
   const handleGenerateReport = useMutation({
-    mutationFn: (platform: string) => apiRequest("POST", "/api/compliance/report", { platform }),
+    mutationFn: (platform: string) =>
+      apiRequest("POST", "/api/compliance/report", { platform }),
     onSuccess: () => {
       toast({
         title: "Compliance report generated",
-        description: "Report has been generated and is ready for download"
+        description: "Report has been generated and is ready for download",
       });
-    }
+    },
   });
 
   const getStatusBadge = (status: string) => {
     const variants = {
       compliant: "bg-green-600",
-      pending: "bg-yellow-600", 
+      pending: "bg-yellow-600",
       expired: "bg-orange-600",
       missing: "bg-red-600",
-      invalid: "bg-red-700"
+      invalid: "bg-red-700",
     } as const;
 
     return (
-      <Badge className={variants[status as keyof typeof variants] || "bg-gray-600"}>
+      <Badge
+        className={variants[status as keyof typeof variants] || "bg-gray-600"}
+      >
         {status.toUpperCase()}
       </Badge>
     );
@@ -323,11 +359,13 @@ export default function ComplianceMonitoring() {
       low: "bg-green-700",
       medium: "bg-yellow-700",
       high: "bg-orange-700",
-      critical: "bg-red-700"
+      critical: "bg-red-700",
     } as const;
 
     return (
-      <Badge className={variants[risk as keyof typeof variants] || "bg-gray-600"}>
+      <Badge
+        className={variants[risk as keyof typeof variants] || "bg-gray-600"}
+      >
         {risk.toUpperCase()}
       </Badge>
     );
@@ -337,12 +375,14 @@ export default function ComplianceMonitoring() {
     const variants = {
       low: "bg-blue-600",
       medium: "bg-yellow-600",
-      high: "bg-orange-600", 
-      critical: "bg-red-600"
+      high: "bg-orange-600",
+      critical: "bg-red-600",
     } as const;
 
     return (
-      <Badge className={variants[severity as keyof typeof variants] || "bg-gray-600"}>
+      <Badge
+        className={variants[severity as keyof typeof variants] || "bg-gray-600"}
+      >
         {severity.toUpperCase()}
       </Badge>
     );
@@ -353,31 +393,39 @@ export default function ComplianceMonitoring() {
       in_progress: "bg-blue-600",
       completed: "bg-green-600",
       failed: "bg-red-600",
-      scheduled: "bg-yellow-600"
+      scheduled: "bg-yellow-600",
     } as const;
 
     return (
-      <Badge className={variants[status as keyof typeof variants] || "bg-gray-600"}>
-        {status.replace('_', ' ').toUpperCase()}
+      <Badge
+        className={variants[status as keyof typeof variants] || "bg-gray-600"}
+      >
+        {status.replace("_", " ").toUpperCase()}
       </Badge>
     );
   };
 
-  const filteredRecords = complianceRecords.filter(record => {
-    const matchesPlatform = selectedPlatform === "all" || record.platform === selectedPlatform;
-    const matchesStatus = selectedStatus === "all" || record.status === selectedStatus;
-    const matchesSearch = !searchQuery || 
+  const filteredRecords = complianceRecords.filter((record) => {
+    const matchesPlatform =
+      selectedPlatform === "all" || record.platform === selectedPlatform;
+    const matchesStatus =
+      selectedStatus === "all" || record.status === selectedStatus;
+    const matchesSearch =
+      !searchQuery ||
       record.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       record.recordType.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     return matchesPlatform && matchesStatus && matchesSearch;
   });
 
   const stats = {
     totalRecords: complianceRecords.length,
-    compliantRecords: complianceRecords.filter(r => r.status === 'compliant').length,
-    pendingRecords: complianceRecords.filter(r => r.status === 'pending').length,
-    criticalIssues: complianceRecords.filter(r => r.riskLevel === 'critical').length
+    compliantRecords: complianceRecords.filter((r) => r.status === "compliant")
+      .length,
+    pendingRecords: complianceRecords.filter((r) => r.status === "pending")
+      .length,
+    criticalIssues: complianceRecords.filter((r) => r.riskLevel === "critical")
+      .length,
   };
 
   return (
@@ -386,13 +434,16 @@ export default function ComplianceMonitoring() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Real-time Compliance Monitoring</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Real-time Compliance Monitoring
+            </h1>
             <p className="text-muted-foreground">
-              Monitor 2257 records, GDPR/CCPA compliance, age verification across all platforms
+              Monitor 2257 records, GDPR/CCPA compliance, age verification
+              across all platforms
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button 
+            <Button
               variant="outline"
               onClick={() => handleGenerateReport.mutate("all")}
               disabled={handleGenerateReport.isPending}
@@ -416,7 +467,9 @@ export default function ComplianceMonitoring() {
                 <FileCheck className="h-8 w-8 text-cyan-400" />
                 <div>
                   <p className="text-sm font-medium">Total Records</p>
-                  <p className="text-2xl font-bold text-cyan-400">{stats.totalRecords}</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {stats.totalRecords}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -428,7 +481,9 @@ export default function ComplianceMonitoring() {
                 <CheckCircle className="h-8 w-8 text-green-400" />
                 <div>
                   <p className="text-sm font-medium">Compliant</p>
-                  <p className="text-2xl font-bold text-green-400">{stats.compliantRecords}</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {stats.compliantRecords}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -440,7 +495,9 @@ export default function ComplianceMonitoring() {
                 <Clock className="h-8 w-8 text-yellow-400" />
                 <div>
                   <p className="text-sm font-medium">Pending</p>
-                  <p className="text-2xl font-bold text-yellow-400">{stats.pendingRecords}</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {stats.pendingRecords}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -452,7 +509,9 @@ export default function ComplianceMonitoring() {
                 <AlertTriangle className="h-8 w-8 text-red-400" />
                 <div>
                   <p className="text-sm font-medium">Critical Issues</p>
-                  <p className="text-2xl font-bold text-red-400">{stats.criticalIssues}</p>
+                  <p className="text-2xl font-bold text-red-400">
+                    {stats.criticalIssues}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -470,8 +529,12 @@ export default function ComplianceMonitoring() {
           <TabsContent value="records" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Compliance Records</CardTitle>
-                <CardDescription>Monitor individual compliance records and verification status</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Compliance Records
+                </CardTitle>
+                <CardDescription>
+                  Monitor individual compliance records and verification status
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -485,8 +548,11 @@ export default function ComplianceMonitoring() {
                       data-testid="input-compliance-search"
                     />
                   </div>
-                  
-                  <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+
+                  <Select
+                    value={selectedPlatform}
+                    onValueChange={setSelectedPlatform}
+                  >
                     <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Filter by platform" />
                     </SelectTrigger>
@@ -501,7 +567,10 @@ export default function ComplianceMonitoring() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <Select
+                    value={selectedStatus}
+                    onValueChange={setSelectedStatus}
+                  >
                     <SelectTrigger className="w-[150px] bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
@@ -534,8 +603,12 @@ export default function ComplianceMonitoring() {
                         <TableRow key={record.id}>
                           <TableCell>
                             <div>
-                              <p className="font-medium text-white">{record.username}</p>
-                              <p className="text-xs text-gray-400">{record.region}</p>
+                              <p className="font-medium text-white">
+                                {record.username}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {record.region}
+                              </p>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -544,25 +617,29 @@ export default function ComplianceMonitoring() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline">
-                              {record.platform}
-                            </Badge>
+                            <Badge variant="outline">{record.platform}</Badge>
                           </TableCell>
-                          <TableCell>
-                            {getStatusBadge(record.status)}
-                          </TableCell>
+                          <TableCell>{getStatusBadge(record.status)}</TableCell>
                           <TableCell>
                             {getRiskBadge(record.riskLevel)}
                           </TableCell>
                           <TableCell className="text-sm">
-                            {new Date(record.verificationDate).toLocaleDateString()}
+                            {new Date(
+                              record.verificationDate,
+                            ).toLocaleDateString()}
                           </TableCell>
                           <TableCell className="text-sm">
                             {record.expiryDate ? (
-                              <span className={
-                                new Date(record.expiryDate) < new Date() ? "text-red-400" : "text-gray-400"
-                              }>
-                                {new Date(record.expiryDate).toLocaleDateString()}
+                              <span
+                                className={
+                                  new Date(record.expiryDate) < new Date()
+                                    ? "text-red-400"
+                                    : "text-gray-400"
+                                }
+                              >
+                                {new Date(
+                                  record.expiryDate,
+                                ).toLocaleDateString()}
                               </span>
                             ) : (
                               <span className="text-gray-400">N/A</span>
@@ -570,22 +647,34 @@ export default function ComplianceMonitoring() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <Button size="sm" variant="outline" data-testid={`button-view-${record.id}`}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                data-testid={`button-view-${record.id}`}
+                              >
                                 <Eye className="w-3 h-3" />
                               </Button>
                               {record.documentUrl && (
-                                <Button size="sm" variant="outline" data-testid={`button-download-${record.id}`}>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  data-testid={`button-download-${record.id}`}
+                                >
                                   <Download className="w-3 h-3" />
                                 </Button>
                               )}
-                              {record.status === 'pending' && (
-                                <Button 
+                              {record.status === "pending" && (
+                                <Button
                                   size="sm"
-                                  onClick={() => handleUpdateComplianceStatus.mutate({ 
-                                    recordId: record.id, 
-                                    status: 'compliant' 
-                                  })}
-                                  disabled={handleUpdateComplianceStatus.isPending}
+                                  onClick={() =>
+                                    handleUpdateComplianceStatus.mutate({
+                                      recordId: record.id,
+                                      status: "compliant",
+                                    })
+                                  }
+                                  disabled={
+                                    handleUpdateComplianceStatus.isPending
+                                  }
                                   className="bg-green-600 hover:bg-green-700"
                                   data-testid={`button-approve-${record.id}`}
                                 >
@@ -606,8 +695,12 @@ export default function ComplianceMonitoring() {
           <TabsContent value="rules" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Compliance Rules</CardTitle>
-                <CardDescription>Manage regulatory compliance rules and enforcement policies</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Compliance Rules
+                </CardTitle>
+                <CardDescription>
+                  Manage regulatory compliance rules and enforcement policies
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -617,7 +710,9 @@ export default function ComplianceMonitoring() {
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-semibold text-white">{rule.name}</h3>
+                              <h3 className="font-semibold text-white">
+                                {rule.name}
+                              </h3>
                               {getSeverityBadge(rule.severity)}
                               {rule.autoEnforcement && (
                                 <Badge className="bg-blue-600">
@@ -626,11 +721,22 @@ export default function ComplianceMonitoring() {
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-gray-400 mb-2">{rule.description}</p>
+                            <p className="text-sm text-gray-400 mb-2">
+                              {rule.description}
+                            </p>
                             <div className="flex items-center gap-4 text-xs text-gray-400">
-                              <span><Globe className="w-3 h-3 inline mr-1" />{rule.jurisdiction}</span>
-                              <span><Calendar className="w-3 h-3 inline mr-1" />Review: {new Date(rule.nextReview).toLocaleDateString()}</span>
-                              <span className="capitalize">{rule.category.replace('_', ' ')}</span>
+                              <span>
+                                <Globe className="w-3 h-3 inline mr-1" />
+                                {rule.jurisdiction}
+                              </span>
+                              <span>
+                                <Calendar className="w-3 h-3 inline mr-1" />
+                                Review:{" "}
+                                {new Date(rule.nextReview).toLocaleDateString()}
+                              </span>
+                              <span className="capitalize">
+                                {rule.category.replace("_", " ")}
+                              </span>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -658,8 +764,12 @@ export default function ComplianceMonitoring() {
           <TabsContent value="audits" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Compliance Audits</CardTitle>
-                <CardDescription>Track compliance audit schedules, progress, and results</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Compliance Audits
+                </CardTitle>
+                <CardDescription>
+                  Track compliance audit schedules, progress, and results
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="border rounded-lg bg-gray-800/50">
@@ -681,16 +791,15 @@ export default function ComplianceMonitoring() {
                         <TableRow key={audit.id}>
                           <TableCell>
                             <Badge variant="outline" className="capitalize">
-                              {audit.auditType.replace('_', ' ')}
+                              {audit.auditType.replace("_", " ")}
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline">
-                              {audit.platform}
-                            </Badge>
+                            <Badge variant="outline">{audit.platform}</Badge>
                           </TableCell>
                           <TableCell className="text-sm">
-                            {new Date(audit.startDate).toLocaleDateString()} - {new Date(audit.endDate).toLocaleDateString()}
+                            {new Date(audit.startDate).toLocaleDateString()} -{" "}
+                            {new Date(audit.endDate).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
                             {getAuditStatusBadge(audit.status)}
@@ -699,29 +808,40 @@ export default function ComplianceMonitoring() {
                             <div className="flex items-center gap-2">
                               {audit.complianceScore > 0 && (
                                 <>
-                                  <Progress value={audit.complianceScore} className="w-16 h-2" />
-                                  <span className="text-sm font-mono">{audit.complianceScore}%</span>
+                                  <Progress
+                                    value={audit.complianceScore}
+                                    className="w-16 h-2"
+                                  />
+                                  <span className="text-sm font-mono">
+                                    {audit.complianceScore}%
+                                  </span>
                                 </>
                               )}
                               {audit.complianceScore === 0 && (
-                                <span className="text-gray-400 text-sm">N/A</span>
+                                <span className="text-gray-400 text-sm">
+                                  N/A
+                                </span>
                               )}
                             </div>
                           </TableCell>
                           <TableCell>
                             <div className="text-center">
-                              <p className="text-sm font-mono text-blue-400">{audit.findings}</p>
+                              <p className="text-sm font-mono text-blue-400">
+                                {audit.findings}
+                              </p>
                             </div>
                           </TableCell>
                           <TableCell>
                             <div className="text-center">
-                              <p className={`text-sm font-mono ${audit.criticalIssues > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                              <p
+                                className={`text-sm font-mono ${audit.criticalIssues > 0 ? "text-red-400" : "text-green-400"}`}
+                              >
                                 {audit.criticalIssues}
                               </p>
                             </div>
                           </TableCell>
                           <TableCell className="text-sm text-gray-400">
-                            {audit.auditor.replace('_', ' ')}
+                            {audit.auditor.replace("_", " ")}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -736,36 +856,54 @@ export default function ComplianceMonitoring() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="bg-gray-900/50 border-cyan-500/20">
                 <CardHeader>
-                  <CardTitle className="text-cyan-400">Compliance Overview</CardTitle>
+                  <CardTitle className="text-cyan-400">
+                    Compliance Overview
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-400">Overall Compliance Rate</span>
+                      <span className="text-sm text-gray-400">
+                        Overall Compliance Rate
+                      </span>
                       <div className="flex items-center gap-2">
                         <Progress value={85} className="w-20 h-2" />
-                        <span className="text-sm font-mono text-green-400">85%</span>
+                        <span className="text-sm font-mono text-green-400">
+                          85%
+                        </span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-400">2257 Records</span>
+                      <span className="text-sm text-gray-400">
+                        2257 Records
+                      </span>
                       <div className="flex items-center gap-2">
                         <Progress value={92} className="w-20 h-2" />
-                        <span className="text-sm font-mono text-green-400">92%</span>
+                        <span className="text-sm font-mono text-green-400">
+                          92%
+                        </span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-400">GDPR Compliance</span>
+                      <span className="text-sm text-gray-400">
+                        GDPR Compliance
+                      </span>
                       <div className="flex items-center gap-2">
                         <Progress value={88} className="w-20 h-2" />
-                        <span className="text-sm font-mono text-green-400">88%</span>
+                        <span className="text-sm font-mono text-green-400">
+                          88%
+                        </span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-400">Age Verification</span>
+                      <span className="text-sm text-gray-400">
+                        Age Verification
+                      </span>
                       <div className="flex items-center gap-2">
                         <Progress value={96} className="w-20 h-2" />
-                        <span className="text-sm font-mono text-green-400">96%</span>
+                        <span className="text-sm font-mono text-green-400">
+                          96%
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -774,16 +912,22 @@ export default function ComplianceMonitoring() {
 
               <Card className="bg-gray-900/50 border-cyan-500/20">
                 <CardHeader>
-                  <CardTitle className="text-cyan-400">Risk Assessment</CardTitle>
+                  <CardTitle className="text-cyan-400">
+                    Risk Assessment
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-4 bg-green-900/30 rounded-lg">
-                      <p className="text-2xl font-bold text-green-400">{stats.compliantRecords}</p>
+                      <p className="text-2xl font-bold text-green-400">
+                        {stats.compliantRecords}
+                      </p>
                       <p className="text-sm text-green-300">Low Risk</p>
                     </div>
                     <div className="text-center p-4 bg-yellow-900/30 rounded-lg">
-                      <p className="text-2xl font-bold text-yellow-400">{stats.pendingRecords}</p>
+                      <p className="text-2xl font-bold text-yellow-400">
+                        {stats.pendingRecords}
+                      </p>
                       <p className="text-sm text-yellow-300">Medium Risk</p>
                     </div>
                     <div className="text-center p-4 bg-orange-900/30 rounded-lg">
@@ -791,7 +935,9 @@ export default function ComplianceMonitoring() {
                       <p className="text-sm text-orange-300">High Risk</p>
                     </div>
                     <div className="text-center p-4 bg-red-900/30 rounded-lg">
-                      <p className="text-2xl font-bold text-red-400">{stats.criticalIssues}</p>
+                      <p className="text-2xl font-bold text-red-400">
+                        {stats.criticalIssues}
+                      </p>
                       <p className="text-sm text-red-300">Critical Risk</p>
                     </div>
                   </div>
@@ -801,14 +947,19 @@ export default function ComplianceMonitoring() {
 
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Compliance Trends</CardTitle>
+                <CardTitle className="text-cyan-400">
+                  Compliance Trends
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
                   <BarChart3 className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
-                  <p className="text-lg font-medium text-white mb-2">Compliance Analytics Dashboard</p>
+                  <p className="text-lg font-medium text-white mb-2">
+                    Compliance Analytics Dashboard
+                  </p>
                   <p className="text-gray-400">
-                    Real-time compliance monitoring and trend analysis across all Fanz™ platforms
+                    Real-time compliance monitoring and trend analysis across
+                    all Fanz™ platforms
                   </p>
                 </div>
               </CardContent>

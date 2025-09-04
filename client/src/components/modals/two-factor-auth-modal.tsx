@@ -1,5 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -19,7 +24,7 @@ export function TwoFactorAuthModal({
   onClose,
   onVerify,
   isProfileVerification = false,
-  className = ""
+  className = "",
 }: TwoFactorAuthModalProps) {
   const [codes, setCodes] = useState<string[]>(["", "", "", ""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,7 +44,7 @@ export function TwoFactorAuthModal({
     let interval: NodeJS.Timeout;
     if (resendCooldown > 0) {
       interval = setInterval(() => {
-        setResendCooldown(prev => prev - 1);
+        setResendCooldown((prev) => prev - 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -47,8 +52,8 @@ export function TwoFactorAuthModal({
 
   const handleInputChange = (index: number, value: string) => {
     // Only allow digits
-    const sanitizedValue = value.replace(/\D/g, '').slice(0, 1);
-    
+    const sanitizedValue = value.replace(/\D/g, "").slice(0, 1);
+
     const newCodes = [...codes];
     newCodes[index] = sanitizedValue;
     setCodes(newCodes);
@@ -63,7 +68,7 @@ export function TwoFactorAuthModal({
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace') {
+    if (e.key === "Backspace") {
       if (!codes[index] && index > 0) {
         // Move to previous input if current is empty
         inputRefs.current[index - 1]?.focus();
@@ -73,11 +78,11 @@ export function TwoFactorAuthModal({
         newCodes[index] = "";
         setCodes(newCodes);
       }
-    } else if (e.key === 'ArrowLeft' && index > 0) {
+    } else if (e.key === "ArrowLeft" && index > 0) {
       inputRefs.current[index - 1]?.focus();
-    } else if (e.key === 'ArrowRight' && index < 3) {
+    } else if (e.key === "ArrowRight" && index < 3) {
       inputRefs.current[index + 1]?.focus();
-    } else if (e.key === 'Enter') {
+    } else if (e.key === "Enter") {
       e.preventDefault();
       handleSubmit();
     }
@@ -85,21 +90,23 @@ export function TwoFactorAuthModal({
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text');
-    const digits = pastedData.replace(/\D/g, '').slice(0, 4);
-    
-    const newCodes = Array(4).fill("").map((_, index) => digits[index] || "");
+    const pastedData = e.clipboardData.getData("text");
+    const digits = pastedData.replace(/\D/g, "").slice(0, 4);
+
+    const newCodes = Array(4)
+      .fill("")
+      .map((_, index) => digits[index] || "");
     setCodes(newCodes);
 
     // Focus on the next empty input or last input
-    const nextEmptyIndex = newCodes.findIndex(code => !code);
+    const nextEmptyIndex = newCodes.findIndex((code) => !code);
     const focusIndex = nextEmptyIndex === -1 ? 3 : nextEmptyIndex;
     inputRefs.current[focusIndex]?.focus();
   };
 
   const handleSubmit = async () => {
     const fullCode = codes.join("");
-    
+
     if (fullCode.length !== 4) {
       setError("Please enter the complete 4-digit code");
       return;
@@ -131,7 +138,7 @@ export function TwoFactorAuthModal({
 
     try {
       // Simulate API call to resend code
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setResendCooldown(60); // 60 second cooldown
     } catch (err) {
       setError("Failed to resend code. Please try again.");
@@ -140,7 +147,7 @@ export function TwoFactorAuthModal({
     }
   };
 
-  const isComplete = codes.every(code => code.length === 1);
+  const isComplete = codes.every((code) => code.length === 1);
   const isDisabled = !isComplete || isSubmitting;
 
   return (
@@ -156,10 +163,9 @@ export function TwoFactorAuthModal({
         <div className="space-y-4">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              {isProfileVerification 
+              {isProfileVerification
                 ? "Enter the verification code to access your profile"
-                : "Enter the 4-digit code sent to your device to continue"
-              }
+                : "Enter the 4-digit code sent to your device to continue"}
             </p>
           </div>
 
@@ -168,7 +174,7 @@ export function TwoFactorAuthModal({
             {codes.map((code, index) => (
               <Input
                 key={index}
-                ref={el => inputRefs.current[index] = el}
+                ref={(el) => (inputRefs.current[index] = el)}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
@@ -227,7 +233,7 @@ export function TwoFactorAuthModal({
             >
               Cancel
             </Button>
-            
+
             <Button
               onClick={handleSubmit}
               disabled={isDisabled}

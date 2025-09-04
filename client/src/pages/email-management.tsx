@@ -1,21 +1,47 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Mail, 
-  Send, 
-  Plus, 
+import {
+  Mail,
+  Send,
+  Plus,
   Edit,
   Trash2,
   Eye,
@@ -27,7 +53,7 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  AlertTriangle
+  AlertTriangle,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -39,7 +65,7 @@ interface EmailTemplate {
   textContent?: string;
   variables: string[];
   isActive: boolean;
-  category: 'auth' | 'notification' | 'marketing' | 'system';
+  category: "auth" | "notification" | "marketing" | "system";
   createdAt: string;
   updatedAt: string;
 }
@@ -51,7 +77,7 @@ interface EmailLog {
   templateId?: string;
   templateName?: string;
   subject: string;
-  status: 'pending' | 'sent' | 'delivered' | 'failed' | 'bounced';
+  status: "pending" | "sent" | "delivered" | "failed" | "bounced";
   provider: string;
   sentAt?: string;
   deliveredAt?: string;
@@ -64,7 +90,8 @@ interface EmailLog {
 export default function EmailManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<EmailTemplate | null>(null);
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -81,12 +108,13 @@ export default function EmailManagement() {
         <p>To get started, please verify your email address by clicking the button below:</p>
         <a href="{{verification_url}}" style="background: #3869D4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
       `,
-      textContent: "Welcome {{user_name}}! Thank you for joining {{site_name}}.",
+      textContent:
+        "Welcome {{user_name}}! Thank you for joining {{site_name}}.",
       variables: ["user_name", "site_name", "verification_url"],
       isActive: true,
       category: "auth",
       createdAt: "2025-01-10T10:00:00Z",
-      updatedAt: "2025-01-15T14:30:00Z"
+      updatedAt: "2025-01-15T14:30:00Z",
     },
     {
       id: "2",
@@ -103,7 +131,7 @@ export default function EmailManagement() {
       isActive: true,
       category: "auth",
       createdAt: "2025-01-10T10:00:00Z",
-      updatedAt: "2025-01-15T14:30:00Z"
+      updatedAt: "2025-01-15T14:30:00Z",
     },
     {
       id: "3",
@@ -120,7 +148,7 @@ export default function EmailManagement() {
       isActive: true,
       category: "auth",
       createdAt: "2025-01-10T10:00:00Z",
-      updatedAt: "2025-01-15T14:30:00Z"
+      updatedAt: "2025-01-15T14:30:00Z",
     },
     {
       id: "4",
@@ -135,7 +163,7 @@ export default function EmailManagement() {
       isActive: true,
       category: "notification",
       createdAt: "2025-01-12T15:00:00Z",
-      updatedAt: "2025-01-12T15:00:00Z"
+      updatedAt: "2025-01-12T15:00:00Z",
     },
     {
       id: "5",
@@ -151,7 +179,7 @@ export default function EmailManagement() {
       isActive: true,
       category: "notification",
       createdAt: "2025-01-12T15:00:00Z",
-      updatedAt: "2025-01-12T15:00:00Z"
+      updatedAt: "2025-01-12T15:00:00Z",
     },
     {
       id: "6",
@@ -167,7 +195,7 @@ export default function EmailManagement() {
       isActive: true,
       category: "system",
       createdAt: "2025-01-12T15:00:00Z",
-      updatedAt: "2025-01-12T15:00:00Z"
+      updatedAt: "2025-01-12T15:00:00Z",
     },
     {
       id: "7",
@@ -179,12 +207,17 @@ export default function EmailManagement() {
         <p>You now have {{total_subscribers}} total subscribers.</p>
         <a href="{{subscribers_url}}" style="background: #3869D4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Subscribers</a>
       `,
-      variables: ["creator_name", "subscriber_name", "total_subscribers", "subscribers_url"],
+      variables: [
+        "creator_name",
+        "subscriber_name",
+        "total_subscribers",
+        "subscribers_url",
+      ],
       isActive: true,
       category: "notification",
       createdAt: "2025-01-12T15:00:00Z",
-      updatedAt: "2025-01-12T15:00:00Z"
-    }
+      updatedAt: "2025-01-12T15:00:00Z",
+    },
   ];
 
   // Mock email logs data
@@ -201,7 +234,7 @@ export default function EmailManagement() {
       sentAt: "2025-01-15T10:30:00Z",
       deliveredAt: "2025-01-15T10:31:00Z",
       openedAt: "2025-01-15T11:00:00Z",
-      createdAt: "2025-01-15T10:30:00Z"
+      createdAt: "2025-01-15T10:30:00Z",
     },
     {
       id: "2",
@@ -213,7 +246,7 @@ export default function EmailManagement() {
       status: "sent",
       provider: "sendgrid",
       sentAt: "2025-01-15T12:00:00Z",
-      createdAt: "2025-01-15T12:00:00Z"
+      createdAt: "2025-01-15T12:00:00Z",
     },
     {
       id: "3",
@@ -222,38 +255,59 @@ export default function EmailManagement() {
       status: "failed",
       provider: "sendgrid",
       errorMessage: "Invalid email address",
-      createdAt: "2025-01-15T14:00:00Z"
-    }
+      createdAt: "2025-01-15T14:00:00Z",
+    },
   ];
 
   const isLoading = false;
 
   const createTemplateMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/admin/email-templates', 'POST', data),
+    mutationFn: (data: any) =>
+      apiRequest("/api/admin/email-templates", "POST", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/email-templates'] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/admin/email-templates"],
+      });
       toast({ title: "Template created successfully" });
       setIsTemplateDialogOpen(false);
-    }
+    },
   });
 
-  const filteredTemplates = emailTemplates.filter(template => {
-    const matchesSearch = !searchQuery || 
+  const filteredTemplates = emailTemplates.filter((template) => {
+    const matchesSearch =
+      !searchQuery ||
       template.templateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       template.subject.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "all" || template.category === selectedCategory;
-    
+
+    const matchesCategory =
+      selectedCategory === "all" || template.category === selectedCategory;
+
     return matchesSearch && matchesCategory;
   });
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      pending: { variant: "outline" as const, color: "text-yellow-600", icon: Clock },
+      pending: {
+        variant: "outline" as const,
+        color: "text-yellow-600",
+        icon: Clock,
+      },
       sent: { variant: "default" as const, color: "text-blue-600", icon: Send },
-      delivered: { variant: "default" as const, color: "text-green-600", icon: CheckCircle },
-      failed: { variant: "destructive" as const, color: "text-red-600", icon: XCircle },
-      bounced: { variant: "destructive" as const, color: "text-orange-600", icon: AlertTriangle }
+      delivered: {
+        variant: "default" as const,
+        color: "text-green-600",
+        icon: CheckCircle,
+      },
+      failed: {
+        variant: "destructive" as const,
+        color: "text-red-600",
+        icon: XCircle,
+      },
+      bounced: {
+        variant: "destructive" as const,
+        color: "text-orange-600",
+        icon: AlertTriangle,
+      },
     };
 
     const config = variants[status as keyof typeof variants];
@@ -270,9 +324,14 @@ export default function EmailManagement() {
 
   const getStats = () => {
     const totalEmails = emailLogs.length;
-    const deliveredEmails = emailLogs.filter(log => log.status === 'delivered').length;
-    const failedEmails = emailLogs.filter(log => log.status === 'failed' || log.status === 'bounced').length;
-    const deliveryRate = totalEmails > 0 ? Math.round((deliveredEmails / totalEmails) * 100) : 0;
+    const deliveredEmails = emailLogs.filter(
+      (log) => log.status === "delivered",
+    ).length;
+    const failedEmails = emailLogs.filter(
+      (log) => log.status === "failed" || log.status === "bounced",
+    ).length;
+    const deliveryRate =
+      totalEmails > 0 ? Math.round((deliveredEmails / totalEmails) * 100) : 0;
 
     return { totalEmails, deliveredEmails, failedEmails, deliveryRate };
   };
@@ -280,15 +339,23 @@ export default function EmailManagement() {
   const stats = getStats();
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="email-management">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="email-management"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold cyber-text-glow">Email Management</h1>
+          <h1 className="text-3xl font-bold cyber-text-glow">
+            Email Management
+          </h1>
           <p className="text-muted-foreground">
             Manage email templates, send campaigns, and monitor delivery
           </p>
         </div>
-        <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
+        <Dialog
+          open={isTemplateDialogOpen}
+          onOpenChange={setIsTemplateDialogOpen}
+        >
           <DialogTrigger asChild>
             <Button data-testid="button-new-template">
               <Plus className="h-4 w-4 mr-2" />
@@ -330,13 +397,16 @@ export default function EmailManagement() {
               </div>
               <div className="space-y-2">
                 <Label>HTML Content</Label>
-                <Textarea 
-                  placeholder="HTML email content with {{variables}}" 
+                <Textarea
+                  placeholder="HTML email content with {{variables}}"
                   className="min-h-[200px]"
                 />
               </div>
               <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsTemplateDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsTemplateDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button>Create Template</Button>
@@ -407,7 +477,9 @@ export default function EmailManagement() {
         <TabsContent value="templates" className="space-y-4">
           <Card className="cyber-border">
             <CardHeader>
-              <CardTitle>Email Templates ({filteredTemplates.length})</CardTitle>
+              <CardTitle>
+                Email Templates ({filteredTemplates.length})
+              </CardTitle>
               <CardDescription>
                 Manage reusable email templates with dynamic variables
               </CardDescription>
@@ -425,9 +497,15 @@ export default function EmailManagement() {
                     data-testid="input-search-templates"
                   />
                 </div>
-                
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-[180px]" data-testid="select-category-filter">
+
+                <Select
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
+                >
+                  <SelectTrigger
+                    className="w-[180px]"
+                    data-testid="select-category-filter"
+                  >
                     <SelectValue placeholder="Filter by category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -447,24 +525,32 @@ export default function EmailManagement() {
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <h3 className="font-semibold">{template.templateName}</h3>
+                          <h3 className="font-semibold">
+                            {template.templateName}
+                          </h3>
                           <p className="text-sm text-muted-foreground truncate">
                             {template.subject}
                           </p>
                         </div>
                         <div className="flex items-center space-x-1 ml-2">
-                          <Badge variant={template.category === 'auth' ? 'default' : 'secondary'}>
+                          <Badge
+                            variant={
+                              template.category === "auth"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
                             {template.category}
                           </Badge>
-                          <Switch 
-                            checked={template.isActive}
-                          />
+                          <Switch checked={template.isActive} />
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
                         <span>{template.variables.length} variables</span>
-                        <span>{new Date(template.updatedAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(template.updatedAt).toLocaleDateString()}
+                        </span>
                       </div>
 
                       <div className="flex space-x-2">
@@ -514,24 +600,34 @@ export default function EmailManagement() {
                       <TableRow key={log.id}>
                         <TableCell>
                           <div>
-                            <div className="font-medium">{log.recipientName || 'Unknown'}</div>
-                            <div className="text-sm text-muted-foreground">{log.recipientEmail}</div>
+                            <div className="font-medium">
+                              {log.recipientName || "Unknown"}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {log.recipientEmail}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
                           {log.templateName ? (
                             <Badge variant="outline">{log.templateName}</Badge>
                           ) : (
-                            <span className="text-muted-foreground">Custom</span>
+                            <span className="text-muted-foreground">
+                              Custom
+                            </span>
                           )}
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">
                           {log.subject}
                         </TableCell>
                         <TableCell>{getStatusBadge(log.status)}</TableCell>
-                        <TableCell className="capitalize">{log.provider}</TableCell>
+                        <TableCell className="capitalize">
+                          {log.provider}
+                        </TableCell>
                         <TableCell>
-                          {log.sentAt ? new Date(log.sentAt).toLocaleString() : '-'}
+                          {log.sentAt
+                            ? new Date(log.sentAt).toLocaleString()
+                            : "-"}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -554,10 +650,15 @@ export default function EmailManagement() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">SendGrid Configuration</h3>
+                    <h3 className="text-lg font-semibold">
+                      SendGrid Configuration
+                    </h3>
                     <div className="space-y-2">
                       <Label>API Key</Label>
-                      <Input type="password" placeholder="Enter SendGrid API key" />
+                      <Input
+                        type="password"
+                        placeholder="Enter SendGrid API key"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label>From Email</Label>

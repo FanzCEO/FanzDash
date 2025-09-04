@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "wouter";
-import { 
-  Users, 
-  Camera, 
-  Video, 
-  Music, 
+import {
+  Users,
+  Camera,
+  Video,
+  Music,
   FileArchive,
   Star,
   Verified,
@@ -17,7 +17,7 @@ import {
   Tag,
   DollarSign,
   Eye,
-  Heart
+  Heart,
 } from "lucide-react";
 
 interface Creator {
@@ -59,7 +59,7 @@ export function CreatorExploration({
   title = "Explore Creators",
   onRefresh,
   onToggleFreeFilter,
-  className = ""
+  className = "",
 }: CreatorExplorationProps) {
   const [freeFilterActive, setFreeFilterActive] = useState(false);
 
@@ -72,12 +72,14 @@ export function CreatorExploration({
     <Card className="cyber-border hover:shadow-lg transition-all duration-200 h-full">
       <CardContent className="p-0">
         {/* Cover Image */}
-        <div 
+        <div
           className="relative h-32 bg-gradient-to-r from-purple-500 to-blue-500 rounded-t-lg overflow-hidden"
           style={{
-            backgroundImage: creator.cover ? `url(${creator.cover})` : undefined,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
+            backgroundImage: creator.cover
+              ? `url(${creator.cover})`
+              : undefined,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         >
           {/* Live indicator */}
@@ -89,7 +91,7 @@ export function CreatorExploration({
               </Badge>
             </div>
           )}
-          
+
           {/* Free badge */}
           {creator.freeSubscription && (
             <div className="absolute top-2 right-2">
@@ -162,7 +164,7 @@ export function CreatorExploration({
                 View Profile
               </Button>
             </Link>
-            
+
             <Button className="w-full" size="sm">
               {creator.freeSubscription ? (
                 <>
@@ -171,8 +173,8 @@ export function CreatorExploration({
                 </>
               ) : (
                 <>
-                  <DollarSign className="h-3 w-3 mr-1" />
-                  ${creator.subscriptionPrice}/month
+                  <DollarSign className="h-3 w-3 mr-1" />$
+                  {creator.subscriptionPrice}/month
                 </>
               )}
             </Button>
@@ -184,12 +186,12 @@ export function CreatorExploration({
 
   const CreatorListItem = ({ creator }: { creator: Creator }) => (
     <Link href={`/${creator.username}`}>
-      <div 
+      <div
         className="block w-100 h-100 rounded-lg overflow-hidden mb-2"
         style={{
-          background: creator.cover ? `url(${creator.cover})` : '#505050',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          background: creator.cover ? `url(${creator.cover})` : "#505050",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div className="relative h-12">
@@ -200,13 +202,15 @@ export function CreatorExploration({
           )}
         </div>
 
-        <div className="p-3" style={{ background: 'rgba(0,0,0,.35)' }}>
+        <div className="p-3" style={{ background: "rgba(0,0,0,.35)" }}>
           <div className="flex space-x-3">
             <Avatar className="h-12 w-12 flex-shrink-0">
               <AvatarImage src={creator.avatar} />
-              <AvatarFallback>{creator.name.charAt(0).toUpperCase()}</AvatarFallback>
+              <AvatarFallback>
+                {creator.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
-            
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-1 mb-1">
                 <h5 className="font-semibold text-white text-sm">
@@ -219,7 +223,9 @@ export function CreatorExploration({
                   <Award className="h-3 w-3 text-yellow-400 fill-current" />
                 )}
               </div>
-              <p className="text-white text-xs opacity-80">@{creator.username}</p>
+              <p className="text-white text-xs opacity-80">
+                @{creator.username}
+              </p>
             </div>
           </div>
         </div>
@@ -235,20 +241,20 @@ export function CreatorExploration({
           <h3 className="text-lg font-semibold text-muted-foreground">
             {title}
           </h3>
-          
+
           <div className="flex space-x-2">
             {showFreeFilter && creators.length > 2 && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleToggleFreeFilter}
-                className={`h-8 w-8 p-0 ${freeFilterActive ? 'bg-primary/10 text-primary' : ''}`}
+                className={`h-8 w-8 p-0 ${freeFilterActive ? "bg-primary/10 text-primary" : ""}`}
                 title="Show only free creators"
               >
                 <Tag className="h-4 w-4" />
               </Button>
             )}
-            
+
             {showRefresh && creators.length > 2 && (
               <Button
                 variant="ghost"

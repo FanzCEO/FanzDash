@@ -15,9 +15,12 @@ export default function ProfileDisabled() {
           <CardContent className="p-8 text-center">
             <div className="mb-6">
               <UserX className="h-16 w-16 text-orange-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">Profile Disabled</h1>
+              <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                Profile Disabled
+              </h1>
               <p className="text-gray-600">
-                This profile has been temporarily deactivated and is not accessible at this time.
+                This profile has been temporarily deactivated and is not
+                accessible at this time.
               </p>
             </div>
 
@@ -30,15 +33,15 @@ export default function ProfileDisabled() {
                     Account Status
                   </h3>
                   <p className="text-sm text-orange-700">
-                    This account may have been suspended due to policy violations 
-                    or is undergoing review by our moderation team.
+                    This account may have been suspended due to policy
+                    violations or is undergoing review by our moderation team.
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={goBack}
                 variant="outline"
                 className="w-full"
@@ -49,17 +52,14 @@ export default function ProfileDisabled() {
               </Button>
 
               <Link href="/">
-                <Button 
-                  className="w-full"
-                  data-testid="button-go-home"
-                >
+                <Button className="w-full" data-testid="button-go-home">
                   <Home className="h-4 w-4 mr-2" />
                   Go Home
                 </Button>
               </Link>
 
               <Link href="/contact">
-                <Button 
+                <Button
                   variant="ghost"
                   className="w-full text-gray-600"
                   data-testid="button-contact"
@@ -77,7 +77,8 @@ export default function ProfileDisabled() {
           <div className="bg-white/10 backdrop-blur rounded-lg p-4">
             <h3 className="text-white font-medium mb-2">Need Help?</h3>
             <p className="text-white/80 text-sm mb-3">
-              If you believe this is an error or need to appeal an account suspension:
+              If you believe this is an error or need to appeal an account
+              suspension:
             </p>
             <ul className="text-white/70 text-sm space-y-1">
               <li>• Contact our support team</li>

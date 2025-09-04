@@ -6,11 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Lock, 
-  Shield, 
-  Key, 
-  FileText, 
+import {
+  Lock,
+  Shield,
+  Key,
+  FileText,
   Download,
   Upload,
   Eye,
@@ -18,7 +18,7 @@ import {
   Trash2,
   Search,
   Calendar,
-  HardDrive
+  HardDrive,
 } from "lucide-react";
 
 export default function VaultPage() {
@@ -37,7 +37,7 @@ export default function VaultPage() {
       { name: "Flagged Content", count: 8934, size: "1.2 TB" },
       { name: "Evidence Files", count: 3421, size: "756 GB" },
       { name: "User Reports", count: 2108, size: "234 GB" },
-      { name: "System Backups", count: 1384, size: "412 GB" }
+      { name: "System Backups", count: 1384, size: "412 GB" },
     ],
     recentFiles: [
       {
@@ -47,43 +47,43 @@ export default function VaultPage() {
         size: "45.2 MB",
         encrypted: true,
         uploadedAt: "2025-08-29T17:30:00Z",
-        accessLevel: "Admin Only"
+        accessLevel: "Admin Only",
       },
       {
-        id: "vault-002", 
+        id: "vault-002",
         name: "user_report_evidence_789.enc",
         category: "Evidence Files",
         size: "12.8 MB",
         encrypted: true,
         uploadedAt: "2025-08-29T16:45:00Z",
-        accessLevel: "Moderator"
+        accessLevel: "Moderator",
       },
       {
         id: "vault-003",
         name: "compliance_audit_2025_08.enc",
         category: "System Backups",
-        size: "234.5 MB", 
+        size: "234.5 MB",
         encrypted: true,
         uploadedAt: "2025-08-29T15:20:00Z",
-        accessLevel: "Legal Team"
-      }
-    ]
+        accessLevel: "Legal Team",
+      },
+    ],
   };
 
   const handleFileUpload = async () => {
     setIsUploading(true);
     try {
       // Simulate secure file upload
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       toast({
         title: "File Uploaded Securely",
-        description: "File encrypted and stored in secure vault"
+        description: "File encrypted and stored in secure vault",
       });
     } catch (error) {
       toast({
         title: "Upload Failed",
         description: "Failed to upload file to secure vault",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
     setIsUploading(false);
@@ -92,7 +92,7 @@ export default function VaultPage() {
   const handleFileAccess = (fileId: string) => {
     toast({
       title: "Access Logged",
-      description: `File access logged for audit trail: ${fileId}`
+      description: `File access logged for audit trail: ${fileId}`,
     });
   };
 
@@ -102,10 +102,14 @@ export default function VaultPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Security Vault</h1>
-            <p className="text-muted-foreground">Encrypted Content Storage & Evidence Management</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Security Vault
+            </h1>
+            <p className="text-muted-foreground">
+              Encrypted Content Storage & Evidence Management
+            </p>
           </div>
-          <Button 
+          <Button
             onClick={handleFileUpload}
             disabled={isUploading}
             className="neon-button"
@@ -143,7 +147,9 @@ export default function VaultPage() {
               <div className="text-2xl font-bold text-purple-400">
                 {vaultData.encryptedSize}
               </div>
-              <div className="text-xs text-muted-foreground">Encrypted Data</div>
+              <div className="text-xs text-muted-foreground">
+                Encrypted Data
+              </div>
             </CardContent>
           </Card>
 
@@ -185,18 +191,24 @@ export default function VaultPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                {["all", "flagged", "evidence", "reports", "backups"].map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className={selectedCategory === category ? "neon-button" : ""}
-                    data-testid={`filter-${category}-button`}
-                  >
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </Button>
-                ))}
+                {["all", "flagged", "evidence", "reports", "backups"].map(
+                  (category) => (
+                    <Button
+                      key={category}
+                      variant={
+                        selectedCategory === category ? "default" : "outline"
+                      }
+                      size="sm"
+                      onClick={() => setSelectedCategory(category)}
+                      className={
+                        selectedCategory === category ? "neon-button" : ""
+                      }
+                      data-testid={`filter-${category}-button`}
+                    >
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </Button>
+                  ),
+                )}
               </div>
             </div>
           </CardContent>
@@ -213,7 +225,10 @@ export default function VaultPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {vaultData.categories.map((category) => (
-                <div key={category.name} className="p-4 cyber-card border border-primary/20">
+                <div
+                  key={category.name}
+                  className="p-4 cyber-card border border-primary/20"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-medium">{category.name}</h3>
                     <Lock className="w-4 h-4 text-primary" />
@@ -243,7 +258,10 @@ export default function VaultPage() {
           <CardContent>
             <div className="space-y-4">
               {vaultData.recentFiles.map((file) => (
-                <div key={file.id} className="flex items-center justify-between p-4 cyber-card border border-primary/20">
+                <div
+                  key={file.id}
+                  className="flex items-center justify-between p-4 cyber-card border border-primary/20"
+                >
                   <div className="flex items-center space-x-4">
                     <div className="p-2 bg-primary/10 rounded-lg">
                       <Lock className="w-5 h-5 text-primary" />
@@ -251,13 +269,18 @@ export default function VaultPage() {
                     <div>
                       <div className="font-medium">{file.name}</div>
                       <div className="text-sm text-muted-foreground">
-                        {file.category} • {file.size} • {new Date(file.uploadedAt).toLocaleString()}
+                        {file.category} • {file.size} •{" "}
+                        {new Date(file.uploadedAt).toLocaleString()}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge 
-                      variant={file.accessLevel === "Admin Only" ? "destructive" : "default"}
+                    <Badge
+                      variant={
+                        file.accessLevel === "Admin Only"
+                          ? "destructive"
+                          : "default"
+                      }
                       className="text-xs"
                     >
                       {file.accessLevel}
@@ -300,15 +323,23 @@ export default function VaultPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">ACTIVE</div>
-                <div className="text-sm text-muted-foreground">Encryption Status</div>
+                <div className="text-sm text-muted-foreground">
+                  Encryption Status
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">SECURE</div>
-                <div className="text-sm text-muted-foreground">Access Control</div>
+                <div className="text-sm text-muted-foreground">
+                  Access Control
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">COMPLIANT</div>
-                <div className="text-sm text-muted-foreground">Legal Standards</div>
+                <div className="text-2xl font-bold text-green-400">
+                  COMPLIANT
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Legal Standards
+                </div>
               </div>
             </div>
           </CardContent>

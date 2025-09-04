@@ -1,33 +1,44 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Package, 
-  DollarSign, 
-  Truck, 
-  Clock, 
-  Archive, 
+import {
+  Package,
+  DollarSign,
+  Truck,
+  Clock,
+  Archive,
   Tag,
   Globe,
   AlertTriangle,
   Save,
   X,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 
 interface Product {
   id: string;
   name: string;
   price: number;
-  type: 'physical' | 'digital' | 'custom';
+  type: "physical" | "digital" | "custom";
   description: string;
   tags: string;
   status: boolean;
@@ -37,7 +48,7 @@ interface Product {
   countryFreeShipping?: string;
   quantity?: number;
   boxContents?: string;
-  // Custom product fields  
+  // Custom product fields
   deliveryTime?: number;
   // Category
   category: string;
@@ -77,7 +88,7 @@ export function ProductEditModal({
   onClose,
   onSave,
   settings,
-  className = ""
+  className = "",
 }: ProductEditModalProps) {
   const [formData, setFormData] = useState<Partial<Product>>({
     name: "",
@@ -92,12 +103,14 @@ export function ProductEditModal({
     quantity: 0,
     boxContents: "",
     deliveryTime: 1,
-    category: ""
+    category: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   useEffect(() => {
     if (product) {
@@ -106,7 +119,7 @@ export function ProductEditModal({
         tags: product.tags || "",
         externalLink: product.externalLink || "",
         boxContents: product.boxContents || "",
-        countryFreeShipping: product.countryFreeShipping || ""
+        countryFreeShipping: product.countryFreeShipping || "",
       });
     } else {
       // Reset form for new product
@@ -123,19 +136,19 @@ export function ProductEditModal({
         quantity: 0,
         boxContents: "",
         deliveryTime: 1,
-        category: ""
+        category: "",
       });
     }
     setErrors({});
-    setSubmitStatus('idle');
+    setSubmitStatus("idle");
   }, [product, isOpen]);
 
   const handleInputChange = (field: keyof Product, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -158,18 +171,22 @@ export function ProductEditModal({
       newErrors.category = "Category is required";
     }
 
-    if (formData.type === 'physical') {
+    if (formData.type === "physical") {
       if (formData.shippingFee === undefined || formData.shippingFee < 0) {
         newErrors.shippingFee = "Shipping fee must be 0 or greater";
       }
-      
+
       if (formData.quantity === undefined || formData.quantity < 0) {
         newErrors.quantity = "Quantity must be 0 or greater";
       }
     }
 
-    if (formData.type === 'custom') {
-      if (!formData.deliveryTime || formData.deliveryTime < 1 || formData.deliveryTime > 30) {
+    if (formData.type === "custom") {
+      if (
+        !formData.deliveryTime ||
+        formData.deliveryTime < 1 ||
+        formData.deliveryTime > 30
+      ) {
         newErrors.deliveryTime = "Delivery time must be between 1 and 30 days";
       }
     }
@@ -180,26 +197,26 @@ export function ProductEditModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
-    setSubmitStatus('idle');
-    
+    setSubmitStatus("idle");
+
     try {
       await onSave(formData);
-      setSubmitStatus('success');
+      setSubmitStatus("success");
       // Use setTimeout with proper cleanup
       const timer = setTimeout(() => {
         onClose();
       }, 1500);
-      
+
       // Cleanup function would be needed if this was in useEffect
       // return () => clearTimeout(timer);
     } catch (error: any) {
-      setSubmitStatus('error');
+      setSubmitStatus("error");
       setErrors({ submit: error.message || "Failed to save product" });
     } finally {
       setIsSubmitting(false);
@@ -218,7 +235,7 @@ export function ProductEditModal({
             id="externalLink"
             type="url"
             value={formData.externalLink || ""}
-            onChange={(e) => handleInputChange('externalLink', e.target.value)}
+            onChange={(e) => handleInputChange("externalLink", e.target.value)}
             placeholder="https://yourwebsite.com/purchase-url"
             data-testid="external-link-input"
           />
@@ -240,7 +257,9 @@ export function ProductEditModal({
             min="0"
             step="0.01"
             value={formData.shippingFee || ""}
-            onChange={(e) => handleInputChange('shippingFee', parseFloat(e.target.value) || 0)}
+            onChange={(e) =>
+              handleInputChange("shippingFee", parseFloat(e.target.value) || 0)
+            }
             placeholder="0.00"
             data-testid="shipping-fee-input"
           />
@@ -256,7 +275,9 @@ export function ProductEditModal({
           </Label>
           <Select
             value={formData.quantity?.toString()}
-            onValueChange={(value) => handleInputChange('quantity', parseInt(value))}
+            onValueChange={(value) =>
+              handleInputChange("quantity", parseInt(value))
+            }
           >
             <SelectTrigger data-testid="quantity-select">
               <SelectValue placeholder="Select quantity" />
@@ -279,7 +300,9 @@ export function ProductEditModal({
         <Label htmlFor="countryFreeShipping">Country for Free Shipping</Label>
         <Select
           value={formData.countryFreeShipping}
-          onValueChange={(value) => handleInputChange('countryFreeShipping', value)}
+          onValueChange={(value) =>
+            handleInputChange("countryFreeShipping", value)
+          }
         >
           <SelectTrigger data-testid="free-shipping-country-select">
             <SelectValue placeholder="Select country for free shipping" />
@@ -300,7 +323,7 @@ export function ProductEditModal({
         <Input
           id="boxContents"
           value={formData.boxContents || ""}
-          onChange={(e) => handleInputChange('boxContents', e.target.value)}
+          onChange={(e) => handleInputChange("boxContents", e.target.value)}
           placeholder="What's included in the package"
           data-testid="box-contents-input"
         />
@@ -316,7 +339,9 @@ export function ProductEditModal({
       </Label>
       <Select
         value={formData.deliveryTime?.toString()}
-        onValueChange={(value) => handleInputChange('deliveryTime', parseInt(value))}
+        onValueChange={(value) =>
+          handleInputChange("deliveryTime", parseInt(value))
+        }
       >
         <SelectTrigger data-testid="delivery-time-select">
           <SelectValue placeholder="Select delivery time" />
@@ -326,7 +351,7 @@ export function ProductEditModal({
             const days = i + 1;
             return (
               <SelectItem key={days} value={days.toString()}>
-                {days} {days === 1 ? 'day' : 'days'}
+                {days} {days === 1 ? "day" : "days"}
               </SelectItem>
             );
           })}
@@ -345,7 +370,7 @@ export function ProductEditModal({
           <DialogTitle className="flex items-center space-x-2">
             <Package className="h-5 w-5" />
             <span>
-              {product ? 'Edit Product' : 'Create Product'}
+              {product ? "Edit Product" : "Create Product"}
               {product && (
                 <>
                   <span className="mx-2">→</span>
@@ -357,7 +382,7 @@ export function ProductEditModal({
         </DialogHeader>
 
         {/* Status Messages */}
-        {submitStatus === 'success' && (
+        {submitStatus === "success" && (
           <Alert className="border-green-200 bg-green-50">
             <Save className="h-4 w-4 text-green-600" />
             <AlertDescription className="text-green-800">
@@ -366,7 +391,7 @@ export function ProductEditModal({
           </Alert>
         )}
 
-        {submitStatus === 'error' && errors.submit && (
+        {submitStatus === "error" && errors.submit && (
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>{errors.submit}</AlertDescription>
@@ -383,7 +408,7 @@ export function ProductEditModal({
               <Input
                 id="name"
                 value={formData.name || ""}
-                onChange={(e) => handleInputChange('name', e.target.value)}
+                onChange={(e) => handleInputChange("name", e.target.value)}
                 placeholder="Enter product name"
                 className={errors.name ? "border-red-500" : ""}
                 data-testid="product-name-input"
@@ -405,7 +430,9 @@ export function ProductEditModal({
                   min="0"
                   step="0.01"
                   value={formData.price || ""}
-                  onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    handleInputChange("price", parseFloat(e.target.value) || 0)
+                  }
                   placeholder="0.00"
                   className={errors.price ? "border-red-500" : ""}
                   data-testid="product-price-input"
@@ -419,9 +446,11 @@ export function ProductEditModal({
                 <Label htmlFor="category">Category *</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value) => handleInputChange('category', value)}
+                  onValueChange={(value) =>
+                    handleInputChange("category", value)
+                  }
                 >
-                  <SelectTrigger 
+                  <SelectTrigger
                     className={errors.category ? "border-red-500" : ""}
                     data-testid="product-category-select"
                   >
@@ -449,7 +478,7 @@ export function ProductEditModal({
               <Input
                 id="tags"
                 value={formData.tags || ""}
-                onChange={(e) => handleInputChange('tags', e.target.value)}
+                onChange={(e) => handleInputChange("tags", e.target.value)}
                 placeholder="tag1, tag2, tag3"
                 data-testid="product-tags-input"
               />
@@ -463,7 +492,9 @@ export function ProductEditModal({
               <Textarea
                 id="description"
                 value={formData.description || ""}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 placeholder="Describe your product..."
                 rows={5}
                 className={errors.description ? "border-red-500" : ""}
@@ -480,17 +511,19 @@ export function ProductEditModal({
           {/* Product Type Specific Fields */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Product Type Settings</h3>
-            
+
             <div className="flex items-center space-x-2 mb-4">
-              <Badge variant={formData.type === 'physical' ? 'default' : 'secondary'}>
-                {formData.type === 'physical' && 'Physical Product'}
-                {formData.type === 'digital' && 'Digital Product'}
-                {formData.type === 'custom' && 'Custom Service'}
+              <Badge
+                variant={formData.type === "physical" ? "default" : "secondary"}
+              >
+                {formData.type === "physical" && "Physical Product"}
+                {formData.type === "digital" && "Digital Product"}
+                {formData.type === "custom" && "Custom Service"}
               </Badge>
             </div>
 
-            {formData.type === 'physical' && renderPhysicalProductFields()}
-            {formData.type === 'custom' && renderCustomProductFields()}
+            {formData.type === "physical" && renderPhysicalProductFields()}
+            {formData.type === "custom" && renderCustomProductFields()}
           </div>
 
           <Separator />
@@ -498,23 +531,24 @@ export function ProductEditModal({
           {/* Status Toggle */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Status</h3>
-            
+
             <div className="flex items-center space-x-3">
               <Switch
                 id="status"
                 checked={formData.status}
-                onCheckedChange={(checked) => handleInputChange('status', checked)}
+                onCheckedChange={(checked) =>
+                  handleInputChange("status", checked)
+                }
                 data-testid="product-status-toggle"
               />
               <Label htmlFor="status" className="cursor-pointer">
-                {formData.status ? 'Active' : 'Inactive'}
+                {formData.status ? "Active" : "Inactive"}
               </Label>
             </div>
             <p className="text-sm text-muted-foreground">
-              {formData.status 
-                ? 'Product is visible and available for purchase' 
-                : 'Product is hidden from customers'
-              }
+              {formData.status
+                ? "Product is visible and available for purchase"
+                : "Product is hidden from customers"}
             </p>
           </div>
 
@@ -530,7 +564,7 @@ export function ProductEditModal({
               <X className="h-4 w-4 mr-2" />
               Cancel
             </Button>
-            
+
             <Button
               type="submit"
               disabled={isSubmitting}
@@ -545,7 +579,7 @@ export function ProductEditModal({
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  {product ? 'Update Product' : 'Create Product'}
+                  {product ? "Update Product" : "Create Product"}
                 </>
               )}
             </Button>

@@ -4,11 +4,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Filter, Search, Save, Share, Zap, Shield, AlertTriangle } from "lucide-react";
+import {
+  Filter,
+  Search,
+  Save,
+  Share,
+  Zap,
+  Shield,
+  AlertTriangle,
+} from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import type { ContentFilter } from "@shared/schema";
 
@@ -48,8 +62,11 @@ export function AdvancedFilters() {
   });
 
   const saveFilterMutation = useMutation({
-    mutationFn: (data: { name: string; criteria: FilterCriteria; isShared: boolean }) =>
-      apiRequest("/api/filters", "POST", data),
+    mutationFn: (data: {
+      name: string;
+      criteria: FilterCriteria;
+      isShared: boolean;
+    }) => apiRequest("/api/filters", "POST", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/filters"] });
       setShowSaveDialog(false);
@@ -58,7 +75,7 @@ export function AdvancedFilters() {
   });
 
   const applyFilterMutation = useMutation({
-    mutationFn: (filterId: string) => 
+    mutationFn: (filterId: string) =>
       apiRequest(`/api/filters/${filterId}/apply`, "POST"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/content/filtered"] });
@@ -87,9 +104,9 @@ export function AdvancedFilters() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                   <Label>Content Type</Label>
-                  <Select 
-                    value={activeFilter.contentType?.[0] || ""} 
-                    onValueChange={(value) => 
+                  <Select
+                    value={activeFilter.contentType?.[0] || ""}
+                    onValueChange={(value) =>
                       setActiveFilter({ ...activeFilter, contentType: [value] })
                     }
                   >
@@ -107,9 +124,9 @@ export function AdvancedFilters() {
 
                 <div>
                   <Label>Status</Label>
-                  <Select 
-                    value={activeFilter.status?.[0] || ""} 
-                    onValueChange={(value) => 
+                  <Select
+                    value={activeFilter.status?.[0] || ""}
+                    onValueChange={(value) =>
                       setActiveFilter({ ...activeFilter, status: [value] })
                     }
                   >
@@ -129,27 +146,27 @@ export function AdvancedFilters() {
                 <div>
                   <Label>Risk Score Range</Label>
                   <div className="flex space-x-2">
-                    <Input 
-                      type="number" 
-                      placeholder="Min" 
+                    <Input
+                      type="number"
+                      placeholder="Min"
                       className="neon-border"
                       value={activeFilter.riskScoreMin || ""}
-                      onChange={(e) => 
-                        setActiveFilter({ 
-                          ...activeFilter, 
-                          riskScoreMin: parseFloat(e.target.value) 
+                      onChange={(e) =>
+                        setActiveFilter({
+                          ...activeFilter,
+                          riskScoreMin: parseFloat(e.target.value),
                         })
                       }
                     />
-                    <Input 
-                      type="number" 
-                      placeholder="Max" 
+                    <Input
+                      type="number"
+                      placeholder="Max"
                       className="neon-border"
                       value={activeFilter.riskScoreMax || ""}
-                      onChange={(e) => 
-                        setActiveFilter({ 
-                          ...activeFilter, 
-                          riskScoreMax: parseFloat(e.target.value) 
+                      onChange={(e) =>
+                        setActiveFilter({
+                          ...activeFilter,
+                          riskScoreMax: parseFloat(e.target.value),
                         })
                       }
                     />
@@ -159,33 +176,33 @@ export function AdvancedFilters() {
                 <div>
                   <Label>Date Range</Label>
                   <div className="flex space-x-2">
-                    <Input 
-                      type="date" 
+                    <Input
+                      type="date"
                       className="neon-border"
                       value={activeFilter.dateRange?.start || ""}
-                      onChange={(e) => 
-                        setActiveFilter({ 
-                          ...activeFilter, 
-                          dateRange: { 
-                            ...activeFilter.dateRange, 
+                      onChange={(e) =>
+                        setActiveFilter({
+                          ...activeFilter,
+                          dateRange: {
+                            ...activeFilter.dateRange,
                             start: e.target.value,
-                            end: activeFilter.dateRange?.end || ""
-                          } 
+                            end: activeFilter.dateRange?.end || "",
+                          },
                         })
                       }
                     />
-                    <Input 
-                      type="date" 
+                    <Input
+                      type="date"
                       className="neon-border"
                       value={activeFilter.dateRange?.end || ""}
-                      onChange={(e) => 
-                        setActiveFilter({ 
-                          ...activeFilter, 
-                          dateRange: { 
-                            ...activeFilter.dateRange, 
+                      onChange={(e) =>
+                        setActiveFilter({
+                          ...activeFilter,
+                          dateRange: {
+                            ...activeFilter.dateRange,
                             start: activeFilter.dateRange?.start || "",
-                            end: e.target.value 
-                          } 
+                            end: e.target.value,
+                          },
                         })
                       }
                     />
@@ -206,21 +223,24 @@ export function AdvancedFilters() {
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
-                        <Switch 
+                        <Switch
                           checked={activeFilter.vaultStatus === "vaulted"}
-                          onCheckedChange={(checked) => 
-                            setActiveFilter({ 
-                              ...activeFilter, 
-                              vaultStatus: checked ? "vaulted" : undefined 
+                          onCheckedChange={(checked) =>
+                            setActiveFilter({
+                              ...activeFilter,
+                              vaultStatus: checked ? "vaulted" : undefined,
                             })
                           }
                         />
                         <Label>Vaulted Content Only</Label>
                       </div>
-                      <Select 
-                        value={activeFilter.severity?.[0] || ""} 
-                        onValueChange={(value) => 
-                          setActiveFilter({ ...activeFilter, severity: [value] })
+                      <Select
+                        value={activeFilter.severity?.[0] || ""}
+                        onValueChange={(value) =>
+                          setActiveFilter({
+                            ...activeFilter,
+                            severity: [value],
+                          })
                         }
                       >
                         <SelectTrigger className="neon-border">
@@ -246,10 +266,13 @@ export function AdvancedFilters() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      <Select 
-                        value={activeFilter.adminActions?.[0] || ""} 
-                        onValueChange={(value) => 
-                          setActiveFilter({ ...activeFilter, adminActions: [value] })
+                      <Select
+                        value={activeFilter.adminActions?.[0] || ""}
+                        onValueChange={(value) =>
+                          setActiveFilter({
+                            ...activeFilter,
+                            adminActions: [value],
+                          })
                         }
                       >
                         <SelectTrigger className="neon-border">
@@ -260,15 +283,20 @@ export function AdvancedFilters() {
                           <SelectItem value="reject">Rejections</SelectItem>
                           <SelectItem value="escalate">Escalations</SelectItem>
                           <SelectItem value="vault">Vault Actions</SelectItem>
-                          <SelectItem value="unvault">Unvault Actions</SelectItem>
+                          <SelectItem value="unvault">
+                            Unvault Actions
+                          </SelectItem>
                         </SelectContent>
                       </Select>
-                      <Input 
-                        placeholder="Moderator ID" 
+                      <Input
+                        placeholder="Moderator ID"
                         className="neon-border"
                         value={activeFilter.moderatorId || ""}
-                        onChange={(e) => 
-                          setActiveFilter({ ...activeFilter, moderatorId: e.target.value })
+                        onChange={(e) =>
+                          setActiveFilter({
+                            ...activeFilter,
+                            moderatorId: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -285,20 +313,26 @@ export function AdvancedFilters() {
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
-                        <Switch 
+                        <Switch
                           checked={activeFilter.suspicious || false}
-                          onCheckedChange={(checked) => 
-                            setActiveFilter({ ...activeFilter, suspicious: checked })
+                          onCheckedChange={(checked) =>
+                            setActiveFilter({
+                              ...activeFilter,
+                              suspicious: checked,
+                            })
                           }
                         />
                         <Label>Suspicious Only</Label>
                       </div>
-                      <Input 
-                        placeholder="IP Address" 
+                      <Input
+                        placeholder="IP Address"
                         className="neon-border"
                         value={activeFilter.ipAddress || ""}
-                        onChange={(e) => 
-                          setActiveFilter({ ...activeFilter, ipAddress: e.target.value })
+                        onChange={(e) =>
+                          setActiveFilter({
+                            ...activeFilter,
+                            ipAddress: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -313,8 +347,12 @@ export function AdvancedFilters() {
                   <Card key={filter.id} className="cyber-card">
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-medium cyber-text-glow">{filter.name}</h4>
-                        <Badge variant={filter.isShared ? "secondary" : "outline"}>
+                        <h4 className="font-medium cyber-text-glow">
+                          {filter.name}
+                        </h4>
+                        <Badge
+                          variant={filter.isShared ? "secondary" : "outline"}
+                        >
                           {filter.isShared ? "Shared" : "Private"}
                         </Badge>
                       </div>
@@ -325,8 +363,8 @@ export function AdvancedFilters() {
                         <span className="text-xs text-muted-foreground">
                           Used {filter.usageCount} times
                         </span>
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           className="neon-button"
                           onClick={() => applyFilterMutation.mutate(filter.id)}
                           data-testid={`button-apply-filter-${filter.id}`}
@@ -343,16 +381,16 @@ export function AdvancedFilters() {
 
           <div className="flex justify-between items-center pt-4 border-t border-border/30">
             <div className="flex space-x-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => setActiveFilter({})}
                 data-testid="button-clear-filters"
               >
                 Clear All
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => setShowSaveDialog(true)}
                 data-testid="button-save-filter"
@@ -362,7 +400,8 @@ export function AdvancedFilters() {
               </Button>
             </div>
             <div className="text-sm text-muted-foreground">
-              {Array.isArray(filteredContent) ? filteredContent.length : 0} items match current filters
+              {Array.isArray(filteredContent) ? filteredContent.length : 0}{" "}
+              items match current filters
             </div>
           </div>
         </CardContent>
@@ -376,8 +415,8 @@ export function AdvancedFilters() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <Input 
-                placeholder="Filter name" 
+              <Input
+                placeholder="Filter name"
                 value={filterName}
                 onChange={(e) => setFilterName(e.target.value)}
                 className="neon-border"
@@ -389,19 +428,21 @@ export function AdvancedFilters() {
                   <Label htmlFor="share-filter">Share with team</Label>
                 </div>
                 <div className="space-x-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => setShowSaveDialog(false)}
                     data-testid="button-cancel-save"
                   >
                     Cancel
                   </Button>
-                  <Button 
-                    onClick={() => saveFilterMutation.mutate({
-                      name: filterName,
-                      criteria: activeFilter,
-                      isShared: false // Get from switch
-                    })}
+                  <Button
+                    onClick={() =>
+                      saveFilterMutation.mutate({
+                        name: filterName,
+                        criteria: activeFilter,
+                        isShared: false, // Get from switch
+                      })
+                    }
                     disabled={!filterName}
                     className="neon-button"
                     data-testid="button-confirm-save"

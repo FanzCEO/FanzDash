@@ -2,10 +2,26 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useParams, useLocation } from "wouter";
-import { ArrowLeft, CheckCircle, Trash2, ExternalLink, Eye } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  Trash2,
+  ExternalLink,
+  Eye,
+} from "lucide-react";
 import { Link } from "wouter";
 
 interface UserDeposit {
@@ -34,27 +50,31 @@ export default function DepositView() {
 
   const { data: deposit, isLoading } = useQuery({
     queryKey: ["/api/deposits", depositId],
-    queryFn: () => fetch(`/api/deposits/${depositId}`).then(res => res.json()) as Promise<UserDeposit>,
-    enabled: !!depositId
+    queryFn: () =>
+      fetch(`/api/deposits/${depositId}`).then((res) =>
+        res.json(),
+      ) as Promise<UserDeposit>,
+    enabled: !!depositId,
   });
 
   const approveMutation = useMutation({
-    mutationFn: () => fetch(`/api/deposits/${depositId}/approve`, { method: "POST" }),
+    mutationFn: () =>
+      fetch(`/api/deposits/${depositId}/approve`, { method: "POST" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/deposits"] });
       queryClient.invalidateQueries({ queryKey: ["/api/deposits", depositId] });
       toast({
         title: "Success",
-        description: "Deposit approved successfully"
+        description: "Deposit approved successfully",
       });
     },
     onError: () => {
       toast({
         title: "Error",
         description: "Failed to approve deposit",
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const deleteMutation = useMutation({
@@ -63,7 +83,7 @@ export default function DepositView() {
       queryClient.invalidateQueries({ queryKey: ["/api/deposits"] });
       toast({
         title: "Success",
-        description: "Deposit deleted successfully"
+        description: "Deposit deleted successfully",
       });
       setLocation("/deposits");
     },
@@ -71,9 +91,9 @@ export default function DepositView() {
       toast({
         title: "Error",
         description: "Failed to delete deposit",
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const handleApprove = () => {
@@ -135,7 +155,9 @@ export default function DepositView() {
       <div className="p-6">
         <div className="text-center py-8">
           <h2 className="text-2xl font-bold mb-2">Deposit Not Found</h2>
-          <p className="text-muted-foreground mb-4">The deposit you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground mb-4">
+            The deposit you're looking for doesn't exist.
+          </p>
           <Link href="/deposits">
             <Button>Back to Deposits</Button>
           </Link>
@@ -149,16 +171,20 @@ export default function DepositView() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/deposits">
-            <Button variant="ghost" size="sm" data-testid="button-back-to-deposits">
+            <Button
+              variant="ghost"
+              size="sm"
+              data-testid="button-back-to-deposits"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Deposits
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Deposit Details</h1>
-            <p className="text-muted-foreground">
-              Deposit #{deposit.id}
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Deposit Details
+            </h1>
+            <p className="text-muted-foreground">Deposit #{deposit.id}</p>
           </div>
         </div>
       </div>
@@ -173,9 +199,11 @@ export default function DepositView() {
               <dt className="font-medium text-sm text-muted-foreground">ID</dt>
               <dd className="mt-1 font-mono">{deposit.id}</dd>
             </div>
-            
+
             <div>
-              <dt className="font-medium text-sm text-muted-foreground">Transaction ID</dt>
+              <dt className="font-medium text-sm text-muted-foreground">
+                Transaction ID
+              </dt>
               <dd className="mt-1">
                 {deposit.transactionId !== "null" && deposit.transactionId ? (
                   <span className="font-mono">{deposit.transactionId}</span>
@@ -186,7 +214,9 @@ export default function DepositView() {
             </div>
 
             <div>
-              <dt className="font-medium text-sm text-muted-foreground">User</dt>
+              <dt className="font-medium text-sm text-muted-foreground">
+                User
+              </dt>
               <dd className="mt-1">
                 {deposit.userId ? (
                   <Link href={`/users/${deposit.userId}`}>
@@ -195,13 +225,17 @@ export default function DepositView() {
                     </Button>
                   </Link>
                 ) : (
-                  <span className="text-muted-foreground">No User Available</span>
+                  <span className="text-muted-foreground">
+                    No User Available
+                  </span>
                 )}
               </dd>
             </div>
 
             <div>
-              <dt className="font-medium text-sm text-muted-foreground">Screenshot</dt>
+              <dt className="font-medium text-sm text-muted-foreground">
+                Screenshot
+              </dt>
               <dd className="mt-1">
                 {deposit.metadata?.screenshot_transfer ? (
                   <Button variant="link" size="sm" className="p-0 h-auto">
@@ -215,7 +249,9 @@ export default function DepositView() {
             </div>
 
             <div>
-              <dt className="font-medium text-sm text-muted-foreground">Amount</dt>
+              <dt className="font-medium text-sm text-muted-foreground">
+                Amount
+              </dt>
               <dd className="mt-1">
                 <span className="text-lg font-semibold text-green-600">
                   ${parseFloat(deposit.amount).toFixed(2)}
@@ -224,27 +260,35 @@ export default function DepositView() {
             </div>
 
             <div>
-              <dt className="font-medium text-sm text-muted-foreground">Payment Gateway</dt>
+              <dt className="font-medium text-sm text-muted-foreground">
+                Payment Gateway
+              </dt>
               <dd className="mt-1">
-                {deposit.method === "Bank Transfer" ? "Bank Transfer" : deposit.method || "Unknown"}
+                {deposit.method === "Bank Transfer"
+                  ? "Bank Transfer"
+                  : deposit.method || "Unknown"}
               </dd>
             </div>
 
             <div>
-              <dt className="font-medium text-sm text-muted-foreground">Date</dt>
+              <dt className="font-medium text-sm text-muted-foreground">
+                Date
+              </dt>
               <dd className="mt-1">
                 {new Date(deposit.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
                   hour: "2-digit",
-                  minute: "2-digit"
+                  minute: "2-digit",
                 })}
               </dd>
             </div>
 
             <div>
-              <dt className="font-medium text-sm text-muted-foreground">Status</dt>
+              <dt className="font-medium text-sm text-muted-foreground">
+                Status
+              </dt>
               <dd className="mt-1">
                 <Badge variant={getStatusColor(deposit.status)}>
                   {getStatusText(deposit.status)}
@@ -275,7 +319,10 @@ export default function DepositView() {
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" data-testid="button-delete-deposit">
+                  <Button
+                    variant="destructive"
+                    data-testid="button-delete-deposit"
+                  >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
                   </Button>
@@ -284,7 +331,8 @@ export default function DepositView() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete Deposit</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to delete this deposit? This action cannot be undone.
+                      Are you sure you want to delete this deposit? This action
+                      cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

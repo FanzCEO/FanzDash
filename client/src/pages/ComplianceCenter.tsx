@@ -2,18 +2,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ComplianceBot } from "@/components/ComplianceBot";
 import { Button } from "@/components/ui/button";
-import { 
-  Shield, 
-  AlertTriangle, 
-  Scale, 
-  Eye, 
-  Users, 
-  FileText, 
+import {
+  Shield,
+  AlertTriangle,
+  Scale,
+  Eye,
+  Users,
+  FileText,
   Gavel,
   Clock,
   CheckCircle,
   XCircle,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -45,13 +45,13 @@ interface ApprovalData {
 
 export default function ComplianceCenter() {
   const { data: complianceStatus } = useQuery<ComplianceStatus>({
-    queryKey: ['/api/compliance/status'],
-    refetchInterval: 5000
+    queryKey: ["/api/compliance/status"],
+    refetchInterval: 5000,
   });
 
   const { data: approvalData } = useQuery<ApprovalData>({
-    queryKey: ['/api/compliance/approvals'],
-    refetchInterval: 10000
+    queryKey: ["/api/compliance/approvals"],
+    refetchInterval: 10000,
   });
 
   return (
@@ -63,10 +63,14 @@ export default function ComplianceCenter() {
             🛡️ Legal Compliance Center
           </h1>
           <p className="text-gray-400">
-            Military-grade compliance monitoring and violation prevention for Fanz™ Unlimited Network LLC
+            Military-grade compliance monitoring and violation prevention for
+            Fanz™ Unlimited Network LLC
           </p>
         </div>
-        <Badge variant="destructive" className="bg-red-900/50 text-red-300 border-red-600">
+        <Badge
+          variant="destructive"
+          className="bg-red-900/50 text-red-300 border-red-600"
+        >
           <Eye className="h-4 w-4 mr-2" />
           Active Monitoring
         </Badge>
@@ -83,7 +87,9 @@ export default function ComplianceCenter() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-400">
-              {complianceStatus ? complianceStatus.totalEvents - complianceStatus.blockedActions : 0}
+              {complianceStatus
+                ? complianceStatus.totalEvents - complianceStatus.blockedActions
+                : 0}
             </div>
             <p className="text-xs text-gray-500">Last 24 hours</p>
           </CardContent>
@@ -210,28 +216,45 @@ export default function ComplianceCenter() {
             {approvalData && approvalData.approvals.length > 0 ? (
               <div className="space-y-4">
                 {approvalData.approvals.map((approval: any) => (
-                  <Card key={approval.id} className="bg-gray-800 border-orange-700">
+                  <Card
+                    key={approval.id}
+                    className="bg-gray-800 border-orange-700"
+                  >
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <div className="font-semibold text-white">{approval.action}</div>
-                          <div className="text-sm text-gray-400">User: {approval.userId}</div>
+                          <div className="font-semibold text-white">
+                            {approval.action}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            User: {approval.userId}
+                          </div>
                         </div>
-                        <Badge 
-                          variant={approval.riskLevel === 'critical' ? 'destructive' : 'secondary'}
+                        <Badge
+                          variant={
+                            approval.riskLevel === "critical"
+                              ? "destructive"
+                              : "secondary"
+                          }
                           className="text-xs"
                         >
                           {approval.riskLevel.toUpperCase()}
                         </Badge>
                       </div>
-                      
+
                       {approval.violations.length > 0 && (
                         <div className="mb-3">
-                          <div className="text-sm text-gray-400 mb-1">Violations:</div>
+                          <div className="text-sm text-gray-400 mb-1">
+                            Violations:
+                          </div>
                           <div className="flex flex-wrap gap-1">
                             {approval.violations.map((violation: string) => (
-                              <Badge key={violation} variant="outline" className="text-xs">
-                                {violation.replace('_', ' ')}
+                              <Badge
+                                key={violation}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {violation.replace("_", " ")}
                               </Badge>
                             ))}
                           </div>
@@ -239,10 +262,18 @@ export default function ComplianceCenter() {
                       )}
 
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="border-green-600 text-green-400">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-green-600 text-green-400"
+                        >
                           Approve
                         </Button>
-                        <Button size="sm" variant="outline" className="border-red-600 text-red-400">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-red-600 text-red-400"
+                        >
                           Deny
                         </Button>
                       </div>
@@ -253,8 +284,12 @@ export default function ComplianceCenter() {
             ) : (
               <div className="text-center py-8">
                 <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <div className="text-white font-semibold mb-2">No Pending Approvals</div>
-                <div className="text-gray-400 text-sm">All actions are compliant</div>
+                <div className="text-white font-semibold mb-2">
+                  No Pending Approvals
+                </div>
+                <div className="text-gray-400 text-sm">
+                  All actions are compliant
+                </div>
               </div>
             )}
           </CardContent>
@@ -271,19 +306,35 @@ export default function ComplianceCenter() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="border-blue-600 text-blue-400" size="sm">
+            <Button
+              variant="outline"
+              className="border-blue-600 text-blue-400"
+              size="sm"
+            >
               <Scale className="h-4 w-4 mr-2" />
               18 U.S.C. § 2257
             </Button>
-            <Button variant="outline" className="border-purple-600 text-purple-400" size="sm">
+            <Button
+              variant="outline"
+              className="border-purple-600 text-purple-400"
+              size="sm"
+            >
               <Gavel className="h-4 w-4 mr-2" />
               DMCA Guidelines
             </Button>
-            <Button variant="outline" className="border-green-600 text-green-400" size="sm">
+            <Button
+              variant="outline"
+              className="border-green-600 text-green-400"
+              size="sm"
+            >
               <Shield className="h-4 w-4 mr-2" />
               GDPR Compliance
             </Button>
-            <Button variant="outline" className="border-orange-600 text-orange-400" size="sm">
+            <Button
+              variant="outline"
+              className="border-orange-600 text-orange-400"
+              size="sm"
+            >
               <Users className="h-4 w-4 mr-2" />
               Platform Policies
             </Button>
@@ -302,17 +353,23 @@ export default function ComplianceCenter() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <div className="font-semibold text-white mb-1">Legal Department</div>
+              <div className="font-semibold text-white mb-1">
+                Legal Department
+              </div>
               <div className="text-red-300">legal@fanzunlimited.com</div>
               <div className="text-gray-400">For all legal matters</div>
             </div>
             <div>
-              <div className="font-semibold text-white mb-1">Compliance Team</div>
+              <div className="font-semibold text-white mb-1">
+                Compliance Team
+              </div>
               <div className="text-red-300">compliance@fanzunlimited.com</div>
               <div className="text-gray-400">Regulatory compliance</div>
             </div>
             <div>
-              <div className="font-semibold text-white mb-1">Crisis Management</div>
+              <div className="font-semibold text-white mb-1">
+                Crisis Management
+              </div>
               <div className="text-red-300">crisis@fanzunlimited.com</div>
               <div className="text-gray-400">Emergency incidents</div>
             </div>

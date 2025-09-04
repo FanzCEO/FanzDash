@@ -4,14 +4,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { 
-  Shield, 
-  User, 
-  Clock, 
-  MapPin, 
-  Monitor, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Shield,
+  User,
+  Clock,
+  MapPin,
+  Monitor,
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -19,7 +31,7 @@ import {
   Search,
   Calendar,
   Activity,
-  FileText
+  FileText,
 } from "lucide-react";
 
 interface SessionLog {
@@ -69,7 +81,9 @@ export function AdminAuditLogs() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAction, setFilterAction] = useState<string>("all");
   const [filterTimeRange, setFilterTimeRange] = useState<string>("24h");
-  const [selectedLog, setSelectedLog] = useState<ActionLog | SessionLog | null>(null);
+  const [selectedLog, setSelectedLog] = useState<ActionLog | SessionLog | null>(
+    null,
+  );
 
   const { data: sessionLogs = [] } = useQuery<SessionLog[]>({
     queryKey: ["/api/admin/session-logs"],
@@ -88,42 +102,56 @@ export function AdminAuditLogs() {
 
   const getActionIcon = (action: string) => {
     switch (action) {
-      case "approve": return <CheckCircle className="w-4 h-4 text-secondary" />;
-      case "reject": return <XCircle className="w-4 h-4 text-destructive" />;
-      case "hold": return <Clock className="w-4 h-4 text-accent" />;
-      case "request_edit": return <FileText className="w-4 h-4 text-primary" />;
-      case "delete": return <XCircle className="w-4 h-4 text-destructive" />;
-      case "restore": return <CheckCircle className="w-4 h-4 text-secondary" />;
-      default: return <Activity className="w-4 h-4 text-muted-foreground" />;
+      case "approve":
+        return <CheckCircle className="w-4 h-4 text-secondary" />;
+      case "reject":
+        return <XCircle className="w-4 h-4 text-destructive" />;
+      case "hold":
+        return <Clock className="w-4 h-4 text-accent" />;
+      case "request_edit":
+        return <FileText className="w-4 h-4 text-primary" />;
+      case "delete":
+        return <XCircle className="w-4 h-4 text-destructive" />;
+      case "restore":
+        return <CheckCircle className="w-4 h-4 text-secondary" />;
+      default:
+        return <Activity className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
   const getActionColor = (action: string) => {
     switch (action) {
-      case "approve": return "bg-secondary text-secondary-foreground";
-      case "reject": return "bg-destructive text-destructive-foreground";
-      case "hold": return "bg-accent text-accent-foreground";
-      case "request_edit": return "bg-primary text-primary-foreground";
-      default: return "bg-muted text-muted-foreground";
+      case "approve":
+        return "bg-secondary text-secondary-foreground";
+      case "reject":
+        return "bg-destructive text-destructive-foreground";
+      case "hold":
+        return "bg-accent text-accent-foreground";
+      case "request_edit":
+        return "bg-primary text-primary-foreground";
+      default:
+        return "bg-muted text-muted-foreground";
     }
   };
 
-  const filteredActionLogs = actionLogs.filter(log => {
-    const matchesSearch = searchTerm === "" || 
+  const filteredActionLogs = actionLogs.filter((log) => {
+    const matchesSearch =
+      searchTerm === "" ||
       log.adminName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.targetId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.reason.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesAction = filterAction === "all" || log.action === filterAction;
-    
+
     return matchesSearch && matchesAction;
   });
 
-  const filteredSessionLogs = sessionLogs.filter(log => {
-    const matchesSearch = searchTerm === "" || 
+  const filteredSessionLogs = sessionLogs.filter((log) => {
+    const matchesSearch =
+      searchTerm === "" ||
       log.adminName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.ipAddress.includes(searchTerm);
-    
+
     return matchesSearch;
   });
 
@@ -178,7 +206,9 @@ export function AdminAuditLogs() {
                 variant={activeTab === "actions" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setActiveTab("actions")}
-                className={activeTab === "actions" ? "neon-button" : "glass-effect"}
+                className={
+                  activeTab === "actions" ? "neon-button" : "glass-effect"
+                }
                 data-testid="tab-actions"
               >
                 <Activity className="w-4 h-4 mr-2" />
@@ -188,7 +218,9 @@ export function AdminAuditLogs() {
                 variant={activeTab === "sessions" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setActiveTab("sessions")}
-                className={activeTab === "sessions" ? "neon-button" : "glass-effect"}
+                className={
+                  activeTab === "sessions" ? "neon-button" : "glass-effect"
+                }
                 data-testid="tab-sessions"
               >
                 <Monitor className="w-4 h-4 mr-2" />
@@ -204,7 +236,11 @@ export function AdminAuditLogs() {
               <div className="relative">
                 <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder={activeTab === "actions" ? "Search actions, admins, targets..." : "Search sessions, admins, IPs..."}
+                  placeholder={
+                    activeTab === "actions"
+                      ? "Search actions, admins, targets..."
+                      : "Search sessions, admins, IPs..."
+                  }
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 glass-effect"
@@ -212,7 +248,7 @@ export function AdminAuditLogs() {
                 />
               </div>
             </div>
-            
+
             {activeTab === "actions" && (
               <Select value={filterAction} onValueChange={setFilterAction}>
                 <SelectTrigger className="w-40 glass-effect">
@@ -266,7 +302,9 @@ export function AdminAuditLogs() {
                           <User className="w-3 h-3 inline mr-1" />
                           <span className="font-medium">{log.adminName}</span>
                           {" • "}
-                          <span className="text-muted-foreground">{log.reason}</span>
+                          <span className="text-muted-foreground">
+                            {log.reason}
+                          </span>
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">
                           <Calendar className="w-3 h-3 inline mr-1" />
@@ -277,7 +315,7 @@ export function AdminAuditLogs() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
@@ -297,43 +335,65 @@ export function AdminAuditLogs() {
                             <span>Action Details - {selectedLog?.id}</span>
                           </DialogTitle>
                         </DialogHeader>
-                        
+
                         {selectedLog && "action" in selectedLog && (
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <label className="text-sm font-medium">Admin</label>
-                                <div className="font-mono">{selectedLog.adminName}</div>
-                              </div>
-                              <div>
-                                <label className="text-sm font-medium">Action</label>
-                                <Badge className={getActionColor(selectedLog.action)}>
-                                  {selectedLog.action.replace("_", " ").toUpperCase()}
-                                </Badge>
-                              </div>
-                              <div>
-                                <label className="text-sm font-medium">Target</label>
-                                <div className="font-mono text-sm">
-                                  {selectedLog.targetType}: {selectedLog.targetId}
+                                <label className="text-sm font-medium">
+                                  Admin
+                                </label>
+                                <div className="font-mono">
+                                  {selectedLog.adminName}
                                 </div>
                               </div>
                               <div>
-                                <label className="text-sm font-medium">IP Address</label>
-                                <div className="font-mono">{selectedLog.ipAddress}</div>
+                                <label className="text-sm font-medium">
+                                  Action
+                                </label>
+                                <Badge
+                                  className={getActionColor(selectedLog.action)}
+                                >
+                                  {selectedLog.action
+                                    .replace("_", " ")
+                                    .toUpperCase()}
+                                </Badge>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium">
+                                  Target
+                                </label>
+                                <div className="font-mono text-sm">
+                                  {selectedLog.targetType}:{" "}
+                                  {selectedLog.targetId}
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium">
+                                  IP Address
+                                </label>
+                                <div className="font-mono">
+                                  {selectedLog.ipAddress}
+                                </div>
                               </div>
                             </div>
-                            
+
                             {selectedLog.previousStatus && (
                               <div>
-                                <label className="text-sm font-medium">Status Change</label>
+                                <label className="text-sm font-medium">
+                                  Status Change
+                                </label>
                                 <div className="text-sm">
-                                  {selectedLog.previousStatus} → {selectedLog.newStatus}
+                                  {selectedLog.previousStatus} →{" "}
+                                  {selectedLog.newStatus}
                                 </div>
                               </div>
                             )}
 
                             <div>
-                              <label className="text-sm font-medium">Reason</label>
+                              <label className="text-sm font-medium">
+                                Reason
+                              </label>
                               <div className="p-3 bg-muted/20 rounded text-sm">
                                 {selectedLog.reason}
                               </div>
@@ -341,7 +401,9 @@ export function AdminAuditLogs() {
 
                             {selectedLog.moderatorNotes && (
                               <div>
-                                <label className="text-sm font-medium">Moderator Notes</label>
+                                <label className="text-sm font-medium">
+                                  Moderator Notes
+                                </label>
                                 <div className="p-3 bg-muted/20 rounded text-sm">
                                   {selectedLog.moderatorNotes}
                                 </div>
@@ -349,9 +411,13 @@ export function AdminAuditLogs() {
                             )}
 
                             <div>
-                              <label className="text-sm font-medium">Timestamp</label>
+                              <label className="text-sm font-medium">
+                                Timestamp
+                              </label>
                               <div className="font-mono text-sm">
-                                {new Date(selectedLog.createdAt).toLocaleString()}
+                                {new Date(
+                                  selectedLog.createdAt,
+                                ).toLocaleString()}
                               </div>
                             </div>
                           </div>
@@ -378,7 +444,13 @@ export function AdminAuditLogs() {
                       <Monitor className="w-5 h-5 text-secondary" />
                       <div>
                         <div className="flex items-center space-x-2 mb-1">
-                          <Badge variant={log.sessionType === "login" ? "default" : "outline"}>
+                          <Badge
+                            variant={
+                              log.sessionType === "login"
+                                ? "default"
+                                : "outline"
+                            }
+                          >
                             {log.sessionType.toUpperCase()}
                           </Badge>
                           {log.suspicious && (

@@ -1,16 +1,14 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
-import { 
-  Image as ImageIcon, 
-  Type, 
-  Clock,
-  X,
-  Camera,
-  Edit
-} from "lucide-react";
+import { Image as ImageIcon, Type, Clock, X, Camera, Edit } from "lucide-react";
 
 interface StoryCreationModalProps {
   isOpen: boolean;
@@ -19,7 +17,7 @@ interface StoryCreationModalProps {
     storyImage: boolean;
     storyText: boolean;
   };
-  onNavigate: (type: 'image' | 'text') => void;
+  onNavigate: (type: "image" | "text") => void;
   className?: string;
 }
 
@@ -28,9 +26,9 @@ export function StoryCreationModal({
   onClose,
   settings,
   onNavigate,
-  className = ""
+  className = "",
 }: StoryCreationModalProps) {
-  const handleChoiceSelect = (type: 'image' | 'text') => {
+  const handleChoiceSelect = (type: "image" | "text") => {
     onNavigate(type);
     onClose();
   };
@@ -59,9 +57,9 @@ export function StoryCreationModal({
         <div className="space-y-3">
           {/* Image Story Option */}
           {settings.storyImage && (
-            <Card 
+            <Card
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleChoiceSelect('image')}
+              onClick={() => handleChoiceSelect("image")}
               data-testid="story-image-option"
             >
               <CardContent className="p-4">
@@ -83,9 +81,9 @@ export function StoryCreationModal({
 
           {/* Text Story Option */}
           {settings.storyText && (
-            <Card 
+            <Card
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleChoiceSelect('text')}
+              onClick={() => handleChoiceSelect("text")}
               data-testid="story-text-option"
             >
               <CardContent className="p-4">

@@ -1,24 +1,36 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  CreditCard, 
-  Ban, 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  CreditCard,
+  Ban,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
   XCircle,
   Bitcoin,
   DollarSign,
   Globe,
-  Lock
+  Lock,
 } from "lucide-react";
 
 interface PaymentProcessor {
@@ -50,11 +62,14 @@ interface PaymentTransaction {
 export default function PaymentManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedProcessor, setSelectedProcessor] = useState<PaymentProcessor | null>(null);
+  const [selectedProcessor, setSelectedProcessor] =
+    useState<PaymentProcessor | null>(null);
   const [newProcessorName, setNewProcessorName] = useState("");
   const [newProcessorType, setNewProcessorType] = useState("");
 
-  const { data: processors = [], isLoading: processorsLoading } = useQuery<PaymentProcessor[]>({
+  const { data: processors = [], isLoading: processorsLoading } = useQuery<
+    PaymentProcessor[]
+  >({
     queryKey: ["/api/payment/processors"],
     refetchInterval: 10000,
   });
@@ -65,7 +80,11 @@ export default function PaymentManagement() {
   });
 
   const addProcessorMutation = useMutation({
-    mutationFn: async (data: { name: string; processorType: string; adultFriendly: boolean }) => {
+    mutationFn: async (data: {
+      name: string;
+      processorType: string;
+      adultFriendly: boolean;
+    }) => {
       return apiRequest("POST", "/api/payment/processors", data);
     },
     onSuccess: () => {
@@ -74,16 +93,16 @@ export default function PaymentManagement() {
       setNewProcessorType("");
       toast({
         title: "Processor Added",
-        description: "Payment processor added successfully"
+        description: "Payment processor added successfully",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Failed to Add Processor",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const handleAddProcessor = () => {
@@ -91,7 +110,7 @@ export default function PaymentManagement() {
       toast({
         title: "Missing Information",
         description: "Please provide processor name and type",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -99,7 +118,7 @@ export default function PaymentManagement() {
     addProcessorMutation.mutate({
       name: newProcessorName,
       processorType: newProcessorType,
-      adultFriendly: true
+      adultFriendly: true,
     });
   };
 
@@ -125,7 +144,7 @@ export default function PaymentManagement() {
         </Badge>
       );
     }
-    
+
     if (!processor.adultFriendly) {
       return (
         <Badge variant="destructive">
@@ -151,11 +170,7 @@ export default function PaymentManagement() {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {processor.status}
-          </Badge>
-        );
+        return <Badge variant="outline">{processor.status}</Badge>;
     }
   };
 
@@ -164,11 +179,13 @@ export default function PaymentManagement() {
       completed: "bg-green-600",
       pending: "bg-yellow-600",
       failed: "bg-red-600",
-      refunded: "bg-blue-600"
+      refunded: "bg-blue-600",
     } as const;
 
     return (
-      <Badge className={variants[status as keyof typeof variants] || "bg-gray-600"}>
+      <Badge
+        className={variants[status as keyof typeof variants] || "bg-gray-600"}
+      >
         {status.toUpperCase()}
       </Badge>
     );
@@ -179,7 +196,7 @@ export default function PaymentManagement() {
     { name: "PayPal", reason: "Prohibits adult content" },
     { name: "Square", reason: "Adult content restrictions" },
     { name: "Venmo", reason: "Consumer payment app" },
-    { name: "Cash App", reason: "Personal payment app" }
+    { name: "Cash App", reason: "Personal payment app" },
   ];
 
   if (processorsLoading) {
@@ -199,8 +216,12 @@ export default function PaymentManagement() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Payment Management</h1>
-            <p className="text-muted-foreground">Adult-friendly payment processors only</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Payment Management
+            </h1>
+            <p className="text-muted-foreground">
+              Adult-friendly payment processors only
+            </p>
           </div>
           <Badge variant="outline" className="border-red-500 text-red-400">
             <Ban className="w-4 h-4 mr-2" />
@@ -211,9 +232,12 @@ export default function PaymentManagement() {
         {/* Banned Processors Warning */}
         <Card className="bg-red-900/20 border-red-500/50">
           <CardHeader>
-            <CardTitle className="text-red-400">🚫 Permanently Banned Processors</CardTitle>
+            <CardTitle className="text-red-400">
+              🚫 Permanently Banned Processors
+            </CardTitle>
             <CardDescription className="text-red-300">
-              These processors are not allowed and will cause application startup failure
+              These processors are not allowed and will cause application
+              startup failure
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -225,7 +249,9 @@ export default function PaymentManagement() {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Ban className="w-4 h-4 text-red-400" />
-                    <span className="font-semibold text-red-300">{processor.name}</span>
+                    <span className="font-semibold text-red-300">
+                      {processor.name}
+                    </span>
                   </div>
                   <p className="text-xs text-red-400">{processor.reason}</p>
                 </div>
@@ -238,56 +264,128 @@ export default function PaymentManagement() {
           {/* Add New Processor */}
           <Card className="bg-gray-900/50 border-cyan-500/20">
             <CardHeader>
-              <CardTitle className="text-cyan-400">Add Adult-Friendly Processor</CardTitle>
+              <CardTitle className="text-cyan-400">
+                Add Adult-Friendly Processor
+              </CardTitle>
               <CardDescription className="text-gray-400">
                 Only adult-industry friendly processors allowed
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Select value={newProcessorName} onValueChange={setNewProcessorName}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700" data-testid="select-processor-name">
+                <Select
+                  value={newProcessorName}
+                  onValueChange={setNewProcessorName}
+                >
+                  <SelectTrigger
+                    className="bg-gray-800 border-gray-700"
+                    data-testid="select-processor-name"
+                  >
                     <SelectValue placeholder="Select adult-friendly processor" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[400px] overflow-y-auto">
-                    <SelectItem value="CCBill">CCBill - Global adult IPSP; ~5–12% fees</SelectItem>
-                    <SelectItem value="Segpay">Segpay - Adult specialist; ~4–6% + fee</SelectItem>
-                    <SelectItem value="Epoch">Epoch - Adult subscription billing pioneer; ~15% small-volume</SelectItem>
-                    <SelectItem value="Verotel">Verotel - Netherlands-based; ~15% low-volume</SelectItem>
-                    <SelectItem value="Vendo">Vendo - EU focus; ~5–10%</SelectItem>
-                    <SelectItem value="Netbilling">Netbilling - US gateway; ~2.5–5% + $0.25</SelectItem>
-                    <SelectItem value="PaymentCloud">PaymentCloud - US-based; ~3–4% + $0.30</SelectItem>
-                    <SelectItem value="PayKings">PayKings - High-risk network; ~3–5%</SelectItem>
-                    <SelectItem value="Durango Merchant Services">Durango Merchant Services - Offshore; ~4%+</SelectItem>
-                    <SelectItem value="Corepay">Corepay - Adult specialists; ~3–5%</SelectItem>
-                    <SelectItem value="Instabill">Instabill - Offshore-friendly; ~4–6%</SelectItem>
-                    <SelectItem value="Host Merchant Services">Host Merchant Services - US high-risk accounts</SelectItem>
-                    <SelectItem value="Payment Nerds">Payment Nerds - No monthly fees; flat ~3.5%</SelectItem>
-                    <SelectItem value="SensaPay">SensaPay - Global; ~2.95–5%</SelectItem>
-                    <SelectItem value="Tower Payments">Tower Payments - US-based; adult e-commerce focus</SelectItem>
-                    <SelectItem value="Zen Payments">Zen Payments - US; ~3%+; OnlyFans-style platforms</SelectItem>
-                    <SelectItem value="Easy Pay Direct">Easy Pay Direct - US gateway; $49/mo + ~3–5%</SelectItem>
-                    <SelectItem value="eMerchantBroker (EMB)">eMerchantBroker (EMB) - High-risk specialists; 4%+</SelectItem>
-                    <SelectItem value="NOWPayments">NOWPayments - Adult-friendly; 100+ cryptos; 0.5% fee</SelectItem>
-                    <SelectItem value="CoinPayments">CoinPayments - 75+ cryptos; 0.5–1% fees</SelectItem>
-                    <SelectItem value="CoinGate">CoinGate - 1% fee; Bitcoin/Ethereum/etc.</SelectItem>
-                    <SelectItem value="BTCPay Server">BTCPay Server - Open-source, self-hosted; 0% fee</SelectItem>
-                    <SelectItem value="PayRam">PayRam - Non-custodial; 0% fee</SelectItem>
-                    <SelectItem value="Confirmo">Confirmo - EU-based; ~1% fee</SelectItem>
-                    <SelectItem value="Paxum Bank">Paxum Bank (Dominica) - Offshore bank for adult industry</SelectItem>
-                    <SelectItem value="Yoursafe/Bitsafe">Yoursafe/Bitsafe - Dutch EMI offering IBANs/cards</SelectItem>
+                    <SelectItem value="CCBill">
+                      CCBill - Global adult IPSP; ~5–12% fees
+                    </SelectItem>
+                    <SelectItem value="Segpay">
+                      Segpay - Adult specialist; ~4–6% + fee
+                    </SelectItem>
+                    <SelectItem value="Epoch">
+                      Epoch - Adult subscription billing pioneer; ~15%
+                      small-volume
+                    </SelectItem>
+                    <SelectItem value="Verotel">
+                      Verotel - Netherlands-based; ~15% low-volume
+                    </SelectItem>
+                    <SelectItem value="Vendo">
+                      Vendo - EU focus; ~5–10%
+                    </SelectItem>
+                    <SelectItem value="Netbilling">
+                      Netbilling - US gateway; ~2.5–5% + $0.25
+                    </SelectItem>
+                    <SelectItem value="PaymentCloud">
+                      PaymentCloud - US-based; ~3–4% + $0.30
+                    </SelectItem>
+                    <SelectItem value="PayKings">
+                      PayKings - High-risk network; ~3–5%
+                    </SelectItem>
+                    <SelectItem value="Durango Merchant Services">
+                      Durango Merchant Services - Offshore; ~4%+
+                    </SelectItem>
+                    <SelectItem value="Corepay">
+                      Corepay - Adult specialists; ~3–5%
+                    </SelectItem>
+                    <SelectItem value="Instabill">
+                      Instabill - Offshore-friendly; ~4–6%
+                    </SelectItem>
+                    <SelectItem value="Host Merchant Services">
+                      Host Merchant Services - US high-risk accounts
+                    </SelectItem>
+                    <SelectItem value="Payment Nerds">
+                      Payment Nerds - No monthly fees; flat ~3.5%
+                    </SelectItem>
+                    <SelectItem value="SensaPay">
+                      SensaPay - Global; ~2.95–5%
+                    </SelectItem>
+                    <SelectItem value="Tower Payments">
+                      Tower Payments - US-based; adult e-commerce focus
+                    </SelectItem>
+                    <SelectItem value="Zen Payments">
+                      Zen Payments - US; ~3%+; OnlyFans-style platforms
+                    </SelectItem>
+                    <SelectItem value="Easy Pay Direct">
+                      Easy Pay Direct - US gateway; $49/mo + ~3–5%
+                    </SelectItem>
+                    <SelectItem value="eMerchantBroker (EMB)">
+                      eMerchantBroker (EMB) - High-risk specialists; 4%+
+                    </SelectItem>
+                    <SelectItem value="NOWPayments">
+                      NOWPayments - Adult-friendly; 100+ cryptos; 0.5% fee
+                    </SelectItem>
+                    <SelectItem value="CoinPayments">
+                      CoinPayments - 75+ cryptos; 0.5–1% fees
+                    </SelectItem>
+                    <SelectItem value="CoinGate">
+                      CoinGate - 1% fee; Bitcoin/Ethereum/etc.
+                    </SelectItem>
+                    <SelectItem value="BTCPay Server">
+                      BTCPay Server - Open-source, self-hosted; 0% fee
+                    </SelectItem>
+                    <SelectItem value="PayRam">
+                      PayRam - Non-custodial; 0% fee
+                    </SelectItem>
+                    <SelectItem value="Confirmo">
+                      Confirmo - EU-based; ~1% fee
+                    </SelectItem>
+                    <SelectItem value="Paxum Bank">
+                      Paxum Bank (Dominica) - Offshore bank for adult industry
+                    </SelectItem>
+                    <SelectItem value="Yoursafe/Bitsafe">
+                      Yoursafe/Bitsafe - Dutch EMI offering IBANs/cards
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
-                <Select value={newProcessorType} onValueChange={setNewProcessorType}>
+                <Select
+                  value={newProcessorType}
+                  onValueChange={setNewProcessorType}
+                >
                   <SelectTrigger className="bg-gray-800 border-gray-700">
                     <SelectValue placeholder="Processor category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="adult_friendly">Payment Processors & Merchant Accounts</SelectItem>
-                    <SelectItem value="crypto">Crypto Payment Solutions</SelectItem>
-                    <SelectItem value="bank">Banks & Financial Institutions</SelectItem>
-                    <SelectItem value="international">International High-Risk</SelectItem>
+                    <SelectItem value="adult_friendly">
+                      Payment Processors & Merchant Accounts
+                    </SelectItem>
+                    <SelectItem value="crypto">
+                      Crypto Payment Solutions
+                    </SelectItem>
+                    <SelectItem value="bank">
+                      Banks & Financial Institutions
+                    </SelectItem>
+                    <SelectItem value="international">
+                      International High-Risk
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -307,7 +405,9 @@ export default function PaymentManagement() {
           {/* Active Processors */}
           <Card className="bg-gray-900/50 border-cyan-500/20 lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-cyan-400">Active Payment Processors</CardTitle>
+              <CardTitle className="text-cyan-400">
+                Active Payment Processors
+              </CardTitle>
               <CardDescription className="text-gray-400">
                 Adult-industry approved payment methods
               </CardDescription>
@@ -315,7 +415,9 @@ export default function PaymentManagement() {
             <CardContent>
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {processors.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">No processors configured</p>
+                  <p className="text-gray-400 text-center py-8">
+                    No processors configured
+                  </p>
                 ) : (
                   processors.map((processor) => (
                     <div
@@ -330,7 +432,9 @@ export default function PaymentManagement() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           {getProcessorTypeIcon(processor.processorType)}
-                          <span className="font-semibold text-white">{processor.name}</span>
+                          <span className="font-semibold text-white">
+                            {processor.name}
+                          </span>
                         </div>
                         {getStatusBadge(processor)}
                       </div>
@@ -338,17 +442,21 @@ export default function PaymentManagement() {
                       <div className="flex items-center gap-4 text-sm text-gray-400 mb-2">
                         <div className="flex items-center gap-1">
                           <Globe className="w-3 h-3" />
-                          {processor.supportedCurrencies?.length || 0} currencies
+                          {processor.supportedCurrencies?.length || 0}{" "}
+                          currencies
                         </div>
                         <div className="flex items-center gap-1">
                           <Lock className="w-3 h-3" />
-                          {processor.adultFriendly ? "Adult-Safe" : "Restricted"}
+                          {processor.adultFriendly
+                            ? "Adult-Safe"
+                            : "Restricted"}
                         </div>
                       </div>
 
                       {processor.geographicRestrictions?.length > 0 && (
                         <div className="text-xs text-orange-400">
-                          Geographic restrictions: {processor.geographicRestrictions.join(", ")}
+                          Geographic restrictions:{" "}
+                          {processor.geographicRestrictions.join(", ")}
                         </div>
                       )}
                     </div>
@@ -372,7 +480,9 @@ export default function PaymentManagement() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-700">
-                    <th className="text-left py-2 text-gray-400">Transaction ID</th>
+                    <th className="text-left py-2 text-gray-400">
+                      Transaction ID
+                    </th>
                     <th className="text-left py-2 text-gray-400">User</th>
                     <th className="text-left py-2 text-gray-400">Amount</th>
                     <th className="text-left py-2 text-gray-400">Type</th>
@@ -383,15 +493,22 @@ export default function PaymentManagement() {
                 <tbody>
                   {transactions.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-8 text-gray-400">
+                      <td
+                        colSpan={6}
+                        className="text-center py-8 text-gray-400"
+                      >
                         No transactions yet
                       </td>
                     </tr>
                   ) : (
                     transactions.slice(0, 10).map((transaction) => (
-                      <tr key={transaction.id} className="border-b border-gray-800">
+                      <tr
+                        key={transaction.id}
+                        className="border-b border-gray-800"
+                      >
                         <td className="py-2 font-mono text-sm text-gray-300">
-                          {transaction.externalTransactionId.substring(0, 12)}...
+                          {transaction.externalTransactionId.substring(0, 12)}
+                          ...
                         </td>
                         <td className="py-2 text-gray-300">
                           {transaction.userId.substring(0, 8)}...
@@ -429,21 +546,30 @@ export default function PaymentManagement() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-400 mb-2">
-                  {processors.filter(p => p.status === "active" && p.adultFriendly).length}
+                  {
+                    processors.filter(
+                      (p) => p.status === "active" && p.adultFriendly,
+                    ).length
+                  }
                 </div>
                 <div className="text-sm text-gray-400">Active Adult-Safe</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-400 mb-2">
-                  {processors.filter(p => p.processorType === "crypto").length}
+                  {
+                    processors.filter((p) => p.processorType === "crypto")
+                      .length
+                  }
                 </div>
                 <div className="text-sm text-gray-400">Crypto Processors</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-400 mb-2">
-                  {transactions.filter(t => t.status === "completed").length}
+                  {transactions.filter((t) => t.status === "completed").length}
                 </div>
-                <div className="text-sm text-gray-400">Completed Transactions</div>
+                <div className="text-sm text-gray-400">
+                  Completed Transactions
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-red-400 mb-2">

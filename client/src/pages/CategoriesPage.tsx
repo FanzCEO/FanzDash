@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
+import {
   Users,
   Filter,
   SlidersHorizontal,
@@ -13,7 +13,7 @@ import {
   Star,
   Verified,
   Heart,
-  Crown
+  Crown,
 } from "lucide-react";
 
 interface Creator {
@@ -75,7 +75,7 @@ export function CategoriesPage({
   isLoading,
   settings,
   user,
-  className = ""
+  className = "",
 }: CategoriesPageProps) {
   const [showFilters, setShowFilters] = useState(false);
 
@@ -112,9 +112,11 @@ export function CategoriesPage({
                 <Verified className="h-4 w-4 text-blue-500 fill-current flex-shrink-0" />
               )}
             </div>
-            
-            <p className="text-muted-foreground text-sm mb-2">@{creator.username}</p>
-            
+
+            <p className="text-muted-foreground text-sm mb-2">
+              @{creator.username}
+            </p>
+
             {creator.location && (
               <div className="flex items-center text-xs text-muted-foreground">
                 <MapPin className="h-3 w-3 mr-1" />
@@ -127,12 +129,15 @@ export function CategoriesPage({
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-4 text-center">
           <div>
-            <p className="text-lg font-bold">{creator.subscribersCount.toLocaleString()}</p>
+            <p className="text-lg font-bold">
+              {creator.subscribersCount.toLocaleString()}
+            </p>
             <p className="text-xs text-muted-foreground">Followers</p>
           </div>
           <div>
             <p className="text-lg font-bold">
-              {settings.currencySymbol}{creator.subscriptionPrice}
+              {settings.currencySymbol}
+              {creator.subscriptionPrice}
             </p>
             <p className="text-xs text-muted-foreground">per month</p>
           </div>
@@ -142,24 +147,33 @@ export function CategoriesPage({
         <div className="space-y-2">
           {user?.isGuest ? (
             <Link href="/signup">
-              <Button className="w-full" data-testid={`view-creator-${creator.id}`}>
+              <Button
+                className="w-full"
+                data-testid={`view-creator-${creator.id}`}
+              >
                 View Profile
               </Button>
             </Link>
           ) : (
             <div className="flex space-x-2">
               <Link href={`/${creator.username}`} className="flex-1">
-                <Button variant="outline" className="w-full" data-testid={`view-creator-${creator.id}`}>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  data-testid={`view-creator-${creator.id}`}
+                >
                   View Profile
                 </Button>
               </Link>
-              <Button 
+              <Button
                 size="sm"
                 variant={creator.isSubscribed ? "secondary" : "default"}
                 className="px-3"
                 data-testid={`subscribe-creator-${creator.id}`}
               >
-                <Heart className={`h-4 w-4 ${creator.isSubscribed ? 'fill-current' : ''}`} />
+                <Heart
+                  className={`h-4 w-4 ${creator.isSubscribed ? "fill-current" : ""}`}
+                />
               </Button>
             </div>
           )}
@@ -170,22 +184,26 @@ export function CategoriesPage({
 
   const CategoryCard = ({ cat }: { cat: Category }) => (
     <Link href={`/category/${cat.slug}`}>
-      <Card className={`group hover:shadow-lg transition-all duration-300 cursor-pointer ${
-        cat.id === category.id ? 'ring-2 ring-primary bg-primary/5' : ''
-      }`}>
+      <Card
+        className={`group hover:shadow-lg transition-all duration-300 cursor-pointer ${
+          cat.id === category.id ? "ring-2 ring-primary bg-primary/5" : ""
+        }`}
+      >
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
             {cat.image && (
-              <img 
-                src={cat.image} 
+              <img
+                src={cat.image}
                 alt={cat.name}
                 className="w-8 h-8 rounded object-cover"
               />
             )}
             <div className="flex-1">
-              <h4 className={`font-semibold group-hover:text-primary transition-colors ${
-                cat.id === category.id ? 'text-primary' : ''
-              }`}>
+              <h4
+                className={`font-semibold group-hover:text-primary transition-colors ${
+                  cat.id === category.id ? "text-primary" : ""
+                }`}
+              >
                 {cat.name}
               </h4>
               <p className="text-sm text-muted-foreground">
@@ -227,14 +245,14 @@ export function CategoriesPage({
           <div>
             <label className="text-sm font-medium mb-2 block">Age Range</label>
             <div className="space-y-2">
-              <input 
-                type="number" 
-                placeholder="Min age" 
+              <input
+                type="number"
+                placeholder="Min age"
                 className="w-full p-2 border rounded-md"
               />
-              <input 
-                type="number" 
-                placeholder="Max age" 
+              <input
+                type="number"
+                placeholder="Max age"
                 className="w-full p-2 border rounded-md"
               />
             </div>
@@ -275,14 +293,16 @@ export function CategoriesPage({
   );
 
   return (
-    <section className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}>
+    <section
+      className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}
+    >
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center space-x-3 mb-4">
             {category.image && (
-              <img 
-                src={category.image} 
+              <img
+                src={category.image}
                 alt={category.name}
                 className="w-12 h-12 rounded-lg object-cover"
               />
@@ -291,11 +311,12 @@ export function CategoriesPage({
               {category.name}
             </h1>
           </div>
-          
+
           <p className="text-xl text-muted-foreground">
-            {category.description || `Discover amazing creators in ${category.name}`}
+            {category.description ||
+              `Discover amazing creators in ${category.name}`}
           </p>
-          
+
           <div className="flex items-center justify-center space-x-4 mt-4">
             <Badge variant="secondary" className="px-4 py-2">
               <Users className="h-4 w-4 mr-2" />
@@ -335,7 +356,7 @@ export function CategoriesPage({
                   {totalCreators.toLocaleString()} creators found
                 </p>
               </div>
-              
+
               <Button variant="outline" size="sm">
                 <Filter className="h-4 w-4 mr-2" />
                 Filter
@@ -374,33 +395,32 @@ export function CategoriesPage({
                   </div>
                 )}
               </>
+            ) : /* Loading/Empty State */
+            isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <LoadingSkeleton key={index} />
+                ))}
+              </div>
             ) : (
-              /* Loading/Empty State */
-              isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <LoadingSkeleton key={index} />
-                  ))}
+              <div className="text-center py-16">
+                <div className="inline-flex items-center justify-center w-24 h-24 bg-muted/20 rounded-2xl mb-6">
+                  <Users className="h-12 w-12 text-muted-foreground" />
                 </div>
-              ) : (
-                <div className="text-center py-16">
-                  <div className="inline-flex items-center justify-center w-24 h-24 bg-muted/20 rounded-2xl mb-6">
-                    <Users className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold mb-4">No Creators Found</h3>
-                  
-                  <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                    No creators found in the {category.name} category. Try browsing other categories.
-                  </p>
 
-                  <Link href="/creators">
-                    <Button data-testid="browse-all-creators-btn">
-                      Browse All Creators
-                    </Button>
-                  </Link>
-                </div>
-              )
+                <h3 className="text-2xl font-bold mb-4">No Creators Found</h3>
+
+                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                  No creators found in the {category.name} category. Try
+                  browsing other categories.
+                </p>
+
+                <Link href="/creators">
+                  <Button data-testid="browse-all-creators-btn">
+                    Browse All Creators
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>

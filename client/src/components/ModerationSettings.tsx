@@ -4,7 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { ModerationSettings } from "@/types/moderation";
@@ -19,12 +25,12 @@ export function ModerationSettings() {
 
   const [imageSettings, setImageSettings] = useState({
     autoBlockThreshold: 0.85,
-    reviewThreshold: 0.60,
+    reviewThreshold: 0.6,
   });
 
   const [textSettings, setTextSettings] = useState({
-    autoBlockThreshold: 0.80,
-    reviewThreshold: 0.50,
+    autoBlockThreshold: 0.8,
+    reviewThreshold: 0.5,
   });
 
   const [streamSettings, setStreamSettings] = useState({
@@ -76,17 +82,17 @@ export function ModerationSettings() {
   const handleResetDefaults = () => {
     setImageSettings({
       autoBlockThreshold: 0.85,
-      reviewThreshold: 0.60,
+      reviewThreshold: 0.6,
     });
     setTextSettings({
-      autoBlockThreshold: 0.80,
-      reviewThreshold: 0.50,
+      autoBlockThreshold: 0.8,
+      reviewThreshold: 0.5,
     });
     setStreamSettings({
       frameSampleRate: 4,
       autoBlurThreshold: 0.75,
     });
-    
+
     toast({
       title: "Settings reset",
       description: "All settings have been reset to default values.",
@@ -102,7 +108,9 @@ export function ModerationSettings() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Image/Video Thresholds */}
           <div>
-            <h4 className="font-medium text-gray-900 mb-3">Image/Video Content</h4>
+            <h4 className="font-medium text-gray-900 mb-3">
+              Image/Video Content
+            </h4>
             <div className="space-y-4">
               <div>
                 <Label className="block text-sm font-medium text-gray-700 mb-2">
@@ -110,8 +118,11 @@ export function ModerationSettings() {
                 </Label>
                 <Slider
                   value={[imageSettings.autoBlockThreshold]}
-                  onValueChange={([value]) => 
-                    setImageSettings(prev => ({ ...prev, autoBlockThreshold: value }))
+                  onValueChange={([value]) =>
+                    setImageSettings((prev) => ({
+                      ...prev,
+                      autoBlockThreshold: value,
+                    }))
                   }
                   min={0}
                   max={1}
@@ -133,8 +144,11 @@ export function ModerationSettings() {
                 </Label>
                 <Slider
                   value={[imageSettings.reviewThreshold]}
-                  onValueChange={([value]) => 
-                    setImageSettings(prev => ({ ...prev, reviewThreshold: value }))
+                  onValueChange={([value]) =>
+                    setImageSettings((prev) => ({
+                      ...prev,
+                      reviewThreshold: value,
+                    }))
                   }
                   min={0}
                   max={1}
@@ -163,8 +177,11 @@ export function ModerationSettings() {
                 </Label>
                 <Slider
                   value={[textSettings.autoBlockThreshold]}
-                  onValueChange={([value]) => 
-                    setTextSettings(prev => ({ ...prev, autoBlockThreshold: value }))
+                  onValueChange={([value]) =>
+                    setTextSettings((prev) => ({
+                      ...prev,
+                      autoBlockThreshold: value,
+                    }))
                   }
                   min={0}
                   max={1}
@@ -186,8 +203,11 @@ export function ModerationSettings() {
                 </Label>
                 <Slider
                   value={[textSettings.reviewThreshold]}
-                  onValueChange={([value]) => 
-                    setTextSettings(prev => ({ ...prev, reviewThreshold: value }))
+                  onValueChange={([value]) =>
+                    setTextSettings((prev) => ({
+                      ...prev,
+                      reviewThreshold: value,
+                    }))
                   }
                   min={0}
                   max={1}
@@ -208,7 +228,9 @@ export function ModerationSettings() {
 
           {/* Live Stream Settings */}
           <div>
-            <h4 className="font-medium text-gray-900 mb-3">Live Stream Settings</h4>
+            <h4 className="font-medium text-gray-900 mb-3">
+              Live Stream Settings
+            </h4>
             <div className="space-y-4">
               <div>
                 <Label className="block text-sm font-medium text-gray-700 mb-2">
@@ -216,8 +238,11 @@ export function ModerationSettings() {
                 </Label>
                 <Select
                   value={streamSettings.frameSampleRate.toString()}
-                  onValueChange={(value) => 
-                    setStreamSettings(prev => ({ ...prev, frameSampleRate: parseInt(value) }))
+                  onValueChange={(value) =>
+                    setStreamSettings((prev) => ({
+                      ...prev,
+                      frameSampleRate: parseInt(value),
+                    }))
                   }
                 >
                   <SelectTrigger data-testid="frame-rate-select">
@@ -236,8 +261,11 @@ export function ModerationSettings() {
                 </Label>
                 <Slider
                   value={[streamSettings.autoBlurThreshold]}
-                  onValueChange={([value]) => 
-                    setStreamSettings(prev => ({ ...prev, autoBlurThreshold: value }))
+                  onValueChange={([value]) =>
+                    setStreamSettings((prev) => ({
+                      ...prev,
+                      autoBlurThreshold: value,
+                    }))
                   }
                   min={0}
                   max={1}
@@ -256,17 +284,19 @@ export function ModerationSettings() {
             </div>
           </div>
         </div>
-        
+
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <Button 
+          <Button
             onClick={handleSaveSettings}
             disabled={saveSettingsMutation.isPending}
             data-testid="save-settings-button"
           >
-            {saveSettingsMutation.isPending ? "Saving..." : "Save Configuration"}
+            {saveSettingsMutation.isPending
+              ? "Saving..."
+              : "Save Configuration"}
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="ml-3"
             onClick={handleResetDefaults}
             data-testid="reset-defaults-button"

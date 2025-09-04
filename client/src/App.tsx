@@ -97,8 +97,14 @@ function Router() {
           <Route path="/risk-management" component={RiskManagementPage} />
           <Route path="/crisis-management" component={CrisisManagementPage} />
           <Route path="/advanced-analytics" component={AdvancedAnalyticsPage} />
-          <Route path="/predictive-analytics" component={PredictiveAnalyticsPage} />
-          <Route path="/compliance-reporting" component={ComplianceReportingPage} />
+          <Route
+            path="/predictive-analytics"
+            component={PredictiveAnalyticsPage}
+          />
+          <Route
+            path="/compliance-reporting"
+            component={ComplianceReportingPage}
+          />
           <Route path="/vault" component={VaultPage} />
           <Route path="/audit" component={AuditPage} />
           <Route path="/threats" component={ThreatsPage} />
@@ -107,18 +113,33 @@ function Router() {
           <Route path="/chat-system" component={ChatSystem} />
           <Route path="/stream-management" component={StreamManagement} />
           <Route path="/payment-management" component={PaymentManagement} />
-          <Route path="/payment-processors" component={PaymentProcessorManagement} />
+          <Route
+            path="/payment-processors"
+            component={PaymentProcessorManagement}
+          />
           <Route path="/tax-management" component={TaxManagement} />
           <Route path="/advertising" component={AdvertisingManagement} />
           <Route path="/audio-calls" component={AudioCallSettings} />
           <Route path="/radio-broadcasting" component={RadioBroadcastingPage} />
           <Route path="/podcast-management" component={PodcastManagementPage} />
-          <Route path="/content-moderation-hub" component={ContentModerationHub} />
+          <Route
+            path="/content-moderation-hub"
+            component={ContentModerationHub}
+          />
           <Route path="/plugin-management" component={PluginManagement} />
-          <Route path="/api-integration-management" component={APIIntegrationManagement} />
+          <Route
+            path="/api-integration-management"
+            component={APIIntegrationManagement}
+          />
           <Route path="/platform-moderation" component={PlatformModeration} />
-          <Route path="/compliance-monitoring" component={ComplianceMonitoring} />
-          <Route path="/intelligent-moderation" component={IntelligentModerationPage} />
+          <Route
+            path="/compliance-monitoring"
+            component={ComplianceMonitoring}
+          />
+          <Route
+            path="/intelligent-moderation"
+            component={IntelligentModerationPage}
+          />
           <Route path="/vr-rendering" component={VRRenderingEngine} />
           <Route path="/future-tech" component={FutureTechManager} />
           <Route path="/ai-cfo" component={AICFODashboard} />
@@ -133,21 +154,39 @@ function Router() {
           <Route path="/cron-jobs" component={CronManagement} />
           <Route path="/shop-management" component={ShopManagement} />
           <Route path="/stories-management" component={StoriesManagement} />
-          <Route path="/social-login-settings" component={SocialLoginSettings} />
+          <Route
+            path="/social-login-settings"
+            component={SocialLoginSettings}
+          />
           <Route path="/storage-settings" component={StorageSettings} />
           <Route path="/tax-rate-management" component={TaxRateManagement} />
           <Route path="/theme-settings" component={ThemeSettings} />
-          <Route path="/withdrawal-management" component={WithdrawalManagement} />
+          <Route
+            path="/withdrawal-management"
+            component={WithdrawalManagement}
+          />
           <Route path="/withdrawal-view/:id" component={WithdrawalView} />
           <Route path="/email-management" component={EmailManagement} />
           <Route path="/user-management" component={UserManagement} />
           <Route path="/contact-management" component={ContactManagement} />
           <Route path="/video-encoding" component={VideoEncodingPage} />
-          <Route path="/stickers-management" component={StickersManagementPage} />
+          <Route
+            path="/stickers-management"
+            component={StickersManagementPage}
+          />
           <Route path="/websocket-settings" component={WebSocketSettingsPage} />
-          <Route path="/transaction-management" component={TransactionManagementPage} />
-          <Route path="/verification-management" component={VerificationManagementPage} />
-          <Route path="/subscription-management" component={SubscriptionManagementPage} />
+          <Route
+            path="/transaction-management"
+            component={TransactionManagementPage}
+          />
+          <Route
+            path="/verification-management"
+            component={VerificationManagementPage}
+          />
+          <Route
+            path="/subscription-management"
+            component={SubscriptionManagementPage}
+          />
           <Route path="/theme-generator" component={ThemeGeneratorPage} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />

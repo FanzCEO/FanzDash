@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { 
+import {
   DollarSign,
   ArrowUp,
   ArrowDown,
@@ -16,14 +16,14 @@ import {
   Info,
   RefreshCw,
   AlertTriangle,
-  Gift
+  Gift,
 } from "lucide-react";
 import { SiPaypal, SiStripe } from "react-icons/si";
 
 interface PaymentMethod {
   id: string;
   name: string;
-  type: 'card' | 'paypal' | 'wallet' | 'other';
+  type: "card" | "paypal" | "wallet" | "other";
   logo?: string;
   description?: string;
 }
@@ -88,7 +88,7 @@ export function TipModal({
   isLiveStream = false,
   liveId,
   showBillingInfo,
-  className = ""
+  className = "",
 }: TipModalProps) {
   const [amount, setAmount] = useState(tipSettings.minAmount);
   const [selectedPayment, setSelectedPayment] = useState<string>("");
@@ -96,35 +96,37 @@ export function TipModal({
   const [error, setError] = useState<string | null>(null);
 
   const subtotal = amount;
-  const taxes = taxRates.map(tax => ({
+  const taxes = taxRates.map((tax) => ({
     ...tax,
-    amount: (subtotal * tax.percentage) / 100
+    amount: (subtotal * tax.percentage) / 100,
   }));
   const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0);
   const total = subtotal + totalTaxes;
 
   const adjustAmount = (increment: number) => {
     const newAmount = Math.max(
-      tipSettings.minAmount, 
-      Math.min(tipSettings.maxAmount, amount + increment)
+      tipSettings.minAmount,
+      Math.min(tipSettings.maxAmount, amount + increment),
     );
     setAmount(newAmount);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedPayment) {
       setError("Please select a payment method");
       return;
     }
 
     if (amount < tipSettings.minAmount || amount > tipSettings.maxAmount) {
-      setError(`Tip amount must be between ${tipSettings.currencySymbol}${tipSettings.minAmount} and ${tipSettings.currencySymbol}${tipSettings.maxAmount}`);
+      setError(
+        `Tip amount must be between ${tipSettings.currencySymbol}${tipSettings.minAmount} and ${tipSettings.currencySymbol}${tipSettings.maxAmount}`,
+      );
       return;
     }
 
-    if (selectedPayment === 'wallet' && total > walletBalance) {
+    if (selectedPayment === "wallet" && total > walletBalance) {
       setError("Insufficient wallet balance");
       return;
     }
@@ -138,9 +140,9 @@ export function TipModal({
         paymentMethod: selectedPayment,
         isMessage,
         isLiveStream,
-        liveId
+        liveId,
       });
-      
+
       // Reset form and close
       setAmount(tipSettings.minAmount);
       setSelectedPayment("");
@@ -154,15 +156,15 @@ export function TipModal({
 
   const getPaymentIcon = (payment: PaymentMethod) => {
     switch (payment.type) {
-      case 'card':
+      case "card":
         return <CreditCard className="h-4 w-4" />;
-      case 'wallet':
+      case "wallet":
         return <Wallet className="h-4 w-4" />;
       default:
-        if (payment.name.toLowerCase().includes('paypal')) {
+        if (payment.name.toLowerCase().includes("paypal")) {
           return <SiPaypal className="h-4 w-4" />;
         }
-        if (payment.name.toLowerCase().includes('stripe')) {
+        if (payment.name.toLowerCase().includes("stripe")) {
           return <SiStripe className="h-4 w-4" />;
         }
         return <DollarSign className="h-4 w-4" />;
@@ -173,14 +175,14 @@ export function TipModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         {/* Header with cover/avatar */}
-        <div 
+        <div
           className="relative h-24 bg-gradient-to-r from-primary to-primary/80 rounded-t-lg -mx-6 -mt-6"
           style={{
-            background: recipient.coverImage 
+            background: recipient.coverImage
               ? `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${recipient.coverImage})`
-              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
+              : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         >
           <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
@@ -195,9 +197,7 @@ export function TipModal({
 
         <div className="pt-12 space-y-4">
           <div className="text-center">
-            <h6 className="font-semibold">
-              Send Tip to {recipient.name}
-            </h6>
+            <h6 className="font-semibold">Send Tip to {recipient.name}</h6>
             <p className="text-sm text-muted-foreground">
               * In {tipSettings.currencyCode}
             </p>
@@ -207,7 +207,8 @@ export function TipModal({
             {/* Amount Input */}
             <div className="space-y-2">
               <Label htmlFor="tip-amount">
-                Tip Amount (Min: {tipSettings.currencySymbol}{tipSettings.minAmount})
+                Tip Amount (Min: {tipSettings.currencySymbol}
+                {tipSettings.minAmount})
               </Label>
               <div className="relative">
                 <span className="absolute left-3 top-3 text-sm">
@@ -220,12 +221,16 @@ export function TipModal({
                   max={tipSettings.maxAmount}
                   step="0.01"
                   value={amount}
-                  onChange={(e) => setAmount(parseFloat(e.target.value) || tipSettings.minAmount)}
+                  onChange={(e) =>
+                    setAmount(
+                      parseFloat(e.target.value) || tipSettings.minAmount,
+                    )
+                  }
                   className="pl-8 text-center font-semibold"
                   data-testid="tip-amount-input"
                 />
               </div>
-              
+
               {/* Amount Controls */}
               <div className="flex justify-center space-x-2">
                 <Button
@@ -238,7 +243,7 @@ export function TipModal({
                 >
                   <ArrowDown className="h-3 w-3" />
                 </Button>
-                
+
                 <Button
                   type="button"
                   variant="outline"
@@ -250,7 +255,7 @@ export function TipModal({
                   <ArrowUp className="h-3 w-3" />
                 </Button>
               </div>
-              
+
               <p className="text-center text-xs text-muted-foreground">
                 <ArrowUp className="h-3 w-3 inline mr-1" />
                 <ArrowDown className="h-3 w-3 inline mr-1" />
@@ -262,28 +267,35 @@ export function TipModal({
             {!isLiveStream && paymentMethods.length > 0 && (
               <div className="space-y-3">
                 <Label>Payment Method</Label>
-                <RadioGroup 
-                  value={selectedPayment} 
+                <RadioGroup
+                  value={selectedPayment}
                   onValueChange={setSelectedPayment}
                   className="space-y-2"
                 >
                   {paymentMethods.map((payment) => (
-                    <div key={payment.id} className="flex items-center space-x-2">
-                      <RadioGroupItem 
-                        value={payment.name} 
+                    <div
+                      key={payment.id}
+                      className="flex items-center space-x-2"
+                    >
+                      <RadioGroupItem
+                        value={payment.name}
                         id={payment.id}
-                        disabled={payment.type === 'wallet' && walletBalance === 0}
+                        disabled={
+                          payment.type === "wallet" && walletBalance === 0
+                        }
                         data-testid={`payment-${payment.name.toLowerCase()}`}
                       />
-                      <Label 
-                        htmlFor={payment.id} 
+                      <Label
+                        htmlFor={payment.id}
                         className="flex-1 cursor-pointer"
                       >
                         <div className="flex items-center space-x-2">
                           {getPaymentIcon(payment)}
                           <div>
                             <div className="font-semibold">
-                              {payment.type === 'card' ? 'Debit/Credit Card' : payment.name}
+                              {payment.type === "card"
+                                ? "Debit/Credit Card"
+                                : payment.name}
                             </div>
                             {payment.description && (
                               <div className="text-xs text-muted-foreground">
@@ -309,10 +321,15 @@ export function TipModal({
                   </div>
                   <div className="text-right">
                     <div className="font-semibold">
-                      Available: {tipSettings.currencySymbol}{walletBalance.toFixed(2)}
+                      Available: {tipSettings.currencySymbol}
+                      {walletBalance.toFixed(2)}
                     </div>
                     {walletBalance === 0 && (
-                      <Button variant="link" size="sm" className="p-0 h-auto text-xs">
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="p-0 h-auto text-xs"
+                      >
                         Recharge
                       </Button>
                     )}
@@ -329,22 +346,32 @@ export function TipModal({
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Subtotal:</span>
                       <span className="font-semibold">
-                        {tipSettings.currencySymbol}{subtotal.toFixed(2)}
+                        {tipSettings.currencySymbol}
+                        {subtotal.toFixed(2)}
                       </span>
                     </div>
 
                     {taxes.map((tax) => (
-                      <div key={tax.id} className="flex justify-between items-center text-sm">
-                        <span>{tax.name} {tax.percentage}%:</span>
+                      <div
+                        key={tax.id}
+                        className="flex justify-between items-center text-sm"
+                      >
                         <span>
-                          {tipSettings.currencySymbol}{tax.amount.toFixed(2)}
+                          {tax.name} {tax.percentage}%:
+                        </span>
+                        <span>
+                          {tipSettings.currencySymbol}
+                          {tax.amount.toFixed(2)}
                         </span>
                       </div>
                     ))}
 
                     <div className="border-t pt-2 flex justify-between items-center font-semibold">
                       <span>Total:</span>
-                      <span>{tipSettings.currencySymbol}{total.toFixed(2)}</span>
+                      <span>
+                        {tipSettings.currencySymbol}
+                        {total.toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -369,7 +396,8 @@ export function TipModal({
                 )}
                 {showBillingInfo.address && (
                   <p className="text-xs text-muted-foreground">
-                    Address: {showBillingInfo.address} {showBillingInfo.city} {showBillingInfo.country}
+                    Address: {showBillingInfo.address} {showBillingInfo.city}{" "}
+                    {showBillingInfo.country}
                   </p>
                 )}
               </div>
@@ -387,11 +415,13 @@ export function TipModal({
               >
                 Cancel
               </Button>
-              
+
               <Button
                 type="submit"
                 className="flex-1"
-                disabled={isSubmitting || !selectedPayment || total > walletBalance}
+                disabled={
+                  isSubmitting || !selectedPayment || total > walletBalance
+                }
                 data-testid="send-tip-btn"
               >
                 {isSubmitting ? (

@@ -22,36 +22,38 @@ export function AnalysisTools() {
     pdqHash: "f1d2e3a4b5c6...",
     nudenetResults: [
       { label: "EXPOSED_BREAST_F", confidence: 0.87 },
-      { label: "FACE_FEMALE", confidence: 0.95 }
-    ]
+      { label: "FACE_FEMALE", confidence: 0.95 },
+    ],
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setIsAnalyzing(true);
-    
+
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      const response = await fetch('/api/upload/analyze', {
-        method: 'POST',
+      const response = await fetch("/api/upload/analyze", {
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Analysis failed');
+        throw new Error("Analysis failed");
       }
 
       const result = await response.json();
       setLastAnalysis(result);
-      
+
       toast({
         title: "Analysis complete",
-        description: `Risk level: ${result.recommendation || 'unknown'}`,
+        description: `Risk level: ${result.recommendation || "unknown"}`,
       });
     } catch (error) {
       toast({
@@ -101,18 +103,27 @@ export function AnalysisTools() {
                   <label htmlFor="file-upload" className="cursor-pointer">
                     <i className="fas fa-cloud-upload-alt text-gray-400 text-2xl mb-2"></i>
                     <p className="text-sm text-gray-600">
-                      {isAnalyzing ? "Analyzing..." : "Drop image here or click to upload"}
+                      {isAnalyzing
+                        ? "Analyzing..."
+                        : "Drop image here or click to upload"}
                     </p>
                   </label>
                 </div>
               </div>
               <div className="bg-gray-50 p-3 rounded">
-                <div className="text-xs text-gray-600 mb-1">Last Hash Check Result:</div>
-                <div className="font-mono text-sm text-gray-900" data-testid="pdq-hash-result">
+                <div className="text-xs text-gray-600 mb-1">
+                  Last Hash Check Result:
+                </div>
+                <div
+                  className="font-mono text-sm text-gray-900"
+                  data-testid="pdq-hash-result"
+                >
                   {lastAnalysis.pdqHash}
                 </div>
                 <div className="text-xs mt-1">
-                  <span className="text-green-600">✓ No match in blocklist</span>
+                  <span className="text-green-600">
+                    ✓ No match in blocklist
+                  </span>
                   <span className="text-gray-500 ml-2">Quality: 0.95</span>
                 </div>
               </div>
@@ -127,13 +138,21 @@ export function AnalysisTools() {
             </div>
             <div className="space-y-3">
               <div className="bg-gray-50 p-3 rounded">
-                <div className="text-xs text-gray-600 mb-2">Detection Results:</div>
+                <div className="text-xs text-gray-600 mb-2">
+                  Detection Results:
+                </div>
                 {lastAnalysis.nudenetResults?.map((detection, index) => (
-                  <div key={index} className="flex items-center justify-between py-1" data-testid={`detection-${index}`}>
-                    <span className="text-sm text-gray-900">{detection.label}</span>
+                  <div
+                    key={index}
+                    className="flex items-center justify-between py-1"
+                    data-testid={`detection-${index}`}
+                  >
+                    <span className="text-sm text-gray-900">
+                      {detection.label}
+                    </span>
                     <div className="flex items-center space-x-2">
-                      <Progress 
-                        value={detection.confidence * 100} 
+                      <Progress
+                        value={detection.confidence * 100}
                         className="w-20 h-2"
                       />
                       <span className="text-xs text-gray-600">
@@ -143,8 +162,8 @@ export function AnalysisTools() {
                   </div>
                 ))}
               </div>
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={handleRunAnalysis}
                 disabled={isAnalyzing}
                 data-testid="run-analysis-button"

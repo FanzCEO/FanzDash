@@ -1,19 +1,19 @@
-import { spawn, ChildProcess } from 'child_process';
-import { promises as fs } from 'fs';
-import { join, dirname, basename, extname } from 'path';
-import { randomUUID } from 'crypto';
-import { EventEmitter } from 'events';
+import { spawn, ChildProcess } from "child_process";
+import { promises as fs } from "fs";
+import { join, dirname, basename, extname } from "path";
+import { randomUUID } from "crypto";
+import { EventEmitter } from "events";
 
 export interface VideoEncodingJob {
   id: string;
   inputPath: string;
   outputPath: string;
-  format: 'mp4' | 'webm' | 'hls' | 'dash';
-  quality: 'low' | 'medium' | 'high' | 'ultra';
+  format: "mp4" | "webm" | "hls" | "dash";
+  quality: "low" | "medium" | "high" | "ultra";
   resolution: string;
   bitrate?: string;
   fps?: number;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: "pending" | "processing" | "completed" | "failed";
   progress: number;
   startTime?: Date;
   endTime?: Date;
@@ -55,36 +55,36 @@ export class VideoEncoder extends EventEmitter {
 
   // Production-ready encoding presets
   private presets: Record<string, EncodingPreset> = {
-    'mp4_high': {
-      name: 'MP4 High Quality',
-      video: { codec: 'libx264', bitrate: '5000k', preset: 'medium', crf: 18 },
-      audio: { codec: 'aac', bitrate: '192k', sampleRate: '48000' },
-      container: 'mp4'
+    mp4_high: {
+      name: "MP4 High Quality",
+      video: { codec: "libx264", bitrate: "5000k", preset: "medium", crf: 18 },
+      audio: { codec: "aac", bitrate: "192k", sampleRate: "48000" },
+      container: "mp4",
     },
-    'mp4_medium': {
-      name: 'MP4 Medium Quality',
-      video: { codec: 'libx264', bitrate: '2500k', preset: 'fast', crf: 23 },
-      audio: { codec: 'aac', bitrate: '128k', sampleRate: '44100' },
-      container: 'mp4'
+    mp4_medium: {
+      name: "MP4 Medium Quality",
+      video: { codec: "libx264", bitrate: "2500k", preset: "fast", crf: 23 },
+      audio: { codec: "aac", bitrate: "128k", sampleRate: "44100" },
+      container: "mp4",
     },
-    'mp4_low': {
-      name: 'MP4 Low Quality',
-      video: { codec: 'libx264', bitrate: '1000k', preset: 'faster', crf: 28 },
-      audio: { codec: 'aac', bitrate: '96k', sampleRate: '44100' },
-      container: 'mp4'
+    mp4_low: {
+      name: "MP4 Low Quality",
+      video: { codec: "libx264", bitrate: "1000k", preset: "faster", crf: 28 },
+      audio: { codec: "aac", bitrate: "96k", sampleRate: "44100" },
+      container: "mp4",
     },
-    'webm_high': {
-      name: 'WebM High Quality',
-      video: { codec: 'libvpx-vp9', bitrate: '4000k', preset: 'medium' },
-      audio: { codec: 'libopus', bitrate: '192k', sampleRate: '48000' },
-      container: 'webm'
+    webm_high: {
+      name: "WebM High Quality",
+      video: { codec: "libvpx-vp9", bitrate: "4000k", preset: "medium" },
+      audio: { codec: "libopus", bitrate: "192k", sampleRate: "48000" },
+      container: "webm",
     },
-    'hls_adaptive': {
-      name: 'HLS Adaptive Streaming',
-      video: { codec: 'libx264', bitrate: 'variable', preset: 'medium' },
-      audio: { codec: 'aac', bitrate: '128k', sampleRate: '48000' },
-      container: 'hls'
-    }
+    hls_adaptive: {
+      name: "HLS Adaptive Streaming",
+      video: { codec: "libx264", bitrate: "variable", preset: "medium" },
+      audio: { codec: "aac", bitrate: "128k", sampleRate: "48000" },
+      container: "hls",
+    },
   };
 
   constructor() {
@@ -93,42 +93,46 @@ export class VideoEncoder extends EventEmitter {
   }
 
   private async setupDirectories() {
-    const dirs = ['uploads', 'processing', 'output', 'thumbnails'];
+    const dirs = ["uploads", "processing", "output", "thumbnails"];
     for (const dir of dirs) {
-      await fs.mkdir(join(process.cwd(), 'media', dir), { recursive: true });
+      await fs.mkdir(join(process.cwd(), "media", dir), { recursive: true });
     }
   }
 
   async createEncodingJob(
-    inputPath: string, 
-    format: VideoEncodingJob['format'],
-    quality: VideoEncodingJob['quality'],
+    inputPath: string,
+    format: VideoEncodingJob["format"],
+    quality: VideoEncodingJob["quality"],
     options: {
       resolution?: string;
       bitrate?: string;
       fps?: number;
-    } = {}
+    } = {},
   ): Promise<string> {
     const jobId = randomUUID();
-    const outputPath = await this.generateOutputPath(inputPath, format, quality);
-    
+    const outputPath = await this.generateOutputPath(
+      inputPath,
+      format,
+      quality,
+    );
+
     const job: VideoEncodingJob = {
       id: jobId,
       inputPath,
       outputPath,
       format,
       quality,
-      resolution: options.resolution || 'original',
+      resolution: options.resolution || "original",
       bitrate: options.bitrate,
       fps: options.fps,
-      status: 'pending',
+      status: "pending",
       progress: 0,
-      startTime: new Date()
+      startTime: new Date(),
     };
 
     this.jobs.set(jobId, job);
-    this.emit('jobCreated', job);
-    
+    this.emit("jobCreated", job);
+
     // Start processing if under concurrent limit
     if (this.activeProcesses.size < this.concurrentJobs) {
       this.processJob(jobId);
@@ -138,21 +142,38 @@ export class VideoEncoder extends EventEmitter {
   }
 
   private async generateOutputPath(
-    inputPath: string, 
-    format: VideoEncodingJob['format'],
-    quality: VideoEncodingJob['quality']
+    inputPath: string,
+    format: VideoEncodingJob["format"],
+    quality: VideoEncodingJob["quality"],
   ): Promise<string> {
     const baseName = basename(inputPath, extname(inputPath));
     const timestamp = Date.now();
-    
+
     switch (format) {
-      case 'hls':
-        return join(process.cwd(), 'media', 'output', `${baseName}_${quality}_${timestamp}`, 'playlist.m3u8');
-      case 'dash':
-        return join(process.cwd(), 'media', 'output', `${baseName}_${quality}_${timestamp}`, 'manifest.mpd');
+      case "hls":
+        return join(
+          process.cwd(),
+          "media",
+          "output",
+          `${baseName}_${quality}_${timestamp}`,
+          "playlist.m3u8",
+        );
+      case "dash":
+        return join(
+          process.cwd(),
+          "media",
+          "output",
+          `${baseName}_${quality}_${timestamp}`,
+          "manifest.mpd",
+        );
       default:
-        const ext = format === 'mp4' ? 'mp4' : 'webm';
-        return join(process.cwd(), 'media', 'output', `${baseName}_${quality}_${timestamp}.${ext}`);
+        const ext = format === "mp4" ? "mp4" : "webm";
+        return join(
+          process.cwd(),
+          "media",
+          "output",
+          `${baseName}_${quality}_${timestamp}.${ext}`,
+        );
     }
   }
 
@@ -161,18 +182,18 @@ export class VideoEncoder extends EventEmitter {
     if (!job) return;
 
     try {
-      job.status = 'processing';
+      job.status = "processing";
       job.startTime = new Date();
-      this.emit('jobStarted', job);
+      this.emit("jobStarted", job);
 
       // Get video metadata first
       job.metadata = await this.extractMetadata(job.inputPath);
-      
+
       // Generate encoding command
       const command = this.buildFFmpegCommand(job);
-      
+
       // Start encoding process
-      const process = spawn('ffmpeg', command);
+      const process = spawn("ffmpeg", command);
       this.activeProcesses.set(jobId, process);
 
       // Track progress
@@ -180,40 +201,39 @@ export class VideoEncoder extends EventEmitter {
         this.trackProgress(jobId, process);
       }
 
-      process.on('close', async (code) => {
+      process.on("close", async (code) => {
         this.activeProcesses.delete(jobId);
-        
+
         if (code === 0) {
-          job.status = 'completed';
+          job.status = "completed";
           job.endTime = new Date();
           job.progress = 100;
-          
+
           // Generate thumbnail
           await this.generateThumbnail(job.inputPath, jobId);
-          
-          this.emit('jobCompleted', job);
+
+          this.emit("jobCompleted", job);
         } else {
-          job.status = 'failed';
+          job.status = "failed";
           job.error = `FFmpeg process exited with code ${code}`;
-          this.emit('jobFailed', job);
+          this.emit("jobFailed", job);
         }
 
         // Process next job in queue
         this.processNextJob();
       });
 
-      process.on('error', (error) => {
+      process.on("error", (error) => {
         this.activeProcesses.delete(jobId);
-        job.status = 'failed';
+        job.status = "failed";
         job.error = error.message;
-        this.emit('jobFailed', job);
+        this.emit("jobFailed", job);
         this.processNextJob();
       });
-
     } catch (error) {
-      job.status = 'failed';
-      job.error = error instanceof Error ? error.message : 'Unknown error';
-      this.emit('jobFailed', job);
+      job.status = "failed";
+      job.error = error instanceof Error ? error.message : "Unknown error";
+      this.emit("jobFailed", job);
       this.processNextJob();
     }
   }
@@ -221,127 +241,151 @@ export class VideoEncoder extends EventEmitter {
   private buildFFmpegCommand(job: VideoEncodingJob): string[] {
     const preset = this.getPresetForJob(job);
     const args: string[] = [
-      '-i', job.inputPath,
-      '-y', // Overwrite output files
-      '-threads', '0', // Use all available CPU cores
+      "-i",
+      job.inputPath,
+      "-y", // Overwrite output files
+      "-threads",
+      "0", // Use all available CPU cores
     ];
 
     // Video encoding settings
-    args.push('-c:v', preset.video.codec);
-    
+    args.push("-c:v", preset.video.codec);
+
     if (preset.video.crf) {
-      args.push('-crf', preset.video.crf.toString());
+      args.push("-crf", preset.video.crf.toString());
     } else {
-      args.push('-b:v', preset.video.bitrate);
+      args.push("-b:v", preset.video.bitrate);
     }
-    
-    args.push('-preset', preset.video.preset);
+
+    args.push("-preset", preset.video.preset);
 
     // Audio encoding settings
-    args.push('-c:a', preset.audio.codec);
-    args.push('-b:a', preset.audio.bitrate);
-    args.push('-ar', preset.audio.sampleRate);
+    args.push("-c:a", preset.audio.codec);
+    args.push("-b:a", preset.audio.bitrate);
+    args.push("-ar", preset.audio.sampleRate);
 
     // Resolution handling
-    if (job.resolution !== 'original') {
-      args.push('-vf', `scale=${job.resolution}:-2`);
+    if (job.resolution !== "original") {
+      args.push("-vf", `scale=${job.resolution}:-2`);
     }
 
     // FPS handling
     if (job.fps) {
-      args.push('-r', job.fps.toString());
+      args.push("-r", job.fps.toString());
     }
 
     // Format-specific settings
     switch (job.format) {
-      case 'hls':
+      case "hls":
         args.push(
-          '-f', 'hls',
-          '-hls_time', '6',
-          '-hls_playlist_type', 'vod',
-          '-hls_flags', 'independent_segments',
-          '-hls_segment_type', 'mpegts'
+          "-f",
+          "hls",
+          "-hls_time",
+          "6",
+          "-hls_playlist_type",
+          "vod",
+          "-hls_flags",
+          "independent_segments",
+          "-hls_segment_type",
+          "mpegts",
         );
         break;
-      case 'dash':
+      case "dash":
         args.push(
-          '-f', 'dash',
-          '-seg_duration', '6',
-          '-adaptation_sets', 'id=0,streams=v id=1,streams=a'
+          "-f",
+          "dash",
+          "-seg_duration",
+          "6",
+          "-adaptation_sets",
+          "id=0,streams=v id=1,streams=a",
         );
         break;
-      case 'webm':
-        args.push('-f', 'webm');
+      case "webm":
+        args.push("-f", "webm");
         break;
       default:
-        args.push('-f', 'mp4', '-movflags', '+faststart');
+        args.push("-f", "mp4", "-movflags", "+faststart");
     }
 
     // Ensure output directory exists
     const outputDir = dirname(job.outputPath);
-    require('fs').mkdirSync(outputDir, { recursive: true });
-    
+    require("fs").mkdirSync(outputDir, { recursive: true });
+
     args.push(job.outputPath);
-    
+
     return args;
   }
 
   private getPresetForJob(job: VideoEncodingJob): EncodingPreset {
-    if (job.format === 'hls') {
-      return this.presets['hls_adaptive'];
+    if (job.format === "hls") {
+      return this.presets["hls_adaptive"];
     }
-    
+
     const presetKey = `${job.format}_${job.quality}`;
-    return this.presets[presetKey] || this.presets[`${job.format}_medium`] || this.presets['mp4_medium'];
+    return (
+      this.presets[presetKey] ||
+      this.presets[`${job.format}_medium`] ||
+      this.presets["mp4_medium"]
+    );
   }
 
   private trackProgress(jobId: string, process: ChildProcess) {
     const job = this.jobs.get(jobId);
     if (!job || !job.metadata) return;
 
-    let progressData = '';
-    
-    process.stderr?.on('data', (data) => {
+    let progressData = "";
+
+    process.stderr?.on("data", (data) => {
       progressData += data.toString();
-      
+
       // Parse FFmpeg progress output
-      const timeMatch = progressData.match(/time=(\d{2}):(\d{2}):(\d{2}\.\d{2})/);
+      const timeMatch = progressData.match(
+        /time=(\d{2}):(\d{2}):(\d{2}\.\d{2})/,
+      );
       if (timeMatch) {
         const [, hours, minutes, seconds] = timeMatch;
-        const currentTime = parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseFloat(seconds);
-        const progress = Math.min(100, Math.round((currentTime / job.metadata.duration) * 100));
-        
+        const currentTime =
+          parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseFloat(seconds);
+        const progress = Math.min(
+          100,
+          Math.round((currentTime / job.metadata.duration) * 100),
+        );
+
         job.progress = progress;
-        this.emit('jobProgress', job);
+        this.emit("jobProgress", job);
       }
     });
   }
 
   private async extractMetadata(inputPath: string): Promise<VideoMetadata> {
     return new Promise((resolve, reject) => {
-      const process = spawn('ffprobe', [
-        '-v', 'quiet',
-        '-print_format', 'json',
-        '-show_format',
-        '-show_streams',
-        inputPath
+      const process = spawn("ffprobe", [
+        "-v",
+        "quiet",
+        "-print_format",
+        "json",
+        "-show_format",
+        "-show_streams",
+        inputPath,
       ]);
 
-      let output = '';
-      
-      process.stdout.on('data', (data) => {
+      let output = "";
+
+      process.stdout.on("data", (data) => {
         output += data.toString();
       });
 
-      process.on('close', (code) => {
+      process.on("close", (code) => {
         if (code !== 0) {
-          reject(new Error('Failed to extract metadata'));
+          reject(new Error("Failed to extract metadata"));
           return;
         }
 
         try {
           const data = JSON.parse(output);
-          const videoStream = data.streams.find((s: any) => s.codec_type === 'video');
+          const videoStream = data.streams.find(
+            (s: any) => s.codec_type === "video",
+          );
           const format = data.format;
 
           resolve({
@@ -352,7 +396,7 @@ export class VideoEncoder extends EventEmitter {
             fps: eval(videoStream.r_frame_rate), // Safe eval of fraction
             codec: videoStream.codec_name,
             format: format.format_name,
-            size: parseInt(format.size)
+            size: parseInt(format.size),
           });
         } catch (error) {
           reject(error);
@@ -361,23 +405,34 @@ export class VideoEncoder extends EventEmitter {
     });
   }
 
-  private async generateThumbnail(inputPath: string, jobId: string): Promise<void> {
-    const thumbnailPath = join(process.cwd(), 'media', 'thumbnails', `${jobId}.jpg`);
-    
+  private async generateThumbnail(
+    inputPath: string,
+    jobId: string,
+  ): Promise<void> {
+    const thumbnailPath = join(
+      process.cwd(),
+      "media",
+      "thumbnails",
+      `${jobId}.jpg`,
+    );
+
     return new Promise((resolve, reject) => {
-      const process = spawn('ffmpeg', [
-        '-i', inputPath,
-        '-vf', 'thumbnail,scale=320:240',
-        '-frames:v', '1',
-        '-y',
-        thumbnailPath
+      const process = spawn("ffmpeg", [
+        "-i",
+        inputPath,
+        "-vf",
+        "thumbnail,scale=320:240",
+        "-frames:v",
+        "1",
+        "-y",
+        thumbnailPath,
       ]);
 
-      process.on('close', (code) => {
+      process.on("close", (code) => {
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error('Failed to generate thumbnail'));
+          reject(new Error("Failed to generate thumbnail"));
         }
       });
     });
@@ -386,8 +441,9 @@ export class VideoEncoder extends EventEmitter {
   private processNextJob() {
     if (this.activeProcesses.size >= this.concurrentJobs) return;
 
-    const pendingJob = Array.from(this.jobs.values())
-      .find(job => job.status === 'pending');
+    const pendingJob = Array.from(this.jobs.values()).find(
+      (job) => job.status === "pending",
+    );
 
     if (pendingJob) {
       this.processJob(pendingJob.id);
@@ -403,24 +459,25 @@ export class VideoEncoder extends EventEmitter {
   }
 
   getActiveJobs(): VideoEncodingJob[] {
-    return Array.from(this.jobs.values())
-      .filter(job => job.status === 'processing');
+    return Array.from(this.jobs.values()).filter(
+      (job) => job.status === "processing",
+    );
   }
 
   cancelJob(jobId: string): boolean {
     const process = this.activeProcesses.get(jobId);
     const job = this.jobs.get(jobId);
-    
+
     if (process && job) {
-      process.kill('SIGTERM');
-      job.status = 'failed';
-      job.error = 'Job cancelled by user';
+      process.kill("SIGTERM");
+      job.status = "failed";
+      job.error = "Job cancelled by user";
       this.activeProcesses.delete(jobId);
-      this.emit('jobCancelled', job);
+      this.emit("jobCancelled", job);
       this.processNextJob();
       return true;
     }
-    
+
     return false;
   }
 
@@ -428,12 +485,12 @@ export class VideoEncoder extends EventEmitter {
     const jobs = Array.from(this.jobs.values());
     return {
       total: jobs.length,
-      pending: jobs.filter(j => j.status === 'pending').length,
-      processing: jobs.filter(j => j.status === 'processing').length,
-      completed: jobs.filter(j => j.status === 'completed').length,
-      failed: jobs.filter(j => j.status === 'failed').length,
+      pending: jobs.filter((j) => j.status === "pending").length,
+      processing: jobs.filter((j) => j.status === "processing").length,
+      completed: jobs.filter((j) => j.status === "completed").length,
+      failed: jobs.filter((j) => j.status === "failed").length,
       activeProcesses: this.activeProcesses.size,
-      concurrentJobs: this.concurrentJobs
+      concurrentJobs: this.concurrentJobs,
     };
   }
 

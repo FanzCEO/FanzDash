@@ -1,16 +1,35 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
+import {
   Shield,
   Bot,
   Eye,
@@ -34,31 +53,54 @@ import {
   Pause,
   RotateCcw,
   Settings,
-  Gauge
+  Gauge,
 } from "lucide-react";
 
 interface ModerationItem {
   id: string;
-  contentType: 'image' | 'video' | 'text' | 'live_stream' | 'podcast' | 'radio' | 'audio' | 'document';
-  platform: 'FanzLab' | 'BoyFanz' | 'GirlFanz' | 'DaddyFanz' | 'PupFanz' | 'TabooFanz' | 'TransFanz' | 'CougarFanz' | 'FanzCock' | 'FanzTube';
+  contentType:
+    | "image"
+    | "video"
+    | "text"
+    | "live_stream"
+    | "podcast"
+    | "radio"
+    | "audio"
+    | "document";
+  platform:
+    | "FanzLab"
+    | "BoyFanz"
+    | "GirlFanz"
+    | "DaddyFanz"
+    | "PupFanz"
+    | "TabooFanz"
+    | "TransFanz"
+    | "CougarFanz"
+    | "FanzCock"
+    | "FanzTube";
   creatorId: string;
   creatorName: string;
   content: string;
   aiScore: number;
   humanScore?: number;
-  status: 'pending' | 'approved' | 'rejected' | 'needs_review';
+  status: "pending" | "approved" | "rejected" | "needs_review";
   flaggedReasons: string[];
   moderatorId?: string;
   moderatorAction?: string;
   timestamp: string;
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  riskLevel: "low" | "medium" | "high" | "critical";
   autoModerationEnabled: boolean;
 }
 
 interface AIService {
   name: string;
-  type: 'content_analysis' | 'image_recognition' | 'text_analysis' | 'audio_analysis' | 'video_analysis';
-  status: 'active' | 'inactive';
+  type:
+    | "content_analysis"
+    | "image_recognition"
+    | "text_analysis"
+    | "audio_analysis"
+    | "video_analysis";
+  status: "active" | "inactive";
   confidence: number;
   processedToday: number;
 }
@@ -88,7 +130,7 @@ export default function ContentModerationHub() {
       moderatorAction: "Approved with age verification",
       timestamp: "2025-01-15T10:00:00Z",
       riskLevel: "medium",
-      autoModerationEnabled: true
+      autoModerationEnabled: true,
     },
     {
       id: "mod_002",
@@ -102,7 +144,7 @@ export default function ContentModerationHub() {
       flaggedReasons: ["Explicit Content", "Age Verification Required"],
       timestamp: "2025-01-15T11:30:00Z",
       riskLevel: "high",
-      autoModerationEnabled: true
+      autoModerationEnabled: true,
     },
     {
       id: "mod_003",
@@ -116,7 +158,7 @@ export default function ContentModerationHub() {
       flaggedReasons: ["Live Adult Content", "Real-time Moderation"],
       timestamp: "2025-01-15T12:00:00Z",
       riskLevel: "critical",
-      autoModerationEnabled: true
+      autoModerationEnabled: true,
     },
     {
       id: "mod_004",
@@ -133,7 +175,7 @@ export default function ContentModerationHub() {
       moderatorAction: "Approved with content warning",
       timestamp: "2025-01-15T09:15:00Z",
       riskLevel: "low",
-      autoModerationEnabled: true
+      autoModerationEnabled: true,
     },
     {
       id: "mod_005",
@@ -149,59 +191,114 @@ export default function ContentModerationHub() {
       moderatorAction: "Approved - late night slot",
       timestamp: "2025-01-15T08:45:00Z",
       riskLevel: "low",
-      autoModerationEnabled: true
-    }
+      autoModerationEnabled: true,
+    },
   ];
 
   const aiServices: AIService[] = [
-    { name: "OpenAI GPT-4o Vision", type: "image_recognition", status: "active", confidence: 94, processedToday: 2847 },
-    { name: "OpenAI GPT-5 Text Analysis", type: "text_analysis", status: "active", confidence: 96, processedToday: 1293 },
-    { name: "Google Perspective API", type: "text_analysis", status: "active", confidence: 89, processedToday: 945 },
-    { name: "LAION Safety CLIP", type: "image_recognition", status: "active", confidence: 91, processedToday: 3621 },
-    { name: "OpenAI Whisper", type: "audio_analysis", status: "active", confidence: 88, processedToday: 567 },
-    { name: "Google Video Intelligence", type: "video_analysis", status: "active", confidence: 92, processedToday: 1843 },
-    { name: "AWS Rekognition", type: "video_analysis", status: "active", confidence: 87, processedToday: 2156 },
-    { name: "Custom NudeNet Model", type: "image_recognition", status: "active", confidence: 93, processedToday: 4782 }
+    {
+      name: "OpenAI GPT-4o Vision",
+      type: "image_recognition",
+      status: "active",
+      confidence: 94,
+      processedToday: 2847,
+    },
+    {
+      name: "OpenAI GPT-5 Text Analysis",
+      type: "text_analysis",
+      status: "active",
+      confidence: 96,
+      processedToday: 1293,
+    },
+    {
+      name: "Google Perspective API",
+      type: "text_analysis",
+      status: "active",
+      confidence: 89,
+      processedToday: 945,
+    },
+    {
+      name: "LAION Safety CLIP",
+      type: "image_recognition",
+      status: "active",
+      confidence: 91,
+      processedToday: 3621,
+    },
+    {
+      name: "OpenAI Whisper",
+      type: "audio_analysis",
+      status: "active",
+      confidence: 88,
+      processedToday: 567,
+    },
+    {
+      name: "Google Video Intelligence",
+      type: "video_analysis",
+      status: "active",
+      confidence: 92,
+      processedToday: 1843,
+    },
+    {
+      name: "AWS Rekognition",
+      type: "video_analysis",
+      status: "active",
+      confidence: 87,
+      processedToday: 2156,
+    },
+    {
+      name: "Custom NudeNet Model",
+      type: "image_recognition",
+      status: "active",
+      confidence: 93,
+      processedToday: 4782,
+    },
   ];
 
   const handleApproveContent = useMutation({
-    mutationFn: (itemId: string) => apiRequest("POST", `/api/moderation/${itemId}/approve`),
+    mutationFn: (itemId: string) =>
+      apiRequest("POST", `/api/moderation/${itemId}/approve`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/moderation/items"] });
       toast({ title: "Content approved successfully" });
-    }
+    },
   });
 
   const handleRejectContent = useMutation({
-    mutationFn: (itemId: string) => apiRequest("POST", `/api/moderation/${itemId}/reject`),
+    mutationFn: (itemId: string) =>
+      apiRequest("POST", `/api/moderation/${itemId}/reject`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/moderation/items"] });
       toast({ title: "Content rejected successfully" });
-    }
+    },
   });
 
   const handleToggleAutoModeration = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/moderation/auto-toggle", { enabled: !autoModerationEnabled }),
+    mutationFn: () =>
+      apiRequest("POST", "/api/moderation/auto-toggle", {
+        enabled: !autoModerationEnabled,
+      }),
     onSuccess: () => {
       setAutoModerationEnabled(!autoModerationEnabled);
-      toast({ 
-        title: `Auto-moderation ${!autoModerationEnabled ? 'enabled' : 'disabled'}`,
-        description: `AI moderation is now ${!autoModerationEnabled ? 'active' : 'paused'} across all platforms`
+      toast({
+        title: `Auto-moderation ${!autoModerationEnabled ? "enabled" : "disabled"}`,
+        description: `AI moderation is now ${!autoModerationEnabled ? "active" : "paused"} across all platforms`,
       });
-    }
+    },
   });
 
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: "bg-yellow-600",
-      approved: "bg-green-600", 
+      approved: "bg-green-600",
       rejected: "bg-red-600",
-      needs_review: "bg-orange-600"
+      needs_review: "bg-orange-600",
     } as const;
 
     return (
-      <Badge className={variants[status as keyof typeof variants] || "bg-gray-600"}>
-        {status.replace('_', ' ').toUpperCase()}
+      <Badge
+        className={variants[status as keyof typeof variants] || "bg-gray-600"}
+      >
+        {status.replace("_", " ").toUpperCase()}
       </Badge>
     );
   };
@@ -210,12 +307,14 @@ export default function ContentModerationHub() {
     const variants = {
       low: "bg-green-700",
       medium: "bg-yellow-700",
-      high: "bg-orange-700", 
-      critical: "bg-red-700"
+      high: "bg-orange-700",
+      critical: "bg-red-700",
     } as const;
 
     return (
-      <Badge className={variants[risk as keyof typeof variants] || "bg-gray-600"}>
+      <Badge
+        className={variants[risk as keyof typeof variants] || "bg-gray-600"}
+      >
         {risk.toUpperCase()}
       </Badge>
     );
@@ -223,32 +322,49 @@ export default function ContentModerationHub() {
 
   const getContentTypeIcon = (type: string) => {
     switch (type) {
-      case 'image': return <ImageIcon className="w-4 h-4" />;
-      case 'video': return <Video className="w-4 h-4" />;
-      case 'text': return <FileText className="w-4 h-4" />;
-      case 'live_stream': return <Play className="w-4 h-4" />;
-      case 'podcast': return <Mic className="w-4 h-4" />;
-      case 'radio': return <Radio className="w-4 h-4" />;
-      default: return <FileText className="w-4 h-4" />;
+      case "image":
+        return <ImageIcon className="w-4 h-4" />;
+      case "video":
+        return <Video className="w-4 h-4" />;
+      case "text":
+        return <FileText className="w-4 h-4" />;
+      case "live_stream":
+        return <Play className="w-4 h-4" />;
+      case "podcast":
+        return <Mic className="w-4 h-4" />;
+      case "radio":
+        return <Radio className="w-4 h-4" />;
+      default:
+        return <FileText className="w-4 h-4" />;
     }
   };
 
-  const filteredItems = moderationItems.filter(item => {
-    const matchesPlatform = selectedPlatform === "all" || item.platform === selectedPlatform;
-    const matchesContentType = selectedContentType === "all" || item.contentType === selectedContentType;
-    const matchesSearch = !searchQuery || 
+  const filteredItems = moderationItems.filter((item) => {
+    const matchesPlatform =
+      selectedPlatform === "all" || item.platform === selectedPlatform;
+    const matchesContentType =
+      selectedContentType === "all" || item.contentType === selectedContentType;
+    const matchesSearch =
+      !searchQuery ||
       item.creatorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.content.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     return matchesPlatform && matchesContentType && matchesSearch;
   });
 
   const stats = {
     totalItems: moderationItems.length,
-    pendingReview: moderationItems.filter(item => item.status === 'pending' || item.status === 'needs_review').length,
-    approvedToday: moderationItems.filter(item => item.status === 'approved').length,
-    rejectedToday: moderationItems.filter(item => item.status === 'rejected').length,
-    aiProcessedToday: aiServices.reduce((sum, service) => sum + service.processedToday, 0)
+    pendingReview: moderationItems.filter(
+      (item) => item.status === "pending" || item.status === "needs_review",
+    ).length,
+    approvedToday: moderationItems.filter((item) => item.status === "approved")
+      .length,
+    rejectedToday: moderationItems.filter((item) => item.status === "rejected")
+      .length,
+    aiProcessedToday: aiServices.reduce(
+      (sum, service) => sum + service.processedToday,
+      0,
+    ),
   };
 
   return (
@@ -257,15 +373,21 @@ export default function ContentModerationHub() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Content Moderation Hub</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Content Moderation Hub
+            </h1>
             <p className="text-muted-foreground">
-              AI-powered moderation across all Fanz™ platforms and content types
+              AI-powered moderation across all Fanz™ platforms and content
+              types
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className={`border-2 ${autoModerationEnabled ? 'border-green-500 text-green-400' : 'border-red-500 text-red-400'}`}>
+            <Badge
+              variant="outline"
+              className={`border-2 ${autoModerationEnabled ? "border-green-500 text-green-400" : "border-red-500 text-red-400"}`}
+            >
               <Bot className="w-4 h-4 mr-2" />
-              AI Moderation {autoModerationEnabled ? 'ACTIVE' : 'PAUSED'}
+              AI Moderation {autoModerationEnabled ? "ACTIVE" : "PAUSED"}
             </Badge>
             <Button
               onClick={() => handleToggleAutoModeration.mutate()}
@@ -273,8 +395,12 @@ export default function ContentModerationHub() {
               variant={autoModerationEnabled ? "destructive" : "default"}
               data-testid="button-toggle-auto-moderation"
             >
-              {autoModerationEnabled ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-              {autoModerationEnabled ? 'Pause AI' : 'Resume AI'}
+              {autoModerationEnabled ? (
+                <Pause className="w-4 h-4 mr-2" />
+              ) : (
+                <Play className="w-4 h-4 mr-2" />
+              )}
+              {autoModerationEnabled ? "Pause AI" : "Resume AI"}
             </Button>
           </div>
         </div>
@@ -287,7 +413,9 @@ export default function ContentModerationHub() {
                 <Activity className="h-8 w-8 text-cyan-400" />
                 <div>
                   <p className="text-sm font-medium">Total Items</p>
-                  <p className="text-2xl font-bold text-cyan-400">{stats.totalItems}</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {stats.totalItems}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -299,7 +427,9 @@ export default function ContentModerationHub() {
                 <Clock className="h-8 w-8 text-yellow-400" />
                 <div>
                   <p className="text-sm font-medium">Pending Review</p>
-                  <p className="text-2xl font-bold text-yellow-400">{stats.pendingReview}</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {stats.pendingReview}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -311,7 +441,9 @@ export default function ContentModerationHub() {
                 <CheckCircle className="h-8 w-8 text-green-400" />
                 <div>
                   <p className="text-sm font-medium">Approved Today</p>
-                  <p className="text-2xl font-bold text-green-400">{stats.approvedToday}</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {stats.approvedToday}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -323,7 +455,9 @@ export default function ContentModerationHub() {
                 <XCircle className="h-8 w-8 text-red-400" />
                 <div>
                   <p className="text-sm font-medium">Rejected Today</p>
-                  <p className="text-2xl font-bold text-red-400">{stats.rejectedToday}</p>
+                  <p className="text-2xl font-bold text-red-400">
+                    {stats.rejectedToday}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -335,7 +469,9 @@ export default function ContentModerationHub() {
                 <Brain className="h-8 w-8 text-purple-400" />
                 <div>
                   <p className="text-sm font-medium">AI Processed</p>
-                  <p className="text-2xl font-bold text-purple-400">{stats.aiProcessedToday.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-purple-400">
+                    {stats.aiProcessedToday.toLocaleString()}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -354,8 +490,12 @@ export default function ContentModerationHub() {
             {/* Filters */}
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Content Moderation Queue</CardTitle>
-                <CardDescription>Review and moderate content across all platforms</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Content Moderation Queue
+                </CardTitle>
+                <CardDescription>
+                  Review and moderate content across all platforms
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -369,8 +509,11 @@ export default function ContentModerationHub() {
                       data-testid="input-moderation-search"
                     />
                   </div>
-                  
-                  <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+
+                  <Select
+                    value={selectedPlatform}
+                    onValueChange={setSelectedPlatform}
+                  >
                     <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Filter by platform" />
                     </SelectTrigger>
@@ -389,7 +532,10 @@ export default function ContentModerationHub() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={selectedContentType} onValueChange={setSelectedContentType}>
+                  <Select
+                    value={selectedContentType}
+                    onValueChange={setSelectedContentType}
+                  >
                     <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Filter by content type" />
                     </SelectTrigger>
@@ -426,7 +572,9 @@ export default function ContentModerationHub() {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               {getContentTypeIcon(item.contentType)}
-                              <span className="capitalize">{item.contentType.replace('_', ' ')}</span>
+                              <span className="capitalize">
+                                {item.contentType.replace("_", " ")}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -443,22 +591,23 @@ export default function ContentModerationHub() {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Progress value={item.aiScore} className="w-16" />
-                              <span className="text-sm font-mono">{item.aiScore}%</span>
+                              <span className="text-sm font-mono">
+                                {item.aiScore}%
+                              </span>
                             </div>
                           </TableCell>
-                          <TableCell>
-                            {getRiskBadge(item.riskLevel)}
-                          </TableCell>
-                          <TableCell>
-                            {getStatusBadge(item.status)}
-                          </TableCell>
+                          <TableCell>{getRiskBadge(item.riskLevel)}</TableCell>
+                          <TableCell>{getStatusBadge(item.status)}</TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              {(item.status === 'pending' || item.status === 'needs_review') && (
+                              {(item.status === "pending" ||
+                                item.status === "needs_review") && (
                                 <>
                                   <Button
                                     size="sm"
-                                    onClick={() => handleApproveContent.mutate(item.id)}
+                                    onClick={() =>
+                                      handleApproveContent.mutate(item.id)
+                                    }
                                     disabled={handleApproveContent.isPending}
                                     className="bg-green-600 hover:bg-green-700"
                                     data-testid={`button-approve-${item.id}`}
@@ -468,7 +617,9 @@ export default function ContentModerationHub() {
                                   <Button
                                     size="sm"
                                     variant="destructive"
-                                    onClick={() => handleRejectContent.mutate(item.id)}
+                                    onClick={() =>
+                                      handleRejectContent.mutate(item.id)
+                                    }
                                     disabled={handleRejectContent.isPending}
                                     data-testid={`button-reject-${item.id}`}
                                   >
@@ -476,7 +627,11 @@ export default function ContentModerationHub() {
                                   </Button>
                                 </>
                               )}
-                              <Button size="sm" variant="outline" data-testid={`button-view-${item.id}`}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                data-testid={`button-view-${item.id}`}
+                              >
                                 <Eye className="w-3 h-3" />
                               </Button>
                             </div>
@@ -493,8 +648,12 @@ export default function ContentModerationHub() {
           <TabsContent value="ai-services" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">AI Moderation Services</CardTitle>
-                <CardDescription>Monitor and manage AI-powered content analysis engines</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  AI Moderation Services
+                </CardTitle>
+                <CardDescription>
+                  Monitor and manage AI-powered content analysis engines
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -502,23 +661,38 @@ export default function ContentModerationHub() {
                     <Card key={index} className="bg-gray-800/50">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-white">{service.name}</h3>
-                          <Badge className={service.status === 'active' ? 'bg-green-600' : 'bg-red-600'}>
+                          <h3 className="font-semibold text-white">
+                            {service.name}
+                          </h3>
+                          <Badge
+                            className={
+                              service.status === "active"
+                                ? "bg-green-600"
+                                : "bg-red-600"
+                            }
+                          >
                             {service.status.toUpperCase()}
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-400 mb-3 capitalize">
-                          {service.type.replace('_', ' ')}
+                          {service.type.replace("_", " ")}
                         </p>
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span>Confidence:</span>
-                            <span className="font-mono">{service.confidence}%</span>
+                            <span className="font-mono">
+                              {service.confidence}%
+                            </span>
                           </div>
-                          <Progress value={service.confidence} className="h-2" />
+                          <Progress
+                            value={service.confidence}
+                            className="h-2"
+                          />
                           <div className="flex justify-between text-sm">
                             <span>Processed Today:</span>
-                            <span className="font-mono text-cyan-400">{service.processedToday.toLocaleString()}</span>
+                            <span className="font-mono text-cyan-400">
+                              {service.processedToday.toLocaleString()}
+                            </span>
                           </div>
                         </div>
                       </CardContent>
@@ -532,20 +706,29 @@ export default function ContentModerationHub() {
           <TabsContent value="real-time" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Real-time Moderation Monitor</CardTitle>
-                <CardDescription>Live monitoring of content across all platforms</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Real-time Moderation Monitor
+                </CardTitle>
+                <CardDescription>
+                  Live monitoring of content across all platforms
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
                   <Activity className="w-16 h-16 mx-auto mb-4 text-cyan-400 animate-pulse" />
-                  <p className="text-lg font-medium text-white mb-2">Real-time monitoring active</p>
+                  <p className="text-lg font-medium text-white mb-2">
+                    Real-time monitoring active
+                  </p>
                   <p className="text-gray-400">
-                    Monitoring live streams, real-time uploads, and user interactions across all Fanz™ platforms
+                    Monitoring live streams, real-time uploads, and user
+                    interactions across all Fanz™ platforms
                   </p>
                   <div className="mt-6 grid grid-cols-3 gap-4 text-center">
                     <div>
                       <p className="text-2xl font-bold text-green-400">847</p>
-                      <p className="text-sm text-gray-400">Live Streams Active</p>
+                      <p className="text-sm text-gray-400">
+                        Live Streams Active
+                      </p>
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-yellow-400">23</p>
@@ -564,8 +747,12 @@ export default function ContentModerationHub() {
           <TabsContent value="analytics" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Moderation Analytics</CardTitle>
-                <CardDescription>Performance metrics and trends across all platforms</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Moderation Analytics
+                </CardTitle>
+                <CardDescription>
+                  Performance metrics and trends across all platforms
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -577,7 +764,9 @@ export default function ContentModerationHub() {
                   <div className="text-center p-6 bg-gray-800/50 rounded-lg">
                     <Gauge className="w-12 h-12 mx-auto mb-4 text-blue-400" />
                     <p className="text-3xl font-bold text-blue-400">2.3s</p>
-                    <p className="text-sm text-gray-400">Average Processing Time</p>
+                    <p className="text-sm text-gray-400">
+                      Average Processing Time
+                    </p>
                   </div>
                   <div className="text-center p-6 bg-gray-800/50 rounded-lg">
                     <Shield className="w-12 h-12 mx-auto mb-4 text-purple-400" />

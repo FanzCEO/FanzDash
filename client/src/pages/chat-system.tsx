@@ -2,19 +2,32 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Send, Users, MessageCircle, Phone, Video, Settings } from "lucide-react";
+import {
+  Send,
+  Users,
+  MessageCircle,
+  Phone,
+  Video,
+  Settings,
+} from "lucide-react";
 
 interface ChatRoom {
   id: string;
   name: string;
-  type: 'direct' | 'group' | 'broadcast' | 'emergency';
+  type: "direct" | "group" | "broadcast" | "emergency";
   participants: string[];
   isActive: boolean;
   createdAt: string;
@@ -26,7 +39,7 @@ interface ChatMessage {
   roomId: string;
   senderId: string;
   content: string;
-  messageType: 'text' | 'image' | 'file' | 'system';
+  messageType: "text" | "image" | "file" | "system";
   attachmentUrl?: string;
   isEdited: boolean;
   isDeleted: boolean;
@@ -54,7 +67,9 @@ export default function ChatSystem() {
     refetchInterval: 3000, // Refresh every 3 seconds
   });
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery<ChatMessage[]>({
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<
+    ChatMessage[]
+  >({
     queryKey: ["/api/chat/messages", selectedRoom],
     enabled: !!selectedRoom,
     refetchInterval: 1000, // Refresh every second for real-time feel
@@ -65,11 +80,23 @@ export default function ChatSystem() {
   });
 
   const sendMessageMutation = useMutation({
-    mutationFn: async ({ roomId, content }: { roomId: string; content: string }) => {
-      return apiRequest("POST", "/api/chat/messages", { roomId, content, messageType: "text" });
+    mutationFn: async ({
+      roomId,
+      content,
+    }: {
+      roomId: string;
+      content: string;
+    }) => {
+      return apiRequest("POST", "/api/chat/messages", {
+        roomId,
+        content,
+        messageType: "text",
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/chat/messages", selectedRoom] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/chat/messages", selectedRoom],
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/chat/rooms"] });
       setMessageInput("");
       scrollToBottom();
@@ -84,8 +111,20 @@ export default function ChatSystem() {
   });
 
   const createRoomMutation = useMutation({
-    mutationFn: async ({ name, type, participants }: { name: string; type: string; participants: string[] }) => {
-      return apiRequest("POST", "/api/chat/rooms", { name, type, participants });
+    mutationFn: async ({
+      name,
+      type,
+      participants,
+    }: {
+      name: string;
+      type: string;
+      participants: string[];
+    }) => {
+      return apiRequest("POST", "/api/chat/rooms", {
+        name,
+        type,
+        participants,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chat/rooms"] });
@@ -113,10 +152,10 @@ export default function ChatSystem() {
 
   const handleSendMessage = () => {
     if (!selectedRoom || !messageInput.trim()) return;
-    
+
     sendMessageMutation.mutate({
       roomId: selectedRoom,
-      content: messageInput.trim()
+      content: messageInput.trim(),
     });
   };
 
@@ -131,14 +170,14 @@ export default function ChatSystem() {
     createRoomMutation.mutate({
       name: `Emergency - ${new Date().toLocaleTimeString()}`,
       type: "emergency",
-      participants: []
+      participants: [],
     });
   };
 
   const formatMessageTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -156,8 +195,8 @@ export default function ChatSystem() {
     }
   };
 
-  const filteredRooms = rooms.filter(room =>
-    room.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredRooms = rooms.filter((room) =>
+    room.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   if (roomsLoading) {
@@ -177,11 +216,15 @@ export default function ChatSystem() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Secure Communication Hub</h1>
-            <p className="text-muted-foreground">Enterprise Team Communication & Crisis Response</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Secure Communication Hub
+            </h1>
+            <p className="text-muted-foreground">
+              Enterprise Team Communication & Crisis Response
+            </p>
           </div>
           <div className="flex gap-2">
-            <Button 
+            <Button
               onClick={createEmergencyRoom}
               className="bg-red-600 hover:bg-red-700"
               data-testid="button-create-emergency"
@@ -215,8 +258,8 @@ export default function ChatSystem() {
                     <div
                       key={room.id}
                       className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                        selectedRoom === room.id 
-                          ? "bg-cyan-500/20 border border-cyan-500/50" 
+                        selectedRoom === room.id
+                          ? "bg-cyan-500/20 border border-cyan-500/50"
                           : "bg-gray-800/50 hover:bg-gray-700/50"
                       }`}
                       onClick={() => setSelectedRoom(room.id)}
@@ -224,9 +267,13 @@ export default function ChatSystem() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">{getRoomIcon(room.type)}</span>
+                          <span className="text-lg">
+                            {getRoomIcon(room.type)}
+                          </span>
                           <div>
-                            <p className="font-medium text-white">{room.name}</p>
+                            <p className="font-medium text-white">
+                              {room.name}
+                            </p>
                             <p className="text-xs text-gray-400">
                               {room.participants.length} participants
                             </p>
@@ -256,20 +303,35 @@ export default function ChatSystem() {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-cyan-400">
-                        {rooms.find(r => r.id === selectedRoom)?.name || "Chat Room"}
+                        {rooms.find((r) => r.id === selectedRoom)?.name ||
+                          "Chat Room"}
                       </CardTitle>
                       <CardDescription className="text-gray-400">
-                        {rooms.find(r => r.id === selectedRoom)?.participants.length || 0} participants
+                        {rooms.find((r) => r.id === selectedRoom)?.participants
+                          .length || 0}{" "}
+                        participants
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="border-cyan-500 text-cyan-400">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-cyan-500 text-cyan-400"
+                      >
                         <Phone className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline" className="border-cyan-500 text-cyan-400">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-cyan-500 text-cyan-400"
+                      >
                         <Video className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline" className="border-cyan-500 text-cyan-400">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-cyan-500 text-cyan-400"
+                      >
                         <Users className="w-4 h-4" />
                       </Button>
                     </div>
@@ -281,9 +343,13 @@ export default function ChatSystem() {
                   <ScrollArea className="flex-1 h-96 mb-4">
                     <div className="space-y-4 p-4">
                       {messagesLoading ? (
-                        <p className="text-center text-gray-400">Loading messages...</p>
+                        <p className="text-center text-gray-400">
+                          Loading messages...
+                        </p>
                       ) : messages.length === 0 ? (
-                        <p className="text-center text-gray-400">No messages yet. Start the conversation!</p>
+                        <p className="text-center text-gray-400">
+                          No messages yet. Start the conversation!
+                        </p>
                       ) : (
                         messages.map((message) => (
                           <div key={message.id} className="flex gap-3">
@@ -295,13 +361,19 @@ export default function ChatSystem() {
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="font-medium text-white">
-                                  {message.senderName || `User ${message.senderId}`}
+                                  {message.senderName ||
+                                    `User ${message.senderId}`}
                                 </span>
                                 <span className="text-xs text-gray-400">
                                   {formatMessageTime(message.createdAt)}
                                 </span>
                                 {message.isEdited && (
-                                  <Badge variant="secondary" className="text-xs">edited</Badge>
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    edited
+                                  </Badge>
                                 )}
                               </div>
                               <p className="text-gray-300">{message.content}</p>
@@ -323,9 +395,11 @@ export default function ChatSystem() {
                       className="flex-1 bg-gray-800 border-gray-700"
                       data-testid="input-message"
                     />
-                    <Button 
+                    <Button
                       onClick={handleSendMessage}
-                      disabled={!messageInput.trim() || sendMessageMutation.isPending}
+                      disabled={
+                        !messageInput.trim() || sendMessageMutation.isPending
+                      }
                       className="bg-cyan-500 hover:bg-cyan-600"
                       data-testid="button-send-message"
                     >
@@ -338,7 +412,9 @@ export default function ChatSystem() {
               <CardContent className="flex items-center justify-center h-full">
                 <div className="text-center">
                   <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-500" />
-                  <p className="text-gray-400">Select a room to start chatting</p>
+                  <p className="text-gray-400">
+                    Select a room to start chatting
+                  </p>
                 </div>
               </CardContent>
             )}
@@ -348,7 +424,9 @@ export default function ChatSystem() {
         {/* Online Users */}
         <Card className="bg-gray-900/50 border-cyan-500/20 mt-6">
           <CardHeader>
-            <CardTitle className="text-cyan-400">Team Status ({users.filter(u => u.isActive).length} online)</CardTitle>
+            <CardTitle className="text-cyan-400">
+              Team Status ({users.filter((u) => u.isActive).length} online)
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
@@ -357,7 +435,9 @@ export default function ChatSystem() {
                   key={user.id}
                   className="flex items-center gap-2 px-3 py-1 bg-gray-800/50 rounded-full"
                 >
-                  <div className={`w-2 h-2 rounded-full ${user.isActive ? 'bg-green-400' : 'bg-gray-500'}`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${user.isActive ? "bg-green-400" : "bg-gray-500"}`}
+                  />
                   <span className="text-sm text-white">{user.username}</span>
                   <Badge variant="outline" className="text-xs">
                     {user.role}

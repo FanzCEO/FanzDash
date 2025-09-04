@@ -4,20 +4,20 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
+import {
   MessageCircle,
   MoreHorizontal,
   Edit,
   Trash2,
   Heart,
   RefreshCw,
-  Verified
+  Verified,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -65,7 +65,7 @@ export function CommentReplies({
   onLikeReply,
   onReplyToComment,
   onEditReply,
-  className = ""
+  className = "",
 }: CommentRepliesProps) {
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
   const [likingReplies, setLikingReplies] = useState<Set<string>>(new Set());
@@ -83,14 +83,14 @@ export function CommentReplies({
 
   const handleLikeReply = async (replyId: string) => {
     if (likingReplies.has(replyId)) return;
-    
-    setLikingReplies(prev => new Set(prev).add(replyId));
+
+    setLikingReplies((prev) => new Set(prev).add(replyId));
     try {
       await onLikeReply(replyId);
     } catch (error) {
       console.error("Failed to like reply:", error);
     } finally {
-      setLikingReplies(prev => {
+      setLikingReplies((prev) => {
         const newSet = new Set(prev);
         newSet.delete(replyId);
         return newSet;
@@ -130,8 +130,8 @@ export function CommentReplies({
       {showReplies && replies.length > 0 && (
         <div className="space-y-3 pl-5 border-l-2 border-muted ml-3">
           {replies.map((reply) => (
-            <div 
-              key={reply.id} 
+            <div
+              key={reply.id}
               className="flex space-x-3"
               data-testid={`reply-${reply.id}`}
             >
@@ -152,35 +152,41 @@ export function CommentReplies({
                       {reply.name || reply.username}
                     </h6>
                   </Link>
-                  
+
                   {reply.isVerified && (
                     <Verified className="h-3 w-3 text-blue-500 fill-current" />
                   )}
 
                   <span className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(reply.createdAt), {
+                      addSuffix: true,
+                    })}
                   </span>
 
                   {/* Reply Actions Menu */}
                   {(reply.canEdit || reply.canDelete || isPostOwner) && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-auto">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 ml-auto"
+                        >
                           <MoreHorizontal className="h-3 w-3" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         {reply.canEdit && (
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => onEditReply(reply.id, reply.content)}
                           >
                             <Edit className="h-4 w-4 mr-2" />
                             Edit
                           </DropdownMenuItem>
                         )}
-                        
+
                         {(reply.canDelete || isPostOwner) && (
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => onDeleteReply(reply.id)}
                             className="text-red-600"
                           >
@@ -197,26 +203,28 @@ export function CommentReplies({
                 <div className="space-y-2">
                   {reply.content && (
                     <p className="text-sm break-words">
-                      <span dangerouslySetInnerHTML={{ __html: reply.content }} />
+                      <span
+                        dangerouslySetInnerHTML={{ __html: reply.content }}
+                      />
                     </p>
                   )}
 
                   {reply.sticker && (
                     <div>
-                      <img 
-                        src={reply.sticker} 
-                        alt="Sticker" 
-                        className="max-w-16 rounded" 
+                      <img
+                        src={reply.sticker}
+                        alt="Sticker"
+                        className="max-w-16 rounded"
                       />
                     </div>
                   )}
 
                   {reply.gifImage && (
                     <div>
-                      <img 
-                        src={reply.gifImage} 
-                        alt="GIF" 
-                        className="max-w-48 rounded" 
+                      <img
+                        src={reply.gifImage}
+                        alt="GIF"
+                        className="max-w-48 rounded"
                       />
                     </div>
                   )}
@@ -241,19 +249,19 @@ export function CommentReplies({
                     disabled={likingReplies.has(reply.id)}
                     className={cn(
                       "px-0 text-xs",
-                      reply.isLikedByUser 
-                        ? "text-red-500 hover:text-red-600" 
-                        : "text-muted-foreground hover:text-red-500"
+                      reply.isLikedByUser
+                        ? "text-red-500 hover:text-red-600"
+                        : "text-muted-foreground hover:text-red-500",
                     )}
                     data-testid={`like-reply-${reply.id}`}
                   >
-                    <Heart className={cn(
-                      "h-3 w-3 mr-1",
-                      reply.isLikedByUser ? "fill-current" : ""
-                    )} />
-                    {reply.likesCount > 0 && (
-                      <span>{reply.likesCount}</span>
-                    )}
+                    <Heart
+                      className={cn(
+                        "h-3 w-3 mr-1",
+                        reply.isLikedByUser ? "fill-current" : "",
+                      )}
+                    />
+                    {reply.likesCount > 0 && <span>{reply.likesCount}</span>}
                   </Button>
                 </div>
               </div>

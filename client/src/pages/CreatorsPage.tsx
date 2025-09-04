@@ -6,17 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  Search, 
-  Filter, 
-  Users, 
-  MapPin, 
+import {
+  Search,
+  Filter,
+  Users,
+  MapPin,
   Calendar,
   Heart,
   Star,
@@ -25,7 +25,7 @@ import {
   ChevronDown,
   SlidersHorizontal,
   UserPlus,
-  Crown
+  Crown,
 } from "lucide-react";
 
 interface Creator {
@@ -66,7 +66,7 @@ interface CreatorsPageProps {
     minAge?: number;
     maxAge?: number;
     category?: string;
-    sortBy?: 'latest' | 'popular' | 'featured' | 'price_low' | 'price_high';
+    sortBy?: "latest" | "popular" | "featured" | "price_low" | "price_high";
   };
   onSearch: (query: string) => void;
   onFilter: (filters: any) => void;
@@ -97,10 +97,12 @@ export function CreatorsPage({
   isLoading,
   settings,
   user,
-  className = ""
+  className = "",
 }: CreatorsPageProps) {
   const [searchQuery, setSearchQuery] = useState(currentFilters.query || "");
-  const [selectedCategory, setSelectedCategory] = useState(currentFilters.category || "");
+  const [selectedCategory, setSelectedCategory] = useState(
+    currentFilters.category || "",
+  );
   const [sortBy, setSortBy] = useState(currentFilters.sortBy || "latest");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -118,16 +120,18 @@ export function CreatorsPage({
     <Card className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-0 bg-gradient-to-br from-background to-muted/10">
       <div className="relative">
         {/* Cover Image */}
-        <div 
+        <div
           className="w-full h-40 bg-gradient-to-br from-primary/20 to-purple-500/20 relative overflow-hidden"
           style={{
-            backgroundImage: creator.coverImage ? `url(${creator.coverImage})` : undefined,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
+            backgroundImage: creator.coverImage
+              ? `url(${creator.coverImage})`
+              : undefined,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         >
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-          
+
           {/* Live Indicator */}
           {creator.isLive && (
             <div className="absolute top-3 left-3">
@@ -173,9 +177,11 @@ export function CreatorsPage({
               <Verified className="h-5 w-5 text-blue-500 fill-current flex-shrink-0" />
             )}
           </div>
-          
-          <p className="text-muted-foreground text-sm mb-2">@{creator.username}</p>
-          
+
+          <p className="text-muted-foreground text-sm mb-2">
+            @{creator.username}
+          </p>
+
           {creator.bio && (
             <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
               {creator.bio}
@@ -193,7 +199,9 @@ export function CreatorsPage({
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-4 text-center">
           <div>
-            <p className="text-lg font-bold">{creator.subscribersCount.toLocaleString()}</p>
+            <p className="text-lg font-bold">
+              {creator.subscribersCount.toLocaleString()}
+            </p>
             <p className="text-xs text-muted-foreground">Followers</p>
           </div>
           <div>
@@ -202,7 +210,8 @@ export function CreatorsPage({
           </div>
           <div>
             <p className="text-lg font-bold">
-              {settings.currencySymbol}{creator.subscriptionPrice}
+              {settings.currencySymbol}
+              {creator.subscriptionPrice}
             </p>
             <p className="text-xs text-muted-foreground">per month</p>
           </div>
@@ -228,7 +237,10 @@ export function CreatorsPage({
         <div className="space-y-2">
           {user?.isGuest ? (
             <Link href="/signup">
-              <Button className="w-full" data-testid={`view-creator-${creator.id}`}>
+              <Button
+                className="w-full"
+                data-testid={`view-creator-${creator.id}`}
+              >
                 <UserPlus className="h-4 w-4 mr-2" />
                 View Profile
               </Button>
@@ -236,17 +248,23 @@ export function CreatorsPage({
           ) : (
             <div className="flex space-x-2">
               <Link href={`/${creator.username}`} className="flex-1">
-                <Button variant="outline" className="w-full" data-testid={`view-creator-${creator.id}`}>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  data-testid={`view-creator-${creator.id}`}
+                >
                   View Profile
                 </Button>
               </Link>
-              <Button 
+              <Button
                 size="sm"
                 variant={creator.isSubscribed ? "secondary" : "default"}
                 className="px-3"
                 data-testid={`subscribe-creator-${creator.id}`}
               >
-                <Heart className={`h-4 w-4 ${creator.isSubscribed ? 'fill-current' : ''}`} />
+                <Heart
+                  className={`h-4 w-4 ${creator.isSubscribed ? "fill-current" : ""}`}
+                />
               </Button>
             </div>
           )}
@@ -261,8 +279,8 @@ export function CreatorsPage({
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
             {category.image && (
-              <img 
-                src={category.image} 
+              <img
+                src={category.image}
                 alt={category.name}
                 className="w-8 h-8 rounded object-cover"
               />
@@ -297,20 +315,22 @@ export function CreatorsPage({
   );
 
   return (
-    <section className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}>
+    <section
+      className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}
+    >
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6">
             <Users className="h-10 w-10 text-primary" />
           </div>
-          
+
           <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-4">
             Discover Creators
           </h1>
-          
+
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            The best creators are here. 
+            The best creators are here.
             {user?.isGuest && settings.registrationActive && (
               <>
                 {" "}
@@ -364,32 +384,37 @@ export function CreatorsPage({
 
                 {/* Sort Dropdown */}
                 <div className="mb-4">
-                  <label className="text-sm font-medium mb-2 block">Sort by</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Sort by
+                  </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-full justify-between">
-                        {sortBy === 'latest' && 'Latest'}
-                        {sortBy === 'popular' && 'Most Popular'}
-                        {sortBy === 'featured' && 'Featured'}
-                        {sortBy === 'price_low' && 'Price: Low to High'}
-                        {sortBy === 'price_high' && 'Price: High to Low'}
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between"
+                      >
+                        {sortBy === "latest" && "Latest"}
+                        {sortBy === "popular" && "Most Popular"}
+                        {sortBy === "featured" && "Featured"}
+                        {sortBy === "price_low" && "Price: Low to High"}
+                        {sortBy === "price_high" && "Price: High to Low"}
                         <ChevronDown className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-full">
-                      <DropdownMenuItem onClick={() => setSortBy('latest')}>
+                      <DropdownMenuItem onClick={() => setSortBy("latest")}>
                         Latest
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setSortBy('popular')}>
+                      <DropdownMenuItem onClick={() => setSortBy("popular")}>
                         Most Popular
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setSortBy('featured')}>
+                      <DropdownMenuItem onClick={() => setSortBy("featured")}>
                         Featured
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setSortBy('price_low')}>
+                      <DropdownMenuItem onClick={() => setSortBy("price_low")}>
                         Price: Low to High
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setSortBy('price_high')}>
+                      <DropdownMenuItem onClick={() => setSortBy("price_high")}>
                         Price: High to Low
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -417,13 +442,15 @@ export function CreatorsPage({
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold mb-1">
-                  {searchQuery ? `Search results for "${searchQuery}"` : 'All Creators'}
+                  {searchQuery
+                    ? `Search results for "${searchQuery}"`
+                    : "All Creators"}
                 </h2>
                 <p className="text-muted-foreground">
                   {totalCreators.toLocaleString()} creators found
                 </p>
               </div>
-              
+
               <Button variant="outline" size="sm">
                 <Filter className="h-4 w-4 mr-2" />
                 Filter
@@ -462,43 +489,40 @@ export function CreatorsPage({
                   </div>
                 )}
               </>
+            ) : /* Loading/Empty State */
+            isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <LoadingSkeleton key={index} />
+                ))}
+              </div>
             ) : (
-              /* Loading/Empty State */
-              isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <LoadingSkeleton key={index} />
-                  ))}
+              <div className="text-center py-16">
+                <div className="inline-flex items-center justify-center w-24 h-24 bg-muted/20 rounded-2xl mb-6">
+                  <Users className="h-12 w-12 text-muted-foreground" />
                 </div>
-              ) : (
-                <div className="text-center py-16">
-                  <div className="inline-flex items-center justify-center w-24 h-24 bg-muted/20 rounded-2xl mb-6">
-                    <Users className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold mb-4">No Creators Found</h3>
-                  
-                  <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                    {searchQuery ? 
-                      `No creators match your search for "${searchQuery}". Try different keywords.` :
-                      "No creators available at the moment. Check back soon!"
-                    }
-                  </p>
 
-                  {searchQuery && (
-                    <Button
-                      onClick={() => {
-                        setSearchQuery("");
-                        onSearch("");
-                      }}
-                      variant="outline"
-                      data-testid="clear-creators-search-btn"
-                    >
-                      Clear Search
-                    </Button>
-                  )}
-                </div>
-              )
+                <h3 className="text-2xl font-bold mb-4">No Creators Found</h3>
+
+                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                  {searchQuery
+                    ? `No creators match your search for "${searchQuery}". Try different keywords.`
+                    : "No creators available at the moment. Check back soon!"}
+                </p>
+
+                {searchQuery && (
+                  <Button
+                    onClick={() => {
+                      setSearchQuery("");
+                      onSearch("");
+                    }}
+                    variant="outline"
+                    data-testid="clear-creators-search-btn"
+                  >
+                    Clear Search
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>

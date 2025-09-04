@@ -23,7 +23,7 @@ export default function DemoUIShowcase() {
   const mockCurrentUser = {
     id: "1",
     username: "admin",
-    name: "Administrator", 
+    name: "Administrator",
     avatar: "/api/placeholder/80/80",
     isVerified: true,
     darkMode: false,
@@ -32,7 +32,7 @@ export default function DemoUIShowcase() {
     unreadMessages: 3,
     unreadNotifications: 7,
     hasReelsAccess: true,
-    pendingRequests: 2
+    pendingRequests: 2,
   };
 
   const mockSettings = {
@@ -62,7 +62,7 @@ export default function DemoUIShowcase() {
     footerTextColor: "#000000",
     facebook: "https://facebook.com/fanzdash",
     twitter: "https://twitter.com/fanzdash",
-    instagram: "https://instagram.com/fanzdash"
+    instagram: "https://instagram.com/fanzdash",
   };
 
   const mockComments = [
@@ -90,11 +90,11 @@ export default function DemoUIShowcase() {
           isLiked: true,
           createdAt: new Date(Date.now() - 1800000).toISOString(),
           canEdit: false,
-          canDelete: false
-        }
+          canDelete: false,
+        },
       ],
       canEdit: false,
-      canDelete: false
+      canDelete: false,
     },
     {
       id: "2",
@@ -109,8 +109,8 @@ export default function DemoUIShowcase() {
       createdAt: new Date(Date.now() - 7200000).toISOString(),
       replies: [],
       canEdit: true,
-      canDelete: true
-    }
+      canDelete: true,
+    },
   ];
 
   const mockCreators = [
@@ -126,12 +126,13 @@ export default function DemoUIShowcase() {
       freeSubscription: false,
       subscriptionPrice: 29.99,
       subscriberCount: 15420,
-      story: "Professional content creator sharing exclusive behind-the-scenes content.",
+      story:
+        "Professional content creator sharing exclusive behind-the-scenes content.",
       mediaStats: { images: 245, videos: 89, audio: 12, files: 5 },
-      category: "Lifestyle"
+      category: "Lifestyle",
     },
     {
-      id: "2", 
+      id: "2",
       username: "artist_jane",
       name: "Jane Artist",
       avatar: "/api/placeholder/100/100",
@@ -142,8 +143,8 @@ export default function DemoUIShowcase() {
       subscriberCount: 8750,
       story: "Digital artist creating beautiful illustrations and tutorials.",
       mediaStats: { images: 156, videos: 34, audio: 0, files: 8 },
-      category: "Art"
-    }
+      category: "Art",
+    },
   ];
 
   const mockMedia = [
@@ -152,40 +153,68 @@ export default function DemoUIShowcase() {
       type: "image" as const,
       file: "/api/placeholder/600/400",
       width: 600,
-      height: 400
+      height: 400,
     },
     {
-      id: "2", 
+      id: "2",
       type: "video" as const,
       file: "/api/placeholder/600/400",
-      videoPoster: "/api/placeholder/600/400"
-    }
+      videoPoster: "/api/placeholder/600/400",
+    },
   ];
 
   const mockPages = [
-    { id: "1", title: "Privacy Policy", slug: "privacy", access: "all" as const },
-    { id: "2", title: "Terms of Service", slug: "terms", access: "all" as const },
-    { id: "3", title: "Creator Guidelines", slug: "creator-guide", access: "creators" as const }
+    {
+      id: "1",
+      title: "Privacy Policy",
+      slug: "privacy",
+      access: "all" as const,
+    },
+    {
+      id: "2",
+      title: "Terms of Service",
+      slug: "terms",
+      access: "all" as const,
+    },
+    {
+      id: "3",
+      title: "Creator Guidelines",
+      slug: "creator-guide",
+      access: "creators" as const,
+    },
   ];
 
   const mockCategories = [
-    { id: "1", name: "Lifestyle", slug: "lifestyle", image: "/api/placeholder/30/30" },
-    { id: "2", name: "Fitness", slug: "fitness", image: "/api/placeholder/30/30" },
-    { id: "3", name: "Art", slug: "art", image: "/api/placeholder/30/30" }
+    {
+      id: "1",
+      name: "Lifestyle",
+      slug: "lifestyle",
+      image: "/api/placeholder/30/30",
+    },
+    {
+      id: "2",
+      name: "Fitness",
+      slug: "fitness",
+      image: "/api/placeholder/30/30",
+    },
+    { id: "3", name: "Art", slug: "art", image: "/api/placeholder/30/30" },
   ];
 
   const mockLanguages = [
     { id: "1", name: "English", abbreviation: "en" },
-    { id: "2", name: "Spanish", abbreviation: "es" }
+    { id: "2", name: "Spanish", abbreviation: "es" },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">FanzDash UI Component Showcase</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            FanzDash UI Component Showcase
+          </h1>
           <p className="text-muted-foreground">
-            Complete implementation of all Sponzy v6.8 Blade templates converted to modern React components
+            Complete implementation of all Sponzy v6.8 Blade templates converted
+            to modern React components
           </p>
         </div>
 
@@ -206,7 +235,8 @@ export default function DemoUIShowcase() {
               <CardHeader>
                 <CardTitle>Comment System</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Full-featured commenting with replies, likes, emojis, stickers, and GIFs
+                  Full-featured commenting with replies, likes, emojis,
+                  stickers, and GIFs
                 </p>
               </CardHeader>
               <CardContent>
@@ -214,9 +244,15 @@ export default function DemoUIShowcase() {
                   postId="demo-post"
                   comments={mockComments}
                   currentUser={mockCurrentUser}
-                  onAddComment={(content) => console.log("Add comment:", content)}
-                  onAddReply={(commentId, content, username) => console.log("Add reply:", { commentId, content, username })}
-                  onLikeComment={(commentId, isReply) => console.log("Like comment:", { commentId, isReply })}
+                  onAddComment={(content) =>
+                    console.log("Add comment:", content)
+                  }
+                  onAddReply={(commentId, content, username) =>
+                    console.log("Add reply:", { commentId, content, username })
+                  }
+                  onLikeComment={(commentId, isReply) =>
+                    console.log("Like comment:", { commentId, isReply })
+                  }
                 />
               </CardContent>
             </Card>
@@ -227,7 +263,8 @@ export default function DemoUIShowcase() {
               <CardHeader>
                 <CardTitle>Post Creation Form</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Advanced post creation with media upload, pricing, scheduling, and rich features
+                  Advanced post creation with media upload, pricing, scheduling,
+                  and rich features
                 </p>
               </CardHeader>
               <CardContent>
@@ -245,7 +282,8 @@ export default function DemoUIShowcase() {
               <CardHeader>
                 <CardTitle>Creator Exploration</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Creator discovery with grid and list views, filtering, and refresh functionality
+                  Creator discovery with grid and list views, filtering, and
+                  refresh functionality
                 </p>
               </CardHeader>
               <CardContent>
@@ -265,7 +303,8 @@ export default function DemoUIShowcase() {
               <CardHeader>
                 <CardTitle>Media Display</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Responsive media grids for images, videos, audio, documents, tips, and gifts
+                  Responsive media grids for images, videos, audio, documents,
+                  tips, and gifts
                 </p>
               </CardHeader>
               <CardContent>
@@ -350,7 +389,7 @@ export default function DemoUIShowcase() {
                     timestamp={new Date().toISOString()}
                     tip={{ amount: 25, currency: "$" }}
                   />
-                  
+
                   <AdvertisingCard
                     id="ad-1"
                     title="Premium Creator Tools"
@@ -369,7 +408,8 @@ export default function DemoUIShowcase() {
               <CardHeader>
                 <CardTitle>Category & Filter System</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Advanced filtering with categories, search, and gender/age filters
+                  Advanced filtering with categories, search, and gender/age
+                  filters
                 </p>
               </CardHeader>
               <CardContent>
@@ -388,7 +428,8 @@ export default function DemoUIShowcase() {
               <CardHeader>
                 <CardTitle>Footer Component</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Responsive footer with links, social media, and company information
+                  Responsive footer with links, social media, and company
+                  information
                 </p>
               </CardHeader>
               <CardContent>
@@ -412,7 +453,7 @@ export default function DemoUIShowcase() {
           <Button onClick={() => setShowGifPicker(!showGifPicker)}>
             {showGifPicker ? "Hide" : "Show"} GIF Picker
           </Button>
-          
+
           {showGifPicker && (
             <GifPicker
               isOpen={showGifPicker}
@@ -430,12 +471,14 @@ export default function DemoUIShowcase() {
         <Card className="mt-8 border-green-200 bg-green-50">
           <CardContent className="p-6">
             <div className="flex items-center space-x-2 mb-4">
-              <Badge variant="default" className="bg-green-600">✅ Complete</Badge>
+              <Badge variant="default" className="bg-green-600">
+                ✅ Complete
+              </Badge>
               <h3 className="text-lg font-semibold text-green-800">
                 FanzDash Enterprise Platform - Comprehensive Implementation
               </h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-green-700">
               <div>
                 <h4 className="font-semibold mb-2">Authentication System</h4>
@@ -446,7 +489,7 @@ export default function DemoUIShowcase() {
                   <li>• Email Verification</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-semibold mb-2">Content Management</h4>
                 <ul className="space-y-1">
@@ -456,7 +499,7 @@ export default function DemoUIShowcase() {
                   <li>• Live Streaming</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-semibold mb-2">Creator Economy</h4>
                 <ul className="space-y-1">
@@ -466,7 +509,7 @@ export default function DemoUIShowcase() {
                   <li>• Analytics Dashboard</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-semibold mb-2">Admin Features</h4>
                 <ul className="space-y-1">
@@ -476,7 +519,7 @@ export default function DemoUIShowcase() {
                   <li>• System Settings</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-semibold mb-2">UI Components</h4>
                 <ul className="space-y-1">
@@ -486,7 +529,7 @@ export default function DemoUIShowcase() {
                   <li>• Media Galleries</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-semibold mb-2">Enterprise Features</h4>
                 <ul className="space-y-1">

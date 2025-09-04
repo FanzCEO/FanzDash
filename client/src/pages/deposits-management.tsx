@@ -4,7 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Eye, CheckCircle, Trash2, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
@@ -34,47 +44,49 @@ export default function DepositsManagement() {
   const { data: deposits = [], isLoading } = useQuery({
     queryKey: ["/api/deposits", searchQuery],
     queryFn: () => {
-      const url = searchQuery 
+      const url = searchQuery
         ? `/api/deposits?q=${encodeURIComponent(searchQuery)}`
         : "/api/deposits";
-      return fetch(url).then(res => res.json()) as Promise<UserDeposit[]>;
-    }
+      return fetch(url).then((res) => res.json()) as Promise<UserDeposit[]>;
+    },
   });
 
   const approveMutation = useMutation({
-    mutationFn: (id: string) => fetch(`/api/deposits/${id}/approve`, { method: "POST" }),
+    mutationFn: (id: string) =>
+      fetch(`/api/deposits/${id}/approve`, { method: "POST" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/deposits"] });
       toast({
         title: "Success",
-        description: "Deposit approved successfully"
+        description: "Deposit approved successfully",
       });
     },
     onError: () => {
       toast({
         title: "Error",
         description: "Failed to approve deposit",
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => fetch(`/api/deposits/${id}`, { method: "DELETE" }),
+    mutationFn: (id: string) =>
+      fetch(`/api/deposits/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/deposits"] });
       toast({
         title: "Success",
-        description: "Deposit deleted successfully"
+        description: "Deposit deleted successfully",
       });
     },
     onError: () => {
       toast({
         title: "Error",
         description: "Failed to delete deposit",
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const handleApprove = (id: string) => {
@@ -119,7 +131,9 @@ export default function DepositsManagement() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Deposits Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Deposits Management
+          </h1>
           <p className="text-muted-foreground">
             Monitor and manage user deposits ({deposits.length} total)
           </p>
@@ -155,7 +169,9 @@ export default function DepositsManagement() {
             </div>
           ) : deposits.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              {searchQuery ? "No deposits found matching your search." : "No deposits found."}
+              {searchQuery
+                ? "No deposits found matching your search."
+                : "No deposits found."}
             </div>
           ) : (
             <div className="space-y-4">
@@ -168,15 +184,22 @@ export default function DepositsManagement() {
                 <div>Date</div>
                 <div>Status</div>
               </div>
-              
+
               {deposits.map((deposit) => (
-                <div key={deposit.id} className="grid grid-cols-7 gap-4 px-4 py-3 border rounded-lg hover:bg-gray-50" data-testid={`card-deposit-${deposit.id}`}>
-                  <div className="text-sm font-mono">{deposit.id.substring(0, 8)}...</div>
+                <div
+                  key={deposit.id}
+                  className="grid grid-cols-7 gap-4 px-4 py-3 border rounded-lg hover:bg-gray-50"
+                  data-testid={`card-deposit-${deposit.id}`}
+                >
+                  <div className="text-sm font-mono">
+                    {deposit.id.substring(0, 8)}...
+                  </div>
                   <div className="text-sm">
                     {deposit.userId ? (
                       <Link href={`/users/${deposit.userId}`}>
                         <Button variant="link" size="sm" className="p-0 h-auto">
-                          {deposit.userId.substring(0, 8)}... <ExternalLink className="ml-1 h-3 w-3" />
+                          {deposit.userId.substring(0, 8)}...{" "}
+                          <ExternalLink className="ml-1 h-3 w-3" />
                         </Button>
                       </Link>
                     ) : (
@@ -185,11 +208,18 @@ export default function DepositsManagement() {
                   </div>
                   <div className="text-sm">
                     {deposit.status === "pending" ? (
-                      <span className="font-mono">{deposit.transactionId || "—"}</span>
+                      <span className="font-mono">
+                        {deposit.transactionId || "—"}
+                      </span>
                     ) : (
                       <Link href={`/deposits/invoice/${deposit.id}`}>
-                        <Button variant="link" size="sm" className="p-0 h-auto font-mono">
-                          {deposit.transactionId || "—"} <ExternalLink className="ml-1 h-3 w-3" />
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="p-0 h-auto font-mono"
+                        >
+                          {deposit.transactionId || "—"}{" "}
+                          <ExternalLink className="ml-1 h-3 w-3" />
                         </Button>
                       </Link>
                     )}
@@ -205,9 +235,14 @@ export default function DepositsManagement() {
                     <Badge variant={getStatusColor(deposit.status)}>
                       {getStatusText(deposit.status)}
                     </Badge>
-                    {(deposit.method === "Bank Transfer" || deposit.method === "Bank") && (
+                    {(deposit.method === "Bank Transfer" ||
+                      deposit.method === "Bank") && (
                       <Link href={`/deposits/${deposit.id}`}>
-                        <Button variant="outline" size="sm" data-testid={`button-view-deposit-${deposit.id}`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          data-testid={`button-view-deposit-${deposit.id}`}
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
                       </Link>
@@ -225,15 +260,22 @@ export default function DepositsManagement() {
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm" data-testid={`button-delete-deposit-${deposit.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              data-testid={`button-delete-deposit-${deposit.id}`}
+                            >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Deposit</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Delete Deposit
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete this deposit? This action cannot be undone.
+                                Are you sure you want to delete this deposit?
+                                This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

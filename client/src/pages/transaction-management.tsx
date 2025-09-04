@@ -3,9 +3,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Receipt, Search, Filter, Download, CreditCard, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Receipt,
+  Search,
+  Filter,
+  Download,
+  CreditCard,
+  DollarSign,
+  TrendingUp,
+  AlertTriangle,
+} from "lucide-react";
 import { SEOHeadTags } from "@/components/SEOHeadTags";
 
 export default function TransactionManagementPage() {
@@ -17,7 +39,7 @@ export default function TransactionManagementPage() {
     totalRevenue: 1247583.92,
     totalTransactions: 8947,
     avgTransactionValue: 139.42,
-    pendingAmount: 23847.50
+    pendingAmount: 23847.5,
   };
 
   const transactions = [
@@ -29,17 +51,17 @@ export default function TransactionManagementPage() {
       status: "completed",
       date: "2025-01-04T15:30:00Z",
       paymentMethod: "Stripe",
-      fee: 1.17
+      fee: 1.17,
     },
     {
       id: "TXN-001235",
       user: "alex_fan",
       type: "Tip",
-      amount: 50.00,
+      amount: 50.0,
       status: "pending",
       date: "2025-01-04T14:45:00Z",
       paymentMethod: "PayPal",
-      fee: 1.75
+      fee: 1.75,
     },
     {
       id: "TXN-001236",
@@ -49,26 +71,30 @@ export default function TransactionManagementPage() {
       status: "completed",
       date: "2025-01-04T13:20:00Z",
       paymentMethod: "Coinbase",
-      fee: 0.32
+      fee: 0.32,
     },
     {
       id: "TXN-001237",
       user: "mike_supporter",
       type: "Private Show",
-      amount: 200.00,
+      amount: 200.0,
       status: "failed",
       date: "2025-01-04T12:15:00Z",
       paymentMethod: "Stripe",
-      fee: 0.00
-    }
+      fee: 0.0,
+    },
   ];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-green-500/20 text-green-400">Completed</Badge>;
+        return (
+          <Badge className="bg-green-500/20 text-green-400">Completed</Badge>
+        );
       case "pending":
-        return <Badge className="bg-yellow-500/20 text-yellow-400">Pending</Badge>;
+        return (
+          <Badge className="bg-yellow-500/20 text-yellow-400">Pending</Badge>
+        );
       case "failed":
         return <Badge className="bg-red-500/20 text-red-400">Failed</Badge>;
       default:
@@ -91,17 +117,21 @@ export default function TransactionManagementPage() {
 
   return (
     <div className="min-h-screen p-6 cyber-bg">
-      <SEOHeadTags 
+      <SEOHeadTags
         title="Transaction Management - FanzDash"
         description="Monitor and manage all financial transactions and payment processing"
         canonicalUrl="https://fanzdash.com/transaction-management"
       />
-      
+
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Transaction Management</h1>
-            <p className="text-muted-foreground">Financial transactions & payments</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Transaction Management
+            </h1>
+            <p className="text-muted-foreground">
+              Financial transactions & payments
+            </p>
           </div>
           <Button className="cyber-button">
             <Download className="w-4 h-4 mr-2" />
@@ -116,7 +146,9 @@ export default function TransactionManagementPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Revenue</p>
-                  <p className="text-2xl font-bold cyber-text-glow">${transactionStats.totalRevenue.toLocaleString()}</p>
+                  <p className="text-2xl font-bold cyber-text-glow">
+                    ${transactionStats.totalRevenue.toLocaleString()}
+                  </p>
                 </div>
                 <DollarSign className="w-8 h-8 text-primary" />
               </div>
@@ -128,7 +160,9 @@ export default function TransactionManagementPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Transactions</p>
-                  <p className="text-2xl font-bold text-blue-400">{transactionStats.totalTransactions.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {transactionStats.totalTransactions.toLocaleString()}
+                  </p>
                 </div>
                 <Receipt className="w-8 h-8 text-blue-400" />
               </div>
@@ -139,8 +173,12 @@ export default function TransactionManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Avg Transaction</p>
-                  <p className="text-2xl font-bold text-green-400">${transactionStats.avgTransactionValue}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Avg Transaction
+                  </p>
+                  <p className="text-2xl font-bold text-green-400">
+                    ${transactionStats.avgTransactionValue}
+                  </p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-green-400" />
               </div>
@@ -152,7 +190,9 @@ export default function TransactionManagementPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Pending</p>
-                  <p className="text-2xl font-bold text-yellow-400">${transactionStats.pendingAmount.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    ${transactionStats.pendingAmount.toLocaleString()}
+                  </p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-yellow-400" />
               </div>
@@ -166,7 +206,7 @@ export default function TransactionManagementPage() {
             <div className="flex gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input 
+                <Input
                   placeholder="Search transactions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -222,7 +262,9 @@ export default function TransactionManagementPage() {
               <TableBody>
                 {transactions.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell className="font-mono text-sm">{transaction.id}</TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {transaction.id}
+                    </TableCell>
                     <TableCell>{transaction.user}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -230,8 +272,12 @@ export default function TransactionManagementPage() {
                         {transaction.type}
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold">${transaction.amount}</TableCell>
-                    <TableCell className="text-muted-foreground">${transaction.fee}</TableCell>
+                    <TableCell className="font-bold">
+                      ${transaction.amount}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      ${transaction.fee}
+                    </TableCell>
                     <TableCell>{transaction.paymentMethod}</TableCell>
                     <TableCell>{getStatusBadge(transaction.status)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">

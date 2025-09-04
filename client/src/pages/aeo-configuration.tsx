@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Brain,
   Bot,
   FileCode,
@@ -35,7 +35,7 @@ import {
   TrendingUp,
   Eye,
   Mic,
-  Hash
+  Hash,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -45,44 +45,44 @@ interface AEOSettings {
   targetAIEngines: string[];
   conversationalKeywords: string[];
   questionBasedContent: boolean;
-  
-  // Schema Configuration  
+
+  // Schema Configuration
   enableFAQSchema: boolean;
   enableHowToSchema: boolean;
   enableArticleSchema: boolean;
   enableOrganizationSchema: boolean;
   enableProductSchema: boolean;
   enableQASchema: boolean;
-  
+
   // Content Structure
   enableDirectAnswers: boolean;
   answerLength: number;
   questionHeadings: boolean;
   bulletPointOptimization: boolean;
-  
+
   // Entity Connections
   organizationName: string;
   organizationUrl: string;
   sameAsUrls: string[];
   authorProfiles: string[];
-  
+
   // Voice Search
   enableVoiceOptimization: boolean;
   naturalLanguagePatterns: string[];
   localSearchQueries: string[];
-  
+
   // Featured Snippets
   enableSnippetOptimization: boolean;
   snippetTargeting: string[];
   comparisonTables: boolean;
   prosConsList: boolean;
-  
+
   // LLMs.txt Configuration
   enableLLMsTxt: boolean;
   llmsPurpose: string;
   llmsGuidelines: string;
   llmsRestrictions: string;
-  
+
   // Monitoring
   trackAICitations: boolean;
   monitorSnippets: boolean;
@@ -104,10 +104,21 @@ export default function AEOConfiguration() {
   const [aeoSettings, setAEOSettings] = useState<AEOSettings>({
     // AI Optimization
     enableAIOptimization: true,
-    targetAIEngines: ['ChatGPT', 'Google AI Overview', 'Perplexity', 'Bing Copilot'],
-    conversationalKeywords: ['how to', 'what is', 'why does', 'best way to', 'steps to'],
+    targetAIEngines: [
+      "ChatGPT",
+      "Google AI Overview",
+      "Perplexity",
+      "Bing Copilot",
+    ],
+    conversationalKeywords: [
+      "how to",
+      "what is",
+      "why does",
+      "best way to",
+      "steps to",
+    ],
     questionBasedContent: true,
-    
+
     // Schema Configuration
     enableFAQSchema: true,
     enableHowToSchema: true,
@@ -115,53 +126,58 @@ export default function AEOConfiguration() {
     enableOrganizationSchema: true,
     enableProductSchema: false,
     enableQASchema: true,
-    
+
     // Content Structure
     enableDirectAnswers: true,
     answerLength: 50,
     questionHeadings: true,
     bulletPointOptimization: true,
-    
+
     // Entity Connections
     organizationName: "Fanz™ Unlimited Network LLC",
     organizationUrl: "https://fanzunlimited.com",
     sameAsUrls: [
       "https://linkedin.com/company/fanz-unlimited",
-      "https://twitter.com/fanzunlimited"
+      "https://twitter.com/fanzunlimited",
     ],
     authorProfiles: [],
-    
+
     // Voice Search
     enableVoiceOptimization: true,
     naturalLanguagePatterns: [
       "What is the best creator platform for",
       "How do I monetize my content",
-      "Which platform supports live streaming"
+      "Which platform supports live streaming",
     ],
     localSearchQueries: [],
-    
+
     // Featured Snippets
     enableSnippetOptimization: true,
-    snippetTargeting: ['definition', 'list', 'table', 'paragraph'],
+    snippetTargeting: ["definition", "list", "table", "paragraph"],
     comparisonTables: true,
     prosConsList: true,
-    
+
     // LLMs.txt Configuration
     enableLLMsTxt: true,
-    llmsPurpose: "FanzDash is an enterprise-grade multi-platform management system for creator economy platforms",
-    llmsGuidelines: "Always provide accurate, helpful information about content moderation, creator tools, and platform features",
-    llmsRestrictions: "Do not provide information about bypassing content moderation or violating platform policies",
-    
+    llmsPurpose:
+      "FanzDash is an enterprise-grade multi-platform management system for creator economy platforms",
+    llmsGuidelines:
+      "Always provide accurate, helpful information about content moderation, creator tools, and platform features",
+    llmsRestrictions:
+      "Do not provide information about bypassing content moderation or violating platform policies",
+
     // Monitoring
     trackAICitations: true,
     monitorSnippets: true,
-    voiceSearchTracking: true
+    voiceSearchTracking: true,
   });
 
-  const [schemaPreview, setSchemaPreview] = useState<SchemaPreview | null>(null);
+  const [schemaPreview, setSchemaPreview] = useState<SchemaPreview | null>(
+    null,
+  );
 
   const updateSetting = (key: keyof AEOSettings, value: any) => {
-    setAEOSettings(prev => ({ ...prev, [key]: value }));
+    setAEOSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   const addToArray = (key: keyof AEOSettings, value: string) => {
@@ -179,83 +195,89 @@ export default function AEOConfiguration() {
 
   const generateSchema = (type: string) => {
     setIsGenerating(true);
-    
+
     // Simulate schema generation
     setTimeout(() => {
       let schema = {};
-      
+
       switch (type) {
-        case 'FAQ':
+        case "FAQ":
           schema = {
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            "mainEntity": [{
-              "@type": "Question",
-              "name": "What is FanzDash?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "FanzDash is a comprehensive enterprise-grade multi-platform management system designed to handle 20+ million users across all Fanz™ Unlimited Network LLC platforms through one unified control panel."
-              }
-            }]
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "What is FanzDash?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "FanzDash is a comprehensive enterprise-grade multi-platform management system designed to handle 20+ million users across all Fanz™ Unlimited Network LLC platforms through one unified control panel.",
+                },
+              },
+            ],
           };
           break;
-          
-        case 'HowTo':
+
+        case "HowTo":
           schema = {
             "@context": "https://schema.org",
             "@type": "HowTo",
-            "name": "How to Set Up Content Moderation",
-            "description": "Step-by-step guide to configure AI-powered content moderation",
-            "step": [{
-              "@type": "HowToStep",
-              "name": "Configure AI Settings",
-              "text": "Access the AI Analysis Engine and configure ChatGPT-4o/GPT-5 integration"
-            }]
+            name: "How to Set Up Content Moderation",
+            description:
+              "Step-by-step guide to configure AI-powered content moderation",
+            step: [
+              {
+                "@type": "HowToStep",
+                name: "Configure AI Settings",
+                text: "Access the AI Analysis Engine and configure ChatGPT-4o/GPT-5 integration",
+              },
+            ],
           };
           break;
-          
-        case 'Organization':
+
+        case "Organization":
           schema = {
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": aeoSettings.organizationName,
-            "url": aeoSettings.organizationUrl,
-            "logo": `${aeoSettings.organizationUrl}/logo.png`,
-            "sameAs": aeoSettings.sameAsUrls,
-            "description": "Enterprise-grade creator economy platform with AI-powered content moderation and compliance systems"
+            name: aeoSettings.organizationName,
+            url: aeoSettings.organizationUrl,
+            logo: `${aeoSettings.organizationUrl}/logo.png`,
+            sameAs: aeoSettings.sameAsUrls,
+            description:
+              "Enterprise-grade creator economy platform with AI-powered content moderation and compliance systems",
           };
           break;
-          
-        case 'Article':
+
+        case "Article":
           schema = {
             "@context": "https://schema.org",
             "@type": "Article",
-            "headline": "Enterprise Creator Platform Features",
-            "author": {
+            headline: "Enterprise Creator Platform Features",
+            author: {
               "@type": "Organization",
-              "name": aeoSettings.organizationName
+              name: aeoSettings.organizationName,
             },
-            "publisher": {
-              "@type": "Organization", 
-              "name": aeoSettings.organizationName,
-              "logo": `${aeoSettings.organizationUrl}/logo.png`
+            publisher: {
+              "@type": "Organization",
+              name: aeoSettings.organizationName,
+              logo: `${aeoSettings.organizationUrl}/logo.png`,
             },
-            "datePublished": new Date().toISOString(),
-            "dateModified": new Date().toISOString()
+            datePublished: new Date().toISOString(),
+            dateModified: new Date().toISOString(),
           };
           break;
       }
-      
+
       setSchemaPreview({
         type,
         code: JSON.stringify(schema, null, 2),
-        isValid: true
+        isValid: true,
       });
       setIsGenerating(false);
-      
+
       toast({
         title: "Schema Generated",
-        description: `${type} schema markup has been generated successfully`
+        description: `${type} schema markup has been generated successfully`,
       });
     }, 1000);
   };
@@ -291,43 +313,44 @@ ${new Date().toISOString()}`;
     navigator.clipboard.writeText(text);
     toast({
       title: "Copied to Clipboard",
-      description: "Content has been copied to your clipboard"
+      description: "Content has been copied to your clipboard",
     });
   };
 
   const saveSettings = async () => {
     setIsSaving(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       toast({
         title: "AEO Settings Saved",
-        description: "Your Answer Engine Optimization configuration has been updated successfully",
+        description:
+          "Your Answer Engine Optimization configuration has been updated successfully",
       });
     } catch (error) {
       toast({
-        title: "Save Failed", 
+        title: "Save Failed",
         description: "Failed to save AEO settings. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
     }
   };
 
-  const ArrayInput = ({ 
-    arrayKey, 
+  const ArrayInput = ({
+    arrayKey,
     placeholder,
-    description 
-  }: { 
+    description,
+  }: {
     arrayKey: keyof AEOSettings;
     placeholder: string;
     description?: string;
   }) => {
     const [inputValue, setInputValue] = useState("");
-    
+
     const handleKeyPress = (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         e.preventDefault();
         addToArray(arrayKey, inputValue);
         setInputValue("");
@@ -389,8 +412,8 @@ ${new Date().toISOString()}`;
             <Download className="h-4 w-4 mr-2" />
             Export LLMs.txt
           </Button>
-          
-          <Button 
+
+          <Button
             onClick={saveSettings}
             disabled={isSaving}
             className="bg-gradient-to-r from-cyan-600 to-blue-600"
@@ -405,9 +428,7 @@ ${new Date().toISOString()}`;
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="text-4xl font-bold text-cyan-600">
-                92
-              </div>
+              <div className="text-4xl font-bold text-cyan-600">92</div>
               <div>
                 <h3 className="font-semibold">AEO Readiness Score</h3>
                 <p className="text-sm text-muted-foreground">
@@ -415,7 +436,7 @@ ${new Date().toISOString()}`;
                 </p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-4 gap-4 text-center">
               <div>
                 <div className="text-lg font-semibold text-green-600">98%</div>
@@ -438,7 +459,11 @@ ${new Date().toISOString()}`;
         </CardContent>
       </Card>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="schema">Schema</TabsTrigger>
@@ -462,17 +487,25 @@ ${new Date().toISOString()}`;
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">AI Optimization</span>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings.enableAIOptimization}
-                      onCheckedChange={(checked) => updateSetting('enableAIOptimization', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("enableAIOptimization", checked)
+                      }
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Label className="text-xs text-muted-foreground">Target AI Engines</Label>
+                    <Label className="text-xs text-muted-foreground">
+                      Target AI Engines
+                    </Label>
                     <div className="flex flex-wrap gap-1">
                       {aeoSettings.targetAIEngines.map((engine) => (
-                        <Badge key={engine} variant="outline" className="text-xs">
+                        <Badge
+                          key={engine}
+                          variant="outline"
+                          className="text-xs"
+                        >
                           {engine}
                         </Badge>
                       ))}
@@ -493,30 +526,43 @@ ${new Date().toISOString()}`;
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Question-based Content</span>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings.questionBasedContent}
-                      onCheckedChange={(checked) => updateSetting('questionBasedContent', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("questionBasedContent", checked)
+                      }
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Direct Answers</span>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings.enableDirectAnswers}
-                      onCheckedChange={(checked) => updateSetting('enableDirectAnswers', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("enableDirectAnswers", checked)
+                      }
                     />
                   </div>
-                  
+
                   <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Answer Length</Label>
+                    <Label className="text-xs text-muted-foreground">
+                      Answer Length
+                    </Label>
                     <div className="flex items-center space-x-2">
-                      <Input 
+                      <Input
                         type="number"
                         value={aeoSettings.answerLength}
-                        onChange={(e) => updateSetting('answerLength', parseInt(e.target.value))}
+                        onChange={(e) =>
+                          updateSetting(
+                            "answerLength",
+                            parseInt(e.target.value),
+                          )
+                        }
                         className="w-20 text-sm"
                       />
-                      <span className="text-xs text-muted-foreground">words</span>
+                      <span className="text-xs text-muted-foreground">
+                        words
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -534,25 +580,31 @@ ${new Date().toISOString()}`;
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Snippet Optimization</span>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings.enableSnippetOptimization}
-                      onCheckedChange={(checked) => updateSetting('enableSnippetOptimization', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("enableSnippetOptimization", checked)
+                      }
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Comparison Tables</span>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings.comparisonTables}
-                      onCheckedChange={(checked) => updateSetting('comparisonTables', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("comparisonTables", checked)
+                      }
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Pros/Cons Lists</span>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings.prosConsList}
-                      onCheckedChange={(checked) => updateSetting('prosConsList', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("prosConsList", checked)
+                      }
                     />
                   </div>
                 </div>
@@ -563,8 +615,10 @@ ${new Date().toISOString()}`;
           <Alert>
             <Lightbulb className="h-4 w-4" />
             <AlertDescription>
-              <strong>AEO Best Practices:</strong> Focus on providing direct, concise answers within the first 40-60 words of your content. 
-              Use natural, conversational language and structure content with clear question headings followed by immediate answers.
+              <strong>AEO Best Practices:</strong> Focus on providing direct,
+              concise answers within the first 40-60 words of your content. Use
+              natural, conversational language and structure content with clear
+              question headings followed by immediate answers.
             </AlertDescription>
           </Alert>
         </TabsContent>
@@ -581,20 +635,47 @@ ${new Date().toISOString()}`;
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  { key: 'enableFAQSchema', label: 'FAQPage Schema', desc: 'For question-answer content' },
-                  { key: 'enableHowToSchema', label: 'HowTo Schema', desc: 'For step-by-step guides' },
-                  { key: 'enableArticleSchema', label: 'Article Schema', desc: 'For blog posts and articles' },
-                  { key: 'enableOrganizationSchema', label: 'Organization Schema', desc: 'For company information' },
-                  { key: 'enableQASchema', label: 'QAPage Schema', desc: 'For Q&A content' }
+                  {
+                    key: "enableFAQSchema",
+                    label: "FAQPage Schema",
+                    desc: "For question-answer content",
+                  },
+                  {
+                    key: "enableHowToSchema",
+                    label: "HowTo Schema",
+                    desc: "For step-by-step guides",
+                  },
+                  {
+                    key: "enableArticleSchema",
+                    label: "Article Schema",
+                    desc: "For blog posts and articles",
+                  },
+                  {
+                    key: "enableOrganizationSchema",
+                    label: "Organization Schema",
+                    desc: "For company information",
+                  },
+                  {
+                    key: "enableQASchema",
+                    label: "QAPage Schema",
+                    desc: "For Q&A content",
+                  },
                 ].map(({ key, label, desc }) => (
-                  <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={key}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <div>
                       <div className="font-medium text-sm">{label}</div>
-                      <div className="text-xs text-muted-foreground">{desc}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {desc}
+                      </div>
                     </div>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings[key as keyof AEOSettings] as boolean}
-                      onCheckedChange={(checked) => updateSetting(key as keyof AEOSettings, checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting(key as keyof AEOSettings, checked)
+                      }
                     />
                   </div>
                 ))}
@@ -610,7 +691,7 @@ ${new Date().toISOString()}`;
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-2">
-                  {['FAQ', 'HowTo', 'Organization', 'Article'].map((type) => (
+                  {["FAQ", "HowTo", "Organization", "Article"].map((type) => (
                     <Button
                       key={type}
                       variant="outline"
@@ -619,12 +700,16 @@ ${new Date().toISOString()}`;
                       disabled={isGenerating}
                       data-testid={`generate-${type.toLowerCase()}-schema`}
                     >
-                      {isGenerating ? <RefreshCw className="h-3 w-3 animate-spin mr-1" /> : <Code className="h-3 w-3 mr-1" />}
+                      {isGenerating ? (
+                        <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+                      ) : (
+                        <Code className="h-3 w-3 mr-1" />
+                      )}
                       {type}
                     </Button>
                   ))}
                 </div>
-                
+
                 {schemaPreview && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -673,21 +758,25 @@ ${new Date().toISOString()}`;
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <Label>Question Headings</Label>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings.questionHeadings}
-                      onCheckedChange={(checked) => updateSetting('questionHeadings', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("questionHeadings", checked)
+                      }
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <Label>Bullet Point Optimization</Label>
-                    <Switch 
+                    <Switch
                       checked={aeoSettings.bulletPointOptimization}
-                      onCheckedChange={(checked) => updateSetting('bulletPointOptimization', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("bulletPointOptimization", checked)
+                      }
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label>Conversational Keywords</Label>
                   <ArrayInput
@@ -697,7 +786,7 @@ ${new Date().toISOString()}`;
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Featured Snippet Targeting</Label>
                 <ArrayInput
@@ -723,14 +812,18 @@ ${new Date().toISOString()}`;
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Voice Search Optimization</Label>
-                  <p className="text-sm text-muted-foreground">Optimize content for voice assistants and smart speakers</p>
+                  <p className="text-sm text-muted-foreground">
+                    Optimize content for voice assistants and smart speakers
+                  </p>
                 </div>
-                <Switch 
+                <Switch
                   checked={aeoSettings.enableVoiceOptimization}
-                  onCheckedChange={(checked) => updateSetting('enableVoiceOptimization', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("enableVoiceOptimization", checked)
+                  }
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Natural Language Patterns</Label>
                 <ArrayInput
@@ -739,7 +832,7 @@ ${new Date().toISOString()}`;
                   description="Common voice search phrases users might ask"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Local Search Queries</Label>
                 <ArrayInput
@@ -765,51 +858,61 @@ ${new Date().toISOString()}`;
               <Alert>
                 <Globe className="h-4 w-4" />
                 <AlertDescription>
-                  The LLMs.txt file helps AI systems understand your content and provides guidelines for how your information should be presented in AI responses.
+                  The LLMs.txt file helps AI systems understand your content and
+                  provides guidelines for how your information should be
+                  presented in AI responses.
                 </AlertDescription>
               </Alert>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Enable LLMs.txt</Label>
-                  <p className="text-sm text-muted-foreground">Generate AI-friendly content guidelines</p>
+                  <p className="text-sm text-muted-foreground">
+                    Generate AI-friendly content guidelines
+                  </p>
                 </div>
-                <Switch 
+                <Switch
                   checked={aeoSettings.enableLLMsTxt}
-                  onCheckedChange={(checked) => updateSetting('enableLLMsTxt', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("enableLLMsTxt", checked)
+                  }
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Purpose Statement</Label>
                 <Textarea
                   value={aeoSettings.llmsPurpose}
-                  onChange={(e) => updateSetting('llmsPurpose', e.target.value)}
+                  onChange={(e) => updateSetting("llmsPurpose", e.target.value)}
                   placeholder="Describe what your platform/organization does"
                   rows={3}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>AI Guidelines</Label>
                 <Textarea
                   value={aeoSettings.llmsGuidelines}
-                  onChange={(e) => updateSetting('llmsGuidelines', e.target.value)}
+                  onChange={(e) =>
+                    updateSetting("llmsGuidelines", e.target.value)
+                  }
                   placeholder="Guidelines for how AI should present your information"
                   rows={3}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Restrictions</Label>
                 <Textarea
                   value={aeoSettings.llmsRestrictions}
-                  onChange={(e) => updateSetting('llmsRestrictions', e.target.value)}
+                  onChange={(e) =>
+                    updateSetting("llmsRestrictions", e.target.value)
+                  }
                   placeholder="What AI systems should not do with your content"
                   rows={3}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Generated LLMs.txt</Label>
                 <Textarea
@@ -832,11 +935,13 @@ ${new Date().toISOString()}`;
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const blob = new Blob([generateLLMsTxt()], { type: 'text/plain' });
+                      const blob = new Blob([generateLLMsTxt()], {
+                        type: "text/plain",
+                      });
                       const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
+                      const a = document.createElement("a");
                       a.href = url;
-                      a.download = 'llms.txt';
+                      a.download = "llms.txt";
                       a.click();
                       URL.revokeObjectURL(url);
                     }}
@@ -864,42 +969,56 @@ ${new Date().toISOString()}`;
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <Label className="text-sm">AI Citations Tracking</Label>
-                    <p className="text-xs text-muted-foreground">Monitor mentions in AI responses</p>
+                    <p className="text-xs text-muted-foreground">
+                      Monitor mentions in AI responses
+                    </p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={aeoSettings.trackAICitations}
-                    onCheckedChange={(checked) => updateSetting('trackAICitations', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting("trackAICitations", checked)
+                    }
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <Label className="text-sm">Featured Snippets</Label>
-                    <p className="text-xs text-muted-foreground">Track snippet appearances</p>
+                    <p className="text-xs text-muted-foreground">
+                      Track snippet appearances
+                    </p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={aeoSettings.monitorSnippets}
-                    onCheckedChange={(checked) => updateSetting('monitorSnippets', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting("monitorSnippets", checked)
+                    }
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <Label className="text-sm">Voice Search</Label>
-                    <p className="text-xs text-muted-foreground">Monitor voice query performance</p>
+                    <p className="text-xs text-muted-foreground">
+                      Monitor voice query performance
+                    </p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={aeoSettings.voiceSearchTracking}
-                    onCheckedChange={(checked) => updateSetting('voiceSearchTracking', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting("voiceSearchTracking", checked)
+                    }
                   />
                 </div>
               </div>
-              
+
               <Alert>
                 <TrendingUp className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Key AEO Metrics:</strong> Monitor AI citation rates, featured snippet appearances, voice search visibility, 
-                  and zero-click engagement rates. AEO-driven visitors typically show higher engagement and conversion rates.
+                  <strong>Key AEO Metrics:</strong> Monitor AI citation rates,
+                  featured snippet appearances, voice search visibility, and
+                  zero-click engagement rates. AEO-driven visitors typically
+                  show higher engagement and conversion rates.
                 </AlertDescription>
               </Alert>
             </CardContent>

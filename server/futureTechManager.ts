@@ -1,13 +1,22 @@
-import { EventEmitter } from 'events';
-import { randomUUID } from 'crypto';
-import OpenAI from 'openai';
+import { EventEmitter } from "events";
+import { randomUUID } from "crypto";
+import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export interface TechAdvancement {
   id: string;
   name: string;
-  category: 'ai' | 'vr' | 'ar' | 'blockchain' | 'quantum' | 'neural' | 'biotech' | 'nanotech' | 'space';
+  category:
+    | "ai"
+    | "vr"
+    | "ar"
+    | "blockchain"
+    | "quantum"
+    | "neural"
+    | "biotech"
+    | "nanotech"
+    | "space";
   description: string;
   currentReadinessLevel: number; // 1-9 Technology Readiness Levels
   targetReadinessLevel: number;
@@ -22,7 +31,7 @@ export interface TechAdvancement {
   marketOpportunity: {
     size: number; // in dollars
     growth: number; // percentage
-    competition: 'low' | 'medium' | 'high';
+    competition: "low" | "medium" | "high";
     barriers: string[];
   };
   researchSources: Array<{
@@ -39,7 +48,7 @@ export interface TechAdvancement {
     title: string;
     assignee: string;
     filingDate: Date;
-    status: 'pending' | 'granted' | 'expired';
+    status: "pending" | "granted" | "expired";
     relevanceScore: number;
   }>;
   competitors: Array<{
@@ -57,7 +66,12 @@ export interface TechAdvancement {
     description: string;
     targetDate: Date;
     actualDate?: Date;
-    status: 'not_started' | 'in_progress' | 'completed' | 'delayed' | 'cancelled';
+    status:
+      | "not_started"
+      | "in_progress"
+      | "completed"
+      | "delayed"
+      | "cancelled";
     dependencies: string[];
     deliverables: string[];
     budget: number;
@@ -65,13 +79,13 @@ export interface TechAdvancement {
   }>;
   risks: Array<{
     id: string;
-    type: 'technical' | 'market' | 'regulatory' | 'financial' | 'competitive';
+    type: "technical" | "market" | "regulatory" | "financial" | "competitive";
     description: string;
     probability: number; // 0-1
     impact: number; // 1-10
     mitigation: string;
     owner: string;
-    status: 'open' | 'mitigated' | 'accepted' | 'transferred';
+    status: "open" | "mitigated" | "accepted" | "transferred";
   }>;
   createdAt: Date;
   updatedAt: Date;
@@ -81,7 +95,7 @@ export interface TechAdvancement {
 export interface TechTrendAnalysis {
   id: string;
   category: string;
-  period: 'weekly' | 'monthly' | 'quarterly';
+  period: "weekly" | "monthly" | "quarterly";
   analysisDate: Date;
   trends: Array<{
     technology: string;
@@ -122,7 +136,7 @@ export interface TechTrendAnalysis {
     barriers: string[];
   };
   recommendations: Array<{
-    priority: 'high' | 'medium' | 'low';
+    priority: "high" | "medium" | "low";
     action: string;
     rationale: string;
     timeline: string;
@@ -134,8 +148,14 @@ export interface InnovationPipeline {
   id: string;
   name: string;
   description: string;
-  stage: 'ideation' | 'research' | 'development' | 'testing' | 'scaling' | 'deployment';
-  priority: 'critical' | 'high' | 'medium' | 'low';
+  stage:
+    | "ideation"
+    | "research"
+    | "development"
+    | "testing"
+    | "scaling"
+    | "deployment";
+  priority: "critical" | "high" | "medium" | "low";
   technologies: string[];
   team: Array<{
     id: string;
@@ -158,7 +178,7 @@ export interface InnovationPipeline {
     milestones: Array<{
       name: string;
       date: Date;
-      status: 'upcoming' | 'in_progress' | 'completed' | 'delayed';
+      status: "upcoming" | "in_progress" | "completed" | "delayed";
     }>;
     expectedCompletion: Date;
     actualCompletion?: Date;
@@ -172,21 +192,21 @@ export interface InnovationPipeline {
   };
   deliverables: Array<{
     name: string;
-    type: 'prototype' | 'documentation' | 'patent' | 'publication' | 'demo';
-    status: 'planned' | 'in_progress' | 'completed';
+    type: "prototype" | "documentation" | "patent" | "publication" | "demo";
+    status: "planned" | "in_progress" | "completed";
     url?: string;
     description: string;
   }>;
   collaborations: Array<{
     partner: string;
-    type: 'university' | 'research_institute' | 'company' | 'government';
+    type: "university" | "research_institute" | "company" | "government";
     contribution: string;
     agreement: string;
   }>;
   intellectualProperty: Array<{
-    type: 'patent' | 'trademark' | 'copyright' | 'trade_secret';
+    type: "patent" | "trademark" | "copyright" | "trade_secret";
     title: string;
-    status: 'filed' | 'pending' | 'granted' | 'licensed';
+    status: "filed" | "pending" | "granted" | "licensed";
     value: number;
   }>;
   createdAt: Date;
@@ -204,8 +224,8 @@ export interface TechScouting {
     description: string;
     readinessLevel: number;
     potentialValue: number;
-    acquisitionPotential: 'high' | 'medium' | 'low';
-    partnershipOpportunity: 'high' | 'medium' | 'low';
+    acquisitionPotential: "high" | "medium" | "low";
+    partnershipOpportunity: "high" | "medium" | "low";
     contactInfo?: {
       name: string;
       email: string;
@@ -233,7 +253,7 @@ export class FutureTechManager extends EventEmitter {
   private trendAnalyses: TechTrendAnalysis[] = [];
   private innovationPipelines = new Map<string, InnovationPipeline>();
   private techScoutingReports: TechScouting[] = [];
-  
+
   constructor() {
     super();
     this.setupDefaultTechnologies();
@@ -241,11 +261,15 @@ export class FutureTechManager extends EventEmitter {
   }
 
   private setupDefaultTechnologies() {
-    const defaultTechs: Omit<TechAdvancement, 'id' | 'createdAt' | 'updatedAt' | 'lastAnalysisUpdate'>[] = [
+    const defaultTechs: Omit<
+      TechAdvancement,
+      "id" | "createdAt" | "updatedAt" | "lastAnalysisUpdate"
+    >[] = [
       {
-        name: 'Brain-Computer Interface for VR',
-        category: 'neural',
-        description: 'Direct neural interface enabling thought-controlled virtual experiences',
+        name: "Brain-Computer Interface for VR",
+        category: "neural",
+        description:
+          "Direct neural interface enabling thought-controlled virtual experiences",
         currentReadinessLevel: 3,
         targetReadinessLevel: 7,
         impactScore: 95,
@@ -254,24 +278,38 @@ export class FutureTechManager extends EventEmitter {
         estimatedTimeToMarket: 36,
         investmentRequired: 15000000,
         potentialROI: 500,
-        dependencies: ['Neural signal processing', 'Real-time ML', 'Medical device approval'],
-        keyTechnologies: ['EEG', 'fMRI', 'Machine Learning', 'Signal Processing'],
+        dependencies: [
+          "Neural signal processing",
+          "Real-time ML",
+          "Medical device approval",
+        ],
+        keyTechnologies: [
+          "EEG",
+          "fMRI",
+          "Machine Learning",
+          "Signal Processing",
+        ],
         marketOpportunity: {
           size: 2500000000,
           growth: 45,
-          competition: 'medium',
-          barriers: ['Regulatory approval', 'Safety concerns', 'High development cost']
+          competition: "medium",
+          barriers: [
+            "Regulatory approval",
+            "Safety concerns",
+            "High development cost",
+          ],
         },
         researchSources: [],
         patents: [],
         competitors: [],
         milestones: [],
-        risks: []
+        risks: [],
       },
       {
-        name: 'Quantum-Enhanced AI Processing',
-        category: 'quantum',
-        description: 'Quantum computing acceleration for real-time AI content generation',
+        name: "Quantum-Enhanced AI Processing",
+        category: "quantum",
+        description:
+          "Quantum computing acceleration for real-time AI content generation",
         currentReadinessLevel: 2,
         targetReadinessLevel: 6,
         impactScore: 90,
@@ -280,24 +318,33 @@ export class FutureTechManager extends EventEmitter {
         estimatedTimeToMarket: 60,
         investmentRequired: 25000000,
         potentialROI: 800,
-        dependencies: ['Quantum hardware maturity', 'Quantum algorithms', 'Quantum error correction'],
-        keyTechnologies: ['Quantum Computing', 'Quantum ML', 'Hybrid Systems'],
+        dependencies: [
+          "Quantum hardware maturity",
+          "Quantum algorithms",
+          "Quantum error correction",
+        ],
+        keyTechnologies: ["Quantum Computing", "Quantum ML", "Hybrid Systems"],
         marketOpportunity: {
           size: 5000000000,
           growth: 35,
-          competition: 'low',
-          barriers: ['Technology immaturity', 'Extreme technical complexity', 'Limited quantum hardware']
+          competition: "low",
+          barriers: [
+            "Technology immaturity",
+            "Extreme technical complexity",
+            "Limited quantum hardware",
+          ],
         },
         researchSources: [],
         patents: [],
         competitors: [],
         milestones: [],
-        risks: []
+        risks: [],
       },
       {
-        name: 'Holographic Display Technology',
-        category: 'vr',
-        description: 'True 3D holographic displays for immersive content without headsets',
+        name: "Holographic Display Technology",
+        category: "vr",
+        description:
+          "True 3D holographic displays for immersive content without headsets",
         currentReadinessLevel: 4,
         targetReadinessLevel: 7,
         impactScore: 85,
@@ -306,24 +353,37 @@ export class FutureTechManager extends EventEmitter {
         estimatedTimeToMarket: 24,
         investmentRequired: 8000000,
         potentialROI: 300,
-        dependencies: ['Display materials', 'Optical engineering', 'Content creation tools'],
-        keyTechnologies: ['Photonics', 'Spatial Light Modulators', 'Computer Graphics'],
+        dependencies: [
+          "Display materials",
+          "Optical engineering",
+          "Content creation tools",
+        ],
+        keyTechnologies: [
+          "Photonics",
+          "Spatial Light Modulators",
+          "Computer Graphics",
+        ],
         marketOpportunity: {
           size: 1800000000,
           growth: 55,
-          competition: 'medium',
-          barriers: ['Manufacturing costs', 'Content ecosystem', 'Consumer adoption']
+          competition: "medium",
+          barriers: [
+            "Manufacturing costs",
+            "Content ecosystem",
+            "Consumer adoption",
+          ],
         },
         researchSources: [],
         patents: [],
         competitors: [],
         milestones: [],
-        risks: []
+        risks: [],
       },
       {
-        name: 'Synthetic Media Generation 3.0',
-        category: 'ai',
-        description: 'Next-generation AI for real-time photorealistic content creation',
+        name: "Synthetic Media Generation 3.0",
+        category: "ai",
+        description:
+          "Next-generation AI for real-time photorealistic content creation",
         currentReadinessLevel: 6,
         targetReadinessLevel: 8,
         impactScore: 80,
@@ -332,24 +392,33 @@ export class FutureTechManager extends EventEmitter {
         estimatedTimeToMarket: 18,
         investmentRequired: 5000000,
         potentialROI: 250,
-        dependencies: ['Advanced GANs', 'Real-time processing', 'Content moderation'],
-        keyTechnologies: ['Deep Learning', 'Neural Rendering', 'Real-time AI'],
+        dependencies: [
+          "Advanced GANs",
+          "Real-time processing",
+          "Content moderation",
+        ],
+        keyTechnologies: ["Deep Learning", "Neural Rendering", "Real-time AI"],
         marketOpportunity: {
           size: 3200000000,
           growth: 40,
-          competition: 'high',
-          barriers: ['Deepfake concerns', 'Computational requirements', 'Content authenticity']
+          competition: "high",
+          barriers: [
+            "Deepfake concerns",
+            "Computational requirements",
+            "Content authenticity",
+          ],
         },
         researchSources: [],
         patents: [],
         competitors: [],
         milestones: [],
-        risks: []
+        risks: [],
       },
       {
-        name: 'Decentralized Creator Economy',
-        category: 'blockchain',
-        description: 'Blockchain-based platform for direct creator-fan interactions',
+        name: "Decentralized Creator Economy",
+        category: "blockchain",
+        description:
+          "Blockchain-based platform for direct creator-fan interactions",
         currentReadinessLevel: 5,
         targetReadinessLevel: 8,
         impactScore: 75,
@@ -358,24 +427,37 @@ export class FutureTechManager extends EventEmitter {
         estimatedTimeToMarket: 12,
         investmentRequired: 3000000,
         potentialROI: 200,
-        dependencies: ['Blockchain scalability', 'Regulatory clarity', 'User adoption'],
-        keyTechnologies: ['Smart Contracts', 'Layer 2 Solutions', 'DeFi Protocols'],
+        dependencies: [
+          "Blockchain scalability",
+          "Regulatory clarity",
+          "User adoption",
+        ],
+        keyTechnologies: [
+          "Smart Contracts",
+          "Layer 2 Solutions",
+          "DeFi Protocols",
+        ],
         marketOpportunity: {
           size: 1500000000,
           growth: 60,
-          competition: 'high',
-          barriers: ['Regulatory uncertainty', 'Technical complexity', 'Market fragmentation']
+          competition: "high",
+          barriers: [
+            "Regulatory uncertainty",
+            "Technical complexity",
+            "Market fragmentation",
+          ],
         },
         researchSources: [],
         patents: [],
         competitors: [],
         milestones: [],
-        risks: []
+        risks: [],
       },
       {
-        name: 'Biometric-Based Content Personalization',
-        category: 'biotech',
-        description: 'Real-time physiological monitoring for adaptive content experiences',
+        name: "Biometric-Based Content Personalization",
+        category: "biotech",
+        description:
+          "Real-time physiological monitoring for adaptive content experiences",
         currentReadinessLevel: 4,
         targetReadinessLevel: 7,
         impactScore: 70,
@@ -384,20 +466,32 @@ export class FutureTechManager extends EventEmitter {
         estimatedTimeToMarket: 30,
         investmentRequired: 6000000,
         potentialROI: 180,
-        dependencies: ['Wearable sensors', 'Privacy regulations', 'AI personalization'],
-        keyTechnologies: ['Biosensors', 'Signal Processing', 'Personalization AI'],
+        dependencies: [
+          "Wearable sensors",
+          "Privacy regulations",
+          "AI personalization",
+        ],
+        keyTechnologies: [
+          "Biosensors",
+          "Signal Processing",
+          "Personalization AI",
+        ],
         marketOpportunity: {
           size: 900000000,
           growth: 35,
-          competition: 'medium',
-          barriers: ['Privacy concerns', 'Regulatory compliance', 'Hardware costs']
+          competition: "medium",
+          barriers: [
+            "Privacy concerns",
+            "Regulatory compliance",
+            "Hardware costs",
+          ],
         },
         researchSources: [],
         patents: [],
         competitors: [],
         milestones: [],
-        risks: []
-      }
+        risks: [],
+      },
     ];
 
     for (const tech of defaultTechs) {
@@ -407,26 +501,35 @@ export class FutureTechManager extends EventEmitter {
         id,
         createdAt: new Date(),
         updatedAt: new Date(),
-        lastAnalysisUpdate: new Date()
+        lastAnalysisUpdate: new Date(),
       });
     }
   }
 
   private startAutomatedAnalysis() {
     // Run trend analysis monthly
-    setInterval(() => {
-      this.performTrendAnalysis();
-    }, 30 * 24 * 60 * 60 * 1000); // 30 days
+    setInterval(
+      () => {
+        this.performTrendAnalysis();
+      },
+      30 * 24 * 60 * 60 * 1000,
+    ); // 30 days
 
     // Update tech readiness weekly
-    setInterval(() => {
-      this.updateTechReadinessLevels();
-    }, 7 * 24 * 60 * 60 * 1000); // 7 days
+    setInterval(
+      () => {
+        this.updateTechReadinessLevels();
+      },
+      7 * 24 * 60 * 60 * 1000,
+    ); // 7 days
 
     // Scout for new technologies daily
-    setInterval(() => {
-      this.performTechScouting();
-    }, 24 * 60 * 60 * 1000); // 24 hours
+    setInterval(
+      () => {
+        this.performTechScouting();
+      },
+      24 * 60 * 60 * 1000,
+    ); // 24 hours
 
     // Initial run
     this.performTrendAnalysis();
@@ -434,7 +537,7 @@ export class FutureTechManager extends EventEmitter {
 
   async performTrendAnalysis(): Promise<string> {
     const analysisId = randomUUID();
-    
+
     try {
       // Use AI to analyze technology trends
       const response = await openai.chat.completions.create({
@@ -450,106 +553,126 @@ export class FutureTechManager extends EventEmitter {
             5. Breakthrough predictions
             6. Investment recommendations
             
-            Provide analysis in JSON format with specific metrics and actionable insights.`
+            Provide analysis in JSON format with specific metrics and actionable insights.`,
           },
           {
             role: "user",
-            content: `Analyze technology trends for ${new Date().toISOString().split('T')[0]} focusing on technologies relevant to adult entertainment, creator economy, VR/AR experiences, and immersive content.`
-          }
+            content: `Analyze technology trends for ${new Date().toISOString().split("T")[0]} focusing on technologies relevant to adult entertainment, creator economy, VR/AR experiences, and immersive content.`,
+          },
         ],
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
       });
 
       const aiAnalysis = JSON.parse(response.choices[0].message.content!);
-      
+
       const trendAnalysis: TechTrendAnalysis = {
         id: analysisId,
-        category: 'comprehensive',
-        period: 'monthly',
+        category: "comprehensive",
+        period: "monthly",
         analysisDate: new Date(),
         trends: aiAnalysis.trends || [],
         insights: aiAnalysis.insights || {
           hottestTechnologies: [],
           decliningTechnologies: [],
           breakthroughPredictions: [],
-          investmentOpportunities: []
+          investmentOpportunities: [],
         },
         marketAnalysis: aiAnalysis.marketAnalysis || {
           totalMarketSize: 0,
           growthProjections: [],
           keyDrivers: [],
-          barriers: []
+          barriers: [],
         },
-        recommendations: aiAnalysis.recommendations || []
+        recommendations: aiAnalysis.recommendations || [],
       };
 
       this.trendAnalyses.push(trendAnalysis);
-      
+
       // Keep only last 12 analyses
       if (this.trendAnalyses.length > 12) {
         this.trendAnalyses = this.trendAnalyses.slice(-12);
       }
 
-      this.emit('trendAnalysisCompleted', trendAnalysis);
+      this.emit("trendAnalysisCompleted", trendAnalysis);
       return analysisId;
-
     } catch (error) {
-      console.error('Trend analysis failed:', error);
-      
+      console.error("Trend analysis failed:", error);
+
       // Generate mock analysis when AI fails to prevent server crashes
       const mockTrendAnalysis: TechTrendAnalysis = {
         id: analysisId,
-        category: 'comprehensive',
-        period: 'monthly',
+        category: "comprehensive",
+        period: "monthly",
         analysisDate: new Date(),
         trends: [
           {
-            technologyName: 'VR/AR Integration',
+            technologyName: "VR/AR Integration",
             growthRate: 45.2,
             adoptionRate: 23.8,
-            investmentLevel: 'high',
-            marketSentiment: 'bullish',
-            riskLevel: 'medium'
+            investmentLevel: "high",
+            marketSentiment: "bullish",
+            riskLevel: "medium",
           },
           {
-            technologyName: 'AI Content Generation',
+            technologyName: "AI Content Generation",
             growthRate: 67.3,
             adoptionRate: 41.5,
-            investmentLevel: 'very_high',
-            marketSentiment: 'bullish',
-            riskLevel: 'low'
-          }
+            investmentLevel: "very_high",
+            marketSentiment: "bullish",
+            riskLevel: "low",
+          },
         ],
         insights: {
-          hottestTechnologies: ['AI Content Creation', 'Immersive VR', 'Blockchain NFTs'],
-          decliningTechnologies: ['Traditional 2D Content', 'Flash-based Systems'],
-          breakthroughPredictions: ['Neural Interface Integration', 'Quantum Computing Applications'],
-          investmentOpportunities: ['VR Hardware Acceleration', 'AI-Powered Personalization']
+          hottestTechnologies: [
+            "AI Content Creation",
+            "Immersive VR",
+            "Blockchain NFTs",
+          ],
+          decliningTechnologies: [
+            "Traditional 2D Content",
+            "Flash-based Systems",
+          ],
+          breakthroughPredictions: [
+            "Neural Interface Integration",
+            "Quantum Computing Applications",
+          ],
+          investmentOpportunities: [
+            "VR Hardware Acceleration",
+            "AI-Powered Personalization",
+          ],
         },
         marketAnalysis: {
           totalMarketSize: 15700000000,
           growthProjections: [
             { year: 2025, projectedValue: 18200000000 },
-            { year: 2026, projectedValue: 22800000000 }
+            { year: 2026, projectedValue: 22800000000 },
           ],
-          keyDrivers: ['Increased VR adoption', 'AI advancement', 'Creator economy growth'],
-          barriers: ['Hardware costs', 'Content creation complexity', 'Regulatory challenges']
+          keyDrivers: [
+            "Increased VR adoption",
+            "AI advancement",
+            "Creator economy growth",
+          ],
+          barriers: [
+            "Hardware costs",
+            "Content creation complexity",
+            "Regulatory challenges",
+          ],
         },
         recommendations: [
-          'Invest in VR content creation tools',
-          'Develop AI-powered personalization engines',
-          'Explore blockchain integration for creator monetization'
-        ]
+          "Invest in VR content creation tools",
+          "Develop AI-powered personalization engines",
+          "Explore blockchain integration for creator monetization",
+        ],
       };
 
       this.trendAnalyses.push(mockTrendAnalysis);
-      
+
       // Keep only last 12 analyses
       if (this.trendAnalyses.length > 12) {
         this.trendAnalyses = this.trendAnalyses.slice(-12);
       }
 
-      this.emit('trendAnalysisCompleted', mockTrendAnalysis);
+      this.emit("trendAnalysisCompleted", mockTrendAnalysis);
       return analysisId;
     }
   }
@@ -563,36 +686,39 @@ export class FutureTechManager extends EventEmitter {
           messages: [
             {
               role: "system",
-              content: "You are a technology assessment expert. Evaluate the current Technology Readiness Level (TRL) of the given technology based on recent developments. Provide updated TRL (1-9), feasibility score (1-100), and brief rationale."
+              content:
+                "You are a technology assessment expert. Evaluate the current Technology Readiness Level (TRL) of the given technology based on recent developments. Provide updated TRL (1-9), feasibility score (1-100), and brief rationale.",
             },
             {
               role: "user",
-              content: `Assess current readiness level for: ${tech.name} - ${tech.description}. Current TRL: ${tech.currentReadinessLevel}`
-            }
+              content: `Assess current readiness level for: ${tech.name} - ${tech.description}. Current TRL: ${tech.currentReadinessLevel}`,
+            },
           ],
-          response_format: { type: "json_object" }
+          response_format: { type: "json_object" },
         });
 
         const assessment = JSON.parse(response.choices[0].message.content!);
-        
+
         if (assessment.trl && assessment.trl !== tech.currentReadinessLevel) {
           tech.currentReadinessLevel = Math.max(1, Math.min(9, assessment.trl));
-          tech.feasibilityScore = assessment.feasibilityScore || tech.feasibilityScore;
+          tech.feasibilityScore =
+            assessment.feasibilityScore || tech.feasibilityScore;
           tech.updatedAt = new Date();
           tech.lastAnalysisUpdate = new Date();
-          
-          this.emit('techReadinessUpdated', tech);
-        }
 
+          this.emit("techReadinessUpdated", tech);
+        }
       } catch (error) {
         console.error(`Failed to update readiness for ${tech.name}:`, error);
       }
     }
   }
 
-  async performTechScouting(query: string = 'emerging technologies VR AR AI adult entertainment'): Promise<string> {
+  async performTechScouting(
+    query: string = "emerging technologies VR AR AI adult entertainment",
+  ): Promise<string> {
     const scoutingId = randomUUID();
-    
+
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
@@ -606,99 +732,122 @@ export class FutureTechManager extends EventEmitter {
             4. Patent activity and IP developments
             5. Partnership and acquisition opportunities
             
-            Provide structured findings with contact information, readiness levels, and strategic value assessments.`
+            Provide structured findings with contact information, readiness levels, and strategic value assessments.`,
           },
           {
             role: "user",
-            content: `Scout for technologies related to: ${query}. Identify opportunities for partnerships, acquisitions, or collaborations.`
-          }
+            content: `Scout for technologies related to: ${query}. Identify opportunities for partnerships, acquisitions, or collaborations.`,
+          },
         ],
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
       });
 
       const scoutingData = JSON.parse(response.choices[0].message.content!);
-      
+
       const scouting: TechScouting = {
         id: scoutingId,
         query,
         scoutingDate: new Date(),
-        sources: ['AI Analysis', 'Patent databases', 'Research publications', 'Industry reports'],
+        sources: [
+          "AI Analysis",
+          "Patent databases",
+          "Research publications",
+          "Industry reports",
+        ],
         findings: scoutingData.findings || [],
         analysis: scoutingData.analysis || {
           totalFindings: 0,
           highValueOpportunities: 0,
           recommendedActions: [],
-          followUpRequired: false
+          followUpRequired: false,
         },
         aiInsights: scoutingData.aiInsights || {
-          summary: '',
+          summary: "",
           keyOpportunities: [],
           riskFactors: [],
-          strategicRecommendations: []
-        }
+          strategicRecommendations: [],
+        },
       };
 
       this.techScoutingReports.push(scouting);
-      
+
       // Keep only last 50 reports
       if (this.techScoutingReports.length > 50) {
         this.techScoutingReports = this.techScoutingReports.slice(-50);
       }
 
-      this.emit('techScoutingCompleted', scouting);
+      this.emit("techScoutingCompleted", scouting);
       return scoutingId;
-
     } catch (error) {
-      console.error('Tech scouting failed:', error);
-      
+      console.error("Tech scouting failed:", error);
+
       // Generate mock scouting report when AI fails to prevent server crashes
       const mockScouting: TechScouting = {
         id: scoutingId,
         query,
         scoutingDate: new Date(),
-        sources: ['Local Analysis', 'Cached Data', 'Industry Knowledge Base'],
+        sources: ["Local Analysis", "Cached Data", "Industry Knowledge Base"],
         findings: [
           {
-            technologyName: 'Advanced VR Haptics',
-            companyName: 'HapticVision Corp',
-            category: 'hardware',
-            readinessLevel: 'prototype',
-            strategicValue: 'high',
-            contactInfo: 'Available through industry connections',
-            description: 'Next-generation haptic feedback systems for immersive content'
+            technologyName: "Advanced VR Haptics",
+            companyName: "HapticVision Corp",
+            category: "hardware",
+            readinessLevel: "prototype",
+            strategicValue: "high",
+            contactInfo: "Available through industry connections",
+            description:
+              "Next-generation haptic feedback systems for immersive content",
           },
           {
-            technologyName: 'AI-Powered Content Personalization',
-            companyName: 'PersonalizeAI Solutions',
-            category: 'software',
-            readinessLevel: 'production',
-            strategicValue: 'very_high',
-            contactInfo: 'Partnership opportunities available',
-            description: 'Machine learning algorithms for content recommendation and user experience optimization'
-          }
+            technologyName: "AI-Powered Content Personalization",
+            companyName: "PersonalizeAI Solutions",
+            category: "software",
+            readinessLevel: "production",
+            strategicValue: "very_high",
+            contactInfo: "Partnership opportunities available",
+            description:
+              "Machine learning algorithms for content recommendation and user experience optimization",
+          },
         ],
         analysis: {
           totalFindings: 2,
           highValueOpportunities: 2,
-          recommendedActions: ['Initiate contact with identified companies', 'Conduct technical evaluations', 'Assess integration feasibility'],
-          followUpRequired: true
+          recommendedActions: [
+            "Initiate contact with identified companies",
+            "Conduct technical evaluations",
+            "Assess integration feasibility",
+          ],
+          followUpRequired: true,
         },
         aiInsights: {
-          summary: 'Identified promising opportunities in VR haptics and AI personalization that align with platform objectives',
-          keyOpportunities: ['Haptic technology integration', 'Enhanced user personalization', 'Competitive advantage through innovation'],
-          riskFactors: ['Technology maturity timeline', 'Integration complexity', 'Investment requirements'],
-          strategicRecommendations: ['Prioritize AI personalization for immediate impact', 'Plan VR haptics for future roadmap', 'Establish innovation partnerships']
-        }
+          summary:
+            "Identified promising opportunities in VR haptics and AI personalization that align with platform objectives",
+          keyOpportunities: [
+            "Haptic technology integration",
+            "Enhanced user personalization",
+            "Competitive advantage through innovation",
+          ],
+          riskFactors: [
+            "Technology maturity timeline",
+            "Integration complexity",
+            "Investment requirements",
+          ],
+          strategicRecommendations: [
+            "Prioritize AI personalization for immediate impact",
+            "Plan VR haptics for future roadmap",
+            "Establish innovation partnerships",
+          ],
+        },
       };
 
       this.techScoutingReports.push(mockScouting);
-      
+
       // Keep only last 50 reports
       if (this.techScoutingReports.length > 50) {
         this.techScoutingReports = this.techScoutingReports.slice(-50);
       }
 
-      this.emit('techScoutingCompleted', mockScouting);
+      this.emit("techScoutingCompleted", mockScouting);
       return scoutingId;
     }
   }
@@ -707,7 +856,7 @@ export class FutureTechManager extends EventEmitter {
     name: string;
     description: string;
     technologies: string[];
-    priority: InnovationPipeline['priority'];
+    priority: InnovationPipeline["priority"];
     budget: number;
     timeline: {
       startDate: Date;
@@ -721,49 +870,52 @@ export class FutureTechManager extends EventEmitter {
     }>;
   }): Promise<string> {
     const pipelineId = randomUUID();
-    
+
     const pipeline: InnovationPipeline = {
       id: pipelineId,
       name: pipelineData.name,
       description: pipelineData.description,
-      stage: 'ideation',
+      stage: "ideation",
       priority: pipelineData.priority,
       technologies: pipelineData.technologies,
-      team: pipelineData.team.map(member => ({
+      team: pipelineData.team.map((member) => ({
         id: randomUUID(),
-        ...member
+        ...member,
       })),
       budget: {
         allocated: pipelineData.budget,
         spent: 0,
-        forecast: []
+        forecast: [],
       },
       timeline: {
         startDate: pipelineData.timeline.startDate,
         milestones: [],
-        expectedCompletion: pipelineData.timeline.expectedCompletion
+        expectedCompletion: pipelineData.timeline.expectedCompletion,
       },
       metrics: {
         progressPercentage: 0,
         qualityScore: 0,
         riskLevel: 0,
         innovationIndex: 0,
-        marketReadiness: 0
+        marketReadiness: 0,
       },
       deliverables: [],
       collaborations: [],
       intellectualProperty: [],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.innovationPipelines.set(pipelineId, pipeline);
-    this.emit('innovationPipelineCreated', pipeline);
-    
+    this.emit("innovationPipelineCreated", pipeline);
+
     return pipelineId;
   }
 
-  async assessTechOpportunity(techName: string, description: string): Promise<{
+  async assessTechOpportunity(
+    techName: string,
+    description: string,
+  ): Promise<{
     assessment: {
       marketPotential: number;
       technicalFeasibility: number;
@@ -789,56 +941,61 @@ export class FutureTechManager extends EventEmitter {
             4. Resource requirements (0-100, higher = more resources needed)
             5. Overall strategic fit score (0-100)
             
-            Provide specific recommendations, next steps, risks, and realistic timeline.`
+            Provide specific recommendations, next steps, risks, and realistic timeline.`,
           },
           {
             role: "user",
-            content: `Assess technology opportunity: ${techName} - ${description}`
-          }
+            content: `Assess technology opportunity: ${techName} - ${description}`,
+          },
         ],
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
       });
 
       const aiAssessment = JSON.parse(response.choices[0].message.content!);
-      
+
       return {
         assessment: aiAssessment.assessment || {
           marketPotential: 50,
           technicalFeasibility: 50,
           competitiveAdvantage: 50,
           resourceRequirement: 50,
-          overallScore: 50
+          overallScore: 50,
         },
         recommendations: aiAssessment.recommendations || [],
         nextSteps: aiAssessment.nextSteps || [],
         risks: aiAssessment.risks || [],
-        timeline: aiAssessment.timeline || '12-18 months'
+        timeline: aiAssessment.timeline || "12-18 months",
       };
-
     } catch (error) {
-      console.error('Tech opportunity assessment failed:', error);
+      console.error("Tech opportunity assessment failed:", error);
       throw error;
     }
   }
 
-  updateInnovationPipeline(pipelineId: string, updates: {
-    stage?: InnovationPipeline['stage'];
-    progressPercentage?: number;
-    budget?: { spent?: number };
-    milestones?: Array<{
-      name: string;
-      date: Date;
-      status: InnovationPipeline['timeline']['milestones'][0]['status'];
-    }>;
-    deliverables?: InnovationPipeline['deliverables'];
-    risks?: Array<{ description: string; mitigation: string }>;
-  }): boolean {
+  updateInnovationPipeline(
+    pipelineId: string,
+    updates: {
+      stage?: InnovationPipeline["stage"];
+      progressPercentage?: number;
+      budget?: { spent?: number };
+      milestones?: Array<{
+        name: string;
+        date: Date;
+        status: InnovationPipeline["timeline"]["milestones"][0]["status"];
+      }>;
+      deliverables?: InnovationPipeline["deliverables"];
+      risks?: Array<{ description: string; mitigation: string }>;
+    },
+  ): boolean {
     const pipeline = this.innovationPipelines.get(pipelineId);
     if (!pipeline) return false;
 
     if (updates.stage) pipeline.stage = updates.stage;
     if (updates.progressPercentage !== undefined) {
-      pipeline.metrics.progressPercentage = Math.max(0, Math.min(100, updates.progressPercentage));
+      pipeline.metrics.progressPercentage = Math.max(
+        0,
+        Math.min(100, updates.progressPercentage),
+      );
     }
     if (updates.budget?.spent !== undefined) {
       pipeline.budget.spent = updates.budget.spent;
@@ -851,8 +1008,8 @@ export class FutureTechManager extends EventEmitter {
     }
 
     pipeline.updatedAt = new Date();
-    this.emit('innovationPipelineUpdated', pipeline);
-    
+    this.emit("innovationPipelineUpdated", pipeline);
+
     return true;
   }
 
@@ -880,40 +1037,54 @@ export class FutureTechManager extends EventEmitter {
     const techs = Array.from(this.techAdvancements.values());
     const totalTechnologies = techs.length;
 
-    const byCategory = techs.reduce((acc, tech) => {
-      acc[tech.category] = (acc[tech.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const byCategory = techs.reduce(
+      (acc, tech) => {
+        acc[tech.category] = (acc[tech.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const byReadinessLevel = techs.reduce((acc, tech) => {
-      const level = `TRL-${tech.currentReadinessLevel}`;
-      acc[level] = (acc[level] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const byReadinessLevel = techs.reduce(
+      (acc, tech) => {
+        const level = `TRL-${tech.currentReadinessLevel}`;
+        acc[level] = (acc[level] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const averageImpactScore = techs.length > 0 ?
-      techs.reduce((sum, tech) => sum + tech.impactScore, 0) / techs.length : 0;
+    const averageImpactScore =
+      techs.length > 0
+        ? techs.reduce((sum, tech) => sum + tech.impactScore, 0) / techs.length
+        : 0;
 
-    const totalInvestment = techs.reduce((sum, tech) => sum + tech.investmentRequired, 0);
+    const totalInvestment = techs.reduce(
+      (sum, tech) => sum + tech.investmentRequired,
+      0,
+    );
     const expectedROI = techs.reduce((sum, tech) => sum + tech.potentialROI, 0);
 
-    const riskDistribution = techs.reduce((acc, tech) => {
-      if (tech.riskScore <= 25) acc.low++;
-      else if (tech.riskScore <= 50) acc.medium++;
-      else if (tech.riskScore <= 75) acc.high++;
-      else acc.critical++;
-      return acc;
-    }, { low: 0, medium: 0, high: 0, critical: 0 });
+    const riskDistribution = techs.reduce(
+      (acc, tech) => {
+        if (tech.riskScore <= 25) acc.low++;
+        else if (tech.riskScore <= 50) acc.medium++;
+        else if (tech.riskScore <= 75) acc.high++;
+        else acc.critical++;
+        return acc;
+      },
+      { low: 0, medium: 0, high: 0, critical: 0 },
+    );
 
     const nearTermOpportunities = techs
-      .filter(tech => tech.estimatedTimeToMarket <= 24)
+      .filter((tech) => tech.estimatedTimeToMarket <= 24)
       .sort((a, b) => b.impactScore - a.impactScore)
       .slice(0, 10)
-      .map(tech => ({
+      .map((tech) => ({
         name: tech.name,
         category: tech.category,
         timeToMarket: tech.estimatedTimeToMarket,
-        impactScore: tech.impactScore
+        impactScore: tech.impactScore,
       }));
 
     return {
@@ -924,7 +1095,7 @@ export class FutureTechManager extends EventEmitter {
       totalInvestment,
       expectedROI: Math.round(expectedROI * 100) / 100,
       riskDistribution,
-      nearTermOpportunities
+      nearTermOpportunities,
     };
   }
 
@@ -948,35 +1119,49 @@ export class FutureTechManager extends EventEmitter {
   } {
     const pipelines = Array.from(this.innovationPipelines.values());
     const activePipelines = pipelines.length;
-    const totalBudget = pipelines.reduce((sum, p) => sum + p.budget.allocated, 0);
+    const totalBudget = pipelines.reduce(
+      (sum, p) => sum + p.budget.allocated,
+      0,
+    );
     const spentBudget = pipelines.reduce((sum, p) => sum + p.budget.spent, 0);
-    const averageProgress = pipelines.length > 0 ?
-      pipelines.reduce((sum, p) => sum + p.metrics.progressPercentage, 0) / pipelines.length : 0;
+    const averageProgress =
+      pipelines.length > 0
+        ? pipelines.reduce((sum, p) => sum + p.metrics.progressPercentage, 0) /
+          pipelines.length
+        : 0;
 
-    const pipelinesByStage = pipelines.reduce((acc, p) => {
-      acc[p.stage] = (acc[p.stage] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const pipelinesByStage = pipelines.reduce(
+      (acc, p) => {
+        acc[p.stage] = (acc[p.stage] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const upcomingMilestones = pipelines
-      .flatMap(p => p.timeline.milestones.map(m => ({
-        pipeline: p.name,
-        milestone: m.name,
-        date: m.date
-      })))
-      .filter(m => m.date > new Date())
+      .flatMap((p) =>
+        p.timeline.milestones.map((m) => ({
+          pipeline: p.name,
+          milestone: m.name,
+          date: m.date,
+        })),
+      )
+      .filter((m) => m.date > new Date())
       .sort((a, b) => a.date.getTime() - b.date.getTime())
       .slice(0, 10);
 
     const deliverablesSummary = pipelines
-      .flatMap(p => p.deliverables)
-      .reduce((acc, d) => {
-        if (d.type === 'prototype') acc.prototypes++;
-        else if (d.type === 'patent') acc.patents++;
-        else if (d.type === 'publication') acc.publications++;
-        else if (d.type === 'demo') acc.demos++;
-        return acc;
-      }, { prototypes: 0, patents: 0, publications: 0, demos: 0 });
+      .flatMap((p) => p.deliverables)
+      .reduce(
+        (acc, d) => {
+          if (d.type === "prototype") acc.prototypes++;
+          else if (d.type === "patent") acc.patents++;
+          else if (d.type === "publication") acc.publications++;
+          else if (d.type === "demo") acc.demos++;
+          return acc;
+        },
+        { prototypes: 0, patents: 0, publications: 0, demos: 0 },
+      );
 
     return {
       activePipelines,
@@ -985,7 +1170,7 @@ export class FutureTechManager extends EventEmitter {
       averageProgress: Math.round(averageProgress * 100) / 100,
       pipelinesByStage,
       upcomingMilestones,
-      deliverablesSummary
+      deliverablesSummary,
     };
   }
 
@@ -1020,15 +1205,20 @@ export class FutureTechManager extends EventEmitter {
       .slice(0, limit);
   }
 
-  getTechByCategory(category: TechAdvancement['category']): TechAdvancement[] {
-    return Array.from(this.techAdvancements.values())
-      .filter(tech => tech.category === category);
+  getTechByCategory(category: TechAdvancement["category"]): TechAdvancement[] {
+    return Array.from(this.techAdvancements.values()).filter(
+      (tech) => tech.category === category,
+    );
   }
 
   getHighPriorityOpportunities(): TechAdvancement[] {
     return Array.from(this.techAdvancements.values())
-      .filter(tech => tech.impactScore >= 80 && tech.feasibilityScore >= 70)
-      .sort((a, b) => (b.impactScore * b.feasibilityScore) - (a.impactScore * a.feasibilityScore));
+      .filter((tech) => tech.impactScore >= 80 && tech.feasibilityScore >= 70)
+      .sort(
+        (a, b) =>
+          b.impactScore * b.feasibilityScore -
+          a.impactScore * a.feasibilityScore,
+      );
   }
 }
 

@@ -7,10 +7,14 @@ interface FormErrorsProps {
   onDismiss?: () => void;
 }
 
-export function FormErrors({ errors, className = "", onDismiss }: FormErrorsProps) {
+export function FormErrors({
+  errors,
+  className = "",
+  onDismiss,
+}: FormErrorsProps) {
   // Handle different error formats
-  const errorList = Array.isArray(errors) 
-    ? errors 
+  const errorList = Array.isArray(errors)
+    ? errors
     : Object.values(errors).filter(Boolean);
 
   if (!errorList.length) return null;
@@ -31,7 +35,7 @@ export function FormErrors({ errors, className = "", onDismiss }: FormErrorsProp
           ))}
         </ul>
       </AlertDescription>
-      
+
       {onDismiss && (
         <button
           onClick={onDismiss}

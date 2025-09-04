@@ -1,17 +1,36 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
+import {
   Shield,
   Activity,
   Users,
@@ -35,7 +54,7 @@ import {
   Play,
   Pause,
   BarChart3,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 
 interface PlatformConfig {
@@ -43,7 +62,7 @@ interface PlatformConfig {
   name: string;
   theme: string;
   icon: React.ReactNode;
-  status: 'active' | 'maintenance' | 'inactive';
+  status: "active" | "maintenance" | "inactive";
   userCount: number;
   dailyActive: number;
   moderationLevel: number; // 1-10 scale
@@ -64,13 +83,18 @@ interface PlatformConfig {
 interface ModerationAction {
   id: string;
   platform: string;
-  action: 'warned' | 'content_removed' | 'user_suspended' | 'user_banned' | 'content_approved';
+  action:
+    | "warned"
+    | "content_removed"
+    | "user_suspended"
+    | "user_banned"
+    | "content_approved";
   userId: string;
   username: string;
   reason: string;
   moderatorId: string;
   timestamp: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   appealable: boolean;
 }
 
@@ -98,11 +122,17 @@ export default function PlatformModeration() {
         harassment: 95,
         spam: 88,
         ageVerification: true,
-        customWords: ["illegal", "underage", "violence"]
+        customWords: ["illegal", "underage", "violence"],
       },
-      allowedContentTypes: ["images", "videos", "text", "live_streams", "audio"],
+      allowedContentTypes: [
+        "images",
+        "videos",
+        "text",
+        "live_streams",
+        "audio",
+      ],
       regionalRestrictions: ["CN", "RU"],
-      communityGuidelines: "Adult content allowed with age verification"
+      communityGuidelines: "Adult content allowed with age verification",
     },
     {
       id: "boyfanz",
@@ -120,11 +150,11 @@ export default function PlatformModeration() {
         harassment: 92,
         spam: 85,
         ageVerification: true,
-        customWords: ["harassment", "doxxing"]
+        customWords: ["harassment", "doxxing"],
       },
       allowedContentTypes: ["images", "videos", "text", "live_streams"],
       regionalRestrictions: ["CN", "IN"],
-      communityGuidelines: "Male-focused adult content with respect guidelines"
+      communityGuidelines: "Male-focused adult content with respect guidelines",
     },
     {
       id: "girlfanz",
@@ -142,11 +172,17 @@ export default function PlatformModeration() {
         harassment: 96,
         spam: 88,
         ageVerification: true,
-        customWords: ["harassment", "revenge", "non-consensual"]
+        customWords: ["harassment", "revenge", "non-consensual"],
       },
-      allowedContentTypes: ["images", "videos", "text", "live_streams", "audio"],
+      allowedContentTypes: [
+        "images",
+        "videos",
+        "text",
+        "live_streams",
+        "audio",
+      ],
       regionalRestrictions: ["CN", "RU", "TR"],
-      communityGuidelines: "Female-empowered adult content with safety focus"
+      communityGuidelines: "Female-empowered adult content with safety focus",
     },
     {
       id: "daddyfanz",
@@ -164,11 +200,12 @@ export default function PlatformModeration() {
         harassment: 95,
         spam: 90,
         ageVerification: true,
-        customWords: ["non-consensual", "abuse", "illegal"]
+        customWords: ["non-consensual", "abuse", "illegal"],
       },
       allowedContentTypes: ["images", "videos", "text", "live_streams"],
       regionalRestrictions: ["CN", "RU", "IN", "TR"],
-      communityGuidelines: "BDSM/Dom-sub content with strict consent requirements"
+      communityGuidelines:
+        "BDSM/Dom-sub content with strict consent requirements",
     },
     {
       id: "pupfanz",
@@ -186,11 +223,11 @@ export default function PlatformModeration() {
         harassment: 94,
         spam: 87,
         ageVerification: true,
-        customWords: ["abuse", "non-consensual"]
+        customWords: ["abuse", "non-consensual"],
       },
       allowedContentTypes: ["images", "videos", "text", "live_streams"],
       regionalRestrictions: ["CN", "RU"],
-      communityGuidelines: "Pet-play community with consent and safety focus"
+      communityGuidelines: "Pet-play community with consent and safety focus",
     },
     {
       id: "taboofanz",
@@ -208,11 +245,11 @@ export default function PlatformModeration() {
         harassment: 97,
         spam: 92,
         ageVerification: true,
-        customWords: ["illegal", "underage", "violence", "drugs", "weapons"]
+        customWords: ["illegal", "underage", "violence", "drugs", "weapons"],
       },
       allowedContentTypes: ["images", "videos", "text"],
       regionalRestrictions: ["CN", "RU", "IN", "TR", "AU", "UK"],
-      communityGuidelines: "Extreme adult content with maximum safety controls"
+      communityGuidelines: "Extreme adult content with maximum safety controls",
     },
     {
       id: "transfanz",
@@ -230,11 +267,23 @@ export default function PlatformModeration() {
         harassment: 98,
         spam: 90,
         ageVerification: true,
-        customWords: ["transphobia", "deadnaming", "harassment", "discrimination"]
+        customWords: [
+          "transphobia",
+          "deadnaming",
+          "harassment",
+          "discrimination",
+        ],
       },
-      allowedContentTypes: ["images", "videos", "text", "live_streams", "audio"],
+      allowedContentTypes: [
+        "images",
+        "videos",
+        "text",
+        "live_streams",
+        "audio",
+      ],
       regionalRestrictions: ["CN", "RU", "IN", "TR", "AF"],
-      communityGuidelines: "Trans-inclusive space with zero tolerance for discrimination"
+      communityGuidelines:
+        "Trans-inclusive space with zero tolerance for discrimination",
     },
     {
       id: "cougarfanz",
@@ -252,12 +301,19 @@ export default function PlatformModeration() {
         harassment: 93,
         spam: 85,
         ageVerification: true,
-        customWords: ["ageism", "harassment"]
+        customWords: ["ageism", "harassment"],
       },
-      allowedContentTypes: ["images", "videos", "text", "live_streams", "audio"],
+      allowedContentTypes: [
+        "images",
+        "videos",
+        "text",
+        "live_streams",
+        "audio",
+      ],
       regionalRestrictions: ["CN"],
-      communityGuidelines: "Mature adult content celebrating experience and wisdom"
-    }
+      communityGuidelines:
+        "Mature adult content celebrating experience and wisdom",
+    },
   ];
 
   // Mock recent moderation actions
@@ -272,10 +328,10 @@ export default function PlatformModeration() {
       moderatorId: "mod_001",
       timestamp: "2025-01-15T11:45:00Z",
       severity: "high",
-      appealable: true
+      appealable: true,
     },
     {
-      id: "act_002", 
+      id: "act_002",
       platform: "BoyFanz",
       action: "user_warned",
       userId: "user_456",
@@ -284,7 +340,7 @@ export default function PlatformModeration() {
       moderatorId: "ai_moderator",
       timestamp: "2025-01-15T11:30:00Z",
       severity: "medium",
-      appealable: true
+      appealable: true,
     },
     {
       id: "act_003",
@@ -296,7 +352,7 @@ export default function PlatformModeration() {
       moderatorId: "mod_002",
       timestamp: "2025-01-15T10:15:00Z",
       severity: "critical",
-      appealable: false
+      appealable: false,
     },
     {
       id: "act_004",
@@ -308,45 +364,67 @@ export default function PlatformModeration() {
       moderatorId: "mod_003",
       timestamp: "2025-01-15T09:30:00Z",
       severity: "critical",
-      appealable: false
-    }
+      appealable: false,
+    },
   ];
 
   const handleUpdateModerationLevel = useMutation({
-    mutationFn: ({ platformId, level }: { platformId: string, level: number }) => 
-      apiRequest("POST", `/api/platforms/${platformId}/moderation-level`, { level }),
+    mutationFn: ({
+      platformId,
+      level,
+    }: {
+      platformId: string;
+      level: number;
+    }) =>
+      apiRequest("POST", `/api/platforms/${platformId}/moderation-level`, {
+        level,
+      }),
     onSuccess: (_, { platformId, level }) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/platforms", platformId] });
-      const platform = platformConfigs.find(p => p.id === platformId);
+      queryClient.invalidateQueries({
+        queryKey: ["/api/platforms", platformId],
+      });
+      const platform = platformConfigs.find((p) => p.id === platformId);
       toast({
         title: "Moderation level updated",
-        description: `${platform?.name} moderation level set to ${level}/10`
+        description: `${platform?.name} moderation level set to ${level}/10`,
       });
-    }
+    },
   });
 
   const handleToggleAutoModeration = useMutation({
-    mutationFn: ({ platformId, enabled }: { platformId: string, enabled: boolean }) =>
-      apiRequest("POST", `/api/platforms/${platformId}/auto-moderation`, { enabled }),
+    mutationFn: ({
+      platformId,
+      enabled,
+    }: {
+      platformId: string;
+      enabled: boolean;
+    }) =>
+      apiRequest("POST", `/api/platforms/${platformId}/auto-moderation`, {
+        enabled,
+      }),
     onSuccess: (_, { platformId, enabled }) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/platforms", platformId] });
-      const platform = platformConfigs.find(p => p.id === platformId);
-      toast({
-        title: `Auto-moderation ${enabled ? 'enabled' : 'disabled'}`,
-        description: `${platform?.name} auto-moderation has been ${enabled ? 'activated' : 'deactivated'}`
+      queryClient.invalidateQueries({
+        queryKey: ["/api/platforms", platformId],
       });
-    }
+      const platform = platformConfigs.find((p) => p.id === platformId);
+      toast({
+        title: `Auto-moderation ${enabled ? "enabled" : "disabled"}`,
+        description: `${platform?.name} auto-moderation has been ${enabled ? "activated" : "deactivated"}`,
+      });
+    },
   });
 
   const getStatusBadge = (status: string) => {
     const variants = {
       active: "bg-green-600",
       maintenance: "bg-yellow-600",
-      inactive: "bg-red-600"
+      inactive: "bg-red-600",
     } as const;
 
     return (
-      <Badge className={variants[status as keyof typeof variants] || "bg-gray-600"}>
+      <Badge
+        className={variants[status as keyof typeof variants] || "bg-gray-600"}
+      >
         {status.toUpperCase()}
       </Badge>
     );
@@ -358,12 +436,14 @@ export default function PlatformModeration() {
       content_removed: "bg-orange-600",
       user_suspended: "bg-red-600",
       user_banned: "bg-red-800",
-      content_approved: "bg-green-600"
+      content_approved: "bg-green-600",
     } as const;
 
     return (
-      <Badge className={variants[action as keyof typeof variants] || "bg-gray-600"}>
-        {action.replace('_', ' ').toUpperCase()}
+      <Badge
+        className={variants[action as keyof typeof variants] || "bg-gray-600"}
+      >
+        {action.replace("_", " ").toUpperCase()}
       </Badge>
     );
   };
@@ -371,32 +451,40 @@ export default function PlatformModeration() {
   const getSeverityBadge = (severity: string) => {
     const variants = {
       low: "bg-blue-600",
-      medium: "bg-yellow-600", 
+      medium: "bg-yellow-600",
       high: "bg-orange-600",
-      critical: "bg-red-600"
+      critical: "bg-red-600",
     } as const;
 
     return (
-      <Badge className={variants[severity as keyof typeof variants] || "bg-gray-600"}>
+      <Badge
+        className={variants[severity as keyof typeof variants] || "bg-gray-600"}
+      >
         {severity.toUpperCase()}
       </Badge>
     );
   };
 
-  const filteredPlatforms = platformConfigs.filter(platform => {
-    const matchesPlatform = selectedPlatform === "all" || platform.id === selectedPlatform;
-    const matchesSearch = !searchQuery || 
+  const filteredPlatforms = platformConfigs.filter((platform) => {
+    const matchesPlatform =
+      selectedPlatform === "all" || platform.id === selectedPlatform;
+    const matchesSearch =
+      !searchQuery ||
       platform.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       platform.theme.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     return matchesPlatform && matchesSearch;
   });
 
   const stats = {
     totalPlatforms: platformConfigs.length,
-    activePlatforms: platformConfigs.filter(p => p.status === 'active').length,
+    activePlatforms: platformConfigs.filter((p) => p.status === "active")
+      .length,
     totalUsers: platformConfigs.reduce((sum, p) => sum + p.userCount, 0),
-    totalDailyActive: platformConfigs.reduce((sum, p) => sum + p.dailyActive, 0)
+    totalDailyActive: platformConfigs.reduce(
+      (sum, p) => sum + p.dailyActive,
+      0,
+    ),
   };
 
   return (
@@ -405,7 +493,9 @@ export default function PlatformModeration() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Platform-Specific Moderation</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Platform-Specific Moderation
+            </h1>
             <p className="text-muted-foreground">
               Configure moderation settings for each Fanz™ platform cluster
             </p>
@@ -426,7 +516,9 @@ export default function PlatformModeration() {
                 <Palette className="h-8 w-8 text-cyan-400" />
                 <div>
                   <p className="text-sm font-medium">Total Platforms</p>
-                  <p className="text-2xl font-bold text-cyan-400">{stats.totalPlatforms}</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {stats.totalPlatforms}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -438,7 +530,9 @@ export default function PlatformModeration() {
                 <Users className="h-8 w-8 text-green-400" />
                 <div>
                   <p className="text-sm font-medium">Total Users</p>
-                  <p className="text-2xl font-bold text-green-400">{(stats.totalUsers / 1000000).toFixed(1)}M</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {(stats.totalUsers / 1000000).toFixed(1)}M
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -450,7 +544,9 @@ export default function PlatformModeration() {
                 <Activity className="h-8 w-8 text-blue-400" />
                 <div>
                   <p className="text-sm font-medium">Daily Active</p>
-                  <p className="text-2xl font-bold text-blue-400">{(stats.totalDailyActive / 1000000).toFixed(1)}M</p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {(stats.totalDailyActive / 1000000).toFixed(1)}M
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -463,7 +559,13 @@ export default function PlatformModeration() {
                 <div>
                   <p className="text-sm font-medium">Avg Moderation</p>
                   <p className="text-2xl font-bold text-purple-400">
-                    {(platformConfigs.reduce((sum, p) => sum + p.moderationLevel, 0) / platformConfigs.length).toFixed(1)}/10
+                    {(
+                      platformConfigs.reduce(
+                        (sum, p) => sum + p.moderationLevel,
+                        0,
+                      ) / platformConfigs.length
+                    ).toFixed(1)}
+                    /10
                   </p>
                 </div>
               </div>
@@ -481,8 +583,12 @@ export default function PlatformModeration() {
           <TabsContent value="platforms" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Platform Moderation Configuration</CardTitle>
-                <CardDescription>Configure moderation settings for each platform cluster</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Platform Moderation Configuration
+                </CardTitle>
+                <CardDescription>
+                  Configure moderation settings for each platform cluster
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -496,8 +602,11 @@ export default function PlatformModeration() {
                       data-testid="input-platform-search"
                     />
                   </div>
-                  
-                  <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+
+                  <Select
+                    value={selectedPlatform}
+                    onValueChange={setSelectedPlatform}
+                  >
                     <SelectTrigger className="w-[200px] bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Filter by platform" />
                     </SelectTrigger>
@@ -514,13 +623,18 @@ export default function PlatformModeration() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {filteredPlatforms.map((platform) => (
-                    <Card key={platform.id} className="bg-gray-800/50 border-gray-700">
+                    <Card
+                      key={platform.id}
+                      className="bg-gray-800/50 border-gray-700"
+                    >
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             {platform.icon}
                             <div>
-                              <CardTitle className="text-lg text-white">{platform.name}</CardTitle>
+                              <CardTitle className="text-lg text-white">
+                                {platform.name}
+                              </CardTitle>
                               <CardDescription className="text-xs">
                                 {platform.theme}
                               </CardDescription>
@@ -547,13 +661,15 @@ export default function PlatformModeration() {
 
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Auto-Moderation</span>
-                            <Switch 
+                            <span className="text-sm text-gray-400">
+                              Auto-Moderation
+                            </span>
+                            <Switch
                               checked={platform.autoModerationEnabled}
-                              onCheckedChange={(enabled) => 
-                                handleToggleAutoModeration.mutate({ 
-                                  platformId: platform.id, 
-                                  enabled 
+                              onCheckedChange={(enabled) =>
+                                handleToggleAutoModeration.mutate({
+                                  platformId: platform.id,
+                                  enabled,
                                 })
                               }
                               data-testid={`switch-auto-moderation-${platform.id}`}
@@ -562,7 +678,9 @@ export default function PlatformModeration() {
 
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm text-gray-400">Moderation Level</span>
+                              <span className="text-sm text-gray-400">
+                                Moderation Level
+                              </span>
                               <span className="text-sm font-mono text-white">
                                 {platform.moderationLevel}/10
                               </span>
@@ -572,7 +690,7 @@ export default function PlatformModeration() {
                               onValueChange={(value) =>
                                 handleUpdateModerationLevel.mutate({
                                   platformId: platform.id,
-                                  level: value[0]
+                                  level: value[0],
                                 })
                               }
                               max={10}
@@ -584,38 +702,48 @@ export default function PlatformModeration() {
                           </div>
 
                           <div className="pt-2">
-                            <p className="text-xs text-gray-400 mb-2">Content Filters:</p>
+                            <p className="text-xs text-gray-400 mb-2">
+                              Content Filters:
+                            </p>
                             <div className="grid grid-cols-2 gap-2 text-xs">
                               <div className="flex justify-between">
                                 <span>Nudity:</span>
-                                <span className="font-mono">{platform.contentFilters.nudity}%</span>
+                                <span className="font-mono">
+                                  {platform.contentFilters.nudity}%
+                                </span>
                               </div>
                               <div className="flex justify-between">
                                 <span>Violence:</span>
-                                <span className="font-mono">{platform.contentFilters.violence}%</span>
+                                <span className="font-mono">
+                                  {platform.contentFilters.violence}%
+                                </span>
                               </div>
                               <div className="flex justify-between">
                                 <span>Harassment:</span>
-                                <span className="font-mono">{platform.contentFilters.harassment}%</span>
+                                <span className="font-mono">
+                                  {platform.contentFilters.harassment}%
+                                </span>
                               </div>
                               <div className="flex justify-between">
                                 <span>Spam:</span>
-                                <span className="font-mono">{platform.contentFilters.spam}%</span>
+                                <span className="font-mono">
+                                  {platform.contentFilters.spam}%
+                                </span>
                               </div>
                             </div>
                           </div>
 
                           <div className="flex justify-between pt-2">
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               variant="outline"
                               data-testid={`button-configure-${platform.id}`}
                             >
                               <Settings className="w-3 h-3 mr-1" />
                               Configure
                             </Button>
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               variant="outline"
                               data-testid={`button-analytics-${platform.id}`}
                             >
@@ -635,8 +763,12 @@ export default function PlatformModeration() {
           <TabsContent value="actions" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Recent Moderation Actions</CardTitle>
-                <CardDescription>Latest moderation actions across all platforms</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Recent Moderation Actions
+                </CardTitle>
+                <CardDescription>
+                  Latest moderation actions across all platforms
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="border rounded-lg bg-gray-800/50">
@@ -657,16 +789,12 @@ export default function PlatformModeration() {
                       {recentActions.map((action) => (
                         <TableRow key={action.id}>
                           <TableCell>
-                            <Badge variant="outline">
-                              {action.platform}
-                            </Badge>
+                            <Badge variant="outline">{action.platform}</Badge>
                           </TableCell>
                           <TableCell className="font-medium">
                             {action.username}
                           </TableCell>
-                          <TableCell>
-                            {getActionBadge(action.action)}
-                          </TableCell>
+                          <TableCell>{getActionBadge(action.action)}</TableCell>
                           <TableCell className="max-w-xs">
                             <p className="text-sm truncate">{action.reason}</p>
                           </TableCell>
@@ -704,15 +832,21 @@ export default function PlatformModeration() {
           <TabsContent value="analytics" className="space-y-6">
             <Card className="bg-gray-900/50 border-cyan-500/20">
               <CardHeader>
-                <CardTitle className="text-cyan-400">Platform Moderation Analytics</CardTitle>
-                <CardDescription>Performance metrics and trends across all platforms</CardDescription>
+                <CardTitle className="text-cyan-400">
+                  Platform Moderation Analytics
+                </CardTitle>
+                <CardDescription>
+                  Performance metrics and trends across all platforms
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center p-6 bg-gray-800/50 rounded-lg">
                     <TrendingUp className="w-12 h-12 mx-auto mb-4 text-green-400" />
                     <p className="text-3xl font-bold text-green-400">97.8%</p>
-                    <p className="text-sm text-gray-400">Auto-Moderation Accuracy</p>
+                    <p className="text-sm text-gray-400">
+                      Auto-Moderation Accuracy
+                    </p>
                   </div>
                   <div className="text-center p-6 bg-gray-800/50 rounded-lg">
                     <Flag className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
@@ -727,10 +861,15 @@ export default function PlatformModeration() {
                 </div>
 
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Platform Performance</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">
+                    Platform Performance
+                  </h3>
                   <div className="space-y-4">
                     {platformConfigs.map((platform) => (
-                      <div key={platform.id} className="flex items-center justify-between p-3 bg-gray-800/50 rounded">
+                      <div
+                        key={platform.id}
+                        className="flex items-center justify-between p-3 bg-gray-800/50 rounded"
+                      >
                         <div className="flex items-center gap-3">
                           {platform.icon}
                           <span className="text-white">{platform.name}</span>

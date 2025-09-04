@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -15,8 +15,14 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   HeadphonesIcon,
   MessageSquare,
   Plus,
@@ -40,7 +46,7 @@ import {
   BookOpen,
   HelpCircle,
   ThumbsUp,
-  ThumbsDown
+  ThumbsDown,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -49,8 +55,8 @@ interface SupportTicket {
   ticketNumber: string;
   subject: string;
   description: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'open' | 'pending' | 'resolved' | 'closed';
+  priority: "low" | "medium" | "high" | "urgent";
+  status: "open" | "pending" | "resolved" | "closed";
   categoryId: string;
   categoryName: string;
   messageCount: number;
@@ -62,7 +68,7 @@ interface SupportTicket {
 interface TicketMessage {
   id: string;
   message: string;
-  authorType: 'customer' | 'agent' | 'system';
+  authorType: "customer" | "agent" | "system";
   authorName: string;
   authorAvatar?: string;
   attachments: Array<{
@@ -111,9 +117,13 @@ interface CustomerSupportPortalProps {
     attachments?: File[];
   }) => Promise<void>;
   onLoadTicketMessages: (ticketId: string) => Promise<TicketMessage[]>;
-  onAddTicketMessage: (ticketId: string, message: string, attachments?: File[]) => Promise<void>;
+  onAddTicketMessage: (
+    ticketId: string,
+    message: string,
+    attachments?: File[],
+  ) => Promise<void>;
   onSearchKnowledgeBase: (query: string) => Promise<KnowledgeBaseArticle[]>;
-  onRateArticle: (articleId: string, rating: 'up' | 'down') => Promise<void>;
+  onRateArticle: (articleId: string, rating: "up" | "down") => Promise<void>;
   className?: string;
 }
 
@@ -127,14 +137,18 @@ export function CustomerSupportPortal({
   onAddTicketMessage,
   onSearchKnowledgeBase,
   onRateArticle,
-  className = ""
+  className = "",
 }: CustomerSupportPortalProps) {
   const [activeTab, setActiveTab] = useState("tickets");
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(
+    null,
+  );
   const [ticketMessages, setTicketMessages] = useState<TicketMessage[]>([]);
   const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<KnowledgeBaseArticle[]>([]);
+  const [searchResults, setSearchResults] = useState<KnowledgeBaseArticle[]>(
+    [],
+  );
   const [isSearching, setIsSearching] = useState(false);
 
   // Create ticket form state
@@ -143,7 +157,7 @@ export function CustomerSupportPortal({
     description: "",
     categoryId: "",
     priority: "medium",
-    attachments: [] as File[]
+    attachments: [] as File[],
   });
   const [ticketErrors, setTicketErrors] = useState<Record<string, string>>({});
   const [isSubmittingTicket, setIsSubmittingTicket] = useState(false);
@@ -158,7 +172,7 @@ export function CustomerSupportPortal({
       const messages = await onLoadTicketMessages(ticket.id);
       setTicketMessages(messages);
     } catch (error) {
-      console.error('Failed to load ticket messages:', error);
+      console.error("Failed to load ticket messages:", error);
     }
   };
 
@@ -178,7 +192,7 @@ export function CustomerSupportPortal({
       const results = await onSearchKnowledgeBase(query);
       setSearchResults(results);
     } catch (error) {
-      console.error('Search failed:', error);
+      console.error("Search failed:", error);
     } finally {
       setIsSearching(false);
     }
@@ -213,7 +227,7 @@ export function CustomerSupportPortal({
         description: "",
         categoryId: "",
         priority: "medium",
-        attachments: []
+        attachments: [],
       });
     } catch (error: any) {
       setTicketErrors({ submit: error.message || "Failed to create ticket" });
@@ -227,12 +241,16 @@ export function CustomerSupportPortal({
 
     setIsSubmittingMessage(true);
     try {
-      await onAddTicketMessage(selectedTicket.id, newMessage, messageAttachments);
+      await onAddTicketMessage(
+        selectedTicket.id,
+        newMessage,
+        messageAttachments,
+      );
       setNewMessage("");
       setMessageAttachments([]);
       await loadTicketMessages(selectedTicket); // Reload messages
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error("Failed to send message:", error);
     } finally {
       setIsSubmittingMessage(false);
     }
@@ -240,14 +258,34 @@ export function CustomerSupportPortal({
 
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
-      case 'urgent':
-        return <Badge variant="destructive" className="animate-pulse"><Flag className="h-3 w-3 mr-1" />Urgent</Badge>;
-      case 'high':
-        return <Badge variant="destructive"><ArrowUp className="h-3 w-3 mr-1" />High</Badge>;
-      case 'medium':
-        return <Badge className="bg-yellow-500"><ArrowUp className="h-3 w-3 mr-1" />Medium</Badge>;
-      case 'low':
-        return <Badge variant="secondary"><ArrowDown className="h-3 w-3 mr-1" />Low</Badge>;
+      case "urgent":
+        return (
+          <Badge variant="destructive" className="animate-pulse">
+            <Flag className="h-3 w-3 mr-1" />
+            Urgent
+          </Badge>
+        );
+      case "high":
+        return (
+          <Badge variant="destructive">
+            <ArrowUp className="h-3 w-3 mr-1" />
+            High
+          </Badge>
+        );
+      case "medium":
+        return (
+          <Badge className="bg-yellow-500">
+            <ArrowUp className="h-3 w-3 mr-1" />
+            Medium
+          </Badge>
+        );
+      case "low":
+        return (
+          <Badge variant="secondary">
+            <ArrowDown className="h-3 w-3 mr-1" />
+            Low
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{priority}</Badge>;
     }
@@ -255,27 +293,50 @@ export function CustomerSupportPortal({
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'open':
-        return <Badge className="bg-blue-500"><Clock className="h-3 w-3 mr-1" />Open</Badge>;
-      case 'pending':
-        return <Badge className="bg-yellow-500"><Timer className="h-3 w-3 mr-1" />Pending</Badge>;
-      case 'resolved':
-        return <Badge className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" />Resolved</Badge>;
-      case 'closed':
-        return <Badge variant="outline"><Archive className="h-3 w-3 mr-1" />Closed</Badge>;
+      case "open":
+        return (
+          <Badge className="bg-blue-500">
+            <Clock className="h-3 w-3 mr-1" />
+            Open
+          </Badge>
+        );
+      case "pending":
+        return (
+          <Badge className="bg-yellow-500">
+            <Timer className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
+      case "resolved":
+        return (
+          <Badge className="bg-green-500">
+            <CheckCircle className="h-3 w-3 mr-1" />
+            Resolved
+          </Badge>
+        );
+      case "closed":
+        return (
+          <Badge variant="outline">
+            <Archive className="h-3 w-3 mr-1" />
+            Closed
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const TicketCard = ({ ticket }: { ticket: SupportTicket }) => (
-    <Card 
+    <Card
       className={`cursor-pointer hover:shadow-lg transition-all duration-300 border-l-4 ${
-        ticket.priority === 'urgent' ? 'border-l-red-500' :
-        ticket.priority === 'high' ? 'border-l-orange-500' :
-        ticket.priority === 'medium' ? 'border-l-yellow-500' :
-        'border-l-blue-500'
-      } ${selectedTicket?.id === ticket.id ? 'ring-2 ring-primary bg-primary/5' : ''}`}
+        ticket.priority === "urgent"
+          ? "border-l-red-500"
+          : ticket.priority === "high"
+            ? "border-l-orange-500"
+            : ticket.priority === "medium"
+              ? "border-l-yellow-500"
+              : "border-l-blue-500"
+      } ${selectedTicket?.id === ticket.id ? "ring-2 ring-primary bg-primary/5" : ""}`}
       onClick={() => handleTicketSelect(ticket)}
     >
       <CardContent className="p-4">
@@ -296,12 +357,16 @@ export function CustomerSupportPortal({
             )}
           </div>
 
-          <h3 className="font-semibold text-lg line-clamp-2">{ticket.subject}</h3>
-          
+          <h3 className="font-semibold text-lg line-clamp-2">
+            {ticket.subject}
+          </h3>
+
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
               <Tag className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{ticket.categoryName}</span>
+              <span className="text-muted-foreground">
+                {ticket.categoryName}
+              </span>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
@@ -309,7 +374,9 @@ export function CustomerSupportPortal({
                 <span>{ticket.messageCount}</span>
               </div>
               <span className="text-muted-foreground">
-                {formatDistanceToNow(new Date(ticket.lastMessageAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(ticket.lastMessageAt), {
+                  addSuffix: true,
+                })}
               </span>
             </div>
           </div>
@@ -324,8 +391,12 @@ export function CustomerSupportPortal({
         <div className="space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="font-semibold text-lg line-clamp-2 mb-2">{article.title}</h3>
-              <p className="text-muted-foreground text-sm line-clamp-2">{article.summary}</p>
+              <h3 className="font-semibold text-lg line-clamp-2 mb-2">
+                {article.title}
+              </h3>
+              <p className="text-muted-foreground text-sm line-clamp-2">
+                {article.summary}
+              </p>
             </div>
             {article.isFeatured && (
               <Badge className="bg-yellow-500">
@@ -357,20 +428,22 @@ export function CustomerSupportPortal({
 
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
-              {formatDistanceToNow(new Date(article.createdAt), { addSuffix: true })}
+              {formatDistanceToNow(new Date(article.createdAt), {
+                addSuffix: true,
+              })}
             </span>
             <div className="flex items-center space-x-2">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
-                onClick={() => onRateArticle(article.id, 'up')}
+                onClick={() => onRateArticle(article.id, "up")}
               >
                 <ThumbsUp className="h-3 w-3" />
               </Button>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
-                onClick={() => onRateArticle(article.id, 'down')}
+                onClick={() => onRateArticle(article.id, "down")}
               >
                 <ThumbsDown className="h-3 w-3" />
               </Button>
@@ -382,18 +455,20 @@ export function CustomerSupportPortal({
   );
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}>
+    <div
+      className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}
+    >
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6">
             <HeadphonesIcon className="h-10 w-10 text-primary" />
           </div>
-          
+
           <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-4">
             Support Center
           </h1>
-          
+
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Get help, browse articles, and manage your support tickets
           </p>
@@ -415,13 +490,23 @@ export function CustomerSupportPortal({
           </CardContent>
         </Card>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="tickets" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="tickets"
+              className="flex items-center space-x-2"
+            >
               <MessageSquare className="h-4 w-4" />
               <span>My Tickets ({tickets.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="knowledge" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="knowledge"
+              className="flex items-center space-x-2"
+            >
               <BookOpen className="h-4 w-4" />
               <span>Knowledge Base</span>
             </TabsTrigger>
@@ -437,7 +522,9 @@ export function CustomerSupportPortal({
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Tickets List */}
                 <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">Your Support Tickets</h3>
+                  <h3 className="text-xl font-semibold">
+                    Your Support Tickets
+                  </h3>
                   {tickets.map((ticket) => (
                     <TicketCard key={ticket.id} ticket={ticket} />
                   ))}
@@ -450,11 +537,18 @@ export function CustomerSupportPortal({
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                           <div>
-                            <CardTitle className="line-clamp-1">{selectedTicket.subject}</CardTitle>
+                            <CardTitle className="line-clamp-1">
+                              {selectedTicket.subject}
+                            </CardTitle>
                             <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
                               <span>#{selectedTicket.ticketNumber}</span>
                               <span>•</span>
-                              <span>{formatDistanceToNow(new Date(selectedTicket.createdAt), { addSuffix: true })}</span>
+                              <span>
+                                {formatDistanceToNow(
+                                  new Date(selectedTicket.createdAt),
+                                  { addSuffix: true },
+                                )}
+                              </span>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -467,27 +561,40 @@ export function CustomerSupportPortal({
                         {/* Messages */}
                         <div className="flex-1 overflow-y-auto space-y-3 pr-2">
                           {ticketMessages.map((message) => (
-                            <div 
+                            <div
                               key={message.id}
-                              className={`flex space-x-3 ${message.authorType === 'customer' ? 'flex-row' : 'flex-row-reverse'}`}
+                              className={`flex space-x-3 ${message.authorType === "customer" ? "flex-row" : "flex-row-reverse"}`}
                             >
                               <Avatar className="h-8 w-8 flex-shrink-0">
                                 <AvatarImage src={message.authorAvatar} />
-                                <AvatarFallback>{message.authorName.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>
+                                  {message.authorName.charAt(0)}
+                                </AvatarFallback>
                               </Avatar>
-                              <div className={`flex-1 ${message.authorType === 'customer' ? 'text-left' : 'text-right'}`}>
+                              <div
+                                className={`flex-1 ${message.authorType === "customer" ? "text-left" : "text-right"}`}
+                              >
                                 <div className="flex items-center space-x-2 mb-1">
-                                  <span className="font-medium text-sm">{message.authorName}</span>
+                                  <span className="font-medium text-sm">
+                                    {message.authorName}
+                                  </span>
                                   <span className="text-xs text-muted-foreground">
-                                    {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+                                    {formatDistanceToNow(
+                                      new Date(message.createdAt),
+                                      { addSuffix: true },
+                                    )}
                                   </span>
                                 </div>
-                                <div className={`rounded-lg p-3 ${
-                                  message.authorType === 'customer' 
-                                    ? 'bg-muted' 
-                                    : 'bg-primary text-primary-foreground'
-                                }`}>
-                                  <p className="text-sm whitespace-pre-wrap">{message.message}</p>
+                                <div
+                                  className={`rounded-lg p-3 ${
+                                    message.authorType === "customer"
+                                      ? "bg-muted"
+                                      : "bg-primary text-primary-foreground"
+                                  }`}
+                                >
+                                  <p className="text-sm whitespace-pre-wrap">
+                                    {message.message}
+                                  </p>
                                 </div>
                               </div>
                             </div>
@@ -495,7 +602,7 @@ export function CustomerSupportPortal({
                         </div>
 
                         {/* Reply Form */}
-                        {selectedTicket.status !== 'closed' && (
+                        {selectedTicket.status !== "closed" && (
                           <div className="space-y-2 pt-2 border-t">
                             <div className="flex space-x-2">
                               <Textarea
@@ -510,9 +617,11 @@ export function CustomerSupportPortal({
                                 <Button variant="ghost" size="sm">
                                   <Paperclip className="h-4 w-4" />
                                 </Button>
-                                <Button 
+                                <Button
                                   onClick={handleSendMessage}
-                                  disabled={!newMessage.trim() || isSubmittingMessage}
+                                  disabled={
+                                    !newMessage.trim() || isSubmittingMessage
+                                  }
                                   size="sm"
                                   data-testid="send-ticket-reply-btn"
                                 >
@@ -528,8 +637,12 @@ export function CustomerSupportPortal({
                     <Card className="h-96 flex items-center justify-center">
                       <div className="text-center">
                         <MessageSquare className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold mb-2">Select a Ticket</h3>
-                        <p className="text-muted-foreground">Choose a ticket from the list to view details</p>
+                        <h3 className="text-xl font-semibold mb-2">
+                          Select a Ticket
+                        </h3>
+                        <p className="text-muted-foreground">
+                          Choose a ticket from the list to view details
+                        </p>
                       </div>
                     </Card>
                   )}
@@ -538,11 +651,17 @@ export function CustomerSupportPortal({
             ) : (
               <div className="text-center py-16">
                 <MessageSquare className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-2xl font-semibold mb-4">No Support Tickets</h3>
+                <h3 className="text-2xl font-semibold mb-4">
+                  No Support Tickets
+                </h3>
                 <p className="text-muted-foreground mb-8">
-                  You haven't created any support tickets yet. Need help? Create your first ticket!
+                  You haven't created any support tickets yet. Need help? Create
+                  your first ticket!
                 </p>
-                <Button onClick={() => setActiveTab('create')} className="bg-gradient-to-r from-primary to-purple-600">
+                <Button
+                  onClick={() => setActiveTab("create")}
+                  className="bg-gradient-to-r from-primary to-purple-600"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Your First Ticket
                 </Button>
@@ -575,7 +694,9 @@ export function CustomerSupportPortal({
                 </div>
               ) : searchQuery ? (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">Search Results ({searchResults.length})</h3>
+                  <h3 className="text-xl font-semibold">
+                    Search Results ({searchResults.length})
+                  </h3>
                   {searchResults.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4">
                       {searchResults.map((article) => (
@@ -585,8 +706,13 @@ export function CustomerSupportPortal({
                   ) : (
                     <div className="text-center py-8">
                       <HelpCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold mb-2">No Results Found</h3>
-                      <p className="text-muted-foreground">Try different search terms or browse popular articles below.</p>
+                      <h3 className="text-xl font-semibold mb-2">
+                        No Results Found
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Try different search terms or browse popular articles
+                        below.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -625,13 +751,20 @@ export function CustomerSupportPortal({
                   <Input
                     id="subject"
                     value={newTicket.subject}
-                    onChange={(e) => setNewTicket(prev => ({ ...prev, subject: e.target.value }))}
+                    onChange={(e) =>
+                      setNewTicket((prev) => ({
+                        ...prev,
+                        subject: e.target.value,
+                      }))
+                    }
                     placeholder="Brief description of your issue"
                     className={ticketErrors.subject ? "border-red-500" : ""}
                     data-testid="ticket-subject-input"
                   />
                   {ticketErrors.subject && (
-                    <p className="text-sm text-red-600">{ticketErrors.subject}</p>
+                    <p className="text-sm text-red-600">
+                      {ticketErrors.subject}
+                    </p>
                   )}
                 </div>
 
@@ -640,9 +773,16 @@ export function CustomerSupportPortal({
                     <Label htmlFor="category">Category *</Label>
                     <Select
                       value={newTicket.categoryId}
-                      onValueChange={(value) => setNewTicket(prev => ({ ...prev, categoryId: value }))}
+                      onValueChange={(value) =>
+                        setNewTicket((prev) => ({ ...prev, categoryId: value }))
+                      }
                     >
-                      <SelectTrigger className={ticketErrors.categoryId ? "border-red-500" : ""} data-testid="ticket-category-select">
+                      <SelectTrigger
+                        className={
+                          ticketErrors.categoryId ? "border-red-500" : ""
+                        }
+                        data-testid="ticket-category-select"
+                      >
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -654,7 +794,9 @@ export function CustomerSupportPortal({
                       </SelectContent>
                     </Select>
                     {ticketErrors.categoryId && (
-                      <p className="text-sm text-red-600">{ticketErrors.categoryId}</p>
+                      <p className="text-sm text-red-600">
+                        {ticketErrors.categoryId}
+                      </p>
                     )}
                   </div>
 
@@ -662,7 +804,9 @@ export function CustomerSupportPortal({
                     <Label htmlFor="priority">Priority</Label>
                     <Select
                       value={newTicket.priority}
-                      onValueChange={(value) => setNewTicket(prev => ({ ...prev, priority: value }))}
+                      onValueChange={(value) =>
+                        setNewTicket((prev) => ({ ...prev, priority: value }))
+                      }
                     >
                       <SelectTrigger data-testid="ticket-priority-select">
                         <SelectValue />
@@ -682,14 +826,21 @@ export function CustomerSupportPortal({
                   <Textarea
                     id="description"
                     value={newTicket.description}
-                    onChange={(e) => setNewTicket(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setNewTicket((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                     placeholder="Please provide detailed information about your issue..."
                     rows={6}
                     className={ticketErrors.description ? "border-red-500" : ""}
                     data-testid="ticket-description-input"
                   />
                   {ticketErrors.description && (
-                    <p className="text-sm text-red-600">{ticketErrors.description}</p>
+                    <p className="text-sm text-red-600">
+                      {ticketErrors.description}
+                    </p>
                   )}
                 </div>
 
@@ -706,7 +857,7 @@ export function CustomerSupportPortal({
                   </div>
                 </div>
 
-                <Button 
+                <Button
                   onClick={handleCreateTicket}
                   disabled={isSubmittingTicket}
                   className="w-full h-12 text-lg bg-gradient-to-r from-primary to-purple-600"

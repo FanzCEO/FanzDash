@@ -2,8 +2,20 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
@@ -33,8 +45,8 @@ export function InteractiveAnalysisForm() {
         body: JSON.stringify({
           contentType: data.contentType,
           url: data.url,
-          contentId: `content-${Date.now()}`
-        })
+          contentId: `content-${Date.now()}`,
+        }),
       });
       return await response.json();
     },
@@ -51,7 +63,7 @@ export function InteractiveAnalysisForm() {
         description: "Failed to analyze content. Please try again.",
         variant: "destructive",
       });
-    }
+    },
   });
 
   const handleAnalyze = () => {
@@ -104,7 +116,7 @@ export function InteractiveAnalysisForm() {
               onChange={(e) => setContentUrl(e.target.value)}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="contentType">Content Type</Label>
             <Select value={contentType} onValueChange={setContentType}>
@@ -119,7 +131,7 @@ export function InteractiveAnalysisForm() {
             </Select>
           </div>
 
-          <Button 
+          <Button
             onClick={handleAnalyze}
             disabled={analysisMutation.isPending}
             className="w-full bg-cyan-600 hover:bg-cyan-700"
@@ -149,31 +161,33 @@ export function InteractiveAnalysisForm() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Risk Score</Label>
-                <Badge 
+                <Badge
                   variant={getRiskBadgeColor(result.riskScore)}
                   data-testid="badge-risk-score"
                 >
                   {(result.riskScore * 100).toFixed(1)}%
                 </Badge>
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Confidence</Label>
                 <Badge variant="outline" data-testid="badge-confidence">
                   {(result.confidence * 100).toFixed(1)}%
                 </Badge>
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Decision</Label>
-                <Badge 
-                  variant={result.decision === "approve" ? "default" : "destructive"}
+                <Badge
+                  variant={
+                    result.decision === "approve" ? "default" : "destructive"
+                  }
                   data-testid="badge-decision"
                 >
                   {result.decision.toUpperCase()}
                 </Badge>
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Processing Time</Label>
                 <Badge variant="outline" data-testid="badge-processing-time">
@@ -185,7 +199,10 @@ export function InteractiveAnalysisForm() {
             {result.reasoning && (
               <div className="space-y-2">
                 <Label>AI Reasoning</Label>
-                <p className="text-sm text-gray-300 bg-gray-800 p-3 rounded border border-gray-700" data-testid="text-reasoning">
+                <p
+                  className="text-sm text-gray-300 bg-gray-800 p-3 rounded border border-gray-700"
+                  data-testid="text-reasoning"
+                >
                   {result.reasoning}
                 </p>
               </div>
@@ -194,7 +211,10 @@ export function InteractiveAnalysisForm() {
             {result.flaggedCategories.length > 0 && (
               <div className="space-y-2">
                 <Label>Flagged Categories</Label>
-                <div className="flex flex-wrap gap-2" data-testid="flagged-categories">
+                <div
+                  className="flex flex-wrap gap-2"
+                  data-testid="flagged-categories"
+                >
                   {result.flaggedCategories.map((category, index) => (
                     <Badge key={index} variant="destructive">
                       {category}

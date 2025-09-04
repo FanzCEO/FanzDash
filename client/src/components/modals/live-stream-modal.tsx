@@ -1,23 +1,34 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Broadcast, 
-  Zap, 
-  Eye, 
-  DollarSign, 
+import {
+  Broadcast,
+  Zap,
+  Eye,
+  DollarSign,
   AlertTriangle,
   Clock,
   Users,
   Lock,
   Unlock,
   Loader2,
-  Info
+  Info,
 } from "lucide-react";
 
 interface LiveStreamModalProps {
@@ -37,29 +48,29 @@ interface LiveStreamModalProps {
 
 interface LiveStreamData {
   name: string;
-  availability: 'all_pay' | 'free_paid_subscribers' | 'everyone_free';
+  availability: "all_pay" | "free_paid_subscribers" | "everyone_free";
   price: number;
 }
 
 const availabilityOptions = [
   {
-    value: 'all_pay',
-    label: 'Everyone (Paid)',
-    description: 'Available to everyone who pays the entry fee',
-    icon: DollarSign
+    value: "all_pay",
+    label: "Everyone (Paid)",
+    description: "Available to everyone who pays the entry fee",
+    icon: DollarSign,
   },
   {
-    value: 'free_paid_subscribers',
-    label: 'Free & Paid Subscribers',
-    description: 'Available to your subscribers only',
-    icon: Users
+    value: "free_paid_subscribers",
+    label: "Free & Paid Subscribers",
+    description: "Available to your subscribers only",
+    icon: Users,
   },
   {
-    value: 'everyone_free',
-    label: 'Everyone (Free)',
-    description: 'Free for everyone to join',
-    icon: Unlock
-  }
+    value: "everyone_free",
+    label: "Everyone (Free)",
+    description: "Free for everyone to join",
+    icon: Unlock,
+  },
 ];
 
 export function LiveStreamModal({
@@ -67,20 +78,26 @@ export function LiveStreamModal({
   onClose,
   onCreateStream,
   settings,
-  className = ""
+  className = "",
 }: LiveStreamModalProps) {
   const [streamData, setStreamData] = useState<LiveStreamData>({
     name: "",
-    availability: 'all_pay',
-    price: settings.liveStreamingMinimumPrice
+    availability: "all_pay",
+    price: settings.liveStreamingMinimumPrice,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const selectedOption = availabilityOptions.find(opt => opt.value === streamData.availability);
-  const showPriceInput = streamData.availability !== 'everyone_free';
-  const showFreeLimit = streamData.availability === 'everyone_free' && settings.limitLiveStreamingFree > 0;
-  const showPaidLimit = streamData.availability !== 'everyone_free' && settings.limitLiveStreamingPaid > 0;
+  const selectedOption = availabilityOptions.find(
+    (opt) => opt.value === streamData.availability,
+  );
+  const showPriceInput = streamData.availability !== "everyone_free";
+  const showFreeLimit =
+    streamData.availability === "everyone_free" &&
+    settings.limitLiveStreamingFree > 0;
+  const showPaidLimit =
+    streamData.availability !== "everyone_free" &&
+    settings.limitLiveStreamingPaid > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,8 +108,13 @@ export function LiveStreamModal({
       return;
     }
 
-    if (showPriceInput && streamData.price < settings.liveStreamingMinimumPrice) {
-      setError(`Minimum price is ${settings.currencySymbol}${settings.liveStreamingMinimumPrice}`);
+    if (
+      showPriceInput &&
+      streamData.price < settings.liveStreamingMinimumPrice
+    ) {
+      setError(
+        `Minimum price is ${settings.currencySymbol}${settings.liveStreamingMinimumPrice}`,
+      );
       return;
     }
 
@@ -101,14 +123,15 @@ export function LiveStreamModal({
     try {
       await onCreateStream({
         ...streamData,
-        price: streamData.availability === 'everyone_free' ? 0 : streamData.price
+        price:
+          streamData.availability === "everyone_free" ? 0 : streamData.price,
       });
-      
+
       // Reset form
       setStreamData({
         name: "",
-        availability: 'all_pay',
-        price: settings.liveStreamingMinimumPrice
+        availability: "all_pay",
+        price: settings.liveStreamingMinimumPrice,
       });
       onClose();
     } catch (err: any) {
@@ -121,8 +144,8 @@ export function LiveStreamModal({
   const resetAndClose = () => {
     setStreamData({
       name: "",
-      availability: 'all_pay',
-      price: settings.liveStreamingMinimumPrice
+      availability: "all_pay",
+      price: settings.liveStreamingMinimumPrice,
     });
     setError(null);
     onClose();
@@ -148,7 +171,9 @@ export function LiveStreamModal({
                 id="stream-name"
                 type="text"
                 value={streamData.name}
-                onChange={(e) => setStreamData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setStreamData((prev) => ({ ...prev, name: e.target.value }))
+                }
                 className="pl-10"
                 placeholder="Enter stream title"
                 maxLength={100}
@@ -162,19 +187,22 @@ export function LiveStreamModal({
             <Label htmlFor="availability">Availability</Label>
             <div className="relative">
               <Eye className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
-              <Select 
-                value={streamData.availability} 
-                onValueChange={(value: LiveStreamData['availability']) => 
-                  setStreamData(prev => ({ ...prev, availability: value }))
+              <Select
+                value={streamData.availability}
+                onValueChange={(value: LiveStreamData["availability"]) =>
+                  setStreamData((prev) => ({ ...prev, availability: value }))
                 }
               >
-                <SelectTrigger className="pl-10" data-testid="availability-select">
+                <SelectTrigger
+                  className="pl-10"
+                  data-testid="availability-select"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {availabilityOptions.map((option) => (
-                    <SelectItem 
-                      key={option.value} 
+                    <SelectItem
+                      key={option.value}
                       value={option.value}
                       className="py-2"
                     >
@@ -184,7 +212,7 @@ export function LiveStreamModal({
                       </div>
                     </SelectItem>
                   ))}
-                  
+
                   {!settings.liveStreamingFree && (
                     <SelectItem value="everyone_free" disabled>
                       <div className="flex items-center space-x-2 opacity-50">
@@ -196,7 +224,7 @@ export function LiveStreamModal({
                 </SelectContent>
               </Select>
             </div>
-            
+
             {selectedOption && (
               <p className="text-sm text-muted-foreground">
                 {selectedOption.description}
@@ -208,7 +236,8 @@ export function LiveStreamModal({
           {showPriceInput && (
             <div className="space-y-2">
               <Label htmlFor="stream-price">
-                Price (Minimum: {settings.currencySymbol}{settings.liveStreamingMinimumPrice})
+                Price (Minimum: {settings.currencySymbol}
+                {settings.liveStreamingMinimumPrice})
               </Label>
               <div className="relative">
                 <span className="absolute left-3 top-3 text-sm text-muted-foreground">
@@ -220,10 +249,12 @@ export function LiveStreamModal({
                   min={settings.liveStreamingMinimumPrice}
                   step="0.01"
                   value={streamData.price}
-                  onChange={(e) => setStreamData(prev => ({ 
-                    ...prev, 
-                    price: parseFloat(e.target.value) || 0 
-                  }))}
+                  onChange={(e) =>
+                    setStreamData((prev) => ({
+                      ...prev,
+                      price: parseFloat(e.target.value) || 0,
+                    }))
+                  }
                   className="pl-8"
                   placeholder={settings.liveStreamingMinimumPrice.toString()}
                   data-testid="stream-price-input"
@@ -237,7 +268,8 @@ export function LiveStreamModal({
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Time Limit:</strong> {settings.limitLiveStreamingPaid} minutes maximum per paid transmission
+                <strong>Time Limit:</strong> {settings.limitLiveStreamingPaid}{" "}
+                minutes maximum per paid transmission
               </AlertDescription>
             </Alert>
           )}
@@ -246,7 +278,8 @@ export function LiveStreamModal({
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Time Limit:</strong> {settings.limitLiveStreamingFree} minutes maximum per free transmission
+                <strong>Time Limit:</strong> {settings.limitLiveStreamingFree}{" "}
+                minutes maximum per free transmission
               </AlertDescription>
             </Alert>
           )}
@@ -254,13 +287,13 @@ export function LiveStreamModal({
           {/* Server Timezone Info */}
           <div className="text-center">
             <p className="text-xs text-muted-foreground">
-              Server timezone: 
-              <a 
-                href={`https://www.google.com/search?q=time+${settings.serverTimezone.replace('_', '+')}`}
+              Server timezone:
+              <a
+                href={`https://www.google.com/search?q=time+${settings.serverTimezone.replace("_", "+")}`}
                 target="_blank"
                 className="text-primary hover:underline ml-1"
               >
-                {settings.serverTimezone.replace('_', ' ')} 
+                {settings.serverTimezone.replace("_", " ")}
                 <Info className="h-3 w-3 inline ml-1" />
               </a>
             </p>
@@ -286,7 +319,7 @@ export function LiveStreamModal({
             >
               Cancel
             </Button>
-            
+
             <Button
               type="submit"
               className="flex-1 bg-red-500 hover:bg-red-600 text-white"

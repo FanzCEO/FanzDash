@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Loader2, Shield, AlertTriangle, CheckCircle } from "lucide-react";
@@ -26,7 +32,7 @@ export function InteractiveThreatScanner() {
       // Simulate progressive scanning
       setScanProgress(0);
       const progressInterval = setInterval(() => {
-        setScanProgress(prev => {
+        setScanProgress((prev) => {
           if (prev >= 95) {
             clearInterval(progressInterval);
             return 95;
@@ -36,13 +42,13 @@ export function InteractiveThreatScanner() {
       }, 200);
 
       const response = await fetch("/api/threats/scan", {
-        method: "POST"
+        method: "POST",
       });
       const result = await response.json();
 
       clearInterval(progressInterval);
       setScanProgress(100);
-      
+
       return result;
     },
     onSuccess: (data) => {
@@ -60,7 +66,7 @@ export function InteractiveThreatScanner() {
         description: "Failed to complete threat scan. Please try again.",
         variant: "destructive",
       });
-    }
+    },
   });
 
   const handleStartScan = () => {
@@ -84,11 +90,12 @@ export function InteractiveThreatScanner() {
             Comprehensive Threat Scanner
           </CardTitle>
           <CardDescription>
-            Run a deep scan across all connected platforms to detect new threats and vulnerabilities
+            Run a deep scan across all connected platforms to detect new threats
+            and vulnerabilities
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button 
+          <Button
             onClick={handleStartScan}
             disabled={scanMutation.isPending}
             className="w-full bg-cyan-600 hover:bg-cyan-700"
@@ -115,7 +122,8 @@ export function InteractiveThreatScanner() {
               </div>
               <Progress value={scanProgress} className="w-full" />
               <p className="text-sm text-gray-400">
-                Analyzing content patterns, checking for coordinated attacks, and scanning for new threat vectors...
+                Analyzing content patterns, checking for coordinated attacks,
+                and scanning for new threat vectors...
               </p>
             </div>
           )}
@@ -134,34 +142,44 @@ export function InteractiveThreatScanner() {
               Scan Results
             </CardTitle>
             <CardDescription>
-              Scan ID: {scanResult.scanId} | Completed: {new Date(scanResult.scanCompletedAt).toLocaleString()}
+              Scan ID: {scanResult.scanId} | Completed:{" "}
+              {new Date(scanResult.scanCompletedAt).toLocaleString()}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center space-y-2">
-                <div className="text-2xl font-bold text-red-400" data-testid="threats-detected">
+                <div
+                  className="text-2xl font-bold text-red-400"
+                  data-testid="threats-detected"
+                >
                   {scanResult.threatsDetected}
                 </div>
-                <Badge 
+                <Badge
                   variant={getThreatBadgeColor(scanResult.threatsDetected)}
                   className="w-full justify-center"
                 >
                   Active Threats
                 </Badge>
               </div>
-              
+
               <div className="text-center space-y-2">
-                <div className="text-2xl font-bold text-yellow-400" data-testid="new-threats">
+                <div
+                  className="text-2xl font-bold text-yellow-400"
+                  data-testid="new-threats"
+                >
                   {scanResult.newThreats}
                 </div>
                 <Badge variant="secondary" className="w-full justify-center">
                   New Threats
                 </Badge>
               </div>
-              
+
               <div className="text-center space-y-2">
-                <div className="text-2xl font-bold text-green-400" data-testid="mitigated-threats">
+                <div
+                  className="text-2xl font-bold text-green-400"
+                  data-testid="mitigated-threats"
+                >
                   {scanResult.mitigatedThreats}
                 </div>
                 <Badge variant="default" className="w-full justify-center">
@@ -171,25 +189,38 @@ export function InteractiveThreatScanner() {
             </div>
 
             {scanResult.threatsDetected > 0 && (
-              <div className="mt-6 p-4 bg-red-900/20 border border-red-500/20 rounded-lg" data-testid="threat-alert">
+              <div
+                className="mt-6 p-4 bg-red-900/20 border border-red-500/20 rounded-lg"
+                data-testid="threat-alert"
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="h-4 w-4 text-red-400" />
-                  <span className="font-semibold text-red-400">Action Required</span>
+                  <span className="font-semibold text-red-400">
+                    Action Required
+                  </span>
                 </div>
                 <p className="text-sm text-gray-300">
-                  {scanResult.threatsDetected} active threats detected. Review the threat center for detailed analysis and recommended actions.
+                  {scanResult.threatsDetected} active threats detected. Review
+                  the threat center for detailed analysis and recommended
+                  actions.
                 </p>
               </div>
             )}
 
             {scanResult.threatsDetected === 0 && (
-              <div className="mt-6 p-4 bg-green-900/20 border border-green-500/20 rounded-lg" data-testid="all-clear">
+              <div
+                className="mt-6 p-4 bg-green-900/20 border border-green-500/20 rounded-lg"
+                data-testid="all-clear"
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <CheckCircle className="h-4 w-4 text-green-400" />
-                  <span className="font-semibold text-green-400">All Clear</span>
+                  <span className="font-semibold text-green-400">
+                    All Clear
+                  </span>
                 </div>
                 <p className="text-sm text-gray-300">
-                  No active threats detected. Your network is secure and all mitigation systems are functioning properly.
+                  No active threats detected. Your network is secure and all
+                  mitigation systems are functioning properly.
                 </p>
               </div>
             )}

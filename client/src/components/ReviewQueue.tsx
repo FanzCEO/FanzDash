@@ -4,21 +4,33 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  Eye, 
-  AlertTriangle, 
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  Eye,
+  AlertTriangle,
   User,
   Calendar,
   FileText,
   Shield,
-  Edit3
+  Edit3,
 } from "lucide-react";
 
 interface ContentItem {
@@ -43,11 +55,13 @@ interface ModerationAction {
 }
 
 export function ReviewQueue() {
-  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
+  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(
+    null,
+  );
   const [actionReason, setActionReason] = useState("");
   const [moderatorNotes, setModeratorNotes] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("pending");
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -87,7 +101,9 @@ export function ReviewQueue() {
     },
   });
 
-  const handleModerationAction = (action: "approve" | "reject" | "hold" | "request_edit") => {
+  const handleModerationAction = (
+    action: "approve" | "reject" | "hold" | "request_edit",
+  ) => {
     if (!selectedContent || !actionReason.trim()) {
       toast({
         title: "Missing Information",
@@ -107,11 +123,16 @@ export function ReviewQueue() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "approved": return "bg-secondary text-secondary-foreground";
-      case "rejected": return "bg-destructive text-destructive-foreground";
-      case "pending": return "bg-accent text-accent-foreground";
-      case "needs_editing": return "bg-primary text-primary-foreground";
-      default: return "bg-muted text-muted-foreground";
+      case "approved":
+        return "bg-secondary text-secondary-foreground";
+      case "rejected":
+        return "bg-destructive text-destructive-foreground";
+      case "pending":
+        return "bg-accent text-accent-foreground";
+      case "needs_editing":
+        return "bg-primary text-primary-foreground";
+      default:
+        return "bg-muted text-muted-foreground";
     }
   };
 
@@ -122,8 +143,10 @@ export function ReviewQueue() {
     return "text-secondary";
   };
 
-  const displayContent = filterStatus === "all" ? allContent : 
-    allContent.filter(item => item.status === filterStatus);
+  const displayContent =
+    filterStatus === "all"
+      ? allContent
+      : allContent.filter((item) => item.status === filterStatus);
 
   if (isLoading) {
     return (
@@ -137,7 +160,10 @@ export function ReviewQueue() {
         <CardContent>
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="p-4 border border-border/30 rounded-lg animate-pulse">
+              <div
+                key={i}
+                className="p-4 border border-border/30 rounded-lg animate-pulse"
+              >
                 <div className="h-4 bg-muted/30 rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-muted/20 rounded w-1/2"></div>
               </div>
@@ -192,10 +218,18 @@ export function ReviewQueue() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      {item.type === "image" && <FileText className="w-5 h-5 text-primary" />}
-                      {item.type === "video" && <FileText className="w-5 h-5 text-secondary" />}
-                      {item.type === "text" && <FileText className="w-5 h-5 text-accent" />}
-                      {item.type === "live_stream" && <FileText className="w-5 h-5 text-destructive" />}
+                      {item.type === "image" && (
+                        <FileText className="w-5 h-5 text-primary" />
+                      )}
+                      {item.type === "video" && (
+                        <FileText className="w-5 h-5 text-secondary" />
+                      )}
+                      {item.type === "text" && (
+                        <FileText className="w-5 h-5 text-accent" />
+                      )}
+                      {item.type === "live_stream" && (
+                        <FileText className="w-5 h-5 text-destructive" />
+                      )}
                     </div>
                     <div>
                       <div className="flex items-center space-x-2 mb-1">
@@ -205,7 +239,10 @@ export function ReviewQueue() {
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        Risk Score: <span className={getRiskColor(item.riskScore)}>{(item.riskScore * 100).toFixed(1)}%</span>
+                        Risk Score:{" "}
+                        <span className={getRiskColor(item.riskScore)}>
+                          {(item.riskScore * 100).toFixed(1)}%
+                        </span>
                         {" • "}
                         <User className="w-3 h-3 inline mr-1" />
                         {item.uploadedBy}
@@ -221,7 +258,7 @@ export function ReviewQueue() {
                       )}
                     </div>
                   </div>
-                  
+
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
@@ -242,7 +279,7 @@ export function ReviewQueue() {
                           <span>Content Review - {selectedContent?.id}</span>
                         </DialogTitle>
                       </DialogHeader>
-                      
+
                       {selectedContent && (
                         <div className="space-y-6">
                           {/* Content Preview */}
@@ -250,13 +287,19 @@ export function ReviewQueue() {
                             <h4 className="font-semibold">Content Preview</h4>
                             <div className="p-4 bg-muted/20 rounded-lg">
                               {selectedContent.type === "text" ? (
-                                <p className="whitespace-pre-wrap">{selectedContent.textContent}</p>
+                                <p className="whitespace-pre-wrap">
+                                  {selectedContent.textContent}
+                                </p>
                               ) : (
                                 <div className="text-center py-8 text-muted-foreground">
                                   <FileText className="w-16 h-16 mx-auto mb-2 opacity-50" />
-                                  <p>{selectedContent.type.toUpperCase()} Content</p>
+                                  <p>
+                                    {selectedContent.type.toUpperCase()} Content
+                                  </p>
                                   {selectedContent.contentUrl && (
-                                    <p className="text-xs font-mono mt-1">{selectedContent.contentUrl}</p>
+                                    <p className="text-xs font-mono mt-1">
+                                      {selectedContent.contentUrl}
+                                    </p>
                                   )}
                                 </div>
                               )}
@@ -266,30 +309,48 @@ export function ReviewQueue() {
                           {/* Content Details */}
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="text-sm font-medium">Risk Score</label>
-                              <div className={`text-lg font-bold ${getRiskColor(selectedContent.riskScore)}`}>
+                              <label className="text-sm font-medium">
+                                Risk Score
+                              </label>
+                              <div
+                                className={`text-lg font-bold ${getRiskColor(selectedContent.riskScore)}`}
+                              >
                                 {(selectedContent.riskScore * 100).toFixed(1)}%
                               </div>
                             </div>
                             <div>
-                              <label className="text-sm font-medium">Content Type</label>
+                              <label className="text-sm font-medium">
+                                Content Type
+                              </label>
                               <div className="text-lg font-semibold capitalize">
                                 {selectedContent.type.replace("_", " ")}
                               </div>
                             </div>
                             <div>
-                              <label className="text-sm font-medium">Uploaded By</label>
-                              <div className="font-mono">{selectedContent.uploadedBy}</div>
+                              <label className="text-sm font-medium">
+                                Uploaded By
+                              </label>
+                              <div className="font-mono">
+                                {selectedContent.uploadedBy}
+                              </div>
                             </div>
                             <div>
-                              <label className="text-sm font-medium">Upload Date</label>
-                              <div>{new Date(selectedContent.uploadedAt).toLocaleString()}</div>
+                              <label className="text-sm font-medium">
+                                Upload Date
+                              </label>
+                              <div>
+                                {new Date(
+                                  selectedContent.uploadedAt,
+                                ).toLocaleString()}
+                              </div>
                             </div>
                           </div>
 
                           {/* Action Reason */}
                           <div className="space-y-2">
-                            <label className="text-sm font-medium">Action Reason *</label>
+                            <label className="text-sm font-medium">
+                              Action Reason *
+                            </label>
                             <Textarea
                               value={actionReason}
                               onChange={(e) => setActionReason(e.target.value)}
@@ -301,10 +362,14 @@ export function ReviewQueue() {
 
                           {/* Moderator Notes */}
                           <div className="space-y-2">
-                            <label className="text-sm font-medium">Additional Notes</label>
+                            <label className="text-sm font-medium">
+                              Additional Notes
+                            </label>
                             <Textarea
                               value={moderatorNotes}
-                              onChange={(e) => setModeratorNotes(e.target.value)}
+                              onChange={(e) =>
+                                setModeratorNotes(e.target.value)
+                              }
                               placeholder="Optional: Add any additional notes or instructions..."
                               className="min-h-16"
                               data-testid="moderator-notes-input"
@@ -325,7 +390,9 @@ export function ReviewQueue() {
                             </Button>
                             <Button
                               variant="outline"
-                              onClick={() => handleModerationAction("request_edit")}
+                              onClick={() =>
+                                handleModerationAction("request_edit")
+                              }
                               disabled={moderationMutation.isPending}
                               className="glass-effect"
                               data-testid="button-request-edit"

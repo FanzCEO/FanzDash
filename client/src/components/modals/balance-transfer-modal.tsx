@@ -1,17 +1,22 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
+import {
   DollarSign,
   ArrowRightLeft,
   Wallet,
   RefreshCw,
   AlertTriangle,
-  Info
+  Info,
 } from "lucide-react";
 
 interface BalanceTransferModalProps {
@@ -35,7 +40,7 @@ export function BalanceTransferModal({
   transferFee = 0,
   minTransferAmount = 1,
   maxTransferAmount,
-  className = ""
+  className = "",
 }: BalanceTransferModalProps) {
   const [amount, setAmount] = useState(minTransferAmount);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,13 +48,16 @@ export function BalanceTransferModal({
 
   const maxAllowed = maxTransferAmount || currentBalance;
   const finalAmount = amount - transferFee;
-  const isValidAmount = amount >= minTransferAmount && amount <= maxAllowed && finalAmount > 0;
+  const isValidAmount =
+    amount >= minTransferAmount && amount <= maxAllowed && finalAmount > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isValidAmount) {
-      setError(`Transfer amount must be between ${currencySymbol}${minTransferAmount} and ${currencySymbol}${maxAllowed}`);
+      setError(
+        `Transfer amount must be between ${currencySymbol}${minTransferAmount} and ${currencySymbol}${maxAllowed}`,
+      );
       return;
     }
 
@@ -63,7 +71,7 @@ export function BalanceTransferModal({
 
     try {
       await onTransfer(amount);
-      
+
       // Reset form and close
       setAmount(minTransferAmount);
       onClose();
@@ -100,7 +108,8 @@ export function BalanceTransferModal({
                   <span className="font-semibold">Current Balance</span>
                 </div>
                 <div className="text-lg font-bold text-primary">
-                  {currencySymbol}{currentBalance.toFixed(2)}
+                  {currencySymbol}
+                  {currentBalance.toFixed(2)}
                 </div>
               </div>
             </CardContent>
@@ -113,7 +122,8 @@ export function BalanceTransferModal({
                 Transfer Amount
                 {minTransferAmount > 0 && (
                   <span className="text-muted-foreground text-sm ml-1">
-                    (Min: {currencySymbol}{minTransferAmount})
+                    (Min: {currencySymbol}
+                    {minTransferAmount})
                   </span>
                 )}
               </Label>
@@ -144,7 +154,8 @@ export function BalanceTransferModal({
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Transfer Amount:</span>
                       <span className="font-semibold">
-                        {currencySymbol}{amount.toFixed(2)}
+                        {currencySymbol}
+                        {amount.toFixed(2)}
                       </span>
                     </div>
 
@@ -152,7 +163,8 @@ export function BalanceTransferModal({
                       <div className="flex justify-between items-center text-sm">
                         <span>Transfer Fee:</span>
                         <span className="text-red-600">
-                          -{currencySymbol}{transferFee.toFixed(2)}
+                          -{currencySymbol}
+                          {transferFee.toFixed(2)}
                         </span>
                       </div>
                     )}
@@ -160,14 +172,16 @@ export function BalanceTransferModal({
                     <div className="border-t pt-2 flex justify-between items-center font-semibold">
                       <span>You'll Receive:</span>
                       <span className="text-green-600">
-                        {currencySymbol}{finalAmount.toFixed(2)}
+                        {currencySymbol}
+                        {finalAmount.toFixed(2)}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center text-sm text-muted-foreground">
                       <span>Remaining Balance:</span>
                       <span>
-                        {currencySymbol}{(currentBalance - amount).toFixed(2)}
+                        {currencySymbol}
+                        {(currentBalance - amount).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -180,7 +194,9 @@ export function BalanceTransferModal({
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  A transfer fee of {currencySymbol}{transferFee.toFixed(2)} will be deducted from your transfer amount.
+                  A transfer fee of {currencySymbol}
+                  {transferFee.toFixed(2)} will be deducted from your transfer
+                  amount.
                 </AlertDescription>
               </Alert>
             )}
@@ -205,11 +221,13 @@ export function BalanceTransferModal({
               >
                 Cancel
               </Button>
-              
+
               <Button
                 type="submit"
                 className="flex-1"
-                disabled={!isValidAmount || isSubmitting || amount > currentBalance}
+                disabled={
+                  !isValidAmount || isSubmitting || amount > currentBalance
+                }
                 data-testid="confirm-transfer-btn"
               >
                 {isSubmitting ? (

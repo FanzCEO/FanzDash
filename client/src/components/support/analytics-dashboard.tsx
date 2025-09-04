@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
+import {
   BarChart3,
   TrendingUp,
   TrendingDown,
@@ -35,9 +35,24 @@ import {
   Timer,
   Award,
   Percent,
-  Plus
+  Plus,
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+} from "recharts";
 import { formatDistanceToNow } from "date-fns";
 
 interface AnalyticsData {
@@ -119,7 +134,14 @@ interface AnalyticsDashboardProps {
   className?: string;
 }
 
-const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+const COLORS = [
+  "#3B82F6",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+  "#8B5CF6",
+  "#06B6D4",
+];
 
 export function AnalyticsDashboard({
   data,
@@ -127,7 +149,7 @@ export function AnalyticsDashboard({
   onTimeRangeChange,
   onExportReport,
   currentUser,
-  className = ""
+  className = "",
 }: AnalyticsDashboardProps) {
   const [selectedTab, setSelectedTab] = useState("overview");
 
@@ -138,15 +160,16 @@ export function AnalyticsDashboard({
     return `${hours}h ${mins}m`;
   };
 
-  const formatPercentage = (value: number) => `${Math.round(value * 100) / 100}%`;
+  const formatPercentage = (value: number) =>
+    `${Math.round(value * 100) / 100}%`;
 
-  const MetricCard = ({ 
-    title, 
-    value, 
-    change, 
-    icon: Icon, 
+  const MetricCard = ({
+    title,
+    value,
+    change,
+    icon: Icon,
     color = "blue",
-    format = "number" 
+    format = "number",
   }: {
     title: string;
     value: number;
@@ -174,12 +197,20 @@ export function AnalyticsDashboard({
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">{title}</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {title}
+              </p>
               <p className="text-3xl font-bold">{formatValue()}</p>
               {change !== undefined && (
-                <div className={`flex items-center mt-1 text-sm ${
-                  isPositive ? 'text-green-600' : isNegative ? 'text-red-600' : 'text-muted-foreground'
-                }`}>
+                <div
+                  className={`flex items-center mt-1 text-sm ${
+                    isPositive
+                      ? "text-green-600"
+                      : isNegative
+                        ? "text-red-600"
+                        : "text-muted-foreground"
+                  }`}
+                >
                   {isPositive && <TrendingUp className="h-4 w-4 mr-1" />}
                   {isNegative && <TrendingDown className="h-4 w-4 mr-1" />}
                   <span>{Math.abs(change)}% from last period</span>
@@ -195,7 +226,11 @@ export function AnalyticsDashboard({
     );
   };
 
-  const AgentPerformanceCard = ({ agent }: { agent: typeof data.agentPerformance[0] }) => (
+  const AgentPerformanceCard = ({
+    agent,
+  }: {
+    agent: (typeof data.agentPerformance)[0];
+  }) => (
     <Card className="hover:shadow-lg transition-all duration-300">
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
@@ -205,21 +240,29 @@ export function AnalyticsDashboard({
                 <AvatarImage src={agent.avatar} />
                 <AvatarFallback>{agent.name.charAt(0)}</AvatarFallback>
               </Avatar>
-              <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                agent.isOnline ? 'bg-green-500' : 'bg-gray-300'
-              }`} />
+              <div
+                className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                  agent.isOnline ? "bg-green-500" : "bg-gray-300"
+                }`}
+              />
             </div>
             <div>
               <h3 className="font-semibold">{agent.name}</h3>
-              <p className="text-sm text-muted-foreground">{agent.departmentName}</p>
+              <p className="text-sm text-muted-foreground">
+                {agent.departmentName}
+              </p>
             </div>
           </div>
-          <Badge className={`${
-            agent.productivityScore >= 90 ? 'bg-green-500' :
-            agent.productivityScore >= 75 ? 'bg-yellow-500' :
-            'bg-red-500'
-          }`}>
-            {agent.productivityScore}% 
+          <Badge
+            className={`${
+              agent.productivityScore >= 90
+                ? "bg-green-500"
+                : agent.productivityScore >= 75
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
+            }`}
+          >
+            {agent.productivityScore}%
           </Badge>
         </div>
 
@@ -237,11 +280,15 @@ export function AnalyticsDashboard({
           <div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Response</span>
-              <span className="font-medium">{formatTime(agent.avgResponseTime)}</span>
+              <span className="font-medium">
+                {formatTime(agent.avgResponseTime)}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Resolution</span>
-              <span className="font-medium">{formatTime(agent.avgResolutionTime)}</span>
+              <span className="font-medium">
+                {formatTime(agent.avgResolutionTime)}
+              </span>
             </div>
           </div>
         </div>
@@ -250,16 +297,24 @@ export function AnalyticsDashboard({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-1">
               <Star className="h-4 w-4 text-yellow-500 fill-current" />
-              <span className="text-sm text-muted-foreground">Satisfaction</span>
+              <span className="text-sm text-muted-foreground">
+                Satisfaction
+              </span>
             </div>
-            <span className="font-semibold">{agent.satisfactionRating.toFixed(1)}/5.0</span>
+            <span className="font-semibold">
+              {agent.satisfactionRating.toFixed(1)}/5.0
+            </span>
           </div>
         </div>
       </CardContent>
     </Card>
   );
 
-  const DepartmentCard = ({ dept }: { dept: typeof data.departmentData[0] }) => (
+  const DepartmentCard = ({
+    dept,
+  }: {
+    dept: (typeof data.departmentData)[0];
+  }) => (
     <Card>
       <CardContent className="p-6">
         <div className="space-y-4">
@@ -270,23 +325,35 @@ export function AnalyticsDashboard({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{dept.ticketsHandled}</div>
-              <div className="text-xs text-muted-foreground">Tickets Handled</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {dept.ticketsHandled}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Tickets Handled
+              </div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">{dept.satisfaction.toFixed(1)}</div>
-              <div className="text-xs text-muted-foreground">Avg Satisfaction</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {dept.satisfaction.toFixed(1)}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Avg Satisfaction
+              </div>
             </div>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Avg Response</span>
-              <span className="font-medium">{formatTime(dept.avgResponseTime)}</span>
+              <span className="font-medium">
+                {formatTime(dept.avgResponseTime)}
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Avg Resolution</span>
-              <span className="font-medium">{formatTime(dept.avgResolutionTime)}</span>
+              <span className="font-medium">
+                {formatTime(dept.avgResolutionTime)}
+              </span>
             </div>
           </div>
         </div>
@@ -321,8 +388,8 @@ export function AnalyticsDashboard({
             </SelectContent>
           </Select>
 
-          <Button 
-            onClick={() => onExportReport('pdf')}
+          <Button
+            onClick={() => onExportReport("pdf")}
             variant="outline"
             className="flex items-center space-x-2"
           >
@@ -332,7 +399,11 @@ export function AnalyticsDashboard({
         </div>
       </div>
 
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
+      <Tabs
+        value={selectedTab}
+        onValueChange={setSelectedTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="agents">Agent Performance</TabsTrigger>
@@ -428,8 +499,18 @@ export function AnalyticsDashboard({
                     <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="ticketsCreated" stroke="#3B82F6" name="Created" />
-                    <Line type="monotone" dataKey="ticketsResolved" stroke="#10B981" name="Resolved" />
+                    <Line
+                      type="monotone"
+                      dataKey="ticketsCreated"
+                      stroke="#3B82F6"
+                      name="Created"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="ticketsResolved"
+                      stroke="#10B981"
+                      name="Resolved"
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -456,7 +537,10 @@ export function AnalyticsDashboard({
                       label
                     >
                       {data.categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -480,9 +564,25 @@ export function AnalyticsDashboard({
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={(value: number) => [formatTime(value), '']} />
-                  <Area type="monotone" dataKey="avgResponseTime" stackId="1" stroke="#F59E0B" fill="#FEF3C7" name="Response Time" />
-                  <Area type="monotone" dataKey="avgResolutionTime" stackId="2" stroke="#8B5CF6" fill="#EDE9FE" name="Resolution Time" />
+                  <Tooltip
+                    formatter={(value: number) => [formatTime(value), ""]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="avgResponseTime"
+                    stackId="1"
+                    stroke="#F59E0B"
+                    fill="#FEF3C7"
+                    name="Response Time"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="avgResolutionTime"
+                    stackId="2"
+                    stroke="#8B5CF6"
+                    fill="#EDE9FE"
+                    name="Resolution Time"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
@@ -500,14 +600,24 @@ export function AnalyticsDashboard({
               <CardContent>
                 <div className="space-y-4">
                   {data.channelData.map((channel, index) => (
-                    <div key={channel.channel} className="flex items-center justify-between">
+                    <div
+                      key={channel.channel}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center space-x-3">
-                        <div className={`w-4 h-4 rounded-full`} style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                        <div
+                          className={`w-4 h-4 rounded-full`}
+                          style={{
+                            backgroundColor: COLORS[index % COLORS.length],
+                          }}
+                        />
                         <span className="capitalize">{channel.channel}</span>
                       </div>
                       <div className="text-right">
                         <div className="font-semibold">{channel.count}</div>
-                        <div className="text-sm text-muted-foreground">{channel.percentage}%</div>
+                        <div className="text-sm text-muted-foreground">
+                          {channel.percentage}%
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -526,7 +636,10 @@ export function AnalyticsDashboard({
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={data.workloadDistribution}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="hour" tickFormatter={(hour) => `${hour}:00`} />
+                    <XAxis
+                      dataKey="hour"
+                      tickFormatter={(hour) => `${hour}:00`}
+                    />
                     <YAxis />
                     <Tooltip labelFormatter={(hour) => `${hour}:00`} />
                     <Bar dataKey="tickets" fill="#3B82F6" name="Tickets" />
@@ -549,7 +662,9 @@ export function AnalyticsDashboard({
                 <SelectItem value="productivity">By Productivity</SelectItem>
                 <SelectItem value="satisfaction">By Satisfaction</SelectItem>
                 <SelectItem value="response_time">By Response Time</SelectItem>
-                <SelectItem value="tickets_resolved">By Tickets Resolved</SelectItem>
+                <SelectItem value="tickets_resolved">
+                  By Tickets Resolved
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -582,12 +697,27 @@ export function AnalyticsDashboard({
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={data.departmentData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
+                  <XAxis
+                    dataKey="name"
+                    angle={-45}
+                    textAnchor="end"
+                    height={100}
+                  />
                   <YAxis yAxisId="left" />
                   <YAxis yAxisId="right" orientation="right" />
                   <Tooltip />
-                  <Bar yAxisId="left" dataKey="ticketsHandled" fill="#3B82F6" name="Tickets Handled" />
-                  <Bar yAxisId="right" dataKey="satisfaction" fill="#10B981" name="Satisfaction" />
+                  <Bar
+                    yAxisId="left"
+                    dataKey="ticketsHandled"
+                    fill="#3B82F6"
+                    name="Tickets Handled"
+                  />
+                  <Bar
+                    yAxisId="right"
+                    dataKey="satisfaction"
+                    fill="#10B981"
+                    name="Satisfaction"
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -612,8 +742,15 @@ export function AnalyticsDashboard({
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis domain={[0, 5]} />
-                  <Tooltip formatter={(value: number) => [`${value}/5`, 'Rating']} />
-                  <Line type="monotone" dataKey="rating" stroke="#F59E0B" strokeWidth={2} />
+                  <Tooltip
+                    formatter={(value: number) => [`${value}/5`, "Rating"]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="rating"
+                    stroke="#F59E0B"
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -632,8 +769,20 @@ export function AnalyticsDashboard({
                   <YAxis yAxisId="left" />
                   <YAxis yAxisId="right" orientation="right" />
                   <Tooltip />
-                  <Line yAxisId="left" type="monotone" dataKey="satisfaction" stroke="#F59E0B" name="Satisfaction %" />
-                  <Line yAxisId="right" type="monotone" dataKey="ticketsResolved" stroke="#3B82F6" name="Tickets Resolved" />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="satisfaction"
+                    stroke="#F59E0B"
+                    name="Satisfaction %"
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="ticketsResolved"
+                    stroke="#3B82F6"
+                    name="Tickets Resolved"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -656,7 +805,9 @@ export function AnalyticsDashboard({
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="font-semibold">Weekly Performance Report</h3>
-                    <p className="text-sm text-muted-foreground">Comprehensive team performance metrics</p>
+                    <p className="text-sm text-muted-foreground">
+                      Comprehensive team performance metrics
+                    </p>
                   </div>
                   <Badge>Automated</Badge>
                 </div>
@@ -673,8 +824,12 @@ export function AnalyticsDashboard({
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="font-semibold">Customer Satisfaction Report</h3>
-                    <p className="text-sm text-muted-foreground">Detailed satisfaction analysis and trends</p>
+                    <h3 className="font-semibold">
+                      Customer Satisfaction Report
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Detailed satisfaction analysis and trends
+                    </p>
                   </div>
                   <Badge>Manual</Badge>
                 </div>
@@ -692,7 +847,9 @@ export function AnalyticsDashboard({
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="font-semibold">SLA Compliance Report</h3>
-                    <p className="text-sm text-muted-foreground">Service level agreement performance tracking</p>
+                    <p className="text-sm text-muted-foreground">
+                      Service level agreement performance tracking
+                    </p>
                   </div>
                   <Badge>Scheduled</Badge>
                 </div>
@@ -713,19 +870,31 @@ export function AnalyticsDashboard({
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col space-y-2"
+                >
                   <BarChart3 className="h-6 w-6" />
                   <span className="text-xs">Performance Report</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col space-y-2"
+                >
                   <Star className="h-6 w-6" />
                   <span className="text-xs">Satisfaction Report</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col space-y-2"
+                >
                   <Clock className="h-6 w-6" />
                   <span className="text-xs">SLA Report</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col space-y-2"
+                >
                   <Users className="h-6 w-6" />
                   <span className="text-xs">Agent Report</span>
                 </Button>

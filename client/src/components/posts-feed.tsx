@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
-import { 
+import {
   Pin,
   Eye,
   EyeOff,
@@ -37,13 +37,13 @@ import {
   Video,
   Music,
   FileArchive,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface MediaItem {
   id: string;
-  type: 'image' | 'video' | 'music' | 'zip' | 'video_embed';
+  type: "image" | "video" | "music" | "zip" | "video_embed";
   file: string;
   videoPoster?: string;
   videoEmbed?: string;
@@ -68,7 +68,7 @@ interface Post {
   price: number;
   locked: boolean;
   isPinned: boolean;
-  status: 'active' | 'pending' | 'scheduled';
+  status: "active" | "pending" | "scheduled";
   scheduledDate?: string;
   createdAt: string;
   likesCount: number;
@@ -105,21 +105,21 @@ export function PostsFeed({
   onReportPost,
   onCopyLink,
   settings,
-  className = ""
+  className = "",
 }: PostsFeedProps) {
   const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set());
   const [unlockingPosts, setUnlockingPosts] = useState<Set<string>>(new Set());
 
   const handleLikePost = async (postId: string) => {
     if (likingPosts.has(postId)) return;
-    
-    setLikingPosts(prev => new Set(prev).add(postId));
+
+    setLikingPosts((prev) => new Set(prev).add(postId));
     try {
       await onLikePost(postId);
     } catch (error) {
       console.error("Failed to like post:", error);
     } finally {
-      setLikingPosts(prev => {
+      setLikingPosts((prev) => {
         const newSet = new Set(prev);
         newSet.delete(postId);
         return newSet;
@@ -130,13 +130,13 @@ export function PostsFeed({
   const handleUnlockPost = async (postId: string) => {
     if (unlockingPosts.has(postId)) return;
 
-    setUnlockingPosts(prev => new Set(prev).add(postId));
+    setUnlockingPosts((prev) => new Set(prev).add(postId));
     try {
       await onUnlockPost(postId);
     } catch (error) {
       console.error("Failed to unlock post:", error);
     } finally {
-      setUnlockingPosts(prev => {
+      setUnlockingPosts((prev) => {
         const newSet = new Set(prev);
         newSet.delete(postId);
         return newSet;
@@ -146,32 +146,38 @@ export function PostsFeed({
 
   const getMediaStats = (media: MediaItem[]) => {
     return {
-      images: media.filter(m => m.type === 'image').length,
-      videos: media.filter(m => m.type === 'video' || m.type === 'video_embed').length,
-      music: media.filter(m => m.type === 'music').length,
-      files: media.filter(m => m.type === 'zip').length
+      images: media.filter((m) => m.type === "image").length,
+      videos: media.filter(
+        (m) => m.type === "video" || m.type === "video_embed",
+      ).length,
+      music: media.filter((m) => m.type === "music").length,
+      files: media.filter((m) => m.type === "zip").length,
     };
   };
 
   const PostContent = ({ post }: { post: Post }) => {
-    const canViewContent = post.isOwn || !post.locked || 
+    const canViewContent =
+      post.isOwn ||
+      !post.locked ||
       (post.isSubscribed && post.price === 0) ||
       (post.isPaidByUser && post.price > 0);
-    
+
     const mediaStats = getMediaStats(post.media);
-    const firstMedia = post.media.find(m => ['image', 'video'].includes(m.type));
+    const firstMedia = post.media.find((m) =>
+      ["image", "video"].includes(m.type),
+    );
 
     if (post.locked && !canViewContent) {
       return (
         <Card className="max-w-full mb-4">
-          <CardContent 
+          <CardContent
             className="p-8 text-center text-white relative overflow-hidden"
             style={{
-              background: firstMedia 
+              background: firstMedia
                 ? `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${firstMedia.videoPoster || `/media/storage/focus/photo/${firstMedia.id}`})`
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
+                : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           >
             <div className="space-y-4">
@@ -197,7 +203,8 @@ export function PostsFeed({
                 ) : (
                   <>
                     <Unlock className="h-4 w-4 mr-2" />
-                    Unlock for {settings.currencySymbol}{post.price}
+                    Unlock for {settings.currencySymbol}
+                    {post.price}
                   </>
                 )}
               </Button>
@@ -256,13 +263,19 @@ export function PostsFeed({
     );
   };
 
-  const MediaDisplay = ({ media, postId }: { media: MediaItem; postId: string }) => {
+  const MediaDisplay = ({
+    media,
+    postId,
+  }: {
+    media: MediaItem;
+    postId: string;
+  }) => {
     switch (media.type) {
-      case 'image':
+      case "image":
         return (
           <div className="max-w-full">
-            {media.imgType === 'gif' ? (
-              <img 
+            {media.imgType === "gif" ? (
+              <img
                 src={media.file}
                 alt="GIF"
                 className="max-w-full rounded-lg"
@@ -272,18 +285,27 @@ export function PostsFeed({
                 src={`/media/storage/focus/photo/${media.id}`}
                 alt="Post image"
                 className="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => window.open(`/media/storage/focus/photo/${media.id}`, '_blank')}
+                onClick={() =>
+                  window.open(
+                    `/media/storage/focus/photo/${media.id}`,
+                    "_blank",
+                  )
+                }
               />
             )}
           </div>
         );
 
-      case 'video':
+      case "video":
         return (
           <div className="max-w-full">
             <video
               controls
-              poster={media.videoPoster ? `/media/storage/focus/video/${media.videoPoster}` : undefined}
+              poster={
+                media.videoPoster
+                  ? `/media/storage/focus/video/${media.videoPoster}`
+                  : undefined
+              }
               className="w-full rounded-lg"
               preload="metadata"
             >
@@ -297,7 +319,7 @@ export function PostsFeed({
           </div>
         );
 
-      case 'video_embed':
+      case "video_embed":
         return (
           <div className="max-w-full aspect-video">
             <iframe
@@ -309,7 +331,7 @@ export function PostsFeed({
           </div>
         );
 
-      case 'music':
+      case "music":
         return (
           <div className="w-full">
             <audio controls className="w-full">
@@ -318,7 +340,7 @@ export function PostsFeed({
           </div>
         );
 
-      case 'zip':
+      case "zip":
         return (
           <Card>
             <CardContent className="p-3">
@@ -344,11 +366,14 @@ export function PostsFeed({
   return (
     <div className={`space-y-6 ${className}`}>
       {posts.map((post) => (
-        <Card key={post.id} className={cn(
-          "shadow-lg rounded-xl border-0 overflow-hidden",
-          post.status === 'pending' ? 'bg-yellow-50 border-yellow-200' : '',
-          post.isPinned ? 'ring-2 ring-primary/20' : ''
-        )}>
+        <Card
+          key={post.id}
+          className={cn(
+            "shadow-lg rounded-xl border-0 overflow-hidden",
+            post.status === "pending" ? "bg-yellow-50 border-yellow-200" : "",
+            post.isPinned ? "ring-2 ring-primary/20" : "",
+          )}
+        >
           <CardContent className="p-0">
             {/* Pinned Post Indicator */}
             {post.isPinned && (
@@ -361,16 +386,14 @@ export function PostsFeed({
             )}
 
             {/* Status Indicators */}
-            {post.status === 'pending' && (
+            {post.status === "pending" && (
               <Alert>
                 <Eye className="h-4 w-4" />
-                <AlertDescription>
-                  This post is pending review
-                </AlertDescription>
+                <AlertDescription>This post is pending review</AlertDescription>
               </Alert>
             )}
 
-            {post.status === 'scheduled' && post.scheduledDate && (
+            {post.status === "scheduled" && post.scheduledDate && (
               <Alert>
                 <Calendar className="h-4 w-4" />
                 <AlertDescription>
@@ -383,10 +406,18 @@ export function PostsFeed({
               {/* User Header */}
               <div className="flex items-start space-x-3 mb-4">
                 <div className="relative">
-                  <Link href={post.isLive ? `/live/${post.username}` : `/${post.username}`}>
+                  <Link
+                    href={
+                      post.isLive
+                        ? `/live/${post.username}`
+                        : `/${post.username}`
+                    }
+                  >
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={post.avatar} />
-                      <AvatarFallback>{post.name.charAt(0).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback>
+                        {post.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                   </Link>
                   {post.isLive && (
@@ -403,7 +434,7 @@ export function PostsFeed({
                         {post.name}
                       </h5>
                     </Link>
-                    
+
                     {post.isVerified && (
                       <Verified className="h-4 w-4 text-blue-500 fill-current" />
                     )}
@@ -415,20 +446,28 @@ export function PostsFeed({
 
                   <div className="flex items-center space-x-3 text-xs text-muted-foreground">
                     <span>
-                      {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(post.createdAt), {
+                        addSuffix: true,
+                      })}
                     </span>
 
                     {post.locked ? (
                       <div className="flex items-center space-x-1">
                         <Lock className="h-3 w-3" />
                         {post.price > 0 && !post.isPaidByUser ? (
-                          <span>{settings.currencySymbol}{post.price}</span>
+                          <span>
+                            {settings.currencySymbol}
+                            {post.price}
+                          </span>
                         ) : post.isPaidByUser ? (
                           <span>Paid</span>
                         ) : null}
                       </div>
                     ) : (
-                      <div className="flex items-center space-x-1" title="Public">
+                      <div
+                        className="flex items-center space-x-1"
+                        title="Public"
+                      >
                         <Globe className="h-3 w-3" />
                       </div>
                     )}
@@ -455,10 +494,12 @@ export function PostsFeed({
                       Copy Link
                     </DropdownMenuItem>
 
-                    {post.isOwn && post.status === 'active' && (
+                    {post.isOwn && post.status === "active" && (
                       <DropdownMenuItem onClick={() => onPinPost(post.id)}>
                         <Pin className="h-4 w-4 mr-2" />
-                        {post.isPinned ? "Unpin from Profile" : "Pin to Profile"}
+                        {post.isPinned
+                          ? "Unpin from Profile"
+                          : "Pin to Profile"}
                       </DropdownMenuItem>
                     )}
 
@@ -470,7 +511,7 @@ export function PostsFeed({
                             Edit Post
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => onDeletePost(post.id)}
                           className="text-red-600"
                         >
@@ -481,8 +522,8 @@ export function PostsFeed({
                     )}
 
                     {!post.isOwn && (
-                      <DropdownMenuItem 
-                        onClick={() => onReportPost(post.id, 'inappropriate')}
+                      <DropdownMenuItem
+                        onClick={() => onReportPost(post.id, "inappropriate")}
                         className="text-red-600"
                       >
                         <Flag className="h-4 w-4 mr-2" />
@@ -506,21 +547,22 @@ export function PostsFeed({
                     disabled={likingPosts.has(post.id)}
                     className={cn(
                       "px-2 transition-colors",
-                      post.isLikedByUser 
-                        ? "text-red-500 hover:text-red-600" 
-                        : "text-muted-foreground hover:text-red-500"
+                      post.isLikedByUser
+                        ? "text-red-500 hover:text-red-600"
+                        : "text-muted-foreground hover:text-red-500",
                     )}
                     data-testid={`like-post-${post.id}`}
                   >
-                    <Heart className={cn(
-                      "h-4 w-4 mr-2",
-                      post.isLikedByUser ? "fill-current" : ""
-                    )} />
+                    <Heart
+                      className={cn(
+                        "h-4 w-4 mr-2",
+                        post.isLikedByUser ? "fill-current" : "",
+                      )}
+                    />
                     <span>
-                      {(post.likesCount + post.likesExtra) > 0 ? 
-                        (post.likesCount + post.likesExtra).toLocaleString() : 
-                        null
-                      }
+                      {post.likesCount + post.likesExtra > 0
+                        ? (post.likesCount + post.likesExtra).toLocaleString()
+                        : null}
                     </span>
                   </Button>
 
@@ -531,7 +573,11 @@ export function PostsFeed({
                     data-testid={`comment-post-${post.id}`}
                   >
                     <MessageCircle className="h-4 w-4 mr-2" />
-                    <span>{post.commentsCount > 0 ? post.commentsCount.toLocaleString() : null}</span>
+                    <span>
+                      {post.commentsCount > 0
+                        ? post.commentsCount.toLocaleString()
+                        : null}
+                    </span>
                   </Button>
 
                   <Button
@@ -549,10 +595,11 @@ export function PostsFeed({
                 <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                   {(() => {
                     const stats = getMediaStats(post.media);
-                    const totalMedia = stats.images + stats.videos + stats.music + stats.files;
-                    
+                    const totalMedia =
+                      stats.images + stats.videos + stats.music + stats.files;
+
                     if (totalMedia === 0) return null;
-                    
+
                     return (
                       <div className="flex items-center space-x-2">
                         {stats.images > 0 && (

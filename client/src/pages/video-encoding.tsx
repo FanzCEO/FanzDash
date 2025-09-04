@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Video, Settings, Upload, Download, Zap, Activity } from "lucide-react";
 import { SEOHeadTags } from "@/components/SEOHeadTags";
 
@@ -16,29 +22,33 @@ export default function VideoEncodingPage() {
     enableHardwareAcceleration: true,
     maxConcurrentJobs: 5,
     outputFormat: "mp4",
-    compressionLevel: "medium"
+    compressionLevel: "medium",
   });
 
   const encodingStats = {
     totalProcessed: 45632,
     currentQueue: 23,
     avgProcessingTime: "2.4 minutes",
-    successRate: 98.7
+    successRate: 98.7,
   };
 
   return (
     <div className="min-h-screen p-6 cyber-bg">
-      <SEOHeadTags 
+      <SEOHeadTags
         title="Video Encoding - FanzDash"
         description="Configure FFMPEG and Coconut video encoding settings for optimal media processing"
         canonicalUrl="https://fanzdash.com/video-encoding"
       />
-      
+
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Video Encoding</h1>
-            <p className="text-muted-foreground">FFMPEG & Coconut configuration</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Video Encoding
+            </h1>
+            <p className="text-muted-foreground">
+              FFMPEG & Coconut configuration
+            </p>
           </div>
           <Badge className="bg-green-500/20 text-green-400">Online</Badge>
         </div>
@@ -49,8 +59,12 @@ export default function VideoEncodingPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Processed</p>
-                  <p className="text-2xl font-bold cyber-text-glow">{encodingStats.totalProcessed.toLocaleString()}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Processed
+                  </p>
+                  <p className="text-2xl font-bold cyber-text-glow">
+                    {encodingStats.totalProcessed.toLocaleString()}
+                  </p>
                 </div>
                 <Video className="w-8 h-8 text-primary" />
               </div>
@@ -62,7 +76,9 @@ export default function VideoEncodingPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Queue</p>
-                  <p className="text-2xl font-bold text-yellow-400">{encodingStats.currentQueue}</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {encodingStats.currentQueue}
+                  </p>
                 </div>
                 <Activity className="w-8 h-8 text-yellow-400" />
               </div>
@@ -73,8 +89,12 @@ export default function VideoEncodingPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Avg Processing</p>
-                  <p className="text-2xl font-bold text-blue-400">{encodingStats.avgProcessingTime}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Avg Processing
+                  </p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {encodingStats.avgProcessingTime}
+                  </p>
                 </div>
                 <Zap className="w-8 h-8 text-blue-400" />
               </div>
@@ -86,7 +106,9 @@ export default function VideoEncodingPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Success Rate</p>
-                  <p className="text-2xl font-bold text-green-400">{encodingStats.successRate}%</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {encodingStats.successRate}%
+                  </p>
                 </div>
                 <Upload className="w-8 h-8 text-green-400" />
               </div>
@@ -105,17 +127,28 @@ export default function VideoEncodingPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">FFMPEG Path</label>
-                <Input 
+                <label className="text-sm font-medium mb-2 block">
+                  FFMPEG Path
+                </label>
+                <Input
                   value={settings.ffmpegPath}
-                  onChange={(e) => setSettings({...settings, ffmpegPath: e.target.value})}
+                  onChange={(e) =>
+                    setSettings({ ...settings, ffmpegPath: e.target.value })
+                  }
                   className="glass-effect"
                 />
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium mb-2 block">Default Quality</label>
-                <Select value={settings.defaultQuality} onValueChange={(value) => setSettings({...settings, defaultQuality: value})}>
+                <label className="text-sm font-medium mb-2 block">
+                  Default Quality
+                </label>
+                <Select
+                  value={settings.defaultQuality}
+                  onValueChange={(value) =>
+                    setSettings({ ...settings, defaultQuality: value })
+                  }
+                >
                   <SelectTrigger className="glass-effect">
                     <SelectValue />
                   </SelectTrigger>
@@ -129,10 +162,17 @@ export default function VideoEncodingPage() {
               </div>
 
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium">Hardware Acceleration</label>
-                <Switch 
+                <label className="text-sm font-medium">
+                  Hardware Acceleration
+                </label>
+                <Switch
                   checked={settings.enableHardwareAcceleration}
-                  onCheckedChange={(checked) => setSettings({...settings, enableHardwareAcceleration: checked})}
+                  onCheckedChange={(checked) =>
+                    setSettings({
+                      ...settings,
+                      enableHardwareAcceleration: checked,
+                    })
+                  }
                 />
               </div>
             </CardContent>
@@ -147,29 +187,47 @@ export default function VideoEncodingPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">API Key</label>
-                <Input 
+                <label className="text-sm font-medium mb-2 block">
+                  API Key
+                </label>
+                <Input
                   type="password"
                   value={settings.coconutApiKey}
-                  onChange={(e) => setSettings({...settings, coconutApiKey: e.target.value})}
+                  onChange={(e) =>
+                    setSettings({ ...settings, coconutApiKey: e.target.value })
+                  }
                   className="glass-effect"
                   placeholder="Enter Coconut API key"
                 />
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium mb-2 block">Max Concurrent Jobs</label>
-                <Input 
+                <label className="text-sm font-medium mb-2 block">
+                  Max Concurrent Jobs
+                </label>
+                <Input
                   type="number"
                   value={settings.maxConcurrentJobs}
-                  onChange={(e) => setSettings({...settings, maxConcurrentJobs: parseInt(e.target.value)})}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      maxConcurrentJobs: parseInt(e.target.value),
+                    })
+                  }
                   className="glass-effect"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Compression Level</label>
-                <Select value={settings.compressionLevel} onValueChange={(value) => setSettings({...settings, compressionLevel: value})}>
+                <label className="text-sm font-medium mb-2 block">
+                  Compression Level
+                </label>
+                <Select
+                  value={settings.compressionLevel}
+                  onValueChange={(value) =>
+                    setSettings({ ...settings, compressionLevel: value })
+                  }
+                >
                   <SelectTrigger className="glass-effect">
                     <SelectValue />
                   </SelectTrigger>
@@ -188,9 +246,7 @@ export default function VideoEncodingPage() {
           <Button variant="outline" className="cyber-border">
             Test Configuration
           </Button>
-          <Button className="cyber-button">
-            Save Settings
-          </Button>
+          <Button className="cyber-button">Save Settings</Button>
         </div>
       </div>
     </div>

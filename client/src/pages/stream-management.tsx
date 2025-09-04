@@ -1,23 +1,35 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  MessageCircle, 
-  Users, 
-  Shield, 
-  Ban, 
-  AlertTriangle, 
-  Play, 
+import {
+  MessageCircle,
+  Users,
+  Shield,
+  Ban,
+  AlertTriangle,
+  Play,
   Settings,
   Hash,
   Clock,
-  Eye
+  Eye,
 } from "lucide-react";
 
 interface StreamChannel {
@@ -46,7 +58,9 @@ export default function StreamManagement() {
   const [moderationTarget, setModerationTarget] = useState("");
   const [moderationReason, setModerationReason] = useState("");
 
-  const { data: channels = [], isLoading: channelsLoading } = useQuery<StreamChannel[]>({
+  const { data: channels = [], isLoading: channelsLoading } = useQuery<
+    StreamChannel[]
+  >({
     queryKey: ["/api/stream/channels"],
     refetchInterval: 5000,
   });
@@ -57,33 +71,44 @@ export default function StreamManagement() {
   });
 
   const generateTokenMutation = useMutation({
-    mutationFn: async ({ userId, tokenType }: { userId: string; tokenType: string }) => {
+    mutationFn: async ({
+      userId,
+      tokenType,
+    }: {
+      userId: string;
+      tokenType: string;
+    }) => {
       return apiRequest("POST", "/api/stream/token", { userId, tokenType });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/stream/tokens"] });
       toast({
         title: "Token Generated",
-        description: "Stream token generated successfully"
+        description: "Stream token generated successfully",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Token Generation Failed",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const moderationMutation = useMutation({
-    mutationFn: async (data: { action: string; targetId: string; reason: string; moderatorId: string }) => {
+    mutationFn: async (data: {
+      action: string;
+      targetId: string;
+      reason: string;
+      moderatorId: string;
+    }) => {
       return apiRequest("POST", "/api/stream/moderate", data);
     },
     onSuccess: () => {
       toast({
         title: "Moderation Action Completed",
-        description: "Stream moderation action applied successfully"
+        description: "Stream moderation action applied successfully",
       });
       setModerationTarget("");
       setModerationReason("");
@@ -92,9 +117,9 @@ export default function StreamManagement() {
       toast({
         title: "Moderation Action Failed",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const handleModeration = () => {
@@ -102,7 +127,7 @@ export default function StreamManagement() {
       toast({
         title: "Missing Information",
         description: "Please fill in all moderation fields",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -111,7 +136,7 @@ export default function StreamManagement() {
       action: selectedAction,
       targetId: moderationTarget,
       reason: moderationReason,
-      moderatorId: "current-user-id" // Replace with actual user ID
+      moderatorId: "current-user-id", // Replace with actual user ID
     });
   };
 
@@ -132,7 +157,7 @@ export default function StreamManagement() {
     const variants = {
       messaging: "default",
       livestream: "destructive",
-      team: "secondary"
+      team: "secondary",
     } as const;
 
     return (
@@ -147,7 +172,7 @@ export default function StreamManagement() {
     const colors = {
       chat: "bg-blue-600",
       feeds: "bg-green-600",
-      activity: "bg-purple-600"
+      activity: "bg-purple-600",
     } as const;
 
     return (
@@ -174,8 +199,12 @@ export default function StreamManagement() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">GetStream Management</h1>
-            <p className="text-muted-foreground">Manage feeds, chat channels, and real-time moderation</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              GetStream Management
+            </h1>
+            <p className="text-muted-foreground">
+              Manage feeds, chat channels, and real-time moderation
+            </p>
           </div>
           <Badge variant="outline" className="border-cyan-500 text-cyan-400">
             <Shield className="w-4 h-4 mr-2" />
@@ -186,7 +215,9 @@ export default function StreamManagement() {
         {/* Moderation Panel */}
         <Card className="bg-gray-900/50 border-red-500/20">
           <CardHeader>
-            <CardTitle className="text-red-400">Live Moderation Center</CardTitle>
+            <CardTitle className="text-red-400">
+              Live Moderation Center
+            </CardTitle>
             <CardDescription className="text-gray-400">
               Real-time content moderation and user management
             </CardDescription>
@@ -202,7 +233,9 @@ export default function StreamManagement() {
                   <SelectItem value="timeout_user">Timeout User</SelectItem>
                   <SelectItem value="delete_message">Delete Message</SelectItem>
                   <SelectItem value="flag_channel">Flag Channel</SelectItem>
-                  <SelectItem value="restrict_channel">Restrict Channel</SelectItem>
+                  <SelectItem value="restrict_channel">
+                    Restrict Channel
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
@@ -247,7 +280,9 @@ export default function StreamManagement() {
             <CardContent>
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {channels.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">No active channels</p>
+                  <p className="text-gray-400 text-center py-8">
+                    No active channels
+                  </p>
                 ) : (
                   channels.map((channel) => (
                     <div
@@ -262,15 +297,21 @@ export default function StreamManagement() {
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant={channel.isActive ? "default" : "secondary"}>
+                          <Badge
+                            variant={channel.isActive ? "default" : "secondary"}
+                          >
                             {channel.isActive ? "Active" : "Inactive"}
                           </Badge>
-                          <Button size="sm" variant="outline" className="border-cyan-500 text-cyan-400">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-cyan-500 text-cyan-400"
+                          >
                             <Settings className="w-3 h-3" />
                           </Button>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-gray-400">
                         <div className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
@@ -317,9 +358,14 @@ export default function StreamManagement() {
                   </Select>
                   <Button
                     onClick={() => {
-                      const userId = (document.getElementById('userId') as HTMLInputElement)?.value;
+                      const userId = (
+                        document.getElementById("userId") as HTMLInputElement
+                      )?.value;
                       if (userId) {
-                        generateTokenMutation.mutate({ userId, tokenType: 'chat' });
+                        generateTokenMutation.mutate({
+                          userId,
+                          tokenType: "chat",
+                        });
                       }
                     }}
                     disabled={generateTokenMutation.isPending}
@@ -370,7 +416,7 @@ export default function StreamManagement() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-cyan-400 mb-2">
-                  {channels.filter(c => c.isActive).length}
+                  {channels.filter((c) => c.isActive).length}
                 </div>
                 <div className="text-sm text-gray-400">Active Channels</div>
               </div>
@@ -382,13 +428,16 @@ export default function StreamManagement() {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-400 mb-2">
-                  {tokens.filter(t => !t.isRevoked).length}
+                  {tokens.filter((t) => !t.isRevoked).length}
                 </div>
                 <div className="text-sm text-gray-400">Valid Tokens</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-400 mb-2">
-                  {channels.filter(c => c.channelType === 'livestream').length}
+                  {
+                    channels.filter((c) => c.channelType === "livestream")
+                      .length
+                  }
                 </div>
                 <div className="text-sm text-gray-400">Live Streams</div>
               </div>

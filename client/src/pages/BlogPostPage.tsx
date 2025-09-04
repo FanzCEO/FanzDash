@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { 
+import {
   Calendar,
   User,
   Share2,
@@ -18,7 +18,7 @@ import {
   Tag,
   Facebook,
   Twitter,
-  Linkedin
+  Linkedin,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -67,36 +67,38 @@ export function BlogPostPage({
   relatedPosts,
   onShare,
   onLike,
-  className = ""
+  className = "",
 }: BlogPostPageProps) {
   const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(Math.floor(Math.random() * 50) + 10);
+  const [likesCount, setLikesCount] = useState(
+    Math.floor(Math.random() * 50) + 10,
+  );
 
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
   const handleLike = () => {
     setIsLiked(!isLiked);
-    setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+    setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
     onLike?.(post.id);
   };
 
   const handleShare = (platform: string) => {
-    let shareUrl = '';
-    
+    let shareUrl = "";
+
     switch (platform) {
-      case 'facebook':
+      case "facebook":
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
         break;
-      case 'twitter':
+      case "twitter":
         shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(post.title)}`;
         break;
-      case 'linkedin':
+      case "linkedin":
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`;
         break;
     }
-    
+
     if (shareUrl) {
-      window.open(shareUrl, '_blank', 'width=600,height=400');
+      window.open(shareUrl, "_blank", "width=600,height=400");
       onShare(platform, currentUrl);
     }
   };
@@ -106,7 +108,7 @@ export function BlogPostPage({
       <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer h-full">
         <div className="relative">
           {relatedPost.image ? (
-            <div 
+            <div
               className="w-full h-32 bg-cover bg-center group-hover:scale-105 transition-transform duration-300"
               style={{ backgroundImage: `url(${relatedPost.image})` }}
             />
@@ -121,7 +123,7 @@ export function BlogPostPage({
           <h4 className="font-bold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
             {relatedPost.title}
           </h4>
-          
+
           <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
             {relatedPost.excerpt}
           </p>
@@ -139,7 +141,9 @@ export function BlogPostPage({
   );
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}>
+    <div
+      className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${className}`}
+    >
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
@@ -157,8 +161,8 @@ export function BlogPostPage({
             {/* Hero Image */}
             {post.image && (
               <div className="w-full h-80 lg:h-96 mb-8 rounded-2xl overflow-hidden">
-                <img 
-                  src={post.image} 
+                <img
+                  src={post.image}
                   alt={post.title}
                   className="w-full h-full object-cover"
                 />
@@ -170,14 +174,20 @@ export function BlogPostPage({
               <div className="flex items-center space-x-4 mb-4">
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={post.authorAvatar} />
-                  <AvatarFallback>{post.authorName.charAt(0).toUpperCase()}</AvatarFallback>
+                  <AvatarFallback>
+                    {post.authorName.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-semibold">{post.authorName}</p>
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">
                       <Calendar className="h-3 w-3" />
-                      <span>{formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })}</span>
+                      <span>
+                        {formatDistanceToNow(new Date(post.publishedAt), {
+                          addSuffix: true,
+                        })}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Clock className="h-3 w-3" />
@@ -191,7 +201,11 @@ export function BlogPostPage({
               {post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-6">
                   {post.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="px-3 py-1">
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="px-3 py-1"
+                    >
                       <Tag className="h-3 w-3 mr-1" />
                       {tag}
                     </Badge>
@@ -213,7 +227,7 @@ export function BlogPostPage({
             </div>
 
             {/* Content */}
-            <div 
+            <div
               className="prose prose-lg max-w-none mb-8"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
@@ -225,26 +239,34 @@ export function BlogPostPage({
                   variant="ghost"
                   size="sm"
                   onClick={handleLike}
-                  className={`${isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'}`}
+                  className={`${isLiked ? "text-red-500 hover:text-red-600" : "text-muted-foreground hover:text-red-500"}`}
                   data-testid="like-post-btn"
                 >
-                  <Heart className={`h-4 w-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
+                  <Heart
+                    className={`h-4 w-4 mr-2 ${isLiked ? "fill-current" : ""}`}
+                  />
                   {likesCount}
                 </Button>
 
-                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground"
+                >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Comment
                 </Button>
               </div>
 
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground mr-2">Share:</span>
-                
+                <span className="text-sm text-muted-foreground mr-2">
+                  Share:
+                </span>
+
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleShare('facebook')}
+                  onClick={() => handleShare("facebook")}
                   className="text-blue-600 hover:text-blue-700"
                   data-testid="share-facebook-btn"
                 >
@@ -254,7 +276,7 @@ export function BlogPostPage({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleShare('twitter')}
+                  onClick={() => handleShare("twitter")}
                   className="text-blue-400 hover:text-blue-500"
                   data-testid="share-twitter-btn"
                 >
@@ -264,7 +286,7 @@ export function BlogPostPage({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleShare('linkedin')}
+                  onClick={() => handleShare("linkedin")}
                   className="text-blue-700 hover:text-blue-800"
                   data-testid="share-linkedin-btn"
                 >
@@ -284,9 +306,12 @@ export function BlogPostPage({
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-2">About {post.authorName}</h3>
+                    <h3 className="text-lg font-bold mb-2">
+                      About {post.authorName}
+                    </h3>
                     <p className="text-muted-foreground mb-4">
-                      {post.authorBio || `${post.authorName} is a content creator and writer sharing insights and stories.`}
+                      {post.authorBio ||
+                        `${post.authorName} is a content creator and writer sharing insights and stories.`}
                     </p>
                     <Button variant="outline" size="sm">
                       <User className="h-4 w-4 mr-2" />
@@ -310,7 +335,10 @@ export function BlogPostPage({
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedPosts.slice(0, 3).map((relatedPost) => (
-                  <RelatedPostCard key={relatedPost.id} relatedPost={relatedPost} />
+                  <RelatedPostCard
+                    key={relatedPost.id}
+                    relatedPost={relatedPost}
+                  />
                 ))}
               </div>
 
@@ -328,9 +356,12 @@ export function BlogPostPage({
           {/* Newsletter CTA */}
           <Card className="mt-16 bg-gradient-to-r from-primary/10 to-purple-500/10 border-primary/20">
             <CardContent className="p-8 text-center">
-              <h3 className="text-2xl font-bold mb-4">Don't Miss Our Latest Content</h3>
+              <h3 className="text-2xl font-bold mb-4">
+                Don't Miss Our Latest Content
+              </h3>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                Subscribe to our newsletter and get the latest articles delivered to your inbox
+                Subscribe to our newsletter and get the latest articles
+                delivered to your inbox
               </p>
               <div className="flex max-w-md mx-auto space-x-3">
                 <input

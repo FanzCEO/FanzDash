@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "wouter";
-import { 
-  Heart, 
-  Users, 
-  Star, 
+import {
+  Heart,
+  Users,
+  Star,
   Verified,
   Camera,
   MessageCircle,
-  DollarSign
+  DollarSign,
 } from "lucide-react";
 
 interface CreatorCardProps {
@@ -30,7 +30,7 @@ interface CreatorCardProps {
   className?: string;
 }
 
-export function CreatorCard({ 
+export function CreatorCard({
   id,
   username,
   name,
@@ -44,28 +44,29 @@ export function CreatorCard({
   isLive = false,
   category,
   rating,
-  className = ""
+  className = "",
 }: CreatorCardProps) {
-
   return (
-    <Card className={`cyber-border hover:shadow-lg transition-all duration-200 ${className}`}>
+    <Card
+      className={`cyber-border hover:shadow-lg transition-all duration-200 ${className}`}
+    >
       <CardContent className="p-0">
         {/* Cover Image */}
         <div className="relative h-32 bg-gradient-to-r from-purple-500 to-blue-500 rounded-t-lg overflow-hidden">
           {cover ? (
-            <img 
-              src={cover} 
+            <img
+              src={cover}
               alt={`${name}'s cover`}
               className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = '/api/placeholder/400/128';
+                target.src = "/api/placeholder/400/128";
               }}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-r from-purple-500 to-blue-500" />
           )}
-          
+
           {/* Live indicator */}
           {isLive && (
             <div className="absolute top-2 left-2">
@@ -75,7 +76,7 @@ export function CreatorCard({
               </Badge>
             </div>
           )}
-          
+
           {/* Category */}
           {category && (
             <div className="absolute top-2 right-2">
@@ -97,13 +98,13 @@ export function CreatorCard({
                   {name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              
+
               {/* Online indicator */}
               {isOnline && (
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full" />
               )}
             </div>
-            
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-1">
                 <h3 className="font-semibold truncate">{name}</h3>
@@ -112,7 +113,7 @@ export function CreatorCard({
                 )}
               </div>
               <p className="text-sm text-muted-foreground">@{username}</p>
-              
+
               {/* Rating */}
               {rating && (
                 <div className="flex items-center space-x-1 mt-1">

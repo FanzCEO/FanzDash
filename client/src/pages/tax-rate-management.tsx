@@ -1,30 +1,63 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { 
-  Calculator, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Globe, 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Calculator,
+  Plus,
+  Edit,
+  Trash2,
+  Globe,
   Map,
   DollarSign,
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
@@ -33,7 +66,7 @@ interface TaxRate {
   id: string;
   name: string;
   rate: string; // decimal as string
-  type: 'vat' | 'gst' | 'sales_tax' | 'income_tax';
+  type: "vat" | "gst" | "sales_tax" | "income_tax";
   country: string;
   state?: string;
   region?: string;
@@ -48,11 +81,13 @@ interface TaxRate {
 const taxRateSchema = z.object({
   name: z.string().min(1, "Name is required"),
   rate: z.string().min(1, "Rate is required"),
-  type: z.enum(['vat', 'gst', 'sales_tax', 'income_tax']),
+  type: z.enum(["vat", "gst", "sales_tax", "income_tax"]),
   country: z.string().min(1, "Country is required"),
   state: z.string().optional(),
   region: z.string().optional(),
-  applicableServices: z.array(z.string()).min(1, "At least one service must be selected"),
+  applicableServices: z
+    .array(z.string())
+    .min(1, "At least one service must be selected"),
   effectiveDate: z.string().min(1, "Effective date is required"),
   expiryDate: z.string().optional(),
 });
@@ -78,7 +113,7 @@ export default function TaxRateManagement() {
       isActive: true,
       effectiveDate: "2025-01-01T00:00:00Z",
       createdAt: "2025-01-15T10:00:00Z",
-      updatedAt: "2025-01-15T10:00:00Z"
+      updatedAt: "2025-01-15T10:00:00Z",
     },
     {
       id: "2",
@@ -90,7 +125,7 @@ export default function TaxRateManagement() {
       isActive: true,
       effectiveDate: "2025-01-01T00:00:00Z",
       createdAt: "2025-01-14T15:30:00Z",
-      updatedAt: "2025-01-14T15:30:00Z"
+      updatedAt: "2025-01-14T15:30:00Z",
     },
     {
       id: "3",
@@ -102,7 +137,7 @@ export default function TaxRateManagement() {
       isActive: true,
       effectiveDate: "2025-01-01T00:00:00Z",
       createdAt: "2025-01-13T12:00:00Z",
-      updatedAt: "2025-01-13T12:00:00Z"
+      updatedAt: "2025-01-13T12:00:00Z",
     },
     {
       id: "4",
@@ -115,8 +150,8 @@ export default function TaxRateManagement() {
       effectiveDate: "2025-01-01T00:00:00Z",
       expiryDate: "2025-12-31T23:59:59Z",
       createdAt: "2025-01-12T09:00:00Z",
-      updatedAt: "2025-01-15T14:30:00Z"
-    }
+      updatedAt: "2025-01-15T14:30:00Z",
+    },
   ];
 
   const isLoading = false;
@@ -131,39 +166,39 @@ export default function TaxRateManagement() {
       state: "",
       region: "",
       applicableServices: [],
-      effectiveDate: new Date().toISOString().split('T')[0],
-      expiryDate: ""
-    }
+      effectiveDate: new Date().toISOString().split("T")[0],
+      expiryDate: "",
+    },
   });
 
   const createTaxRateMutation = useMutation({
     mutationFn: (data: TaxRateFormData) =>
-      apiRequest('/api/admin/tax-rates', 'POST', data),
+      apiRequest("/api/admin/tax-rates", "POST", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/tax-rates'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tax-rates"] });
       toast({ title: "Tax rate created successfully" });
       setIsAddDialogOpen(false);
       form.reset();
-    }
+    },
   });
 
   const updateTaxRateMutation = useMutation({
-    mutationFn: (data: { id: string, updates: Partial<TaxRate> }) =>
-      apiRequest(`/api/admin/tax-rates/${data.id}`, 'PATCH', data.updates),
+    mutationFn: (data: { id: string; updates: Partial<TaxRate> }) =>
+      apiRequest(`/api/admin/tax-rates/${data.id}`, "PATCH", data.updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/tax-rates'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tax-rates"] });
       toast({ title: "Tax rate updated successfully" });
       setEditingTaxRate(null);
-    }
+    },
   });
 
   const deleteTaxRateMutation = useMutation({
     mutationFn: (id: string) =>
-      apiRequest(`/api/admin/tax-rates/${id}`, 'DELETE'),
+      apiRequest(`/api/admin/tax-rates/${id}`, "DELETE"),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/tax-rates'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tax-rates"] });
       toast({ title: "Tax rate deleted successfully" });
-    }
+    },
   });
 
   const onSubmit = (data: TaxRateFormData) => {
@@ -184,8 +219,8 @@ export default function TaxRateManagement() {
       state: taxRate.state || "",
       region: taxRate.region || "",
       applicableServices: taxRate.applicableServices,
-      effectiveDate: taxRate.effectiveDate.split('T')[0],
-      expiryDate: taxRate.expiryDate ? taxRate.expiryDate.split('T')[0] : ""
+      effectiveDate: taxRate.effectiveDate.split("T")[0],
+      expiryDate: taxRate.expiryDate ? taxRate.expiryDate.split("T")[0] : "",
     });
     setIsAddDialogOpen(true);
   };
@@ -196,11 +231,16 @@ export default function TaxRateManagement() {
 
   const getTaxTypeIcon = (type: string) => {
     switch (type) {
-      case 'vat': return <Globe className="h-4 w-4" />;
-      case 'gst': return <Map className="h-4 w-4" />;
-      case 'sales_tax': return <DollarSign className="h-4 w-4" />;
-      case 'income_tax': return <Calculator className="h-4 w-4" />;
-      default: return <Calculator className="h-4 w-4" />;
+      case "vat":
+        return <Globe className="h-4 w-4" />;
+      case "gst":
+        return <Map className="h-4 w-4" />;
+      case "sales_tax":
+        return <DollarSign className="h-4 w-4" />;
+      case "income_tax":
+        return <Calculator className="h-4 w-4" />;
+      default:
+        return <Calculator className="h-4 w-4" />;
     }
   };
 
@@ -209,27 +249,27 @@ export default function TaxRateManagement() {
       vat: "default",
       gst: "secondary",
       sales_tax: "outline",
-      income_tax: "destructive"
+      income_tax: "destructive",
     } as const;
-    
+
     return (
       <Badge variant={variants[type as keyof typeof variants] || "default"}>
-        {type.toUpperCase().replace('_', ' ')}
+        {type.toUpperCase().replace("_", " ")}
       </Badge>
     );
   };
 
   const formatRate = (rate: string) => {
-    return (parseFloat(rate) * 100).toFixed(2) + '%';
+    return (parseFloat(rate) * 100).toFixed(2) + "%";
   };
 
   const getActiveRatesCount = () => {
-    return taxRates.filter(tr => tr.isActive).length;
+    return taxRates.filter((tr) => tr.isActive).length;
   };
 
   const getTotalRevenue = () => {
     // Mock calculation - in real app this would come from analytics
-    return 45890.50;
+    return 45890.5;
   };
 
   const getTotalTaxCollected = () => {
@@ -238,9 +278,22 @@ export default function TaxRateManagement() {
   };
 
   const countries = [
-    "United States", "United Kingdom", "Canada", "Australia", "Germany", 
-    "France", "Italy", "Spain", "Netherlands", "Sweden", "Norway", 
-    "Denmark", "Japan", "South Korea", "Singapore", "New Zealand"
+    "United States",
+    "United Kingdom",
+    "Canada",
+    "Australia",
+    "Germany",
+    "France",
+    "Italy",
+    "Spain",
+    "Netherlands",
+    "Sweden",
+    "Norway",
+    "Denmark",
+    "Japan",
+    "South Korea",
+    "Singapore",
+    "New Zealand",
   ];
 
   const serviceTypes = [
@@ -249,21 +302,33 @@ export default function TaxRateManagement() {
     { value: "content", label: "Content Purchases" },
     { value: "gifts", label: "Virtual Gifts" },
     { value: "merchandise", label: "Merchandise" },
-    { value: "private_shows", label: "Private Shows" }
+    { value: "private_shows", label: "Private Shows" },
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="tax-rate-management">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="tax-rate-management"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold cyber-text-glow">Tax Rate Management</h1>
+          <h1 className="text-3xl font-bold cyber-text-glow">
+            Tax Rate Management
+          </h1>
           <p className="text-muted-foreground">
-            Configure tax rates for different countries, states, and service types
+            Configure tax rates for different countries, states, and service
+            types
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingTaxRate(null); form.reset(); }} data-testid="button-add-tax-rate">
+            <Button
+              onClick={() => {
+                setEditingTaxRate(null);
+                form.reset();
+              }}
+              data-testid="button-add-tax-rate"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Tax Rate
             </Button>
@@ -278,7 +343,10 @@ export default function TaxRateManagement() {
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -287,7 +355,11 @@ export default function TaxRateManagement() {
                       <FormItem>
                         <FormLabel>Tax Rate Name</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="e.g., California Sales Tax" data-testid="input-tax-name" />
+                          <Input
+                            {...field}
+                            placeholder="e.g., California Sales Tax"
+                            data-testid="input-tax-name"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -301,7 +373,15 @@ export default function TaxRateManagement() {
                       <FormItem>
                         <FormLabel>Rate (%)</FormLabel>
                         <FormControl>
-                          <Input {...field} type="number" step="0.01" min="0" max="50" placeholder="8.75" data-testid="input-tax-rate" />
+                          <Input
+                            {...field}
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="50"
+                            placeholder="8.75"
+                            data-testid="input-tax-rate"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -314,7 +394,10 @@ export default function TaxRateManagement() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Tax Type</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
                           <FormControl>
                             <SelectTrigger data-testid="select-tax-type">
                               <SelectValue />
@@ -324,7 +407,9 @@ export default function TaxRateManagement() {
                             <SelectItem value="vat">VAT</SelectItem>
                             <SelectItem value="gst">GST</SelectItem>
                             <SelectItem value="sales_tax">Sales Tax</SelectItem>
-                            <SelectItem value="income_tax">Income Tax</SelectItem>
+                            <SelectItem value="income_tax">
+                              Income Tax
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -338,15 +423,20 @@ export default function TaxRateManagement() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Country</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
                           <FormControl>
                             <SelectTrigger data-testid="select-country">
                               <SelectValue placeholder="Select country" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {countries.map(country => (
-                              <SelectItem key={country} value={country}>{country}</SelectItem>
+                            {countries.map((country) => (
+                              <SelectItem key={country} value={country}>
+                                {country}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -362,7 +452,11 @@ export default function TaxRateManagement() {
                       <FormItem>
                         <FormLabel>State/Province (Optional)</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="e.g., California" data-testid="input-state" />
+                          <Input
+                            {...field}
+                            placeholder="e.g., California"
+                            data-testid="input-state"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -376,7 +470,11 @@ export default function TaxRateManagement() {
                       <FormItem>
                         <FormLabel>Region (Optional)</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="e.g., Los Angeles County" data-testid="input-region" />
+                          <Input
+                            {...field}
+                            placeholder="e.g., Los Angeles County"
+                            data-testid="input-region"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -390,7 +488,11 @@ export default function TaxRateManagement() {
                       <FormItem>
                         <FormLabel>Effective Date</FormLabel>
                         <FormControl>
-                          <Input {...field} type="date" data-testid="input-effective-date" />
+                          <Input
+                            {...field}
+                            type="date"
+                            data-testid="input-effective-date"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -404,7 +506,11 @@ export default function TaxRateManagement() {
                       <FormItem>
                         <FormLabel>Expiry Date (Optional)</FormLabel>
                         <FormControl>
-                          <Input {...field} type="date" data-testid="input-expiry-date" />
+                          <Input
+                            {...field}
+                            type="date"
+                            data-testid="input-expiry-date"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -419,17 +525,27 @@ export default function TaxRateManagement() {
                     <FormItem>
                       <FormLabel>Applicable Services</FormLabel>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {serviceTypes.map(service => (
-                          <div key={service.value} className="flex items-center space-x-2">
+                        {serviceTypes.map((service) => (
+                          <div
+                            key={service.value}
+                            className="flex items-center space-x-2"
+                          >
                             <input
                               type="checkbox"
                               id={service.value}
                               checked={field.value.includes(service.value)}
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  field.onChange([...field.value, service.value]);
+                                  field.onChange([
+                                    ...field.value,
+                                    service.value,
+                                  ]);
                                 } else {
-                                  field.onChange(field.value.filter(v => v !== service.value));
+                                  field.onChange(
+                                    field.value.filter(
+                                      (v) => v !== service.value,
+                                    ),
+                                  );
                                 }
                               }}
                               className="rounded"
@@ -447,17 +563,20 @@ export default function TaxRateManagement() {
                 />
 
                 <div className="flex justify-end space-x-2 pt-4">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setIsAddDialogOpen(false)}
                     data-testid="button-cancel"
                   >
                     Cancel
                   </Button>
-                  <Button 
-                    type="submit" 
-                    disabled={createTaxRateMutation.isPending || updateTaxRateMutation.isPending}
+                  <Button
+                    type="submit"
+                    disabled={
+                      createTaxRateMutation.isPending ||
+                      updateTaxRateMutation.isPending
+                    }
                     data-testid="button-save-tax-rate"
                   >
                     {editingTaxRate ? "Update" : "Create"} Tax Rate
@@ -490,7 +609,7 @@ export default function TaxRateManagement() {
               <div>
                 <p className="text-sm font-medium">Countries</p>
                 <p className="text-2xl font-bold">
-                  {new Set(taxRates.map(tr => tr.country)).size}
+                  {new Set(taxRates.map((tr) => tr.country)).size}
                 </p>
               </div>
             </div>
@@ -503,7 +622,9 @@ export default function TaxRateManagement() {
               <DollarSign className="h-8 w-8 text-green-500" />
               <div>
                 <p className="text-sm font-medium">Tax Collected</p>
-                <p className="text-2xl font-bold">${getTotalTaxCollected().toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  ${getTotalTaxCollected().toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -515,7 +636,9 @@ export default function TaxRateManagement() {
               <CheckCircle className="h-8 w-8 text-yellow-500" />
               <div>
                 <p className="text-sm font-medium">Total Revenue</p>
-                <p className="text-2xl font-bold">${getTotalRevenue().toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  ${getTotalRevenue().toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -565,17 +688,25 @@ export default function TaxRateManagement() {
                     <div>
                       <div className="font-medium">{taxRate.country}</div>
                       {taxRate.state && (
-                        <div className="text-sm text-muted-foreground">{taxRate.state}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {taxRate.state}
+                        </div>
                       )}
                       {taxRate.region && (
-                        <div className="text-xs text-muted-foreground">{taxRate.region}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {taxRate.region}
+                        </div>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      {taxRate.applicableServices.slice(0, 2).map(service => (
-                        <Badge key={service} variant="outline" className="text-xs">
+                      {taxRate.applicableServices.slice(0, 2).map((service) => (
+                        <Badge
+                          key={service}
+                          variant="outline"
+                          className="text-xs"
+                        >
                           {service}
                         </Badge>
                       ))}
@@ -590,10 +721,14 @@ export default function TaxRateManagement() {
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={taxRate.isActive}
-                        onCheckedChange={(checked) => handleToggleActive(taxRate.id, checked)}
+                        onCheckedChange={(checked) =>
+                          handleToggleActive(taxRate.id, checked)
+                        }
                         data-testid={`switch-active-${taxRate.id}`}
                       />
-                      <Badge variant={taxRate.isActive ? "default" : "secondary"}>
+                      <Badge
+                        variant={taxRate.isActive ? "default" : "secondary"}
+                      >
                         {taxRate.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>
@@ -607,22 +742,23 @@ export default function TaxRateManagement() {
                     </div>
                     {taxRate.expiryDate && (
                       <div className="text-xs text-muted-foreground">
-                        Expires: {new Date(taxRate.expiryDate).toLocaleDateString()}
+                        Expires:{" "}
+                        {new Date(taxRate.expiryDate).toLocaleDateString()}
                       </div>
                     )}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => handleEdit(taxRate)}
                         data-testid={`button-edit-${taxRate.id}`}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => deleteTaxRateMutation.mutate(taxRate.id)}
                         data-testid={`button-delete-${taxRate.id}`}
@@ -644,13 +780,28 @@ export default function TaxRateManagement() {
           <div className="flex items-start space-x-3">
             <AlertTriangle className="h-5 w-5 text-blue-600 mt-0.5" />
             <div>
-              <h3 className="font-medium text-blue-800">Tax Compliance Notice</h3>
+              <h3 className="font-medium text-blue-800">
+                Tax Compliance Notice
+              </h3>
               <ul className="text-sm text-blue-700 mt-2 space-y-1">
-                <li>• Consult with tax professionals for accurate rate configuration</li>
-                <li>• Tax rates must comply with local jurisdiction requirements</li>
-                <li>• Monitor changes in tax legislation that may affect your rates</li>
-                <li>• Keep detailed records of tax collection and remittance</li>
-                <li>• Adult entertainment services may have special tax considerations</li>
+                <li>
+                  • Consult with tax professionals for accurate rate
+                  configuration
+                </li>
+                <li>
+                  • Tax rates must comply with local jurisdiction requirements
+                </li>
+                <li>
+                  • Monitor changes in tax legislation that may affect your
+                  rates
+                </li>
+                <li>
+                  • Keep detailed records of tax collection and remittance
+                </li>
+                <li>
+                  • Adult entertainment services may have special tax
+                  considerations
+                </li>
               </ul>
             </div>
           </div>

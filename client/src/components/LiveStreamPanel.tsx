@@ -13,7 +13,7 @@ export function LiveStreamPanel() {
   const handleReviewStream = async (streamId: string) => {
     try {
       await apiRequest("PUT", `/api/live-streams/${streamId}`, {
-        status: "under_review"
+        status: "under_review",
       });
     } catch (error) {
       console.error("Error updating stream:", error);
@@ -36,7 +36,10 @@ export function LiveStreamPanel() {
           <div className="animate-pulse space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[1, 2].map((i) => (
-                <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                <div
+                  key={i}
+                  className="border border-gray-200 rounded-lg overflow-hidden"
+                >
                   <div className="aspect-video bg-gray-200"></div>
                   <div className="p-3 space-y-2">
                     <div className="h-4 bg-gray-200 rounded"></div>
@@ -65,7 +68,11 @@ export function LiveStreamPanel() {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {streams.map((stream: LiveStream) => (
-            <div key={stream.id} className="border border-gray-200 rounded-lg overflow-hidden" data-testid={`stream-${stream.id}`}>
+            <div
+              key={stream.id}
+              className="border border-gray-200 rounded-lg overflow-hidden"
+              data-testid={`stream-${stream.id}`}
+            >
               <div className="relative">
                 <div className="aspect-video bg-gray-900 relative">
                   {/* Stream preview */}
@@ -74,36 +81,59 @@ export function LiveStreamPanel() {
                     <div className="absolute inset-4 bg-white rounded-lg opacity-80 blur-sm"></div>
                   )}
                   <div className="absolute top-2 left-2">
-                    <Badge variant="destructive" className="text-xs">LIVE</Badge>
+                    <Badge variant="destructive" className="text-xs">
+                      LIVE
+                    </Badge>
                   </div>
                   <div className="absolute top-2 right-2">
-                    <Badge 
-                      variant={stream.riskLevel === "high" ? "destructive" : 
-                               stream.riskLevel === "medium" ? "secondary" : "default"}
+                    <Badge
+                      variant={
+                        stream.riskLevel === "high"
+                          ? "destructive"
+                          : stream.riskLevel === "medium"
+                            ? "secondary"
+                            : "default"
+                      }
                       className="text-xs"
                     >
-                      {stream.autoBlurEnabled ? "AUTO-BLUR" : stream.riskLevel?.toUpperCase() || "CLEAN"}
+                      {stream.autoBlurEnabled
+                        ? "AUTO-BLUR"
+                        : stream.riskLevel?.toUpperCase() || "CLEAN"}
                     </Badge>
                   </div>
                 </div>
               </div>
               <div className="p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium text-gray-900">{stream.title || `Stream #${stream.streamKey.slice(-4)}`}</h4>
-                  <span className="text-xs text-gray-500">{stream.viewers || 0} viewers</span>
+                  <h4 className="text-sm font-medium text-gray-900">
+                    {stream.title || `Stream #${stream.streamKey.slice(-4)}`}
+                  </h4>
+                  <span className="text-xs text-gray-500">
+                    {stream.viewers || 0} viewers
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className={`font-medium ${
-                    stream.riskLevel === "high" ? "text-red-600" : 
-                    stream.riskLevel === "medium" ? "text-yellow-600" : "text-green-600"
-                  }`}>
-                    Risk: {stream.riskLevel === "high" ? "High" : 
-                           stream.riskLevel === "medium" ? "Medium" : "Low"} 
-                    {stream.lastRiskScore && ` (${parseFloat(stream.lastRiskScore).toFixed(2)})`}
+                  <span
+                    className={`font-medium ${
+                      stream.riskLevel === "high"
+                        ? "text-red-600"
+                        : stream.riskLevel === "medium"
+                          ? "text-yellow-600"
+                          : "text-green-600"
+                    }`}
+                  >
+                    Risk:{" "}
+                    {stream.riskLevel === "high"
+                      ? "High"
+                      : stream.riskLevel === "medium"
+                        ? "Medium"
+                        : "Low"}
+                    {stream.lastRiskScore &&
+                      ` (${parseFloat(stream.lastRiskScore).toFixed(2)})`}
                   </span>
                   {stream.riskLevel !== "low" ? (
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
                       onClick={() => handleReviewStream(stream.id)}
                       data-testid={`review-stream-${stream.id}`}
@@ -115,7 +145,9 @@ export function LiveStreamPanel() {
                   )}
                 </div>
                 <div className="mt-2 text-xs text-gray-500">
-                  {stream.riskLevel === "high" ? "NudeNet: High-risk content detected" : "NudeNet: Clean frames detected"}
+                  {stream.riskLevel === "high"
+                    ? "NudeNet: High-risk content detected"
+                    : "NudeNet: Clean frames detected"}
                 </div>
               </div>
             </div>

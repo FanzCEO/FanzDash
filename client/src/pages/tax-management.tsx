@@ -1,14 +1,47 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Calculator, Plus, Edit, Trash2, Globe, AlertTriangle } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Calculator,
+  Plus,
+  Edit,
+  Trash2,
+  Globe,
+  AlertTriangle,
+} from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,7 +49,7 @@ interface TaxRate {
   id: string;
   name: string;
   rate: string;
-  type: 'vat' | 'gst' | 'sales_tax' | 'income_tax';
+  type: "vat" | "gst" | "sales_tax" | "income_tax";
   country: string;
   state: string | null;
   region: string | null;
@@ -34,61 +67,95 @@ export default function TaxManagement() {
   // Mock data demonstrating global tax compliance
   const taxRates = [
     {
-      id: '1', name: 'UK VAT', rate: '0.20', type: 'vat' as const,
-      country: 'United Kingdom', state: null, region: 'European Union',
-      applicableServices: ['subscriptions', 'tips', 'content'], isActive: true,
-      effectiveDate: '2024-01-01', expiryDate: null
+      id: "1",
+      name: "UK VAT",
+      rate: "0.20",
+      type: "vat" as const,
+      country: "United Kingdom",
+      state: null,
+      region: "European Union",
+      applicableServices: ["subscriptions", "tips", "content"],
+      isActive: true,
+      effectiveDate: "2024-01-01",
+      expiryDate: null,
     },
     {
-      id: '2', name: 'California Sales Tax', rate: '0.0825', type: 'sales_tax' as const,
-      country: 'United States', state: 'California', region: 'North America',
-      applicableServices: ['subscriptions', 'content'], isActive: true,
-      effectiveDate: '2024-01-01', expiryDate: null
+      id: "2",
+      name: "California Sales Tax",
+      rate: "0.0825",
+      type: "sales_tax" as const,
+      country: "United States",
+      state: "California",
+      region: "North America",
+      applicableServices: ["subscriptions", "content"],
+      isActive: true,
+      effectiveDate: "2024-01-01",
+      expiryDate: null,
     },
     {
-      id: '3', name: 'Canada GST/HST', rate: '0.13', type: 'gst' as const,
-      country: 'Canada', state: 'Ontario', region: 'North America',
-      applicableServices: ['subscriptions', 'tips', 'content'], isActive: true,
-      effectiveDate: '2024-01-01', expiryDate: null
+      id: "3",
+      name: "Canada GST/HST",
+      rate: "0.13",
+      type: "gst" as const,
+      country: "Canada",
+      state: "Ontario",
+      region: "North America",
+      applicableServices: ["subscriptions", "tips", "content"],
+      isActive: true,
+      effectiveDate: "2024-01-01",
+      expiryDate: null,
     },
     {
-      id: '4', name: 'Australia GST', rate: '0.10', type: 'gst' as const,
-      country: 'Australia', state: null, region: 'Asia-Pacific',
-      applicableServices: ['subscriptions', 'content'], isActive: true,
-      effectiveDate: '2024-01-01', expiryDate: null
-    }
+      id: "4",
+      name: "Australia GST",
+      rate: "0.10",
+      type: "gst" as const,
+      country: "Australia",
+      state: null,
+      region: "Asia-Pacific",
+      applicableServices: ["subscriptions", "content"],
+      isActive: true,
+      effectiveDate: "2024-01-01",
+      expiryDate: null,
+    },
   ];
   const isLoading = false;
 
   const { toast } = useToast();
 
   const createTaxRateMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/admin/tax-rates', 'POST', data),
+    mutationFn: (data: any) => apiRequest("/api/admin/tax-rates", "POST", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/tax-rates'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tax-rates"] });
       setIsCreateDialogOpen(false);
       toast({ title: "Tax rate created successfully" });
-    }
+    },
   });
 
   const updateTaxRateMutation = useMutation({
-    mutationFn: (data: { id: string, updates: any }) =>
-      apiRequest(`/api/admin/tax-rates/${data.id}`, 'PATCH', data.updates),
+    mutationFn: (data: { id: string; updates: any }) =>
+      apiRequest(`/api/admin/tax-rates/${data.id}`, "PATCH", data.updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/tax-rates'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tax-rates"] });
       setEditingTax(null);
-    }
+    },
   });
 
   const getTaxTypeBadge = (type: string) => {
     const colors = {
       vat: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
       gst: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-      sales_tax: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-      income_tax: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
+      sales_tax:
+        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+      income_tax:
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
     };
     return (
-      <Badge className={colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
+      <Badge
+        className={
+          colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"
+        }
+      >
         {type.toUpperCase()}
       </Badge>
     );
@@ -103,13 +170,17 @@ export default function TaxManagement() {
 
   const TaxRateForm = ({ taxRate, onSubmit, onCancel }: any) => {
     const [formData, setFormData] = useState({
-      name: taxRate?.name || '',
-      rate: taxRate?.rate || '',
-      type: taxRate?.type || 'vat',
-      country: taxRate?.country || '',
-      state: taxRate?.state || '',
-      region: taxRate?.region || '',
-      applicableServices: taxRate?.applicableServices || ['subscriptions', 'tips', 'content']
+      name: taxRate?.name || "",
+      rate: taxRate?.rate || "",
+      type: taxRate?.type || "vat",
+      country: taxRate?.country || "",
+      state: taxRate?.state || "",
+      region: taxRate?.region || "",
+      applicableServices: taxRate?.applicableServices || [
+        "subscriptions",
+        "tips",
+        "content",
+      ],
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -125,7 +196,9 @@ export default function TaxManagement() {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               placeholder="e.g., UK VAT, California Sales Tax"
               required
               data-testid="input-tax-name"
@@ -140,7 +213,9 @@ export default function TaxManagement() {
               min="0"
               max="1"
               value={formData.rate}
-              onChange={(e) => setFormData({ ...formData, rate: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, rate: e.target.value })
+              }
               placeholder="0.20 for 20%"
               required
               data-testid="input-tax-rate"
@@ -151,7 +226,12 @@ export default function TaxManagement() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="type">Tax Type</Label>
-            <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+            <Select
+              value={formData.type}
+              onValueChange={(value) =>
+                setFormData({ ...formData, type: value })
+              }
+            >
               <SelectTrigger data-testid="select-tax-type">
                 <SelectValue />
               </SelectTrigger>
@@ -168,7 +248,9 @@ export default function TaxManagement() {
             <Input
               id="country"
               value={formData.country}
-              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, country: e.target.value })
+              }
               placeholder="e.g., United Kingdom, United States"
               required
               data-testid="input-tax-country"
@@ -182,7 +264,9 @@ export default function TaxManagement() {
             <Input
               id="state"
               value={formData.state}
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, state: e.target.value })
+              }
               placeholder="e.g., California, Ontario"
               data-testid="input-tax-state"
             />
@@ -192,7 +276,9 @@ export default function TaxManagement() {
             <Input
               id="region"
               value={formData.region}
-              onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, region: e.target.value })
+              }
               placeholder="e.g., European Union, NAFTA"
               data-testid="input-tax-region"
             />
@@ -204,7 +290,7 @@ export default function TaxManagement() {
             Cancel
           </Button>
           <Button type="submit" data-testid="button-save-tax">
-            {taxRate ? 'Update' : 'Create'} Tax Rate
+            {taxRate ? "Update" : "Create"} Tax Rate
           </Button>
         </div>
       </form>
@@ -212,7 +298,10 @@ export default function TaxManagement() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="tax-management">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="tax-management"
+    >
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Tax Management</h1>
@@ -246,7 +335,9 @@ export default function TaxManagement() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Tax Rates</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Tax Rates
+            </CardTitle>
             <Calculator className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -265,9 +356,7 @@ export default function TaxManagement() {
             <div className="text-2xl font-bold">
               {new Set(taxRates.map((rate: TaxRate) => rate.country)).size}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Tax jurisdictions
-            </p>
+            <p className="text-xs text-muted-foreground">Tax jurisdictions</p>
           </CardContent>
         </Card>
         <Card>
@@ -277,11 +366,9 @@ export default function TaxManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {taxRates.filter((rate: TaxRate) => rate.type === 'vat').length}
+              {taxRates.filter((rate: TaxRate) => rate.type === "vat").length}
             </div>
-            <p className="text-xs text-muted-foreground">
-              European compliance
-            </p>
+            <p className="text-xs text-muted-foreground">European compliance</p>
           </CardContent>
         </Card>
         <Card>
@@ -291,13 +378,20 @@ export default function TaxManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {taxRates.length > 0 
-                ? (taxRates.reduce((sum: number, rate: TaxRate) => sum + parseFloat(rate.rate), 0) / taxRates.length * 100).toFixed(1)
-                : 0}%
+              {taxRates.length > 0
+                ? (
+                    (taxRates.reduce(
+                      (sum: number, rate: TaxRate) =>
+                        sum + parseFloat(rate.rate),
+                      0,
+                    ) /
+                      taxRates.length) *
+                    100
+                  ).toFixed(1)
+                : 0}
+              %
             </div>
-            <p className="text-xs text-muted-foreground">
-              Average tax burden
-            </p>
+            <p className="text-xs text-muted-foreground">Average tax burden</p>
           </CardContent>
         </Card>
       </div>
@@ -338,14 +432,20 @@ export default function TaxManagement() {
                       <div className="flex flex-col">
                         <span className="font-medium">{rate.country}</span>
                         {rate.state && (
-                          <span className="text-xs text-muted-foreground">{rate.state}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {rate.state}
+                          </span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {rate.applicableServices.slice(0, 2).map((service) => (
-                          <Badge key={service} variant="secondary" className="text-xs">
+                          <Badge
+                            key={service}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {service}
                           </Badge>
                         ))}
@@ -359,7 +459,9 @@ export default function TaxManagement() {
                     <TableCell className="font-mono text-sm">
                       <div className="flex flex-col">
                         <span>Tax: ${example.tax}</span>
-                        <span className="text-muted-foreground">Total: ${example.total}</span>
+                        <span className="text-muted-foreground">
+                          Total: ${example.total}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -371,16 +473,16 @@ export default function TaxManagement() {
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-1">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => setEditingTax(rate)}
                           data-testid={`button-edit-tax-${rate.id}`}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           data-testid={`button-delete-tax-${rate.id}`}
                         >
@@ -408,7 +510,12 @@ export default function TaxManagement() {
           {editingTax && (
             <TaxRateForm
               taxRate={editingTax}
-              onSubmit={(data: any) => updateTaxRateMutation.mutate({ id: editingTax.id, updates: data })}
+              onSubmit={(data: any) =>
+                updateTaxRateMutation.mutate({
+                  id: editingTax.id,
+                  updates: data,
+                })
+              }
               onCancel={() => setEditingTax(null)}
             />
           )}

@@ -7,24 +7,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   Plus,
   Search,
   Edit,
@@ -47,7 +53,7 @@ import {
   User,
   Activity,
   Globe,
-  Briefcase
+  Briefcase,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -128,15 +134,23 @@ interface RoleManagementProps {
 }
 
 const PERMISSION_MODULES = [
-  { id: 'tickets', name: 'Tickets', icon: Activity },
-  { id: 'users', name: 'User Management', icon: Users },
-  { id: 'departments', name: 'Departments', icon: Briefcase },
-  { id: 'knowledge_base', name: 'Knowledge Base', icon: Globe },
-  { id: 'analytics', name: 'Analytics', icon: Activity },
-  { id: 'settings', name: 'System Settings', icon: Settings },
+  { id: "tickets", name: "Tickets", icon: Activity },
+  { id: "users", name: "User Management", icon: Users },
+  { id: "departments", name: "Departments", icon: Briefcase },
+  { id: "knowledge_base", name: "Knowledge Base", icon: Globe },
+  { id: "analytics", name: "Analytics", icon: Activity },
+  { id: "settings", name: "System Settings", icon: Settings },
 ];
 
-const PERMISSION_ACTIONS = ['create', 'read', 'update', 'delete', 'assign', 'close', 'escalate'];
+const PERMISSION_ACTIONS = [
+  "create",
+  "read",
+  "update",
+  "delete",
+  "assign",
+  "close",
+  "escalate",
+];
 
 export function RoleManagement({
   roles,
@@ -150,7 +164,7 @@ export function RoleManagement({
   onUpdateUser,
   onInviteUser,
   currentUser,
-  className = ""
+  className = "",
 }: RoleManagementProps) {
   const [activeTab, setActiveTab] = useState("roles");
   const [searchQuery, setSearchQuery] = useState("");
@@ -164,7 +178,7 @@ export function RoleManagement({
   const [roleForm, setRoleForm] = useState({
     name: "",
     description: "",
-    permissions: [] as Permission[]
+    permissions: [] as Permission[],
   });
   const [roleErrors, setRoleErrors] = useState<Record<string, string>>({});
   const [isSubmittingRole, setIsSubmittingRole] = useState(false);
@@ -175,17 +189,18 @@ export function RoleManagement({
     name: "",
     roleId: "",
     departmentId: "",
-    maxTickets: 20
+    maxTickets: 20,
   });
   const [inviteErrors, setInviteErrors] = useState<Record<string, string>>({});
   const [isSubmittingInvite, setIsSubmittingInvite] = useState(false);
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = 
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesDepartment = selectedDepartment === "all" || user.departmentId === selectedDepartment;
+
+    const matchesDepartment =
+      selectedDepartment === "all" || user.departmentId === selectedDepartment;
     const matchesRole = selectedRole === "all" || user.roleId === selectedRole;
 
     return matchesSearch && matchesDepartment && matchesRole;
@@ -195,7 +210,7 @@ export function RoleManagement({
     setRoleForm({
       name: "",
       description: "",
-      permissions: []
+      permissions: [],
     });
     setRoleErrors({});
   };
@@ -206,7 +221,7 @@ export function RoleManagement({
       name: "",
       roleId: "",
       departmentId: "",
-      maxTickets: 20
+      maxTickets: 20,
     });
     setInviteErrors({});
   };
@@ -215,8 +230,10 @@ export function RoleManagement({
     const errors: Record<string, string> = {};
 
     if (!roleForm.name.trim()) errors.name = "Role name is required";
-    if (!roleForm.description.trim()) errors.description = "Description is required";
-    if (roleForm.permissions.length === 0) errors.permissions = "At least one permission is required";
+    if (!roleForm.description.trim())
+      errors.description = "Description is required";
+    if (roleForm.permissions.length === 0)
+      errors.permissions = "At least one permission is required";
 
     setRoleErrors(errors);
     return Object.keys(errors).length === 0;
@@ -228,8 +245,10 @@ export function RoleManagement({
     if (!inviteForm.email.trim()) errors.email = "Email is required";
     if (!inviteForm.name.trim()) errors.name = "Name is required";
     if (!inviteForm.roleId) errors.roleId = "Role is required";
-    if (!inviteForm.departmentId) errors.departmentId = "Department is required";
-    if (inviteForm.maxTickets < 1) errors.maxTickets = "Max tickets must be at least 1";
+    if (!inviteForm.departmentId)
+      errors.departmentId = "Department is required";
+    if (inviteForm.maxTickets < 1)
+      errors.maxTickets = "Max tickets must be at least 1";
 
     setInviteErrors(errors);
     return Object.keys(errors).length === 0;
@@ -275,32 +294,32 @@ export function RoleManagement({
     setRoleForm({
       name: role.name,
       description: role.description,
-      permissions: role.permissions
+      permissions: role.permissions,
     });
     setIsCreateRoleOpen(true);
   };
 
   const togglePermission = (permissionId: string) => {
-    const permission = permissions.find(p => p.id === permissionId);
+    const permission = permissions.find((p) => p.id === permissionId);
     if (!permission) return;
-    
-    setRoleForm(prev => ({
+
+    setRoleForm((prev) => ({
       ...prev,
-      permissions: prev.permissions.some(p => p.id === permissionId)
-        ? prev.permissions.filter(p => p.id !== permissionId)
-        : [...prev.permissions, permission]
+      permissions: prev.permissions.some((p) => p.id === permissionId)
+        ? prev.permissions.filter((p) => p.id !== permissionId)
+        : [...prev.permissions, permission],
     }));
   };
 
   const getRoleIcon = (roleName: string) => {
     switch (roleName.toLowerCase()) {
-      case 'admin':
-      case 'administrator':
+      case "admin":
+      case "administrator":
         return Crown;
-      case 'supervisor':
-      case 'manager':
+      case "supervisor":
+      case "manager":
         return Shield;
-      case 'agent':
+      case "agent":
       default:
         return User;
     }
@@ -308,7 +327,7 @@ export function RoleManagement({
 
   const RoleCard = ({ role }: { role: Role }) => {
     const RoleIcon = getRoleIcon(role.name);
-    
+
     return (
       <Card className="hover:shadow-lg transition-all duration-300">
         <CardContent className="p-6">
@@ -334,34 +353,37 @@ export function RoleManagement({
                 </div>
               </div>
 
-              {!role.isSystemRole && currentUser.permissions.includes('roles:update') && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleEditRole(role)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit Role
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onClick={() => onDeleteRole(role.id)}
-                      className="text-red-600"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Role
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+              {!role.isSystemRole &&
+                currentUser.permissions.includes("roles:update") && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEditRole(role)}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Role
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => onDeleteRole(role.id)}
+                        className="text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Role
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Users with this role</span>
+                <span className="text-muted-foreground">
+                  Users with this role
+                </span>
                 <span className="font-medium">{role.userCount}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -371,7 +393,9 @@ export function RoleManagement({
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Created</span>
                 <span className="font-medium">
-                  {formatDistanceToNow(new Date(role.createdAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(role.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
             </div>
@@ -381,7 +405,11 @@ export function RoleManagement({
               <h4 className="font-medium text-sm mb-2">Key Permissions</h4>
               <div className="flex flex-wrap gap-1">
                 {role.permissions.slice(0, 4).map((permission) => (
-                  <Badge key={permission.id} variant="outline" className="text-xs">
+                  <Badge
+                    key={permission.id}
+                    variant="outline"
+                    className="text-xs"
+                  >
                     {permission.module}:{permission.action}
                   </Badge>
                 ))}
@@ -409,9 +437,11 @@ export function RoleManagement({
                   <AvatarImage src={user.avatar} />
                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                  user.isOnline ? 'bg-green-500' : 'bg-gray-300'
-                }`} />
+                <div
+                  className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                    user.isOnline ? "bg-green-500" : "bg-gray-300"
+                  }`}
+                />
               </div>
               <div>
                 <h3 className="font-semibold">{user.name}</h3>
@@ -420,10 +450,8 @@ export function RoleManagement({
             </div>
 
             <div className="flex items-center space-x-2">
-              {!user.isActive && (
-                <Badge variant="destructive">Inactive</Badge>
-              )}
-              
+              {!user.isActive && <Badge variant="destructive">Inactive</Badge>}
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm">
@@ -472,12 +500,16 @@ export function RoleManagement({
             <div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Current Tickets</span>
-                <span className="font-medium">{user.currentTickets}/{user.maxTickets}</span>
+                <span className="font-medium">
+                  {user.currentTickets}/{user.maxTickets}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Last Active</span>
                 <span className="font-medium">
-                  {formatDistanceToNow(new Date(user.lastActivity), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(user.lastActivity), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
             </div>
@@ -487,7 +519,9 @@ export function RoleManagement({
           <div className="pt-2 border-t">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Permissions</span>
-              <span className="font-medium">{user.permissions.length} active</span>
+              <span className="font-medium">
+                {user.permissions.length} active
+              </span>
             </div>
           </div>
         </div>
@@ -517,7 +551,7 @@ export function RoleManagement({
                 Invite User
               </Button>
             </DialogTrigger>
-            
+
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Invite New User</DialogTitle>
@@ -536,13 +570,20 @@ export function RoleManagement({
                     <Input
                       id="invite-name"
                       value={inviteForm.name}
-                      onChange={(e) => setInviteForm(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setInviteForm((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       placeholder="Full name"
                       className={inviteErrors.name ? "border-red-500" : ""}
                       data-testid="invite-name-input"
                     />
                     {inviteErrors.name && (
-                      <p className="text-sm text-red-600">{inviteErrors.name}</p>
+                      <p className="text-sm text-red-600">
+                        {inviteErrors.name}
+                      </p>
                     )}
                   </div>
 
@@ -552,13 +593,20 @@ export function RoleManagement({
                       id="invite-email"
                       type="email"
                       value={inviteForm.email}
-                      onChange={(e) => setInviteForm(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={(e) =>
+                        setInviteForm((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
                       placeholder="user@company.com"
                       className={inviteErrors.email ? "border-red-500" : ""}
                       data-testid="invite-email-input"
                     />
                     {inviteErrors.email && (
-                      <p className="text-sm text-red-600">{inviteErrors.email}</p>
+                      <p className="text-sm text-red-600">
+                        {inviteErrors.email}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -568,9 +616,14 @@ export function RoleManagement({
                     <Label htmlFor="invite-role">Role *</Label>
                     <Select
                       value={inviteForm.roleId}
-                      onValueChange={(value) => setInviteForm(prev => ({ ...prev, roleId: value }))}
+                      onValueChange={(value) =>
+                        setInviteForm((prev) => ({ ...prev, roleId: value }))
+                      }
                     >
-                      <SelectTrigger className={inviteErrors.roleId ? "border-red-500" : ""} data-testid="invite-role-select">
+                      <SelectTrigger
+                        className={inviteErrors.roleId ? "border-red-500" : ""}
+                        data-testid="invite-role-select"
+                      >
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
@@ -582,7 +635,9 @@ export function RoleManagement({
                       </SelectContent>
                     </Select>
                     {inviteErrors.roleId && (
-                      <p className="text-sm text-red-600">{inviteErrors.roleId}</p>
+                      <p className="text-sm text-red-600">
+                        {inviteErrors.roleId}
+                      </p>
                     )}
                   </div>
 
@@ -590,9 +645,19 @@ export function RoleManagement({
                     <Label htmlFor="invite-department">Department *</Label>
                     <Select
                       value={inviteForm.departmentId}
-                      onValueChange={(value) => setInviteForm(prev => ({ ...prev, departmentId: value }))}
+                      onValueChange={(value) =>
+                        setInviteForm((prev) => ({
+                          ...prev,
+                          departmentId: value,
+                        }))
+                      }
                     >
-                      <SelectTrigger className={inviteErrors.departmentId ? "border-red-500" : ""} data-testid="invite-department-select">
+                      <SelectTrigger
+                        className={
+                          inviteErrors.departmentId ? "border-red-500" : ""
+                        }
+                        data-testid="invite-department-select"
+                      >
                         <SelectValue placeholder="Select department" />
                       </SelectTrigger>
                       <SelectContent>
@@ -604,7 +669,9 @@ export function RoleManagement({
                       </SelectContent>
                     </Select>
                     {inviteErrors.departmentId && (
-                      <p className="text-sm text-red-600">{inviteErrors.departmentId}</p>
+                      <p className="text-sm text-red-600">
+                        {inviteErrors.departmentId}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -615,7 +682,12 @@ export function RoleManagement({
                     id="invite-max-tickets"
                     type="number"
                     value={inviteForm.maxTickets}
-                    onChange={(e) => setInviteForm(prev => ({ ...prev, maxTickets: parseInt(e.target.value) || 20 }))}
+                    onChange={(e) =>
+                      setInviteForm((prev) => ({
+                        ...prev,
+                        maxTickets: parseInt(e.target.value) || 20,
+                      }))
+                    }
                     min={1}
                     max={100}
                     data-testid="invite-max-tickets-input"
@@ -623,14 +695,14 @@ export function RoleManagement({
                 </div>
 
                 <div className="flex items-center justify-end space-x-2 pt-4">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setIsInviteUserOpen(false)}
                   >
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleSubmitInvite}
                     disabled={isSubmittingInvite}
                     className="bg-gradient-to-r from-primary to-purple-600"
@@ -643,9 +715,9 @@ export function RoleManagement({
             </DialogContent>
           </Dialog>
 
-          {currentUser.permissions.includes('roles:create') && (
-            <Dialog 
-              open={isCreateRoleOpen} 
+          {currentUser.permissions.includes("roles:create") && (
+            <Dialog
+              open={isCreateRoleOpen}
               onOpenChange={(open) => {
                 setIsCreateRoleOpen(open);
                 if (!open) {
@@ -660,7 +732,7 @@ export function RoleManagement({
                   Create Role
                 </Button>
               </DialogTrigger>
-              
+
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
@@ -681,13 +753,20 @@ export function RoleManagement({
                       <Input
                         id="role-name"
                         value={roleForm.name}
-                        onChange={(e) => setRoleForm(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) =>
+                          setRoleForm((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         placeholder="e.g., Support Agent, Supervisor"
                         className={roleErrors.name ? "border-red-500" : ""}
                         data-testid="role-name-input"
                       />
                       {roleErrors.name && (
-                        <p className="text-sm text-red-600">{roleErrors.name}</p>
+                        <p className="text-sm text-red-600">
+                          {roleErrors.name}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -697,29 +776,40 @@ export function RoleManagement({
                     <Textarea
                       id="role-description"
                       value={roleForm.description}
-                      onChange={(e) => setRoleForm(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(e) =>
+                        setRoleForm((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
                       placeholder="Describe the role's responsibilities and scope..."
                       rows={3}
                       className={roleErrors.description ? "border-red-500" : ""}
                       data-testid="role-description-input"
                     />
                     {roleErrors.description && (
-                      <p className="text-sm text-red-600">{roleErrors.description}</p>
+                      <p className="text-sm text-red-600">
+                        {roleErrors.description}
+                      </p>
                     )}
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <Label className="text-base font-semibold">Permissions *</Label>
+                      <Label className="text-base font-semibold">
+                        Permissions *
+                      </Label>
                       <p className="text-sm text-muted-foreground">
                         Select the permissions for this role
                       </p>
                     </div>
-                    
+
                     {PERMISSION_MODULES.map((module) => {
                       const ModuleIcon = module.icon;
-                      const modulePermissions = permissions.filter(p => p.module === module.id);
-                      
+                      const modulePermissions = permissions.filter(
+                        (p) => p.module === module.id,
+                      );
+
                       return (
                         <Card key={module.id} className="p-4">
                           <div className="space-y-3">
@@ -727,17 +817,27 @@ export function RoleManagement({
                               <ModuleIcon className="h-5 w-5 text-primary" />
                               <h4 className="font-semibold">{module.name}</h4>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                               {modulePermissions.map((permission) => (
-                                <div key={permission.id} className="flex items-center space-x-2">
+                                <div
+                                  key={permission.id}
+                                  className="flex items-center space-x-2"
+                                >
                                   <Switch
                                     id={permission.id}
-                                    checked={roleForm.permissions.some(p => p.id === permission.id)}
-                                    onCheckedChange={() => togglePermission(permission.id)}
+                                    checked={roleForm.permissions.some(
+                                      (p) => p.id === permission.id,
+                                    )}
+                                    onCheckedChange={() =>
+                                      togglePermission(permission.id)
+                                    }
                                     data-testid={`permission-${permission.id}`}
                                   />
-                                  <Label htmlFor={permission.id} className="text-sm">
+                                  <Label
+                                    htmlFor={permission.id}
+                                    className="text-sm"
+                                  >
                                     {permission.action}
                                   </Label>
                                 </div>
@@ -749,25 +849,31 @@ export function RoleManagement({
                     })}
 
                     {roleErrors.permissions && (
-                      <p className="text-sm text-red-600">{roleErrors.permissions}</p>
+                      <p className="text-sm text-red-600">
+                        {roleErrors.permissions}
+                      </p>
                     )}
                   </div>
 
                   <div className="flex items-center justify-end space-x-2 pt-4">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={() => setIsCreateRoleOpen(false)}
                     >
                       Cancel
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleSubmitRole}
                       disabled={isSubmittingRole}
                       className="bg-gradient-to-r from-primary to-purple-600"
                       data-testid="save-role-btn"
                     >
-                      {isSubmittingRole ? "Saving..." : (editingRole ? "Update Role" : "Create Role")}
+                      {isSubmittingRole
+                        ? "Saving..."
+                        : editingRole
+                          ? "Update Role"
+                          : "Create Role"}
                     </Button>
                   </div>
                 </div>
@@ -781,33 +887,43 @@ export function RoleManagement({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{roles.length}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {roles.length}
+            </div>
             <div className="text-sm text-muted-foreground">Total Roles</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{users.length}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {users.length}
+            </div>
             <div className="text-sm text-muted-foreground">Total Users</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-purple-600">
-              {users.filter(u => u.isActive).length}
+              {users.filter((u) => u.isActive).length}
             </div>
             <div className="text-sm text-muted-foreground">Active Users</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-orange-600">{departments.length}</div>
+            <div className="text-2xl font-bold text-orange-600">
+              {departments.length}
+            </div>
             <div className="text-sm text-muted-foreground">Departments</div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="roles" className="flex items-center space-x-2">
             <Shield className="h-4 w-4" />
@@ -817,7 +933,10 @@ export function RoleManagement({
             <Users className="h-4 w-4" />
             <span>Users ({users.length})</span>
           </TabsTrigger>
-          <TabsTrigger value="departments" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="departments"
+            className="flex items-center space-x-2"
+          >
             <Briefcase className="h-4 w-4" />
             <span>Departments ({departments.length})</span>
           </TabsTrigger>
@@ -839,7 +958,7 @@ export function RoleManagement({
                 <p className="text-muted-foreground mb-6">
                   Create your first role to start managing user permissions
                 </p>
-                <Button 
+                <Button
                   onClick={() => setIsCreateRoleOpen(true)}
                   className="bg-gradient-to-r from-primary to-purple-600"
                 >
@@ -871,7 +990,10 @@ export function RoleManagement({
                 </div>
 
                 <div className="flex space-x-2">
-                  <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                  <Select
+                    value={selectedDepartment}
+                    onValueChange={setSelectedDepartment}
+                  >
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="Department" />
                     </SelectTrigger>
@@ -915,13 +1037,12 @@ export function RoleManagement({
                 <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">No Users Found</h3>
                 <p className="text-muted-foreground mb-6">
-                  {searchQuery ? 
-                    "No users match your search criteria." :
-                    "Invite your first team member to get started."
-                  }
+                  {searchQuery
+                    ? "No users match your search criteria."
+                    : "Invite your first team member to get started."}
                 </p>
                 {!searchQuery && (
-                  <Button 
+                  <Button
                     onClick={() => setIsInviteUserOpen(true)}
                     className="bg-gradient-to-r from-primary to-purple-600"
                   >
@@ -954,7 +1075,9 @@ export function RoleManagement({
                     </div>
 
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Team Members</span>
+                      <span className="text-muted-foreground">
+                        Team Members
+                      </span>
                       <span className="font-medium">{dept.userCount}</span>
                     </div>
                   </div>

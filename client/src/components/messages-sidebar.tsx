@@ -11,7 +11,7 @@ interface MessagesSidebarProps {
 export function MessagesSidebar({
   onBack,
   onNewMessage,
-  className = ""
+  className = "",
 }: MessagesSidebarProps) {
   return (
     <Card className={`border-b ${className}`}>
@@ -27,7 +27,7 @@ export function MessagesSidebar({
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            
+
             <h5 className="font-bold text-lg">Messages</h5>
           </div>
 

@@ -6,23 +6,29 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Plus,
   Search,
   Edit,
@@ -42,7 +48,7 @@ import {
   TrendingUp,
   CheckCircle,
   Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -91,7 +97,10 @@ interface CannedResponsesProps {
     tags: string[];
     language: string;
   }) => Promise<void>;
-  onUpdateResponse: (id: string, data: Partial<CannedResponse>) => Promise<void>;
+  onUpdateResponse: (
+    id: string,
+    data: Partial<CannedResponse>,
+  ) => Promise<void>;
   onDeleteResponse: (id: string) => Promise<void>;
   onUseResponse: (id: string) => void;
   currentUser: {
@@ -112,14 +121,16 @@ export function CannedResponses({
   onDeleteResponse,
   onUseResponse,
   currentUser,
-  className = ""
+  className = "",
 }: CannedResponsesProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingResponse, setEditingResponse] = useState<CannedResponse | null>(null);
+  const [editingResponse, setEditingResponse] = useState<CannedResponse | null>(
+    null,
+  );
 
   // Form state
   const [formData, setFormData] = useState({
@@ -130,31 +141,44 @@ export function CannedResponses({
     departmentId: currentUser.departmentId,
     isPublic: true,
     tags: [] as string[],
-    language: "en"
+    language: "en",
   });
   const [tagInput, setTagInput] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const filteredResponses = responses.filter(response => {
-    const matchesSearch = 
+  const filteredResponses = responses.filter((response) => {
+    const matchesSearch =
       response.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       response.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       response.shortcut?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      response.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      response.tags.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
 
-    const matchesCategory = selectedCategory === "all" || response.categoryId === selectedCategory;
-    const matchesDepartment = selectedDepartment === "all" || response.departmentId === selectedDepartment;
-    const matchesLanguage = selectedLanguage === "all" || response.language === selectedLanguage;
+    const matchesCategory =
+      selectedCategory === "all" || response.categoryId === selectedCategory;
+    const matchesDepartment =
+      selectedDepartment === "all" ||
+      response.departmentId === selectedDepartment;
+    const matchesLanguage =
+      selectedLanguage === "all" || response.language === selectedLanguage;
 
     // Role-based filtering
-    const canView = currentUser.role === 'admin' || 
-                   currentUser.role === 'supervisor' ||
-                   response.isPublic ||
-                   response.authorId === currentUser.id ||
-                   response.departmentId === currentUser.departmentId;
+    const canView =
+      currentUser.role === "admin" ||
+      currentUser.role === "supervisor" ||
+      response.isPublic ||
+      response.authorId === currentUser.id ||
+      response.departmentId === currentUser.departmentId;
 
-    return matchesSearch && matchesCategory && matchesDepartment && matchesLanguage && canView;
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesDepartment &&
+      matchesLanguage &&
+      canView
+    );
   });
 
   const resetForm = () => {
@@ -166,7 +190,7 @@ export function CannedResponses({
       departmentId: currentUser.departmentId,
       isPublic: true,
       tags: [],
-      language: "en"
+      language: "en",
     });
     setTagInput("");
     setFormErrors({});
@@ -179,7 +203,10 @@ export function CannedResponses({
     if (!formData.content.trim()) errors.content = "Content is required";
     if (!formData.categoryId) errors.categoryId = "Category is required";
     if (!formData.departmentId) errors.departmentId = "Department is required";
-    if (formData.shortcut && (formData.shortcut.length < 2 || formData.shortcut.length > 10)) {
+    if (
+      formData.shortcut &&
+      (formData.shortcut.length < 2 || formData.shortcut.length > 10)
+    ) {
       errors.shortcut = "Shortcut must be 2-10 characters";
     }
 
@@ -217,25 +244,25 @@ export function CannedResponses({
       departmentId: response.departmentId,
       isPublic: response.isPublic,
       tags: response.tags,
-      language: response.language
+      language: response.language,
     });
     setIsCreateDialogOpen(true);
   };
 
   const addTag = () => {
     if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        tags: [...prev.tags, tagInput.trim()]
+        tags: [...prev.tags, tagInput.trim()],
       }));
       setTagInput("");
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
@@ -251,9 +278,12 @@ export function CannedResponses({
           <div className="flex items-start justify-between">
             <div className="flex-1 space-y-2">
               <div className="flex items-center space-x-2">
-                <Badge 
-                  variant="outline" 
-                  style={{ color: categories.find(c => c.id === response.categoryId)?.color }}
+                <Badge
+                  variant="outline"
+                  style={{
+                    color: categories.find((c) => c.id === response.categoryId)
+                      ?.color,
+                  }}
                 >
                   {response.categoryName}
                 </Badge>
@@ -274,10 +304,14 @@ export function CannedResponses({
                 )}
               </div>
 
-              <h3 className="font-bold text-lg line-clamp-2">{response.title}</h3>
-              
+              <h3 className="font-bold text-lg line-clamp-2">
+                {response.title}
+              </h3>
+
               <div className="bg-muted p-3 rounded-lg">
-                <p className="text-sm line-clamp-3 whitespace-pre-wrap">{response.content}</p>
+                <p className="text-sm line-clamp-3 whitespace-pre-wrap">
+                  {response.content}
+                </p>
               </div>
             </div>
 
@@ -292,18 +326,21 @@ export function CannedResponses({
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Use Response
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => copyToClipboard(response.content)}>
+                <DropdownMenuItem
+                  onClick={() => copyToClipboard(response.content)}
+                >
                   <Copy className="h-4 w-4 mr-2" />
                   Copy Content
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {(currentUser.id === response.authorId || currentUser.role === 'admin') && (
+                {(currentUser.id === response.authorId ||
+                  currentUser.role === "admin") && (
                   <>
                     <DropdownMenuItem onClick={() => handleEdit(response)}>
                       <Edit className="h-4 w-4 mr-2" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => onDeleteResponse(response.id)}
                       className="text-red-600"
                     >
@@ -352,7 +389,11 @@ export function CannedResponses({
 
             <div className="text-right">
               <div>By {response.authorName}</div>
-              <div>{formatDistanceToNow(new Date(response.updatedAt), { addSuffix: true })}</div>
+              <div>
+                {formatDistanceToNow(new Date(response.updatedAt), {
+                  addSuffix: true,
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -374,8 +415,8 @@ export function CannedResponses({
           </p>
         </div>
 
-        <Dialog 
-          open={isCreateDialogOpen} 
+        <Dialog
+          open={isCreateDialogOpen}
           onOpenChange={(open) => {
             setIsCreateDialogOpen(open);
             if (!open) {
@@ -390,11 +431,13 @@ export function CannedResponses({
               {editingResponse ? "Edit Response" : "New Response"}
             </Button>
           </DialogTrigger>
-          
+
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingResponse ? "Edit Canned Response" : "Create New Canned Response"}
+                {editingResponse
+                  ? "Edit Canned Response"
+                  : "Create New Canned Response"}
               </DialogTitle>
             </DialogHeader>
 
@@ -411,7 +454,12 @@ export function CannedResponses({
                   <Input
                     id="title"
                     value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
                     placeholder="Response title"
                     className={formErrors.title ? "border-red-500" : ""}
                     data-testid="response-title-input"
@@ -426,13 +474,20 @@ export function CannedResponses({
                   <Input
                     id="shortcut"
                     value={formData.shortcut}
-                    onChange={(e) => setFormData(prev => ({ ...prev, shortcut: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        shortcut: e.target.value,
+                      }))
+                    }
                     placeholder="e.g., hello, thanks"
                     className={formErrors.shortcut ? "border-red-500" : ""}
                     data-testid="response-shortcut-input"
                   />
                   {formErrors.shortcut && (
-                    <p className="text-sm text-red-600">{formErrors.shortcut}</p>
+                    <p className="text-sm text-red-600">
+                      {formErrors.shortcut}
+                    </p>
                   )}
                 </div>
               </div>
@@ -442,7 +497,12 @@ export function CannedResponses({
                 <Textarea
                   id="content"
                   value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      content: e.target.value,
+                    }))
+                  }
                   placeholder="Enter your response template..."
                   rows={6}
                   className={formErrors.content ? "border-red-500" : ""}
@@ -458,9 +518,14 @@ export function CannedResponses({
                   <Label htmlFor="category">Category *</Label>
                   <Select
                     value={formData.categoryId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, categoryId: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, categoryId: value }))
+                    }
                   >
-                    <SelectTrigger className={formErrors.categoryId ? "border-red-500" : ""} data-testid="response-category-select">
+                    <SelectTrigger
+                      className={formErrors.categoryId ? "border-red-500" : ""}
+                      data-testid="response-category-select"
+                    >
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -472,7 +537,9 @@ export function CannedResponses({
                     </SelectContent>
                   </Select>
                   {formErrors.categoryId && (
-                    <p className="text-sm text-red-600">{formErrors.categoryId}</p>
+                    <p className="text-sm text-red-600">
+                      {formErrors.categoryId}
+                    </p>
                   )}
                 </div>
 
@@ -480,9 +547,16 @@ export function CannedResponses({
                   <Label htmlFor="department">Department *</Label>
                   <Select
                     value={formData.departmentId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, departmentId: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, departmentId: value }))
+                    }
                   >
-                    <SelectTrigger className={formErrors.departmentId ? "border-red-500" : ""} data-testid="response-department-select">
+                    <SelectTrigger
+                      className={
+                        formErrors.departmentId ? "border-red-500" : ""
+                      }
+                      data-testid="response-department-select"
+                    >
                       <SelectValue placeholder="Select department" />
                     </SelectTrigger>
                     <SelectContent>
@@ -494,7 +568,9 @@ export function CannedResponses({
                     </SelectContent>
                   </Select>
                   {formErrors.departmentId && (
-                    <p className="text-sm text-red-600">{formErrors.departmentId}</p>
+                    <p className="text-sm text-red-600">
+                      {formErrors.departmentId}
+                    </p>
                   )}
                 </div>
 
@@ -502,7 +578,9 @@ export function CannedResponses({
                   <Label htmlFor="language">Language</Label>
                   <Select
                     value={formData.language}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, language: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, language: value }))
+                    }
                   >
                     <SelectTrigger data-testid="response-language-select">
                       <SelectValue />
@@ -526,7 +604,7 @@ export function CannedResponses({
                     onChange={(e) => setTagInput(e.target.value)}
                     placeholder="Add a tag..."
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         addTag();
                       }
@@ -540,9 +618,13 @@ export function CannedResponses({
                 {formData.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {formData.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="flex items-center space-x-1">
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="flex items-center space-x-1"
+                      >
                         <span>{tag}</span>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => removeTag(tag)}
                           className="ml-1 hover:text-red-600"
@@ -559,30 +641,39 @@ export function CannedResponses({
                 <Switch
                   id="isPublic"
                   checked={formData.isPublic}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPublic: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isPublic: checked }))
+                  }
                   data-testid="response-public-toggle"
                 />
-                <Label htmlFor="isPublic" className="flex items-center space-x-2">
+                <Label
+                  htmlFor="isPublic"
+                  className="flex items-center space-x-2"
+                >
                   <Users className="h-4 w-4" />
                   <span>Make this response available to all agents</span>
                 </Label>
               </div>
 
               <div className="flex items-center justify-end space-x-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsCreateDialogOpen(false)}
                 >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
                   className="bg-gradient-to-r from-primary to-purple-600"
                   data-testid="save-response-btn"
                 >
-                  {isSubmitting ? "Saving..." : (editingResponse ? "Update Response" : "Create Response")}
+                  {isSubmitting
+                    ? "Saving..."
+                    : editingResponse
+                      ? "Update Response"
+                      : "Create Response"}
                 </Button>
               </div>
             </div>
@@ -594,14 +685,16 @@ export function CannedResponses({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{responses.length}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {responses.length}
+            </div>
             <div className="text-sm text-muted-foreground">Total Responses</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-green-600">
-              {responses.filter(r => r.isPublic).length}
+              {responses.filter((r) => r.isPublic).length}
             </div>
             <div className="text-sm text-muted-foreground">Public</div>
           </CardContent>
@@ -617,7 +710,7 @@ export function CannedResponses({
         <Card>
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-orange-600">
-              {responses.filter(r => r.authorId === currentUser.id).length}
+              {responses.filter((r) => r.authorId === currentUser.id).length}
             </div>
             <div className="text-sm text-muted-foreground">My Responses</div>
           </CardContent>
@@ -642,7 +735,10 @@ export function CannedResponses({
             </div>
 
             <div className="flex space-x-2">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
@@ -656,7 +752,10 @@ export function CannedResponses({
                 </SelectContent>
               </Select>
 
-              <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+              <Select
+                value={selectedDepartment}
+                onValueChange={setSelectedDepartment}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
@@ -670,7 +769,10 @@ export function CannedResponses({
                 </SelectContent>
               </Select>
 
-              <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+              <Select
+                value={selectedLanguage}
+                onValueChange={setSelectedLanguage}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Language" />
                 </SelectTrigger>
@@ -701,13 +803,12 @@ export function CannedResponses({
             <Zap className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">No Responses Found</h3>
             <p className="text-muted-foreground mb-6">
-              {searchQuery ? 
-                "No responses match your search criteria." :
-                "Get started by creating your first canned response template."
-              }
+              {searchQuery
+                ? "No responses match your search criteria."
+                : "Get started by creating your first canned response template."}
             </p>
             {!searchQuery && (
-              <Button 
+              <Button
                 onClick={() => setIsCreateDialogOpen(true)}
                 className="bg-gradient-to-r from-primary to-purple-600"
               >

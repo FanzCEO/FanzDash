@@ -9,14 +9,48 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Plus, Edit, Trash2, Globe, MapPin, Languages } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Globe,
+  MapPin,
+  Languages,
+} from "lucide-react";
 
 const countrySchema = z.object({
-  countryCode: z.string().min(2, "Country code must be at least 2 characters").max(3, "Country code must be at most 3 characters"),
+  countryCode: z
+    .string()
+    .min(2, "Country code must be at least 2 characters")
+    .max(3, "Country code must be at most 3 characters"),
   countryName: z.string().min(1, "Country name is required"),
   isActive: z.boolean().default(true),
 });
@@ -30,7 +64,10 @@ const stateSchema = z.object({
 
 const languageSchema = z.object({
   languageName: z.string().min(1, "Language name is required"),
-  languageCode: z.string().min(2, "Language code must be at least 2 characters").max(5, "Language code must be at most 5 characters"),
+  languageCode: z
+    .string()
+    .min(2, "Language code must be at least 2 characters")
+    .max(5, "Language code must be at most 5 characters"),
   isActive: z.boolean().default(true),
   isDefault: z.boolean().default(false),
 });
@@ -82,7 +119,8 @@ export default function LocationManagement() {
   // Country queries and mutations
   const { data: countries = [], isLoading: loadingCountries } = useQuery({
     queryKey: ["/api/countries"],
-    queryFn: () => fetch("/api/countries").then(res => res.json()) as Promise<Country[]>
+    queryFn: () =>
+      fetch("/api/countries").then((res) => res.json()) as Promise<Country[]>,
   });
 
   const countryForm = useForm<CountryForm>({
@@ -95,11 +133,12 @@ export default function LocationManagement() {
   });
 
   const createCountryMutation = useMutation({
-    mutationFn: (data: CountryForm) => fetch("/api/countries", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: CountryForm) =>
+      fetch("/api/countries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/countries"] });
       toast({ title: "Success", description: "Country created successfully" });
@@ -107,12 +146,16 @@ export default function LocationManagement() {
       setShowCountryForm(false);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to create country", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to create country",
+        variant: "destructive",
+      });
+    },
   });
 
   const updateCountryMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CountryForm> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<CountryForm> }) =>
       fetch(`/api/countries/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -124,25 +167,35 @@ export default function LocationManagement() {
       setEditingCountry(null);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update country", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to update country",
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteCountryMutation = useMutation({
-    mutationFn: (id: string) => fetch(`/api/countries/${id}`, { method: "DELETE" }),
+    mutationFn: (id: string) =>
+      fetch(`/api/countries/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/countries"] });
       toast({ title: "Success", description: "Country deleted successfully" });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to delete country", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to delete country",
+        variant: "destructive",
+      });
+    },
   });
 
   // State queries and mutations
   const { data: states = [], isLoading: loadingStates } = useQuery({
     queryKey: ["/api/states"],
-    queryFn: () => fetch("/api/states").then(res => res.json()) as Promise<State[]>
+    queryFn: () =>
+      fetch("/api/states").then((res) => res.json()) as Promise<State[]>,
   });
 
   const stateForm = useForm<StateForm>({
@@ -156,11 +209,12 @@ export default function LocationManagement() {
   });
 
   const createStateMutation = useMutation({
-    mutationFn: (data: StateForm) => fetch("/api/states", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: StateForm) =>
+      fetch("/api/states", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/states"] });
       toast({ title: "Success", description: "State created successfully" });
@@ -168,12 +222,16 @@ export default function LocationManagement() {
       setShowStateForm(false);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to create state", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to create state",
+        variant: "destructive",
+      });
+    },
   });
 
   const updateStateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<StateForm> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<StateForm> }) =>
       fetch(`/api/states/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -185,25 +243,35 @@ export default function LocationManagement() {
       setEditingState(null);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update state", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to update state",
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteStateMutation = useMutation({
-    mutationFn: (id: string) => fetch(`/api/states/${id}`, { method: "DELETE" }),
+    mutationFn: (id: string) =>
+      fetch(`/api/states/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/states"] });
       toast({ title: "Success", description: "State deleted successfully" });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to delete state", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to delete state",
+        variant: "destructive",
+      });
+    },
   });
 
   // Language queries and mutations
   const { data: languages = [], isLoading: loadingLanguages } = useQuery({
     queryKey: ["/api/languages"],
-    queryFn: () => fetch("/api/languages").then(res => res.json()) as Promise<Language[]>
+    queryFn: () =>
+      fetch("/api/languages").then((res) => res.json()) as Promise<Language[]>,
   });
 
   const languageForm = useForm<LanguageForm>({
@@ -217,11 +285,12 @@ export default function LocationManagement() {
   });
 
   const createLanguageMutation = useMutation({
-    mutationFn: (data: LanguageForm) => fetch("/api/languages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: LanguageForm) =>
+      fetch("/api/languages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/languages"] });
       toast({ title: "Success", description: "Language created successfully" });
@@ -229,12 +298,16 @@ export default function LocationManagement() {
       setShowLanguageForm(false);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to create language", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to create language",
+        variant: "destructive",
+      });
+    },
   });
 
   const updateLanguageMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<LanguageForm> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<LanguageForm> }) =>
       fetch(`/api/languages/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -246,41 +319,55 @@ export default function LocationManagement() {
       setEditingLanguage(null);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update language", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to update language",
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteLanguageMutation = useMutation({
-    mutationFn: (id: string) => fetch(`/api/languages/${id}`, { method: "DELETE" }),
+    mutationFn: (id: string) =>
+      fetch(`/api/languages/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/languages"] });
       toast({ title: "Success", description: "Language deleted successfully" });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to delete language", variant: "destructive" });
-    }
+      toast({
+        title: "Error",
+        description: "Failed to delete language",
+        variant: "destructive",
+      });
+    },
   });
 
-  const filteredCountries = countries.filter(country =>
-    country.countryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    country.countryCode.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCountries = countries.filter(
+    (country) =>
+      country.countryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      country.countryCode.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const filteredStates = states.filter(state =>
-    state.stateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    state.stateCode.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredStates = states.filter(
+    (state) =>
+      state.stateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      state.stateCode.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const filteredLanguages = languages.filter(language =>
-    language.languageName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    language.languageCode.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredLanguages = languages.filter(
+    (language) =>
+      language.languageName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      language.languageCode.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Location Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Location Management
+          </h1>
           <p className="text-muted-foreground">
             Manage countries, states, and languages
           </p>
@@ -307,15 +394,24 @@ export default function LocationManagement() {
 
           <Tabs defaultValue="countries" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="countries" className="flex items-center space-x-2">
+              <TabsTrigger
+                value="countries"
+                className="flex items-center space-x-2"
+              >
                 <Globe className="w-4 h-4" />
                 <span>Countries</span>
               </TabsTrigger>
-              <TabsTrigger value="states" className="flex items-center space-x-2">
+              <TabsTrigger
+                value="states"
+                className="flex items-center space-x-2"
+              >
                 <MapPin className="w-4 h-4" />
                 <span>States</span>
               </TabsTrigger>
-              <TabsTrigger value="languages" className="flex items-center space-x-2">
+              <TabsTrigger
+                value="languages"
+                className="flex items-center space-x-2"
+              >
                 <Languages className="w-4 h-4" />
                 <span>Languages</span>
               </TabsTrigger>
@@ -324,7 +420,9 @@ export default function LocationManagement() {
             {/* Countries Tab */}
             <TabsContent value="countries">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Countries ({filteredCountries.length})</h3>
+                <h3 className="text-lg font-medium">
+                  Countries ({filteredCountries.length})
+                </h3>
                 <Button
                   onClick={() => setShowCountryForm(true)}
                   data-testid="button-add-country"
@@ -341,7 +439,12 @@ export default function LocationManagement() {
                   </CardHeader>
                   <CardContent>
                     <Form {...countryForm}>
-                      <form onSubmit={countryForm.handleSubmit((data) => createCountryMutation.mutate(data))} className="space-y-4">
+                      <form
+                        onSubmit={countryForm.handleSubmit((data) =>
+                          createCountryMutation.mutate(data),
+                        )}
+                        className="space-y-4"
+                      >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <FormField
                             control={countryForm.control}
@@ -350,7 +453,11 @@ export default function LocationManagement() {
                               <FormItem>
                                 <FormLabel>Country Code</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="US, CA, GB..." {...field} data-testid="input-country-code" />
+                                  <Input
+                                    placeholder="US, CA, GB..."
+                                    {...field}
+                                    data-testid="input-country-code"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -363,7 +470,11 @@ export default function LocationManagement() {
                               <FormItem>
                                 <FormLabel>Country Name</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="United States, Canada..." {...field} data-testid="input-country-name" />
+                                  <Input
+                                    placeholder="United States, Canada..."
+                                    {...field}
+                                    data-testid="input-country-name"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -375,7 +486,9 @@ export default function LocationManagement() {
                             render={({ field }) => (
                               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                  <FormLabel className="text-base">Active</FormLabel>
+                                  <FormLabel className="text-base">
+                                    Active
+                                  </FormLabel>
                                 </div>
                                 <FormControl>
                                   <Switch
@@ -389,11 +502,20 @@ export default function LocationManagement() {
                           />
                         </div>
                         <div className="flex justify-end gap-2">
-                          <Button type="button" variant="outline" onClick={() => setShowCountryForm(false)}>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowCountryForm(false)}
+                          >
                             Cancel
                           </Button>
-                          <Button type="submit" disabled={createCountryMutation.isPending}>
-                            {createCountryMutation.isPending ? "Creating..." : "Create Country"}
+                          <Button
+                            type="submit"
+                            disabled={createCountryMutation.isPending}
+                          >
+                            {createCountryMutation.isPending
+                              ? "Creating..."
+                              : "Create Country"}
                           </Button>
                         </div>
                       </form>
@@ -406,14 +528,23 @@ export default function LocationManagement() {
                 {loadingCountries ? (
                   <div className="space-y-2">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="animate-pulse h-12 bg-gray-200 rounded"></div>
+                      <div
+                        key={i}
+                        className="animate-pulse h-12 bg-gray-200 rounded"
+                      ></div>
                     ))}
                   </div>
                 ) : (
                   filteredCountries.map((country) => (
-                    <div key={country.id} className="flex items-center justify-between p-4 border rounded-lg" data-testid={`card-country-${country.id}`}>
+                    <div
+                      key={country.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                      data-testid={`card-country-${country.id}`}
+                    >
                       <div className="flex items-center space-x-4">
-                        <Badge variant={country.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={country.isActive ? "default" : "secondary"}
+                        >
                           {country.countryCode}
                         </Badge>
                         <div>
@@ -434,21 +565,31 @@ export default function LocationManagement() {
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm" data-testid={`button-delete-country-${country.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              data-testid={`button-delete-country-${country.id}`}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Country</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Delete Country
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{country.countryName}"? This action cannot be undone.
+                                Are you sure you want to delete "
+                                {country.countryName}"? This action cannot be
+                                undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => deleteCountryMutation.mutate(country.id)}
+                                onClick={() =>
+                                  deleteCountryMutation.mutate(country.id)
+                                }
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Delete
@@ -466,7 +607,9 @@ export default function LocationManagement() {
             {/* States Tab */}
             <TabsContent value="states">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">States/Regions ({filteredStates.length})</h3>
+                <h3 className="text-lg font-medium">
+                  States/Regions ({filteredStates.length})
+                </h3>
                 <Button
                   onClick={() => setShowStateForm(true)}
                   data-testid="button-add-state"
@@ -483,7 +626,12 @@ export default function LocationManagement() {
                   </CardHeader>
                   <CardContent>
                     <Form {...stateForm}>
-                      <form onSubmit={stateForm.handleSubmit((data) => createStateMutation.mutate(data))} className="space-y-4">
+                      <form
+                        onSubmit={stateForm.handleSubmit((data) =>
+                          createStateMutation.mutate(data),
+                        )}
+                        className="space-y-4"
+                      >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <FormField
                             control={stateForm.control}
@@ -491,7 +639,10 @@ export default function LocationManagement() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Country</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
                                   <FormControl>
                                     <SelectTrigger data-testid="select-state-country">
                                       <SelectValue placeholder="Select a country" />
@@ -499,7 +650,10 @@ export default function LocationManagement() {
                                   </FormControl>
                                   <SelectContent>
                                     {countries.map((country) => (
-                                      <SelectItem key={country.id} value={country.id}>
+                                      <SelectItem
+                                        key={country.id}
+                                        value={country.id}
+                                      >
                                         {country.countryName}
                                       </SelectItem>
                                     ))}
@@ -516,7 +670,11 @@ export default function LocationManagement() {
                               <FormItem>
                                 <FormLabel>State Code</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="CA, NY, TX..." {...field} data-testid="input-state-code" />
+                                  <Input
+                                    placeholder="CA, NY, TX..."
+                                    {...field}
+                                    data-testid="input-state-code"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -529,7 +687,11 @@ export default function LocationManagement() {
                               <FormItem>
                                 <FormLabel>State Name</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="California, New York..." {...field} data-testid="input-state-name" />
+                                  <Input
+                                    placeholder="California, New York..."
+                                    {...field}
+                                    data-testid="input-state-name"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -541,7 +703,9 @@ export default function LocationManagement() {
                             render={({ field }) => (
                               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                  <FormLabel className="text-base">Active</FormLabel>
+                                  <FormLabel className="text-base">
+                                    Active
+                                  </FormLabel>
                                 </div>
                                 <FormControl>
                                   <Switch
@@ -555,11 +719,20 @@ export default function LocationManagement() {
                           />
                         </div>
                         <div className="flex justify-end gap-2">
-                          <Button type="button" variant="outline" onClick={() => setShowStateForm(false)}>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowStateForm(false)}
+                          >
                             Cancel
                           </Button>
-                          <Button type="submit" disabled={createStateMutation.isPending}>
-                            {createStateMutation.isPending ? "Creating..." : "Create State"}
+                          <Button
+                            type="submit"
+                            disabled={createStateMutation.isPending}
+                          >
+                            {createStateMutation.isPending
+                              ? "Creating..."
+                              : "Create State"}
                           </Button>
                         </div>
                       </form>
@@ -572,20 +745,31 @@ export default function LocationManagement() {
                 {loadingStates ? (
                   <div className="space-y-2">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="animate-pulse h-12 bg-gray-200 rounded"></div>
+                      <div
+                        key={i}
+                        className="animate-pulse h-12 bg-gray-200 rounded"
+                      ></div>
                     ))}
                   </div>
                 ) : (
                   filteredStates.map((state) => (
-                    <div key={state.id} className="flex items-center justify-between p-4 border rounded-lg" data-testid={`card-state-${state.id}`}>
+                    <div
+                      key={state.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                      data-testid={`card-state-${state.id}`}
+                    >
                       <div className="flex items-center space-x-4">
-                        <Badge variant={state.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={state.isActive ? "default" : "secondary"}
+                        >
                           {state.stateCode}
                         </Badge>
                         <div>
                           <p className="font-medium">{state.stateName}</p>
                           <p className="text-sm text-muted-foreground">
-                            {countries.find(c => c.id === state.countryId)?.countryName || "Unknown Country"} • {state.isActive ? "Active" : "Inactive"}
+                            {countries.find((c) => c.id === state.countryId)
+                              ?.countryName || "Unknown Country"}{" "}
+                            • {state.isActive ? "Active" : "Inactive"}
                           </p>
                         </div>
                       </div>
@@ -600,7 +784,11 @@ export default function LocationManagement() {
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm" data-testid={`button-delete-state-${state.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              data-testid={`button-delete-state-${state.id}`}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </AlertDialogTrigger>
@@ -608,13 +796,17 @@ export default function LocationManagement() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete State</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{state.stateName}"? This action cannot be undone.
+                                Are you sure you want to delete "
+                                {state.stateName}"? This action cannot be
+                                undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => deleteStateMutation.mutate(state.id)}
+                                onClick={() =>
+                                  deleteStateMutation.mutate(state.id)
+                                }
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Delete
@@ -632,7 +824,9 @@ export default function LocationManagement() {
             {/* Languages Tab */}
             <TabsContent value="languages">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Languages ({filteredLanguages.length})</h3>
+                <h3 className="text-lg font-medium">
+                  Languages ({filteredLanguages.length})
+                </h3>
                 <Button
                   onClick={() => setShowLanguageForm(true)}
                   data-testid="button-add-language"
@@ -649,7 +843,12 @@ export default function LocationManagement() {
                   </CardHeader>
                   <CardContent>
                     <Form {...languageForm}>
-                      <form onSubmit={languageForm.handleSubmit((data) => createLanguageMutation.mutate(data))} className="space-y-4">
+                      <form
+                        onSubmit={languageForm.handleSubmit((data) =>
+                          createLanguageMutation.mutate(data),
+                        )}
+                        className="space-y-4"
+                      >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <FormField
                             control={languageForm.control}
@@ -658,7 +857,11 @@ export default function LocationManagement() {
                               <FormItem>
                                 <FormLabel>Language Code</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="en, es, fr..." {...field} data-testid="input-language-code" />
+                                  <Input
+                                    placeholder="en, es, fr..."
+                                    {...field}
+                                    data-testid="input-language-code"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -671,7 +874,11 @@ export default function LocationManagement() {
                               <FormItem>
                                 <FormLabel>Language Name</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="English, Spanish..." {...field} data-testid="input-language-name" />
+                                  <Input
+                                    placeholder="English, Spanish..."
+                                    {...field}
+                                    data-testid="input-language-name"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -683,7 +890,9 @@ export default function LocationManagement() {
                             render={({ field }) => (
                               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                  <FormLabel className="text-base">Active</FormLabel>
+                                  <FormLabel className="text-base">
+                                    Active
+                                  </FormLabel>
                                 </div>
                                 <FormControl>
                                   <Switch
@@ -701,7 +910,9 @@ export default function LocationManagement() {
                             render={({ field }) => (
                               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                  <FormLabel className="text-base">Default Language</FormLabel>
+                                  <FormLabel className="text-base">
+                                    Default Language
+                                  </FormLabel>
                                 </div>
                                 <FormControl>
                                   <Switch
@@ -715,11 +926,20 @@ export default function LocationManagement() {
                           />
                         </div>
                         <div className="flex justify-end gap-2">
-                          <Button type="button" variant="outline" onClick={() => setShowLanguageForm(false)}>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowLanguageForm(false)}
+                          >
                             Cancel
                           </Button>
-                          <Button type="submit" disabled={createLanguageMutation.isPending}>
-                            {createLanguageMutation.isPending ? "Creating..." : "Create Language"}
+                          <Button
+                            type="submit"
+                            disabled={createLanguageMutation.isPending}
+                          >
+                            {createLanguageMutation.isPending
+                              ? "Creating..."
+                              : "Create Language"}
                           </Button>
                         </div>
                       </form>
@@ -732,20 +952,30 @@ export default function LocationManagement() {
                 {loadingLanguages ? (
                   <div className="space-y-2">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="animate-pulse h-12 bg-gray-200 rounded"></div>
+                      <div
+                        key={i}
+                        className="animate-pulse h-12 bg-gray-200 rounded"
+                      ></div>
                     ))}
                   </div>
                 ) : (
                   filteredLanguages.map((language) => (
-                    <div key={language.id} className="flex items-center justify-between p-4 border rounded-lg" data-testid={`card-language-${language.id}`}>
+                    <div
+                      key={language.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                      data-testid={`card-language-${language.id}`}
+                    >
                       <div className="flex items-center space-x-4">
-                        <Badge variant={language.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={language.isActive ? "default" : "secondary"}
+                        >
                           {language.languageCode}
                         </Badge>
                         <div>
                           <p className="font-medium">{language.languageName}</p>
                           <p className="text-sm text-muted-foreground">
-                            {language.isDefault ? "Default • " : ""}{language.isActive ? "Active" : "Inactive"}
+                            {language.isDefault ? "Default • " : ""}
+                            {language.isActive ? "Active" : "Inactive"}
                           </p>
                         </div>
                       </div>
@@ -760,21 +990,31 @@ export default function LocationManagement() {
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm" data-testid={`button-delete-language-${language.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              data-testid={`button-delete-language-${language.id}`}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Language</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Delete Language
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{language.languageName}"? This action cannot be undone.
+                                Are you sure you want to delete "
+                                {language.languageName}"? This action cannot be
+                                undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => deleteLanguageMutation.mutate(language.id)}
+                                onClick={() =>
+                                  deleteLanguageMutation.mutate(language.id)
+                                }
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Delete

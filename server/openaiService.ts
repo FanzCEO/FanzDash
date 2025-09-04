@@ -1,17 +1,17 @@
 import OpenAI from "openai";
 
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 export interface ContentAnalysisResult {
   riskScore: number;
   confidence: number;
-  recommendation: 'approve' | 'review' | 'block';
+  recommendation: "approve" | "review" | "block";
   reasoning: string;
   categories: string[];
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   processingTime: number;
 }
 
@@ -34,10 +34,12 @@ export interface TextAnalysisResult extends ContentAnalysisResult {
 }
 
 export class OpenAIContentModerationService {
-  
-  async analyzeImage(imageUrl: string, contentContext?: string): Promise<ImageAnalysisResult> {
+  async analyzeImage(
+    imageUrl: string,
+    contentContext?: string,
+  ): Promise<ImageAnalysisResult> {
     const startTime = Date.now();
-    
+
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-4o", // Using GPT-4o for vision capabilities
@@ -66,53 +68,56 @@ Respond in JSON format:
   "detectedObjects": [{"label": "object", "confidence": 0.0-1.0}],
   "explicitContent": boolean,
   "violatesPolicy": boolean
-}`
+}`,
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: `Analyze this image for content moderation. Context: ${contentContext || 'Adult platform content'}`
+                text: `Analyze this image for content moderation. Context: ${contentContext || "Adult platform content"}`,
               },
               {
                 type: "image_url",
-                image_url: { url: imageUrl }
-              }
-            ]
-          }
+                image_url: { url: imageUrl },
+              },
+            ],
+          },
         ],
         response_format: { type: "json_object" },
-        max_completion_tokens: 1000
+        max_completion_tokens: 1000,
       });
 
-      const analysis = JSON.parse(response.choices[0].message.content || '{}');
+      const analysis = JSON.parse(response.choices[0].message.content || "{}");
       const processingTime = Date.now() - startTime;
 
       return {
         ...analysis,
-        processingTime
+        processingTime,
       };
     } catch (error) {
-      console.error('Error analyzing image with OpenAI:', error);
+      console.error("Error analyzing image with OpenAI:", error);
       return {
         riskScore: 0.5,
         confidence: 0.1,
-        recommendation: 'review',
-        reasoning: 'Analysis failed - manual review required',
-        categories: ['error'],
-        severity: 'medium',
+        recommendation: "review",
+        reasoning: "Analysis failed - manual review required",
+        categories: ["error"],
+        severity: "medium",
         detectedObjects: [],
         explicitContent: false,
         violatesPolicy: false,
-        processingTime: Date.now() - startTime
+        processingTime: Date.now() - startTime,
       };
     }
   }
 
-  async analyzeText(text: string, contentContext?: string): Promise<TextAnalysisResult> {
+  async analyzeText(
+    text: string,
+    contentContext?: string,
+  ): Promise<TextAnalysisResult> {
     const startTime = Date.now();
-    
+
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-5", // Using latest GPT-5 for text analysis
@@ -144,55 +149,58 @@ Respond in JSON format:
   "harassment": boolean,
   "threats": boolean,
   "sexualContent": boolean
-}`
+}`,
           },
           {
             role: "user",
-            content: `Analyze this text for content moderation. Context: ${contentContext || 'Adult platform content'}
+            content: `Analyze this text for content moderation. Context: ${contentContext || "Adult platform content"}
 
 Text to analyze:
-"${text}"`
-          }
+"${text}"`,
+          },
         ],
         response_format: { type: "json_object" },
-        max_completion_tokens: 800
+        max_completion_tokens: 800,
       });
 
-      const analysis = JSON.parse(response.choices[0].message.content || '{}');
+      const analysis = JSON.parse(response.choices[0].message.content || "{}");
       const processingTime = Date.now() - startTime;
 
       return {
         ...analysis,
-        processingTime
+        processingTime,
       };
     } catch (error) {
-      console.error('Error analyzing text with OpenAI:', error);
+      console.error("Error analyzing text with OpenAI:", error);
       return {
         riskScore: 0.5,
         confidence: 0.1,
-        recommendation: 'review',
-        reasoning: 'Analysis failed - manual review required',
-        categories: ['error'],
-        severity: 'medium',
+        recommendation: "review",
+        reasoning: "Analysis failed - manual review required",
+        categories: ["error"],
+        severity: "medium",
         toxicityScore: 0.5,
         hateSpeech: false,
         harassment: false,
         threats: false,
         sexualContent: false,
-        processingTime: Date.now() - startTime
+        processingTime: Date.now() - startTime,
       };
     }
   }
 
-  async analyzeLiveStreamFrame(frameImageUrl: string, streamContext?: string): Promise<ImageAnalysisResult> {
+  async analyzeLiveStreamFrame(
+    frameImageUrl: string,
+    streamContext?: string,
+  ): Promise<ImageAnalysisResult> {
     const startTime = Date.now();
-    
+
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
           {
-            role: "system", 
+            role: "system",
             content: `You are monitoring live streams for adult platforms. Analyze video frames for real-time policy violations and safety risks.
 
 Focus on:
@@ -216,76 +224,79 @@ Respond in JSON format:
   "detectedObjects": [{"label": "object", "confidence": 0.0-1.0}],
   "explicitContent": boolean,
   "violatesPolicy": boolean
-}`
+}`,
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: `Analyze this live stream frame. Context: ${streamContext || 'Live adult content stream'}`
+                text: `Analyze this live stream frame. Context: ${streamContext || "Live adult content stream"}`,
               },
               {
                 type: "image_url",
-                image_url: { url: frameImageUrl }
-              }
-            ]
-          }
+                image_url: { url: frameImageUrl },
+              },
+            ],
+          },
         ],
         response_format: { type: "json_object" },
-        max_completion_tokens: 600
+        max_completion_tokens: 600,
       });
 
-      const analysis = JSON.parse(response.choices[0].message.content || '{}');
+      const analysis = JSON.parse(response.choices[0].message.content || "{}");
       const processingTime = Date.now() - startTime;
 
       return {
         ...analysis,
-        processingTime
+        processingTime,
       };
     } catch (error) {
-      console.error('Error analyzing live stream frame:', error);
+      console.error("Error analyzing live stream frame:", error);
       return {
         riskScore: 0.3,
         confidence: 0.1,
-        recommendation: 'review',
-        reasoning: 'Frame analysis failed - continue monitoring',
-        categories: ['error'],
-        severity: 'medium',
+        recommendation: "review",
+        reasoning: "Frame analysis failed - continue monitoring",
+        categories: ["error"],
+        severity: "medium",
         detectedObjects: [],
         explicitContent: false,
         violatesPolicy: false,
-        processingTime: Date.now() - startTime
+        processingTime: Date.now() - startTime,
       };
     }
   }
 
-  async generateModerationReport(analysisResults: ContentAnalysisResult[]): Promise<string> {
+  async generateModerationReport(
+    analysisResults: ContentAnalysisResult[],
+  ): Promise<string> {
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-5",
         messages: [
           {
             role: "system",
-            content: "You are generating executive moderation reports. Create a concise, professional summary of content analysis results for platform administrators."
+            content:
+              "You are generating executive moderation reports. Create a concise, professional summary of content analysis results for platform administrators.",
           },
           {
-            role: "user", 
-            content: `Generate a moderation report based on these analysis results: ${JSON.stringify(analysisResults)}`
-          }
+            role: "user",
+            content: `Generate a moderation report based on these analysis results: ${JSON.stringify(analysisResults)}`,
+          },
         ],
-        max_completion_tokens: 500
+        max_completion_tokens: 500,
       });
 
-      return response.choices[0].message.content || 'Report generation failed';
+      return response.choices[0].message.content || "Report generation failed";
     } catch (error) {
-      console.error('Error generating moderation report:', error);
-      return 'Unable to generate report - please review analysis results manually.';
+      console.error("Error generating moderation report:", error);
+      return "Unable to generate report - please review analysis results manually.";
     }
   }
 
   async assessThreatLevel(recentAnalyses: ContentAnalysisResult[]): Promise<{
-    level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
     score: number;
     trends: {
       increasing: boolean;
@@ -310,28 +321,28 @@ Respond in JSON format:
     "reason": "explanation"
   },
   "recommendations": ["rec1", "rec2"]
-}`
+}`,
           },
           {
             role: "user",
-            content: `Assess threat level from recent analyses: ${JSON.stringify(recentAnalyses.slice(0, 50))}`
-          }
+            content: `Assess threat level from recent analyses: ${JSON.stringify(recentAnalyses.slice(0, 50))}`,
+          },
         ],
         response_format: { type: "json_object" },
-        max_completion_tokens: 400
+        max_completion_tokens: 400,
       });
 
-      return JSON.parse(response.choices[0].message.content || '{}');
+      return JSON.parse(response.choices[0].message.content || "{}");
     } catch (error) {
-      console.error('Error assessing threat level:', error);
+      console.error("Error assessing threat level:", error);
       return {
-        level: 'MEDIUM',
+        level: "MEDIUM",
         score: 50,
         trends: {
           increasing: false,
-          reason: 'Analysis unavailable'
+          reason: "Analysis unavailable",
         },
-        recommendations: ['Continue monitoring', 'Review analysis settings']
+        recommendations: ["Continue monitoring", "Review analysis settings"],
       };
     }
   }

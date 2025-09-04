@@ -1,4 +1,9 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -17,7 +22,11 @@ interface DetailedReviewModalProps {
   } | null;
 }
 
-export function DetailedReviewModal({ open, onOpenChange, content }: DetailedReviewModalProps) {
+export function DetailedReviewModal({
+  open,
+  onOpenChange,
+  content,
+}: DetailedReviewModalProps) {
   if (!content) return null;
 
   const handleApproveWithBlur = () => {
@@ -69,10 +78,15 @@ export function DetailedReviewModal({ open, onOpenChange, content }: DetailedRev
                 {content.detections?.map((detection, index) => (
                   <div key={index} className="flex justify-between">
                     <span>{detection.label}:</span>
-                    <span className={`font-medium ${
-                      detection.confidence > 0.8 ? "text-red-600" : 
-                      detection.confidence > 0.6 ? "text-yellow-600" : "text-gray-600"
-                    }`}>
+                    <span
+                      className={`font-medium ${
+                        detection.confidence > 0.8
+                          ? "text-red-600"
+                          : detection.confidence > 0.6
+                            ? "text-yellow-600"
+                            : "text-gray-600"
+                      }`}
+                    >
                       {detection.confidence.toFixed(2)}
                     </span>
                   </div>
@@ -87,7 +101,9 @@ export function DetailedReviewModal({ open, onOpenChange, content }: DetailedRev
           <div>
             <h4 className="font-medium text-gray-900 mb-2">PDQ Hash</h4>
             <div className="bg-gray-50 p-3 rounded text-sm">
-              <div className="font-mono text-xs mb-1">{content.pdqHash || "f1d2a3b4c5e6f7..."}</div>
+              <div className="font-mono text-xs mb-1">
+                {content.pdqHash || "f1d2a3b4c5e6f7..."}
+              </div>
               <div className="text-green-600 text-xs">✓ No blocklist match</div>
               <div className="text-gray-600 text-xs mt-1">Quality: 0.94</div>
             </div>
@@ -97,21 +113,21 @@ export function DetailedReviewModal({ open, onOpenChange, content }: DetailedRev
         {/* Actions */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-200">
           <div className="flex space-x-3">
-            <Button 
+            <Button
               className="bg-green-600 hover:bg-green-700 text-white"
               onClick={handleApproveWithBlur}
               data-testid="approve-with-blur"
             >
               Approve with Blur
             </Button>
-            <Button 
+            <Button
               variant="destructive"
               onClick={handleBlockContent}
               data-testid="block-content"
             >
               Block Content
             </Button>
-            <Button 
+            <Button
               className="bg-yellow-600 hover:bg-yellow-700 text-white"
               onClick={handleEscalate}
               data-testid="escalate-content"
@@ -119,7 +135,7 @@ export function DetailedReviewModal({ open, onOpenChange, content }: DetailedRev
               Escalate
             </Button>
           </div>
-          <Button 
+          <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             data-testid="close-modal"

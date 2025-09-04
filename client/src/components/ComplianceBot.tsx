@@ -6,13 +6,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Shield, 
-  Send, 
-  X, 
-  Bot, 
-  User, 
-  Minimize2, 
+import {
+  Shield,
+  Send,
+  X,
+  Bot,
+  User,
+  Minimize2,
   Maximize2,
   AlertTriangle,
   Scale,
@@ -21,7 +21,7 @@ import {
   Users,
   Eye,
   Lock,
-  Zap
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -29,11 +29,11 @@ import { apiRequest } from "@/lib/queryClient";
 
 interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: Date;
   typing?: boolean;
-  alertLevel?: 'info' | 'warning' | 'error';
+  alertLevel?: "info" | "warning" | "error";
   requiresApproval?: boolean;
   complianceCheck?: {
     violations: string[];
@@ -58,7 +58,7 @@ interface ComplianceStatus {
 
 interface ComplianceBotResponse {
   message: string;
-  alertLevel?: 'info' | 'warning' | 'error';
+  alertLevel?: "info" | "warning" | "error";
   complianceCheck?: {
     violations: string[];
     riskLevel: string;
@@ -71,25 +71,29 @@ interface ComplianceBotProps {
   isFloating?: boolean;
 }
 
-export function ComplianceBot({ className, isFloating = false }: ComplianceBotProps) {
+export function ComplianceBot({
+  className,
+  isFloating = false,
+}: ComplianceBotProps) {
   const [isOpen, setIsOpen] = useState(!isFloating);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: '1',
-      role: 'assistant',
-      content: '🛡️ **FanzLegal AI Compliance Guardian** is now active.\n\nI monitor all platform activities for legal compliance and can help with:\n\n📋 **Laws & Regulations**: 18 U.S.C. § 2257, DMCA, GDPR, CCPA\n🏛️ **Platform Policies**: Content guidelines, harassment prevention\n⚖️ **Legal Guidance**: Federal law compliance, data protection\n🚨 **Crisis Management**: Emergency protocols, incident response\n👥 **Staff Monitoring**: Real-time action oversight, violation prevention\n\n**WARNING**: I actively monitor and can BLOCK actions that violate laws or policies. Contact legal@fanzunlimited.com for urgent matters.',
+      id: "1",
+      role: "assistant",
+      content:
+        "🛡️ **FanzLegal AI Compliance Guardian** is now active.\n\nI monitor all platform activities for legal compliance and can help with:\n\n📋 **Laws & Regulations**: 18 U.S.C. § 2257, DMCA, GDPR, CCPA\n🏛️ **Platform Policies**: Content guidelines, harassment prevention\n⚖️ **Legal Guidance**: Federal law compliance, data protection\n🚨 **Crisis Management**: Emergency protocols, incident response\n👥 **Staff Monitoring**: Real-time action oversight, violation prevention\n\n**WARNING**: I actively monitor and can BLOCK actions that violate laws or policies. Contact legal@fanzunlimited.com for urgent matters.",
       timestamp: new Date(),
-      alertLevel: 'info'
-    }
+      alertLevel: "info",
+    },
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get real-time compliance status
   const { data: complianceStatus } = useQuery<ComplianceStatus>({
-    queryKey: ['/api/compliance/status'],
-    refetchInterval: 5000 // Refresh every 5 seconds
+    queryKey: ["/api/compliance/status"],
+    refetchInterval: 5000, // Refresh every 5 seconds
   });
 
   const scrollToBottom = () => {
@@ -100,62 +104,73 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
     scrollToBottom();
   }, [messages]);
 
-  const sendMessageMutation = useMutation<ComplianceBotResponse, Error, string>({
-    mutationFn: async (message: string) => {
-      const response = await apiRequest("POST", "/api/compliance-bot/chat", { 
-        message,
-        conversationHistory: messages.slice(-10)
-      });
-      return response as ComplianceBotResponse;
+  const sendMessageMutation = useMutation<ComplianceBotResponse, Error, string>(
+    {
+      mutationFn: async (message: string) => {
+        const response = await apiRequest("POST", "/api/compliance-bot/chat", {
+          message,
+          conversationHistory: messages.slice(-10),
+        });
+        return response as ComplianceBotResponse;
+      },
+      onSuccess: (response) => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.typing
+              ? {
+                  ...msg,
+                  content: response.message,
+                  typing: false,
+                  alertLevel: response.alertLevel,
+                  complianceCheck: response.complianceCheck,
+                }
+              : msg,
+          ),
+        );
+      },
+      onError: () => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.typing
+              ? {
+                  ...msg,
+                  content:
+                    "⚠️ I'm experiencing technical difficulties. For immediate legal compliance assistance, contact legal@fanzunlimited.com",
+                  typing: false,
+                  alertLevel: "error",
+                }
+              : msg,
+          ),
+        );
+      },
     },
-    onSuccess: (response) => {
-      setMessages(prev => prev.map(msg => 
-        msg.typing ? { 
-          ...msg, 
-          content: response.message, 
-          typing: false,
-          alertLevel: response.alertLevel,
-          complianceCheck: response.complianceCheck
-        } : msg
-      ));
-    },
-    onError: () => {
-      setMessages(prev => prev.map(msg => 
-        msg.typing ? { 
-          ...msg, 
-          content: "⚠️ I'm experiencing technical difficulties. For immediate legal compliance assistance, contact legal@fanzunlimited.com", 
-          typing: false,
-          alertLevel: 'error'
-        } : msg
-      ));
-    }
-  });
+  );
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      role: 'user',
+      role: "user",
       content: inputMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     const typingMessage: ChatMessage = {
       id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: 'Analyzing for compliance violations...',
+      role: "assistant",
+      content: "Analyzing for compliance violations...",
       timestamp: new Date(),
-      typing: true
+      typing: true,
     };
 
-    setMessages(prev => [...prev, userMessage, typingMessage]);
+    setMessages((prev) => [...prev, userMessage, typingMessage]);
     setInputMessage("");
     sendMessageMutation.mutate(inputMessage);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -174,12 +189,17 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
   }
 
   return (
-    <Card className={cn(
-      "bg-gray-900/95 border-red-800 backdrop-blur-sm",
-      isFloating ? "fixed bottom-6 right-6 w-96 h-[600px] shadow-2xl z-50" : "w-full h-full",
-      isMinimized && isFloating ? "h-16" : "",
-      className
-    )} data-testid="compliance-bot-card">
+    <Card
+      className={cn(
+        "bg-gray-900/95 border-red-800 backdrop-blur-sm",
+        isFloating
+          ? "fixed bottom-6 right-6 w-96 h-[600px] shadow-2xl z-50"
+          : "w-full h-full",
+        isMinimized && isFloating ? "h-16" : "",
+        className,
+      )}
+      data-testid="compliance-bot-card"
+    >
       <CardHeader className="p-4 border-b border-red-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -192,13 +212,21 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-red-500 border-2 border-gray-900 rounded-full animate-pulse"></div>
             </div>
             <div>
-              <CardTitle className="text-sm text-white">FanzLegal AI Guardian</CardTitle>
+              <CardTitle className="text-sm text-white">
+                FanzLegal AI Guardian
+              </CardTitle>
               <div className="flex items-center gap-1">
-                <Badge variant="destructive" className="text-xs bg-red-900/50 text-red-300">
+                <Badge
+                  variant="destructive"
+                  className="text-xs bg-red-900/50 text-red-300"
+                >
                   <Gavel className="h-3 w-3 mr-1" />
                   Legal Monitor
                 </Badge>
-                <Badge variant="secondary" className="text-xs bg-orange-900/50 text-orange-300">
+                <Badge
+                  variant="secondary"
+                  className="text-xs bg-orange-900/50 text-orange-300"
+                >
                   <Eye className="h-3 w-3 mr-1" />
                   Active
                 </Badge>
@@ -224,7 +252,11 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
                 className="h-8 w-8 p-0 text-gray-400 hover:text-white"
                 data-testid="compliance-bot-minimize-button"
               >
-                {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+                {isMinimized ? (
+                  <Maximize2 className="h-4 w-4" />
+                ) : (
+                  <Minimize2 className="h-4 w-4" />
+                )}
               </Button>
             )}
             {isFloating && (
@@ -244,12 +276,22 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
         {/* Compliance Status Bar */}
         {complianceStatus && !isMinimized && (
           <div className="mt-3 p-2 bg-gray-800 rounded border border-red-700">
-            <div className="text-xs text-gray-300 mb-1">Real-time Compliance Status</div>
+            <div className="text-xs text-gray-300 mb-1">
+              Real-time Compliance Status
+            </div>
             <div className="flex justify-between text-xs">
-              <span className="text-green-400">{complianceStatus.riskDistribution?.low || 0} Low</span>
-              <span className="text-yellow-400">{complianceStatus.riskDistribution?.medium || 0} Medium</span>
-              <span className="text-orange-400">{complianceStatus.riskDistribution?.high || 0} High</span>
-              <span className="text-red-400">{complianceStatus.riskDistribution?.critical || 0} Critical</span>
+              <span className="text-green-400">
+                {complianceStatus.riskDistribution?.low || 0} Low
+              </span>
+              <span className="text-yellow-400">
+                {complianceStatus.riskDistribution?.medium || 0} Medium
+              </span>
+              <span className="text-orange-400">
+                {complianceStatus.riskDistribution?.high || 0} High
+              </span>
+              <span className="text-red-400">
+                {complianceStatus.riskDistribution?.critical || 0} Critical
+              </span>
             </div>
           </div>
         )}
@@ -264,20 +306,28 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
                   key={message.id}
                   className={cn(
                     "flex gap-3",
-                    message.role === 'user' ? "justify-end" : "justify-start"
+                    message.role === "user" ? "justify-end" : "justify-start",
                   )}
                 >
-                  {message.role === 'assistant' && (
-                    <Avatar className={cn(
-                      "h-8 w-8 mt-1",
-                      message.alertLevel === 'error' ? "bg-gradient-to-r from-red-600 to-red-700" :
-                      message.alertLevel === 'warning' ? "bg-gradient-to-r from-orange-600 to-yellow-600" :
-                      "bg-gradient-to-r from-red-600 to-orange-600"
-                    )}>
+                  {message.role === "assistant" && (
+                    <Avatar
+                      className={cn(
+                        "h-8 w-8 mt-1",
+                        message.alertLevel === "error"
+                          ? "bg-gradient-to-r from-red-600 to-red-700"
+                          : message.alertLevel === "warning"
+                            ? "bg-gradient-to-r from-orange-600 to-yellow-600"
+                            : "bg-gradient-to-r from-red-600 to-orange-600",
+                      )}
+                    >
                       <AvatarFallback>
-                        {message.alertLevel === 'error' ? <AlertTriangle className="h-4 w-4 text-white" /> :
-                         message.alertLevel === 'warning' ? <Scale className="h-4 w-4 text-white" /> :
-                         <Shield className="h-4 w-4 text-white" />}
+                        {message.alertLevel === "error" ? (
+                          <AlertTriangle className="h-4 w-4 text-white" />
+                        ) : message.alertLevel === "warning" ? (
+                          <Scale className="h-4 w-4 text-white" />
+                        ) : (
+                          <Shield className="h-4 w-4 text-white" />
+                        )}
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -285,13 +335,13 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
                     <div
                       className={cn(
                         "rounded-lg p-3 text-sm",
-                        message.role === 'user'
+                        message.role === "user"
                           ? "bg-gradient-to-r from-red-600 to-orange-600 text-white"
-                          : message.alertLevel === 'error' 
+                          : message.alertLevel === "error"
                             ? "bg-red-900/50 text-red-100 border border-red-700"
-                            : message.alertLevel === 'warning'
+                            : message.alertLevel === "warning"
                               ? "bg-orange-900/50 text-orange-100 border border-orange-700"
-                              : "bg-gray-800 text-gray-100 border border-red-700"
+                              : "bg-gray-800 text-gray-100 border border-red-700",
                       )}
                       data-testid={`message-${message.role}`}
                     >
@@ -299,44 +349,71 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
                         <div className="flex items-center gap-1">
                           <div className="flex gap-1">
                             <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-                            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: '0.1s' }}></div>
-                            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                            <div
+                              className="w-2 h-2 bg-red-400 rounded-full animate-pulse"
+                              style={{ animationDelay: "0.1s" }}
+                            ></div>
+                            <div
+                              className="w-2 h-2 bg-red-400 rounded-full animate-pulse"
+                              style={{ animationDelay: "0.2s" }}
+                            ></div>
                           </div>
                         </div>
                       ) : (
-                        <div className="whitespace-pre-wrap">{message.content}</div>
+                        <div className="whitespace-pre-wrap">
+                          {message.content}
+                        </div>
                       )}
                     </div>
 
                     {/* Compliance Check Results */}
                     {message.complianceCheck && (
-                      <Alert className={cn(
-                        "mt-2 text-xs",
-                        message.complianceCheck.blocked ? "border-red-600 bg-red-900/20" :
-                        message.complianceCheck.riskLevel === 'high' ? "border-orange-600 bg-orange-900/20" :
-                        "border-yellow-600 bg-yellow-900/20"
-                      )}>
+                      <Alert
+                        className={cn(
+                          "mt-2 text-xs",
+                          message.complianceCheck.blocked
+                            ? "border-red-600 bg-red-900/20"
+                            : message.complianceCheck.riskLevel === "high"
+                              ? "border-orange-600 bg-orange-900/20"
+                              : "border-yellow-600 bg-yellow-900/20",
+                        )}
+                      >
                         <AlertTriangle className="h-3 w-3" />
                         <AlertDescription className="text-xs">
                           <div className="font-semibold mb-1">
-                            {message.complianceCheck.blocked ? "🚫 ACTION BLOCKED" : "⚠️ COMPLIANCE ALERT"}
+                            {message.complianceCheck.blocked
+                              ? "🚫 ACTION BLOCKED"
+                              : "⚠️ COMPLIANCE ALERT"}
                           </div>
-                          <div>Risk Level: {message.complianceCheck.riskLevel.toUpperCase()}</div>
+                          <div>
+                            Risk Level:{" "}
+                            {message.complianceCheck.riskLevel.toUpperCase()}
+                          </div>
                           {message.complianceCheck.violations.length > 0 && (
-                            <div>Violations: {message.complianceCheck.violations.join(', ')}</div>
+                            <div>
+                              Violations:{" "}
+                              {message.complianceCheck.violations.join(", ")}
+                            </div>
                           )}
                         </AlertDescription>
                       </Alert>
                     )}
 
-                    <div className={cn(
-                      "text-xs mt-1 opacity-70",
-                      message.role === 'user' ? "text-red-200" : "text-gray-400"
-                    )}>
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <div
+                      className={cn(
+                        "text-xs mt-1 opacity-70",
+                        message.role === "user"
+                          ? "text-red-200"
+                          : "text-gray-400",
+                      )}
+                    >
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </div>
                   </div>
-                  {message.role === 'user' && (
+                  {message.role === "user" && (
                     <Avatar className="h-8 w-8 bg-gray-700 mt-1">
                       <AvatarFallback>
                         <User className="h-4 w-4 text-gray-300" />
@@ -376,7 +453,8 @@ export function ComplianceBot({ className, isFloating = false }: ComplianceBotPr
               </Button>
             </div>
             <div className="text-xs text-gray-500 mt-2 text-center">
-              🛡️ Legal Guardian • Powered by Military-Grade AI • Fanz™ Unlimited Network LLC
+              🛡️ Legal Guardian • Powered by Military-Grade AI • Fanz™
+              Unlimited Network LLC
             </div>
           </div>
         </CardContent>

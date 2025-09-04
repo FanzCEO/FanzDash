@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -13,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { 
+import {
   FolderOpen,
   Plus,
   Edit3,
@@ -29,7 +34,7 @@ import {
   X,
   AlertTriangle,
   CheckCircle,
-  Image as ImageIcon
+  Image as ImageIcon,
 } from "lucide-react";
 
 interface Category {
@@ -60,10 +65,15 @@ interface CategoryFormData {
 
 interface CategoriesManagementProps {
   categories: Category[];
-  onCreateCategory: (data: Omit<CategoryFormData, 'id'>) => Promise<void>;
-  onUpdateCategory: (id: string, data: Partial<CategoryFormData>) => Promise<void>;
+  onCreateCategory: (data: Omit<CategoryFormData, "id">) => Promise<void>;
+  onUpdateCategory: (
+    id: string,
+    data: Partial<CategoryFormData>,
+  ) => Promise<void>;
   onDeleteCategory: (id: string) => Promise<void>;
-  onReorderCategories: (categories: { id: string; order: number }[]) => Promise<void>;
+  onReorderCategories: (
+    categories: { id: string; order: number }[],
+  ) => Promise<void>;
   stats: {
     totalCategories: number;
     activeCategories: number;
@@ -80,12 +90,14 @@ export function CategoriesManagement({
   onDeleteCategory,
   onReorderCategories,
   stats,
-  className = ""
+  className = "",
 }: CategoriesManagementProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
+  const [deletingCategory, setDeletingCategory] = useState<Category | null>(
+    null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -96,19 +108,20 @@ export function CategoriesManagement({
     image: "",
     parentId: "",
     isActive: true,
-    order: 0
+    order: 0,
   });
 
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    category.slug.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCategories = categories.filter(
+    (category) =>
+      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      category.slug.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const generateSlug = (name: string) => {
     return name
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
   };
 
   const resetForm = () => {
@@ -119,7 +132,7 @@ export function CategoriesManagement({
       image: "",
       parentId: "",
       isActive: true,
-      order: categories.length
+      order: categories.length,
     });
     setErrors({});
   };
@@ -139,23 +152,23 @@ export function CategoriesManagement({
       image: category.image || "",
       parentId: category.parentId || "",
       isActive: category.isActive,
-      order: category.order
+      order: category.order,
     });
     setEditingCategory(category);
     setIsCreateModalOpen(true);
   };
 
   const handleInputChange = (field: keyof CategoryFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Auto-generate slug when name changes
-    if (field === 'name') {
-      setFormData(prev => ({ ...prev, slug: generateSlug(value) }));
+    if (field === "name") {
+      setFormData((prev) => ({ ...prev, slug: generateSlug(value) }));
     }
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -168,7 +181,11 @@ export function CategoriesManagement({
 
     if (!formData.slug.trim()) {
       newErrors.slug = "Category slug is required";
-    } else if (categories.some(cat => cat.slug === formData.slug && cat.id !== formData.id)) {
+    } else if (
+      categories.some(
+        (cat) => cat.slug === formData.slug && cat.id !== formData.id,
+      )
+    ) {
       newErrors.slug = "This slug is already in use";
     }
 
@@ -178,13 +195,13 @@ export function CategoriesManagement({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       if (editingCategory) {
         await onUpdateCategory(editingCategory.id, formData);
@@ -221,8 +238,8 @@ export function CategoriesManagement({
           {/* Category Image */}
           <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
             {category.image ? (
-              <img 
-                src={category.image} 
+              <img
+                src={category.image}
                 alt={category.name}
                 className="w-full h-full object-cover"
               />
@@ -255,11 +272,13 @@ export function CategoriesManagement({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleEditCategory(category)}>
+                  <DropdownMenuItem
+                    onClick={() => handleEditCategory(category)}
+                  >
                     <Edit3 className="h-4 w-4 mr-2" />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => setDeletingCategory(category)}
                     className="text-red-600"
                   >
@@ -271,8 +290,10 @@ export function CategoriesManagement({
             </div>
 
             {/* Category Info */}
-            <p className="text-sm text-muted-foreground mb-1">/{category.slug}</p>
-            
+            <p className="text-sm text-muted-foreground mb-1">
+              /{category.slug}
+            </p>
+
             {category.description && (
               <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                 {category.description}
@@ -339,7 +360,9 @@ export function CategoriesManagement({
                 <Grid3X3 className="h-4 w-4 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Categories</p>
+                <p className="text-sm text-muted-foreground">
+                  Total Categories
+                </p>
                 <p className="text-2xl font-bold">{stats.totalCategories}</p>
               </div>
             </div>
@@ -353,8 +376,12 @@ export function CategoriesManagement({
                 <CheckCircle className="h-4 w-4 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Active Categories</p>
-                <p className="text-2xl font-bold text-green-600">{stats.activeCategories}</p>
+                <p className="text-sm text-muted-foreground">
+                  Active Categories
+                </p>
+                <p className="text-2xl font-bold text-green-600">
+                  {stats.activeCategories}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -418,13 +445,15 @@ export function CategoriesManagement({
             <FolderOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">No Categories Found</h3>
             <p className="text-muted-foreground mb-6">
-              {searchQuery 
+              {searchQuery
                 ? `No categories match your search for "${searchQuery}"`
-                : "Create your first category to get started"
-              }
+                : "Create your first category to get started"}
             </p>
             {!searchQuery && (
-              <Button onClick={handleCreateCategory} className="bg-gradient-to-r from-primary to-purple-600">
+              <Button
+                onClick={handleCreateCategory}
+                className="bg-gradient-to-r from-primary to-purple-600"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Category
               </Button>
@@ -439,7 +468,9 @@ export function CategoriesManagement({
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
               <FolderOpen className="h-5 w-5" />
-              <span>{editingCategory ? 'Edit Category' : 'Create Category'}</span>
+              <span>
+                {editingCategory ? "Edit Category" : "Create Category"}
+              </span>
             </DialogTitle>
           </DialogHeader>
 
@@ -457,7 +488,7 @@ export function CategoriesManagement({
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                   placeholder="Enter category name"
                   className={errors.name ? "border-red-500" : ""}
                   data-testid="category-name-input"
@@ -472,7 +503,7 @@ export function CategoriesManagement({
                 <Input
                   id="slug"
                   value={formData.slug}
-                  onChange={(e) => handleInputChange('slug', e.target.value)}
+                  onChange={(e) => handleInputChange("slug", e.target.value)}
                   placeholder="category-slug"
                   className={errors.slug ? "border-red-500" : ""}
                   data-testid="category-slug-input"
@@ -491,7 +522,9 @@ export function CategoriesManagement({
               <Input
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 placeholder="Brief description of this category"
                 data-testid="category-description-input"
               />
@@ -506,7 +539,7 @@ export function CategoriesManagement({
                 id="image"
                 type="url"
                 value={formData.image}
-                onChange={(e) => handleInputChange('image', e.target.value)}
+                onChange={(e) => handleInputChange("image", e.target.value)}
                 placeholder="https://example.com/category-image.jpg"
                 data-testid="category-image-input"
               />
@@ -520,7 +553,9 @@ export function CategoriesManagement({
                   type="number"
                   min="0"
                   value={formData.order}
-                  onChange={(e) => handleInputChange('order', parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    handleInputChange("order", parseInt(e.target.value) || 0)
+                  }
                   data-testid="category-order-input"
                 />
               </div>
@@ -532,7 +567,9 @@ export function CategoriesManagement({
                     type="checkbox"
                     id="isActive"
                     checked={formData.isActive}
-                    onChange={(e) => handleInputChange('isActive', e.target.checked)}
+                    onChange={(e) =>
+                      handleInputChange("isActive", e.target.checked)
+                    }
                     className="rounded"
                     data-testid="category-active-toggle"
                   />
@@ -554,7 +591,7 @@ export function CategoriesManagement({
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
-              
+
               <Button
                 type="submit"
                 disabled={isSubmitting}
@@ -569,7 +606,7 @@ export function CategoriesManagement({
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    {editingCategory ? 'Update Category' : 'Create Category'}
+                    {editingCategory ? "Update Category" : "Create Category"}
                   </>
                 )}
               </Button>
@@ -579,8 +616,8 @@ export function CategoriesManagement({
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog 
-        open={!!deletingCategory} 
+      <Dialog
+        open={!!deletingCategory}
         onOpenChange={() => setDeletingCategory(null)}
       >
         <DialogContent>
@@ -594,13 +631,16 @@ export function CategoriesManagement({
           {deletingCategory && (
             <div className="space-y-4">
               <p>
-                Are you sure you want to delete <strong>"{deletingCategory.name}"</strong>?
+                Are you sure you want to delete{" "}
+                <strong>"{deletingCategory.name}"</strong>?
               </p>
-              
+
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  This action cannot be undone. The category will be removed from {deletingCategory.productCount} products and {deletingCategory.creatorCount} creators.
+                  This action cannot be undone. The category will be removed
+                  from {deletingCategory.productCount} products and{" "}
+                  {deletingCategory.creatorCount} creators.
                 </AlertDescription>
               </Alert>
 
@@ -612,7 +652,7 @@ export function CategoriesManagement({
                 >
                   Cancel
                 </Button>
-                
+
                 <Button
                   variant="destructive"
                   onClick={handleDeleteCategory}

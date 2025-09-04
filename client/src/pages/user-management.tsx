@@ -1,18 +1,44 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Users, 
-  Search, 
+import {
+  Users,
+  Search,
   Filter,
   Eye,
   Ban,
@@ -28,7 +54,7 @@ import {
   MessageSquare,
   AlertTriangle,
   Settings,
-  MoreHorizontal
+  MoreHorizontal,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -38,8 +64,8 @@ interface User {
   email: string;
   name: string;
   avatar?: string;
-  role: 'user' | 'creator' | 'admin' | 'moderator';
-  status: 'active' | 'suspended' | 'banned' | 'pending';
+  role: "user" | "creator" | "admin" | "moderator";
+  status: "active" | "suspended" | "banned" | "pending";
   isVerified: boolean;
   emailVerified: boolean;
   phoneVerified: boolean;
@@ -54,9 +80,9 @@ interface UserVerification {
   id: string;
   userId: string;
   username: string;
-  verificationType: 'email' | 'phone' | 'identity' | 'address';
+  verificationType: "email" | "phone" | "identity" | "address";
   verificationValue: string;
-  status: 'pending' | 'verified' | 'expired' | 'failed';
+  status: "pending" | "verified" | "expired" | "failed";
   submittedAt: string;
   verifiedAt?: string;
   documents?: string[];
@@ -68,8 +94,8 @@ interface ContactMessage {
   email: string;
   subject: string;
   message: string;
-  status: 'new' | 'read' | 'replied' | 'resolved' | 'archived';
-  priority: 'low' | 'normal' | 'high' | 'urgent';
+  status: "new" | "read" | "replied" | "resolved" | "archived";
+  priority: "low" | "normal" | "high" | "urgent";
   createdAt: string;
   respondedAt?: string;
 }
@@ -98,8 +124,8 @@ export default function UserManagement() {
       identityVerified: true,
       lastLoginAt: "2025-01-15T14:30:00Z",
       createdAt: "2024-08-15T10:00:00Z",
-      totalEarnings: 15420.50,
-      subscriberCount: 1250
+      totalEarnings: 15420.5,
+      subscriberCount: 1250,
     },
     {
       id: "2",
@@ -114,8 +140,8 @@ export default function UserManagement() {
       identityVerified: false,
       lastLoginAt: "2025-01-15T12:00:00Z",
       createdAt: "2024-12-01T15:30:00Z",
-      totalEarnings: 2840.00,
-      subscriberCount: 340
+      totalEarnings: 2840.0,
+      subscriberCount: 340,
     },
     {
       id: "3",
@@ -129,7 +155,7 @@ export default function UserManagement() {
       phoneVerified: false,
       identityVerified: false,
       lastLoginAt: "2025-01-14T18:45:00Z",
-      createdAt: "2025-01-10T09:15:00Z"
+      createdAt: "2025-01-10T09:15:00Z",
     },
     {
       id: "4",
@@ -142,8 +168,8 @@ export default function UserManagement() {
       emailVerified: true,
       phoneVerified: false,
       identityVerified: false,
-      createdAt: "2024-06-20T11:00:00Z"
-    }
+      createdAt: "2024-06-20T11:00:00Z",
+    },
   ];
 
   // Mock verification requests
@@ -156,7 +182,7 @@ export default function UserManagement() {
       verificationValue: "ID Document",
       status: "pending",
       submittedAt: "2025-01-14T10:00:00Z",
-      documents: ["id-front.jpg", "id-back.jpg"]
+      documents: ["id-front.jpg", "id-back.jpg"],
     },
     {
       id: "2",
@@ -166,8 +192,8 @@ export default function UserManagement() {
       verificationValue: "user@example.com",
       status: "verified",
       submittedAt: "2025-01-10T09:20:00Z",
-      verifiedAt: "2025-01-10T09:25:00Z"
-    }
+      verifiedAt: "2025-01-10T09:25:00Z",
+    },
   ];
 
   // Mock contact messages
@@ -177,10 +203,11 @@ export default function UserManagement() {
       name: "Jane Smith",
       email: "jane@example.com",
       subject: "Account verification issue",
-      message: "I'm having trouble verifying my account. The verification email never arrived.",
+      message:
+        "I'm having trouble verifying my account. The verification email never arrived.",
       status: "new",
       priority: "high",
-      createdAt: "2025-01-15T16:30:00Z"
+      createdAt: "2025-01-15T16:30:00Z",
     },
     {
       id: "2",
@@ -191,28 +218,30 @@ export default function UserManagement() {
       status: "replied",
       priority: "normal",
       createdAt: "2025-01-14T14:00:00Z",
-      respondedAt: "2025-01-14T16:30:00Z"
-    }
+      respondedAt: "2025-01-14T16:30:00Z",
+    },
   ];
 
   const isLoading = false;
 
   const updateUserMutation = useMutation({
-    mutationFn: (data: { userId: string, updates: any }) =>
-      apiRequest(`/api/admin/users/${data.userId}`, 'PATCH', data.updates),
+    mutationFn: (data: { userId: string; updates: any }) =>
+      apiRequest(`/api/admin/users/${data.userId}`, "PATCH", data.updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       toast({ title: "User updated successfully" });
-    }
+    },
   });
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = !searchQuery || 
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      !searchQuery ||
       user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.name.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "all" || user.status === statusFilter;
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
 
     return matchesSearch && matchesStatus && matchesRole;
@@ -223,7 +252,7 @@ export default function UserManagement() {
       active: { variant: "default" as const, color: "text-green-600" },
       suspended: { variant: "destructive" as const, color: "text-yellow-600" },
       banned: { variant: "destructive" as const, color: "text-red-600" },
-      pending: { variant: "outline" as const, color: "text-gray-600" }
+      pending: { variant: "outline" as const, color: "text-gray-600" },
     };
 
     const config = variants[status as keyof typeof variants];
@@ -238,8 +267,8 @@ export default function UserManagement() {
     const variants = {
       admin: "destructive",
       moderator: "default",
-      creator: "default", 
-      user: "secondary"
+      creator: "default",
+      user: "secondary",
     } as const;
 
     return (
@@ -251,9 +280,9 @@ export default function UserManagement() {
 
   const getVerificationStatus = (user: User) => {
     const verifications = [
-      { type: 'Email', verified: user.emailVerified, icon: Mail },
-      { type: 'Phone', verified: user.phoneVerified, icon: Phone },
-      { type: 'Identity', verified: user.identityVerified, icon: Shield }
+      { type: "Email", verified: user.emailVerified, icon: Mail },
+      { type: "Phone", verified: user.phoneVerified, icon: Phone },
+      { type: "Identity", verified: user.identityVerified, icon: Shield },
     ];
 
     return (
@@ -264,9 +293,11 @@ export default function UserManagement() {
             <div
               key={verification.type}
               className={`p-1 rounded-full ${
-                verification.verified ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                verification.verified
+                  ? "bg-green-100 text-green-600"
+                  : "bg-gray-100 text-gray-400"
               }`}
-              title={`${verification.type} ${verification.verified ? 'Verified' : 'Not Verified'}`}
+              title={`${verification.type} ${verification.verified ? "Verified" : "Not Verified"}`}
             >
               <Icon className="h-3 w-3" />
             </div>
@@ -278,9 +309,11 @@ export default function UserManagement() {
 
   const getStats = () => {
     const totalUsers = users.length;
-    const activeUsers = users.filter(u => u.status === 'active').length;
-    const creators = users.filter(u => u.role === 'creator').length;
-    const pendingVerifications = verificationRequests.filter(v => v.status === 'pending').length;
+    const activeUsers = users.filter((u) => u.status === "active").length;
+    const creators = users.filter((u) => u.role === "creator").length;
+    const pendingVerifications = verificationRequests.filter(
+      (v) => v.status === "pending",
+    ).length;
 
     return { totalUsers, activeUsers, creators, pendingVerifications };
   };
@@ -288,10 +321,15 @@ export default function UserManagement() {
   const stats = getStats();
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="user-management">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="user-management"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold cyber-text-glow">User Management</h1>
+          <h1 className="text-3xl font-bold cyber-text-glow">
+            User Management
+          </h1>
           <p className="text-muted-foreground">
             Manage user accounts, verifications, and platform access
           </p>
@@ -342,7 +380,9 @@ export default function UserManagement() {
               <Clock className="h-8 w-8 text-yellow-500" />
               <div>
                 <p className="text-sm font-medium">Pending Verifications</p>
-                <p className="text-2xl font-bold">{stats.pendingVerifications}</p>
+                <p className="text-2xl font-bold">
+                  {stats.pendingVerifications}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -378,9 +418,12 @@ export default function UserManagement() {
                     data-testid="input-search-users"
                   />
                 </div>
-                
+
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[180px]" data-testid="select-status-filter">
+                  <SelectTrigger
+                    className="w-[180px]"
+                    data-testid="select-status-filter"
+                  >
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -393,7 +436,10 @@ export default function UserManagement() {
                 </Select>
 
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-[180px]" data-testid="select-role-filter">
+                  <SelectTrigger
+                    className="w-[180px]"
+                    data-testid="select-role-filter"
+                  >
                     <SelectValue placeholder="Filter by role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -427,13 +473,20 @@ export default function UserManagement() {
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={user.avatar} />
                               <AvatarFallback>
-                                {user.name.split(' ').map(n => n[0]).join('')}
+                                {user.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
                               </AvatarFallback>
                             </Avatar>
                             <div>
                               <div className="font-medium">{user.name}</div>
-                              <div className="text-sm text-muted-foreground">@{user.username}</div>
-                              <div className="text-xs text-muted-foreground">{user.email}</div>
+                              <div className="text-sm text-muted-foreground">
+                                @{user.username}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {user.email}
+                              </div>
                             </div>
                           </div>
                         </TableCell>
@@ -451,10 +504,18 @@ export default function UserManagement() {
                         </TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
-                            <Button variant="outline" size="sm" data-testid={`button-view-${user.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              data-testid={`button-view-${user.id}`}
+                            >
                               <Eye className="h-3 w-3" />
                             </Button>
-                            <Button variant="outline" size="sm" data-testid={`button-edit-${user.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              data-testid={`button-edit-${user.id}`}
+                            >
                               <Settings className="h-3 w-3" />
                             </Button>
                           </div>
@@ -497,9 +558,17 @@ export default function UserManagement() {
                             {request.verificationValue}
                           </div>
                         </TableCell>
-                        <TableCell className="capitalize">{request.verificationType}</TableCell>
+                        <TableCell className="capitalize">
+                          {request.verificationType}
+                        </TableCell>
                         <TableCell>
-                          <Badge variant={request.status === 'pending' ? 'outline' : 'default'}>
+                          <Badge
+                            variant={
+                              request.status === "pending"
+                                ? "outline"
+                                : "default"
+                            }
+                          >
                             {request.status}
                           </Badge>
                         </TableCell>
@@ -512,7 +581,7 @@ export default function UserManagement() {
                               <Eye className="h-3 w-3 mr-1" />
                               Review
                             </Button>
-                            {request.status === 'pending' && (
+                            {request.status === "pending" && (
                               <>
                                 <Button variant="default" size="sm">
                                   <CheckCircle className="h-3 w-3 mr-1" />
@@ -562,19 +631,31 @@ export default function UserManagement() {
                         <TableCell>
                           <div>
                             <div className="font-medium">{message.name}</div>
-                            <div className="text-sm text-muted-foreground">{message.email}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {message.email}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">
                           {message.subject}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={message.priority === 'high' ? 'destructive' : 'secondary'}>
+                          <Badge
+                            variant={
+                              message.priority === "high"
+                                ? "destructive"
+                                : "secondary"
+                            }
+                          >
                             {message.priority}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={message.status === 'new' ? 'default' : 'outline'}>
+                          <Badge
+                            variant={
+                              message.status === "new" ? "default" : "outline"
+                            }
+                          >
                             {message.status}
                           </Badge>
                         </TableCell>

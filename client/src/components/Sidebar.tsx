@@ -39,11 +39,16 @@ export function Sidebar() {
                   location === item.href
                     ? "bg-slate-800 text-white"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white",
-                  "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                  "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                 )}
-                data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, "-")}`}
               >
-                <i className={cn(item.icon, "mr-3 flex-shrink-0 h-6 w-6 text-slate-400")} />
+                <i
+                  className={cn(
+                    item.icon,
+                    "mr-3 flex-shrink-0 h-6 w-6 text-slate-400",
+                  )}
+                />
                 {item.name}
               </Link>
             ))}
@@ -58,7 +63,9 @@ export function Sidebar() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-white">Sarah Chen</p>
-                  <p className="text-xs font-medium text-slate-300">Senior Moderator</p>
+                  <p className="text-xs font-medium text-slate-300">
+                    Senior Moderator
+                  </p>
                 </div>
               </div>
             </div>

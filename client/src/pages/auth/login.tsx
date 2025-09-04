@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,15 +15,15 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
-import { 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
   LogIn,
   AlertTriangle,
   ExternalLink,
-  ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -34,21 +40,22 @@ export default function Login() {
   const [formData, setFormData] = useState<LoginForm>({
     usernameEmail: "",
     password: "",
-    remember: false
+    remember: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
   const loginMutation = useMutation({
-    mutationFn: (data: LoginForm) => apiRequest('/api/auth/login', 'POST', data),
+    mutationFn: (data: LoginForm) =>
+      apiRequest("/api/auth/login", "POST", data),
     onSuccess: (data) => {
       toast({ title: "Login successful" });
       // Redirect to dashboard or previous page
-      window.location.href = '/dashboard';
+      window.location.href = "/dashboard";
     },
     onError: (error: any) => {
       setErrors(error.response?.data?.errors || { general: "Login failed" });
-    }
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -57,11 +64,14 @@ export default function Login() {
     loginMutation.mutate(formData);
   };
 
-  const handleInputChange = (field: keyof LoginForm, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof LoginForm,
+    value: string | boolean,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear field error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -71,9 +81,11 @@ export default function Login() {
         <Card className="cyber-border bg-white shadow-2xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your account to continue</CardDescription>
+            <CardDescription>
+              Sign in to your account to continue
+            </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {/* Error Alerts */}
             {errors.general && (
@@ -85,30 +97,30 @@ export default function Login() {
 
             {/* Social Login Buttons */}
             <div className="space-y-3">
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                onClick={() => window.location.href = '/oauth/facebook'}
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => (window.location.href = "/oauth/facebook")}
                 data-testid="button-facebook-login"
               >
                 <FaFacebook className="mr-2 h-4 w-4 text-blue-600" />
                 Login with Facebook
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="w-full"
-                onClick={() => window.location.href = '/oauth/twitter'}
+                onClick={() => (window.location.href = "/oauth/twitter")}
                 data-testid="button-twitter-login"
               >
                 <FaXTwitter className="mr-2 h-4 w-4" />
                 Login with X
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="w-full"
-                onClick={() => window.location.href = '/oauth/google'}
+                onClick={() => (window.location.href = "/oauth/google")}
                 data-testid="button-google-login"
               >
                 <FaGoogle className="mr-2 h-4 w-4 text-red-500" />
@@ -136,8 +148,10 @@ export default function Login() {
                     type="text"
                     placeholder="Enter username or email"
                     value={formData.usernameEmail}
-                    onChange={(e) => handleInputChange('usernameEmail', e.target.value)}
-                    className={`pl-10 ${errors.usernameEmail ? 'border-red-500' : ''}`}
+                    onChange={(e) =>
+                      handleInputChange("usernameEmail", e.target.value)
+                    }
+                    className={`pl-10 ${errors.usernameEmail ? "border-red-500" : ""}`}
                     required
                     data-testid="input-username-email"
                   />
@@ -156,8 +170,10 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter password"
                     value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    className={`pl-10 pr-10 ${errors.password ? 'border-red-500' : ''}`}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
+                    className={`pl-10 pr-10 ${errors.password ? "border-red-500" : ""}`}
                     required
                     data-testid="input-password"
                   />
@@ -185,15 +201,19 @@ export default function Login() {
                 <Checkbox
                   id="remember"
                   checked={formData.remember}
-                  onCheckedChange={(checked) => handleInputChange('remember', checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("remember", checked as boolean)
+                  }
                   data-testid="checkbox-remember"
                 />
-                <Label htmlFor="remember" className="text-sm">Remember me</Label>
+                <Label htmlFor="remember" className="text-sm">
+                  Remember me
+                </Label>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full" 
+              <Button
+                type="submit"
+                className="w-full"
                 disabled={loginMutation.isPending}
                 data-testid="button-login"
               >
@@ -205,12 +225,20 @@ export default function Login() {
             {/* Footer Links */}
             <div className="flex justify-between text-sm">
               <Link href="/password/reset">
-                <Button variant="link" className="p-0 h-auto" data-testid="link-forgot-password">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto"
+                  data-testid="link-forgot-password"
+                >
                   Forgot Password?
                 </Button>
               </Link>
               <Link href="/register">
-                <Button variant="link" className="p-0 h-auto" data-testid="link-register">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto"
+                  data-testid="link-register"
+                >
                   Don't have an account?
                 </Button>
               </Link>
@@ -219,11 +247,19 @@ export default function Login() {
             {/* reCAPTCHA Notice */}
             <p className="text-xs text-center text-muted-foreground">
               This site is protected by reCAPTCHA and the Google{" "}
-              <a href="https://policies.google.com/privacy" target="_blank" className="underline">
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                className="underline"
+              >
                 Privacy Policy
               </a>{" "}
               and{" "}
-              <a href="https://policies.google.com/terms" target="_blank" className="underline">
+              <a
+                href="https://policies.google.com/terms"
+                target="_blank"
+                className="underline"
+              >
                 Terms of Service
               </a>{" "}
               apply.
@@ -234,7 +270,11 @@ export default function Login() {
         {/* Back to Home */}
         <div className="mt-4 text-center">
           <Link href="/">
-            <Button variant="ghost" className="text-white hover:text-gray-200" data-testid="link-home">
+            <Button
+              variant="ghost"
+              className="text-white hover:text-gray-200"
+              data-testid="link-home"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home
             </Button>

@@ -4,9 +4,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Plus, Edit, Trash2, Shield, UserCheck, Search, Filter } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Users,
+  Plus,
+  Edit,
+  Trash2,
+  Shield,
+  UserCheck,
+  Search,
+  Filter,
+} from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,7 +50,7 @@ export default function UsersPage() {
     username: "",
     email: "",
     role: "moderator",
-    password: ""
+    password: "",
   });
 
   const { toast } = useToast();
@@ -47,7 +68,7 @@ export default function UsersPage() {
     onSuccess: () => {
       toast({
         title: "User Created",
-        description: "New user account has been created successfully"
+        description: "New user account has been created successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       setShowAddDialog(false);
@@ -62,7 +83,7 @@ export default function UsersPage() {
     onSuccess: () => {
       toast({
         title: "User Updated",
-        description: "User account has been updated successfully"
+        description: "User account has been updated successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
     },
@@ -75,7 +96,7 @@ export default function UsersPage() {
     onSuccess: () => {
       toast({
         title: "User Deleted",
-        description: "User account has been deleted successfully"
+        description: "User account has been deleted successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
     },
@@ -90,27 +111,27 @@ export default function UsersPage() {
       status: "active",
       lastActive: new Date().toISOString(),
       moderationCount: 1247,
-      accuracy: 98.2
+      accuracy: 98.2,
     },
     {
       id: "user-002",
       username: "mod_alex",
-      email: "alex@fanzdash.com", 
+      email: "alex@fanzdash.com",
       role: "moderator",
       status: "active",
       lastActive: new Date(Date.now() - 300000).toISOString(),
       moderationCount: 967,
-      accuracy: 97.8
+      accuracy: 97.8,
     },
     {
       id: "user-003",
       username: "mod_jordan",
       email: "jordan@fanzdash.com",
-      role: "moderator", 
+      role: "moderator",
       status: "active",
       lastActive: new Date(Date.now() - 600000).toISOString(),
       moderationCount: 834,
-      accuracy: 96.9
+      accuracy: 96.9,
     },
     {
       id: "user-004",
@@ -120,8 +141,8 @@ export default function UsersPage() {
       status: "inactive",
       lastActive: new Date(Date.now() - 86400000).toISOString(),
       moderationCount: 234,
-      accuracy: 94.5
-    }
+      accuracy: 94.5,
+    },
   ];
 
   const getRoleBadge = (role: string) => {
@@ -177,7 +198,9 @@ export default function UsersPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">User Management</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              User Management
+            </h1>
             <p className="text-muted-foreground">Admin & Moderator Accounts</p>
           </div>
           <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -189,31 +212,46 @@ export default function UsersPage() {
             </DialogTrigger>
             <DialogContent className="max-w-md cyber-card">
               <DialogHeader>
-                <DialogTitle className="cyber-text-glow">Add New User</DialogTitle>
+                <DialogTitle className="cyber-text-glow">
+                  Add New User
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Username</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Username
+                  </label>
                   <Input
                     value={newUser.username}
-                    onChange={(e) => setNewUser({...newUser, username: e.target.value})}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, username: e.target.value })
+                    }
                     placeholder="Enter username"
                     className="glass-effect"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Email</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Email
+                  </label>
                   <Input
                     type="email"
                     value={newUser.email}
-                    onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, email: e.target.value })
+                    }
                     placeholder="Enter email"
                     className="glass-effect"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-2 block">Role</label>
-                  <Select value={newUser.role} onValueChange={(value) => setNewUser({...newUser, role: value})}>
+                  <Select
+                    value={newUser.role}
+                    onValueChange={(value) =>
+                      setNewUser({ ...newUser, role: value })
+                    }
+                  >
                     <SelectTrigger className="glass-effect">
                       <SelectValue />
                     </SelectTrigger>
@@ -226,16 +264,20 @@ export default function UsersPage() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Password</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Password
+                  </label>
                   <Input
                     type="password"
                     value={newUser.password}
-                    onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, password: e.target.value })
+                    }
                     placeholder="Enter password"
                     className="glass-effect"
                   />
                 </div>
-                <Button 
+                <Button
                   onClick={() => addUserMutation.mutate(newUser)}
                   disabled={addUserMutation.isPending}
                   className="w-full neon-button"
@@ -252,25 +294,33 @@ export default function UsersPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-primary cyber-text-glow">4</div>
+              <div className="text-2xl font-bold text-primary cyber-text-glow">
+                4
+              </div>
               <div className="text-sm text-muted-foreground">Total Users</div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 cyber-text-glow">3</div>
+              <div className="text-2xl font-bold text-green-400 cyber-text-glow">
+                3
+              </div>
               <div className="text-sm text-muted-foreground">Active</div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-400 cyber-text-glow">2</div>
+              <div className="text-2xl font-bold text-blue-400 cyber-text-glow">
+                2
+              </div>
               <div className="text-sm text-muted-foreground">Moderators</div>
             </CardContent>
           </Card>
           <Card className="cyber-card">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-accent cyber-text-glow">97.3%</div>
+              <div className="text-2xl font-bold text-accent cyber-text-glow">
+                97.3%
+              </div>
               <div className="text-sm text-muted-foreground">Avg Accuracy</div>
             </CardContent>
           </Card>
@@ -315,7 +365,10 @@ export default function UsersPage() {
           <CardContent>
             <div className="space-y-4">
               {mockUsers.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-4 cyber-card border border-primary/20">
+                <div
+                  key={user.id}
+                  className="flex items-center justify-between p-4 cyber-card border border-primary/20"
+                >
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
                       <UserCheck className="w-5 h-5 text-primary" />
@@ -326,23 +379,32 @@ export default function UsersPage() {
                         {getRoleBadge(user.role)}
                         {getStatusBadge(user.status)}
                       </div>
-                      <div className="text-sm text-muted-foreground">{user.email}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {user.email}
+                      </div>
                       <div className="text-xs text-muted-foreground">
-                        Last active: {new Date(user.lastActive).toLocaleString()}
+                        Last active:{" "}
+                        {new Date(user.lastActive).toLocaleString()}
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-6">
                     <div className="text-right">
-                      <div className="text-sm font-medium">{user.moderationCount} reviews</div>
-                      <div className="text-xs text-green-400">{user.accuracy}% accuracy</div>
+                      <div className="text-sm font-medium">
+                        {user.moderationCount} reviews
+                      </div>
+                      <div className="text-xs text-green-400">
+                        {user.accuracy}% accuracy
+                      </div>
                     </div>
 
                     <div className="flex items-center space-x-2">
                       <Select
                         value={user.role}
-                        onValueChange={(value) => updateUserRole(user.id, value)}
+                        onValueChange={(value) =>
+                          updateUserRole(user.id, value)
+                        }
                       >
                         <SelectTrigger className="w-24 h-8">
                           <SelectValue />
@@ -357,7 +419,9 @@ export default function UsersPage() {
 
                       <Select
                         value={user.status}
-                        onValueChange={(value) => updateUserStatus(user.id, value)}
+                        onValueChange={(value) =>
+                          updateUserStatus(user.id, value)
+                        }
                       >
                         <SelectTrigger className="w-24 h-8">
                           <SelectValue />

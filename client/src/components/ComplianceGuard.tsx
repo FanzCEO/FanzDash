@@ -2,26 +2,32 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  AlertTriangle, 
-  Shield, 
-  Eye, 
-  FileCheck, 
+import {
+  AlertTriangle,
+  Shield,
+  Eye,
+  FileCheck,
   Clock,
   CheckCircle2,
   XCircle,
-  Lock
+  Lock,
 } from "lucide-react";
 
 interface ComplianceGuardProps {
   action: string;
   requiredRole?: string;
   requiresSuperAdmin?: boolean;
-  contentType?: 'post' | 'live_stream' | 'user_account' | 'financial';
+  contentType?: "post" | "live_stream" | "user_account" | "financial";
   onApprove?: (reason: string, evidence: any) => void;
   onReject?: (reason: string) => void;
   children?: React.ReactNode;
@@ -32,10 +38,10 @@ export function ComplianceGuard({
   action,
   requiredRole,
   requiresSuperAdmin,
-  contentType = 'post',
+  contentType = "post",
   onApprove,
   onReject,
-  children
+  children,
 }: ComplianceGuardProps) {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewReason, setReviewReason] = useState("");
@@ -47,7 +53,7 @@ export function ComplianceGuard({
     costar_2257_forms: false,
     content_reviewed: false,
     legal_compliance: false,
-    audit_logged: false
+    audit_logged: false,
   });
 
   // Simulate AI-powered compliance checks based on knowledge base SOPs
@@ -56,10 +62,10 @@ export function ComplianceGuard({
     setTimeout(() => {
       setComplianceChecks({
         age_verification: true,
-        costar_2257_forms: contentType === 'post' ? coStarVerified : true,
+        costar_2257_forms: contentType === "post" ? coStarVerified : true,
         content_reviewed: true,
         legal_compliance: true,
-        audit_logged: true
+        audit_logged: true,
       });
     }, 2000);
   };
@@ -75,7 +81,9 @@ export function ComplianceGuard({
       return;
     }
 
-    const allChecksPass = Object.values(complianceChecks).every(check => check);
+    const allChecksPass = Object.values(complianceChecks).every(
+      (check) => check,
+    );
     if (!allChecksPass) {
       alert("All compliance checks must pass before approval");
       return;
@@ -86,7 +94,7 @@ export function ComplianceGuard({
         compliance_checks: complianceChecks,
         timestamp: new Date().toISOString(),
         reviewer_action: action,
-        super_admin_override: requiresSuperAdmin
+        super_admin_override: requiresSuperAdmin,
       });
     } else if (!approved && onReject) {
       onReject(reviewReason);
@@ -95,16 +103,16 @@ export function ComplianceGuard({
     setShowReviewModal(false);
   };
 
-  const ComplianceCheckItem = ({ 
-    id, 
-    label, 
-    checked, 
-    description 
-  }: { 
-    id: string; 
-    label: string; 
-    checked: boolean; 
-    description: string; 
+  const ComplianceCheckItem = ({
+    id,
+    label,
+    checked,
+    description,
+  }: {
+    id: string;
+    label: string;
+    checked: boolean;
+    description: string;
   }) => (
     <div className="flex items-start space-x-3 p-3 border border-primary/20 rounded bg-black/30">
       {checked ? (
@@ -122,7 +130,10 @@ export function ComplianceGuard({
   return (
     <div>
       {children && (
-        <div onClick={() => setShowReviewModal(true)} className="cursor-pointer">
+        <div
+          onClick={() => setShowReviewModal(true)}
+          className="cursor-pointer"
+        >
           {children}
         </div>
       )}
@@ -134,7 +145,9 @@ export function ComplianceGuard({
               <div className="flex items-center space-x-3">
                 <Shield className="w-6 h-6 text-cyan-400" />
                 <div>
-                  <CardTitle className="text-cyan-400">Compliance Review Required</CardTitle>
+                  <CardTitle className="text-cyan-400">
+                    Compliance Review Required
+                  </CardTitle>
                   <CardDescription>
                     Action: {action} | Type: {contentType.toUpperCase()}
                   </CardDescription>
@@ -144,7 +157,8 @@ export function ComplianceGuard({
                 <Alert className="border-red-500/50 bg-red-500/10">
                   <AlertTriangle className="h-4 w-4 text-red-500" />
                   <AlertDescription className="text-red-300">
-                    This action requires Super Admin authorization and will create an immutable audit log entry.
+                    This action requires Super Admin authorization and will
+                    create an immutable audit log entry.
                   </AlertDescription>
                 </Alert>
               )}
@@ -190,8 +204,8 @@ export function ComplianceGuard({
                   />
                 </div>
 
-                <Button 
-                  onClick={runComplianceChecks} 
+                <Button
+                  onClick={runComplianceChecks}
                   className="w-full mt-4 bg-cyan-600 hover:bg-cyan-700"
                 >
                   <Eye className="w-4 h-4 mr-2" />
@@ -200,9 +214,11 @@ export function ComplianceGuard({
               </div>
 
               {/* Co-Star Verification for Posts */}
-              {contentType === 'post' && (
+              {contentType === "post" && (
                 <div className="space-y-4">
-                  <Label className="text-white font-semibold">Co-Star Verification Status</Label>
+                  <Label className="text-white font-semibold">
+                    Co-Star Verification Status
+                  </Label>
                   <div className="flex items-center space-x-3 p-3 border border-primary/20 rounded bg-black/30">
                     <input
                       type="checkbox"
@@ -211,7 +227,8 @@ export function ComplianceGuard({
                       className="w-4 h-4"
                     />
                     <Label className="text-white">
-                      All tagged co-stars have valid 2257 forms with matching legal names and IDs
+                      All tagged co-stars have valid 2257 forms with matching
+                      legal names and IDs
                     </Label>
                   </div>
                 </div>
@@ -236,7 +253,9 @@ export function ComplianceGuard({
 
               {/* Review Reason */}
               <div className="space-y-2">
-                <Label className="text-white font-semibold">Review Reason (Required for Audit)</Label>
+                <Label className="text-white font-semibold">
+                  Review Reason (Required for Audit)
+                </Label>
                 <Textarea
                   value={reviewReason}
                   onChange={(e) => setReviewReason(e.target.value)}
@@ -268,10 +287,10 @@ export function ComplianceGuard({
                   onClick={() => handleReviewAction(true)}
                   className="flex-1 bg-green-600 hover:bg-green-700"
                   disabled={
-                    !reviewReason.trim() || 
-                    !Object.values(complianceChecks).every(check => check) ||
+                    !reviewReason.trim() ||
+                    !Object.values(complianceChecks).every((check) => check) ||
                     (requiresSuperAdmin && !superAdminPassword) ||
-                    (contentType === 'post' && !coStarVerified)
+                    (contentType === "post" && !coStarVerified)
                   }
                 >
                   <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -283,8 +302,10 @@ export function ComplianceGuard({
               <Alert className="border-amber-500/50 bg-amber-500/10">
                 <AlertTriangle className="h-4 w-4 text-amber-500" />
                 <AlertDescription className="text-amber-300 text-sm">
-                  <strong>COMPLIANCE WARNING:</strong> This action will be permanently logged in the audit system for 7+ years as required by 18 U.S.C. § 2257. 
-                  Violations may result in suspension of moderation privileges or account termination.
+                  <strong>COMPLIANCE WARNING:</strong> This action will be
+                  permanently logged in the audit system for 7+ years as
+                  required by 18 U.S.C. § 2257. Violations may result in
+                  suspension of moderation privileges or account termination.
                 </AlertDescription>
               </Alert>
             </CardContent>

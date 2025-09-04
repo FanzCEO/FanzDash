@@ -6,18 +6,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Mail, 
-  User, 
-  MessageSquare, 
-  Send, 
-  MapPin, 
-  Phone, 
+import {
+  Mail,
+  User,
+  MessageSquare,
+  Send,
+  MapPin,
+  Phone,
   Clock,
   CheckCircle,
   AlertTriangle,
   RefreshCw,
-  Shield
+  Shield,
 } from "lucide-react";
 
 interface ContactFormData {
@@ -52,19 +52,21 @@ export function ContactPage({
   onSubmit,
   settings,
   user,
-  className = ""
+  className = "",
 }: ContactPageProps) {
   const [formData, setFormData] = useState<ContactFormData>({
     fullName: user?.name || "",
     email: user?.email || "",
     subject: "",
     message: "",
-    agreeTerms: false
+    agreeTerms: false,
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<ContactFormData>>({});
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
   const [submitMessage, setSubmitMessage] = useState("");
 
   const validateForm = (): boolean => {
@@ -100,46 +102,55 @@ export function ContactPage({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
-    setSubmitStatus('idle');
-    
+    setSubmitStatus("idle");
+
     try {
       await onSubmit(formData);
-      setSubmitStatus('success');
-      setSubmitMessage("Thank you for your message! We'll get back to you soon.");
-      
+      setSubmitStatus("success");
+      setSubmitMessage(
+        "Thank you for your message! We'll get back to you soon.",
+      );
+
       // Reset form
       setFormData({
         fullName: user?.name || "",
         email: user?.email || "",
         subject: "",
         message: "",
-        agreeTerms: false
+        agreeTerms: false,
       });
     } catch (error: any) {
-      setSubmitStatus('error');
-      setSubmitMessage(error.message || "Failed to send message. Please try again.");
+      setSubmitStatus("error");
+      setSubmitMessage(
+        error.message || "Failed to send message. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleInputChange = (field: keyof ContactFormData, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+  const handleInputChange = (
+    field: keyof ContactFormData,
+    value: string | boolean,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-primary/5 via-background to-purple-500/5 ${className}`}>
+    <div
+      className={`min-h-screen bg-gradient-to-br from-primary/5 via-background to-purple-500/5 ${className}`}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -147,13 +158,14 @@ export function ContactPage({
             <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6">
               <Mail className="h-10 w-10 text-primary" />
             </div>
-            
+
             <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-4">
               Contact Us
             </h1>
-            
+
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Have questions or need support? We're here to help and would love to hear from you.
+              Have questions or need support? We're here to help and would love
+              to hear from you.
             </p>
           </div>
 
@@ -175,7 +187,9 @@ export function ContactPage({
                       </div>
                       <div>
                         <h4 className="font-semibold mb-1">Email</h4>
-                        <p className="text-muted-foreground">{settings.contactInfo.email}</p>
+                        <p className="text-muted-foreground">
+                          {settings.contactInfo.email}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -187,7 +201,9 @@ export function ContactPage({
                       </div>
                       <div>
                         <h4 className="font-semibold mb-1">Phone</h4>
-                        <p className="text-muted-foreground">{settings.contactInfo.phone}</p>
+                        <p className="text-muted-foreground">
+                          {settings.contactInfo.phone}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -199,7 +215,9 @@ export function ContactPage({
                       </div>
                       <div>
                         <h4 className="font-semibold mb-1">Address</h4>
-                        <p className="text-muted-foreground">{settings.contactInfo.address}</p>
+                        <p className="text-muted-foreground">
+                          {settings.contactInfo.address}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -211,7 +229,9 @@ export function ContactPage({
                       </div>
                       <div>
                         <h4 className="font-semibold mb-1">Hours</h4>
-                        <p className="text-muted-foreground">{settings.contactInfo.hours}</p>
+                        <p className="text-muted-foreground">
+                          {settings.contactInfo.hours}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -232,12 +252,13 @@ export function ContactPage({
                 <CardHeader>
                   <h3 className="text-2xl font-bold">Send us a Message</h3>
                   <p className="text-muted-foreground">
-                    Fill out the form below and we'll get back to you as soon as possible.
+                    Fill out the form below and we'll get back to you as soon as
+                    possible.
                   </p>
                 </CardHeader>
                 <CardContent>
                   {/* Status Messages */}
-                  {submitStatus === 'success' && (
+                  {submitStatus === "success" && (
                     <Alert className="mb-6 border-green-200 bg-green-50">
                       <CheckCircle className="h-4 w-4 text-green-600" />
                       <AlertDescription className="text-green-800">
@@ -246,7 +267,7 @@ export function ContactPage({
                     </Alert>
                   )}
 
-                  {submitStatus === 'error' && (
+                  {submitStatus === "error" && (
                     <Alert variant="destructive" className="mb-6">
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>{submitMessage}</AlertDescription>
@@ -257,7 +278,10 @@ export function ContactPage({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Full Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="fullName" className="flex items-center space-x-2">
+                        <Label
+                          htmlFor="fullName"
+                          className="flex items-center space-x-2"
+                        >
                           <User className="h-4 w-4" />
                           <span>Full Name</span>
                         </Label>
@@ -265,19 +289,26 @@ export function ContactPage({
                           id="fullName"
                           type="text"
                           value={formData.fullName}
-                          onChange={(e) => handleInputChange('fullName', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("fullName", e.target.value)
+                          }
                           placeholder="Enter your full name"
                           className={errors.fullName ? "border-red-500" : ""}
                           data-testid="contact-fullname-input"
                         />
                         {errors.fullName && (
-                          <p className="text-sm text-red-600">{errors.fullName}</p>
+                          <p className="text-sm text-red-600">
+                            {errors.fullName}
+                          </p>
                         )}
                       </div>
 
                       {/* Email */}
                       <div className="space-y-2">
-                        <Label htmlFor="email" className="flex items-center space-x-2">
+                        <Label
+                          htmlFor="email"
+                          className="flex items-center space-x-2"
+                        >
                           <Mail className="h-4 w-4" />
                           <span>Email Address</span>
                         </Label>
@@ -285,7 +316,9 @@ export function ContactPage({
                           id="email"
                           type="email"
                           value={formData.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("email", e.target.value)
+                          }
                           placeholder="Enter your email address"
                           className={errors.email ? "border-red-500" : ""}
                           data-testid="contact-email-input"
@@ -298,7 +331,10 @@ export function ContactPage({
 
                     {/* Subject */}
                     <div className="space-y-2">
-                      <Label htmlFor="subject" className="flex items-center space-x-2">
+                      <Label
+                        htmlFor="subject"
+                        className="flex items-center space-x-2"
+                      >
                         <MessageSquare className="h-4 w-4" />
                         <span>Subject</span>
                       </Label>
@@ -306,7 +342,9 @@ export function ContactPage({
                         id="subject"
                         type="text"
                         value={formData.subject}
-                        onChange={(e) => handleInputChange('subject', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("subject", e.target.value)
+                        }
                         placeholder="What's this about?"
                         className={errors.subject ? "border-red-500" : ""}
                         data-testid="contact-subject-input"
@@ -322,7 +360,9 @@ export function ContactPage({
                       <Textarea
                         id="message"
                         value={formData.message}
-                        onChange={(e) => handleInputChange('message', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("message", e.target.value)
+                        }
                         placeholder="Tell us more about your inquiry..."
                         rows={6}
                         className={errors.message ? "border-red-500" : ""}
@@ -332,7 +372,8 @@ export function ContactPage({
                         <p className="text-sm text-red-600">{errors.message}</p>
                       )}
                       <p className="text-xs text-muted-foreground">
-                        {formData.message.length} characters (minimum 10 required)
+                        {formData.message.length} characters (minimum 10
+                        required)
                       </p>
                     </div>
 
@@ -343,24 +384,31 @@ export function ContactPage({
                           <Checkbox
                             id="agreeTerms"
                             checked={formData.agreeTerms}
-                            onCheckedChange={(checked) => handleInputChange('agreeTerms', checked === true)}
-                            className={errors.agreeTerms ? "border-red-500" : ""}
+                            onCheckedChange={(checked) =>
+                              handleInputChange("agreeTerms", checked === true)
+                            }
+                            className={
+                              errors.agreeTerms ? "border-red-500" : ""
+                            }
                             data-testid="contact-terms-checkbox"
                           />
-                          <Label htmlFor="agreeTerms" className="text-sm leading-relaxed">
+                          <Label
+                            htmlFor="agreeTerms"
+                            className="text-sm leading-relaxed"
+                          >
                             I agree to the{" "}
-                            <a 
-                              href={settings.linkTerms} 
-                              target="_blank" 
+                            <a
+                              href={settings.linkTerms}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="text-primary hover:underline"
                             >
                               Terms & Conditions
-                            </a>
-                            {" "}and{" "}
-                            <a 
-                              href={settings.linkPrivacy} 
-                              target="_blank" 
+                            </a>{" "}
+                            and{" "}
+                            <a
+                              href={settings.linkPrivacy}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="text-primary hover:underline"
                             >
@@ -369,7 +417,9 @@ export function ContactPage({
                           </Label>
                         </div>
                         {errors.agreeTerms && (
-                          <p className="text-sm text-red-600">{errors.agreeTerms}</p>
+                          <p className="text-sm text-red-600">
+                            {errors.agreeTerms}
+                          </p>
                         )}
                       </div>
                     )}

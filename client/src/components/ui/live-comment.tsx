@@ -1,14 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  Crown, 
-  Verified, 
-  Gift, 
+import {
+  Crown,
+  Verified,
+  Gift,
   Coins,
   Heart,
   MoreHorizontal,
-  Flag
+  Flag,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -55,13 +55,15 @@ export function LiveComment({
   onReport,
   onTip,
   isCurrentUser = false,
-  className = ""
+  className = "",
 }: LiveCommentProps) {
-
   const timeAgo = formatDistanceToNow(new Date(timestamp), { addSuffix: true });
 
   return (
-    <div className={`flex space-x-3 p-3 hover:bg-muted/50 ${className}`} data-comment-id={id}>
+    <div
+      className={`flex space-x-3 p-3 hover:bg-muted/50 ${className}`}
+      data-comment-id={id}
+    >
       {/* Avatar */}
       <Avatar className="h-8 w-8 flex-shrink-0">
         <AvatarImage src={avatar} />
@@ -75,7 +77,7 @@ export function LiveComment({
         {/* Username and badges */}
         <div className="flex items-center space-x-2 mb-1">
           <span className="font-semibold text-sm truncate">{username}</span>
-          
+
           {/* Creator badge */}
           {isCreator && (
             <Badge variant="default" className="text-xs bg-green-600">
@@ -83,7 +85,7 @@ export function LiveComment({
               Creator
             </Badge>
           )}
-          
+
           {/* Subscriber badge */}
           {isSubscriber && !isCreator && (
             <Badge variant="outline" className="text-xs">
@@ -91,7 +93,7 @@ export function LiveComment({
               Subscriber
             </Badge>
           )}
-          
+
           {/* Verified badge */}
           {isVerified && !isCreator && (
             <Verified className="h-4 w-4 text-blue-500 fill-current" />
@@ -104,7 +106,7 @@ export function LiveComment({
         {/* Comment text */}
         <div className="text-sm mb-2">
           {comment}
-          
+
           {/* Join notification */}
           {hasJoined && (
             <span className="text-green-600 font-medium">
@@ -118,7 +120,8 @@ export function LiveComment({
           <div className="mb-2">
             <Badge className="bg-green-100 text-green-800 border-green-300">
               <Coins className="h-3 w-3 mr-1" />
-              Tipped {tip.currency}{tip.amount}
+              Tipped {tip.currency}
+              {tip.amount}
             </Badge>
           </div>
         )}
@@ -127,13 +130,13 @@ export function LiveComment({
         {gift && (
           <div className="mb-2">
             <div className="flex items-center space-x-2 p-2 bg-purple-50 rounded-lg border border-purple-200">
-              <img 
-                src={gift.image} 
+              <img
+                src={gift.image}
                 alt={gift.name}
                 className="w-8 h-8 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = '/api/placeholder/32/32';
+                  target.src = "/api/placeholder/32/32";
                 }}
               />
               <div>

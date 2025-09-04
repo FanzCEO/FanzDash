@@ -1,18 +1,24 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NewAdvancedFilters } from "./NewAdvancedFilters";
-import { 
-  Eye, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  Eye,
+  Clock,
+  CheckCircle2,
+  XCircle,
   AlertTriangle,
   User,
   Calendar,
   Tag,
-  Filter
+  Filter,
 } from "lucide-react";
 
 interface FilterableItem {
@@ -36,11 +42,11 @@ interface FilterableContentGridProps {
   onItemAction?: (action: string, item: FilterableItem) => void;
 }
 
-export function FilterableContentGrid({ 
-  category, 
-  items, 
-  onItemSelect, 
-  onItemAction 
+export function FilterableContentGrid({
+  category,
+  items,
+  onItemSelect,
+  onItemAction,
 }: FilterableContentGridProps) {
   const [filteredItems, setFilteredItems] = useState<FilterableItem[]>(items);
   const [currentFilters, setCurrentFilters] = useState<Record<string, any>>({});
@@ -58,23 +64,31 @@ export function FilterableContentGrid({
 
     // Apply search term
     if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.creator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.creator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.tags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm.toLowerCase()),
+          ),
       );
     }
 
     // Apply keywords
     if (keywords.length > 0) {
-      filtered = filtered.filter(item =>
-        keywords.every(keyword =>
-          item.title.toLowerCase().includes(keyword.toLowerCase()) ||
-          item.type.toLowerCase().includes(keyword.toLowerCase()) ||
-          item.tags.some(tag => tag.toLowerCase().includes(keyword.toLowerCase())) ||
-          JSON.stringify(item.metadata).toLowerCase().includes(keyword.toLowerCase())
-        )
+      filtered = filtered.filter((item) =>
+        keywords.every(
+          (keyword) =>
+            item.title.toLowerCase().includes(keyword.toLowerCase()) ||
+            item.type.toLowerCase().includes(keyword.toLowerCase()) ||
+            item.tags.some((tag) =>
+              tag.toLowerCase().includes(keyword.toLowerCase()),
+            ) ||
+            JSON.stringify(item.metadata)
+              .toLowerCase()
+              .includes(keyword.toLowerCase()),
+        ),
       );
     }
 
@@ -83,76 +97,77 @@ export function FilterableContentGrid({
       if (!value || (Array.isArray(value) && value.length === 0)) return;
 
       switch (key) {
-        case 'contentType':
-        case 'moderationStatus':
-        case 'complianceRisk':
-        case 'platformType':
-        case 'connectionStatus':
-        case 'userType':
-        case 'accountStatus':
-        case 'paymentStatus':
-        case 'systemType':
-        case 'systemStatus':
+        case "contentType":
+        case "moderationStatus":
+        case "complianceRisk":
+        case "platformType":
+        case "connectionStatus":
+        case "userType":
+        case "accountStatus":
+        case "paymentStatus":
+        case "systemType":
+        case "systemStatus":
           if (Array.isArray(value)) {
-            filtered = filtered.filter(item => 
-              value.some(v => 
-                item.type.toLowerCase().includes(v.toLowerCase()) ||
-                item.status.toLowerCase().includes(v.toLowerCase()) ||
-                item.metadata[key]?.toLowerCase().includes(v.toLowerCase())
-              )
+            filtered = filtered.filter((item) =>
+              value.some(
+                (v) =>
+                  item.type.toLowerCase().includes(v.toLowerCase()) ||
+                  item.status.toLowerCase().includes(v.toLowerCase()) ||
+                  item.metadata[key]?.toLowerCase().includes(v.toLowerCase()),
+              ),
             );
           }
           break;
-        
-        case 'priority':
+
+        case "priority":
           if (Array.isArray(value)) {
-            filtered = filtered.filter(item => value.includes(item.priority));
+            filtered = filtered.filter((item) => value.includes(item.priority));
           } else if (value) {
-            filtered = filtered.filter(item => item.priority === value);
+            filtered = filtered.filter((item) => item.priority === value);
           }
           break;
-        
-        case 'assignedTo':
+
+        case "assignedTo":
           if (Array.isArray(value)) {
-            filtered = filtered.filter(item => 
-              item.assignedTo && value.includes(item.assignedTo)
+            filtered = filtered.filter(
+              (item) => item.assignedTo && value.includes(item.assignedTo),
             );
           }
           break;
-        
-        case 'dateRange':
+
+        case "dateRange":
           const now = new Date();
           let cutoffDate = new Date();
           switch (value) {
-            case 'Last 24 hours':
+            case "Last 24 hours":
               cutoffDate.setDate(now.getDate() - 1);
               break;
-            case 'Last 7 days':
+            case "Last 7 days":
               cutoffDate.setDate(now.getDate() - 7);
               break;
-            case 'Last 30 days':
+            case "Last 30 days":
               cutoffDate.setDate(now.getDate() - 30);
               break;
-            case 'Last 90 days':
+            case "Last 90 days":
               cutoffDate.setDate(now.getDate() - 90);
               break;
           }
-          if (value !== 'Custom range') {
-            filtered = filtered.filter(item => 
-              new Date(item.updatedAt) >= cutoffDate
+          if (value !== "Custom range") {
+            filtered = filtered.filter(
+              (item) => new Date(item.updatedAt) >= cutoffDate,
             );
           }
           break;
-        
-        case 'hasCoStars':
-        case 'verified2257':
-        case 'flagged':
-        case 'encrypted':
-        case 'hasAlerts':
-        case 'hasIncidents':
-          if (typeof value === 'boolean') {
-            filtered = filtered.filter(item => 
-              Boolean(item.metadata[key]) === value
+
+        case "hasCoStars":
+        case "verified2257":
+        case "flagged":
+        case "encrypted":
+        case "hasAlerts":
+        case "hasIncidents":
+          if (typeof value === "boolean") {
+            filtered = filtered.filter(
+              (item) => Boolean(item.metadata[key]) === value,
             );
           }
           break;
@@ -165,27 +180,27 @@ export function FilterableContentGrid({
       let bValue: any;
 
       switch (sortBy) {
-        case 'title':
+        case "title":
           aValue = a.title.toLowerCase();
           bValue = b.title.toLowerCase();
           break;
-        case 'priority':
-          const priorityOrder = { 'Critical': 4, 'High': 3, 'Medium': 2, 'Low': 1 };
+        case "priority":
+          const priorityOrder = { Critical: 4, High: 3, Medium: 2, Low: 1 };
           aValue = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
           bValue = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
           break;
-        case 'createdAt':
+        case "createdAt":
           aValue = new Date(a.createdAt).getTime();
           bValue = new Date(b.createdAt).getTime();
           break;
-        case 'updatedAt':
+        case "updatedAt":
         default:
           aValue = new Date(a.updatedAt).getTime();
           bValue = new Date(b.updatedAt).getTime();
           break;
       }
 
-      if (sortOrder === 'asc') {
+      if (sortOrder === "asc") {
         return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
       } else {
         return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
@@ -207,17 +222,17 @@ export function FilterableContentGrid({
   const getStatusIcon = (status: string, priority: string) => {
     const lowerStatus = status.toLowerCase();
     const lowerPriority = priority.toLowerCase();
-    
-    if (lowerPriority === 'critical' || lowerStatus.includes('critical')) {
+
+    if (lowerPriority === "critical" || lowerStatus.includes("critical")) {
       return <AlertTriangle className="w-4 h-4 text-red-500" />;
     }
-    if (lowerStatus.includes('approved') || lowerStatus.includes('completed')) {
+    if (lowerStatus.includes("approved") || lowerStatus.includes("completed")) {
       return <CheckCircle2 className="w-4 h-4 text-green-500" />;
     }
-    if (lowerStatus.includes('rejected') || lowerStatus.includes('failed')) {
+    if (lowerStatus.includes("rejected") || lowerStatus.includes("failed")) {
       return <XCircle className="w-4 h-4 text-red-500" />;
     }
-    if (lowerStatus.includes('pending') || lowerStatus.includes('processing')) {
+    if (lowerStatus.includes("pending") || lowerStatus.includes("processing")) {
       return <Clock className="w-4 h-4 text-yellow-500" />;
     }
     return <Eye className="w-4 h-4 text-gray-400" />;
@@ -225,11 +240,16 @@ export function FilterableContentGrid({
 
   const getPriorityColor = (priority: string) => {
     switch (priority.toLowerCase()) {
-      case 'critical': return 'text-red-400 border-red-400 bg-red-400/10';
-      case 'high': return 'text-orange-400 border-orange-400 bg-orange-400/10';
-      case 'medium': return 'text-yellow-400 border-yellow-400 bg-yellow-400/10';
-      case 'low': return 'text-green-400 border-green-400 bg-green-400/10';
-      default: return 'text-gray-400 border-gray-400 bg-gray-400/10';
+      case "critical":
+        return "text-red-400 border-red-400 bg-red-400/10";
+      case "high":
+        return "text-orange-400 border-orange-400 bg-orange-400/10";
+      case "medium":
+        return "text-yellow-400 border-yellow-400 bg-yellow-400/10";
+      case "low":
+        return "text-green-400 border-green-400 bg-green-400/10";
+      default:
+        return "text-gray-400 border-gray-400 bg-gray-400/10";
     }
   };
 
@@ -240,7 +260,7 @@ export function FilterableContentGrid({
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHours / 24);
 
-    if (diffHours < 1) return 'Just now';
+    if (diffHours < 1) return "Just now";
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
@@ -276,10 +296,10 @@ export function FilterableContentGrid({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
               className="text-xs"
             >
-              {sortOrder === 'asc' ? '↑' : '↓'}
+              {sortOrder === "asc" ? "↑" : "↓"}
             </Button>
           </div>
         </div>
@@ -288,8 +308,8 @@ export function FilterableContentGrid({
       {/* Content Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredItems.map((item) => (
-          <Card 
-            key={item.id} 
+          <Card
+            key={item.id}
             className="bg-black/40 border-primary/20 cyber-border hover:border-cyan-400/50 transition-colors cursor-pointer"
             onClick={() => onItemSelect?.(item)}
             data-testid={`content-item-${item.id}`}
@@ -306,8 +326,8 @@ export function FilterableContentGrid({
                 </div>
                 <div className="flex items-center space-x-2">
                   {getStatusIcon(item.status, item.priority)}
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={`text-xs ${getPriorityColor(item.priority)}`}
                   >
                     {item.priority.toUpperCase()}
@@ -325,14 +345,14 @@ export function FilterableContentGrid({
                     {item.status}
                   </Badge>
                 </div>
-                
+
                 {item.creator && (
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-gray-400">Creator:</span>
                     <span className="text-cyan-400">{item.creator}</span>
                   </div>
                 )}
-                
+
                 {item.assignedTo && (
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-gray-400">Assigned:</span>
@@ -356,7 +376,10 @@ export function FilterableContentGrid({
                       </Badge>
                     ))}
                     {item.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs py-0 px-1 text-gray-400">
+                      <Badge
+                        variant="outline"
+                        className="text-xs py-0 px-1 text-gray-400"
+                      >
                         +{item.tags.length - 3}
                       </Badge>
                     )}
@@ -372,7 +395,7 @@ export function FilterableContentGrid({
                   className="flex-1 text-xs"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onItemAction?.('view', item);
+                    onItemAction?.("view", item);
                   }}
                   data-testid={`view-${item.id}`}
                 >
@@ -385,7 +408,7 @@ export function FilterableContentGrid({
                   className="flex-1 text-xs"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onItemAction?.('edit', item);
+                    onItemAction?.("edit", item);
                   }}
                   data-testid={`edit-${item.id}`}
                 >
@@ -402,11 +425,14 @@ export function FilterableContentGrid({
         <Card className="bg-black/40 border-primary/20 cyber-border">
           <CardContent className="text-center py-12">
             <Filter className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No items found</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">
+              No items found
+            </h3>
             <p className="text-gray-400 mb-4">
-              Try adjusting your filters or search terms to find what you're looking for.
+              Try adjusting your filters or search terms to find what you're
+              looking for.
             </p>
-            <Button 
+            <Button
               variant="outline"
               onClick={() => {
                 setCurrentFilters({});

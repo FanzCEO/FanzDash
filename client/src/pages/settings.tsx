@@ -7,9 +7,29 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Shield, Brain, Bell, Database, Lock, Users, Save, Code, Mail, Play, CheckCircle, AlertTriangle } from "lucide-react";
+import {
+  Settings,
+  Shield,
+  Brain,
+  Bell,
+  Database,
+  Lock,
+  Users,
+  Save,
+  Code,
+  Mail,
+  Play,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
@@ -19,33 +39,33 @@ export default function SettingsPage() {
     autoBlockThreshold: 70,
     analysisSpeed: "balanced",
     modelSelection: "chatgpt-4o",
-    
+
     // Moderation Settings
     requireManualReview: false,
     autoApproveThreshold: 30,
     escalationThreshold: 80,
-    
+
     // Security Settings
     twoFactorAuth: true,
     sessionTimeout: 60,
     ipWhitelist: "",
     auditLogging: true,
-    
+
     // Notification Settings
     emailAlerts: true,
     slackWebhook: "",
     highRiskAlerts: true,
     dailyReports: true,
-    
+
     // Performance Settings
     maxConcurrentAnalysis: 10,
     batchSize: 50,
     retentionDays: 90,
-    
+
     // CSS/JS Customization
     customCss: "",
     customJs: "",
-    
+
     // Email Configuration
     smtpHost: "",
     smtpPort: 587,
@@ -53,23 +73,23 @@ export default function SettingsPage() {
     smtpPassword: "",
     smtpEncryption: "tls",
     adminEmail: "",
-    
+
     // FFMPEG Settings
     ffmpegPath: "/usr/bin/ffmpeg",
-    ffmpegTestStatus: "idle"
+    ffmpegTestStatus: "idle",
   });
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const updateSetting = (key: string, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   const saveSettings = () => {
     toast({
       title: "Settings Saved",
-      description: "Configuration has been updated successfully"
+      description: "Configuration has been updated successfully",
     });
   };
 
@@ -79,10 +99,16 @@ export default function SettingsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">System Settings</h1>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              System Settings
+            </h1>
             <p className="text-muted-foreground">Platform Configuration</p>
           </div>
-          <Button onClick={saveSettings} className="neon-button" data-testid="save-settings">
+          <Button
+            onClick={saveSettings}
+            className="neon-button"
+            data-testid="save-settings"
+          >
             <Save className="w-4 h-4 mr-2" />
             Save Changes
           </Button>
@@ -95,23 +121,38 @@ export default function SettingsPage() {
               <Brain className="w-4 h-4" />
               <span>AI Engine</span>
             </TabsTrigger>
-            <TabsTrigger value="moderation" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="moderation"
+              className="flex items-center space-x-2"
+            >
               <Shield className="w-4 h-4" />
               <span>Moderation</span>
             </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="security"
+              className="flex items-center space-x-2"
+            >
               <Lock className="w-4 h-4" />
               <span>Security</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="notifications"
+              className="flex items-center space-x-2"
+            >
               <Bell className="w-4 h-4" />
               <span>Alerts</span>
             </TabsTrigger>
-            <TabsTrigger value="performance" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="performance"
+              className="flex items-center space-x-2"
+            >
               <Database className="w-4 h-4" />
               <span>Performance</span>
             </TabsTrigger>
-            <TabsTrigger value="customization" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="customization"
+              className="flex items-center space-x-2"
+            >
               <Code className="w-4 h-4" />
               <span>CSS/JS</span>
             </TabsTrigger>
@@ -142,15 +183,21 @@ export default function SettingsPage() {
                       <Switch
                         id="ai-enabled"
                         checked={settings.aiEnabled}
-                        onCheckedChange={(checked) => updateSetting('aiEnabled', checked)}
+                        onCheckedChange={(checked) =>
+                          updateSetting("aiEnabled", checked)
+                        }
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label>Auto-Block Threshold: {settings.autoBlockThreshold}%</Label>
+                      <Label>
+                        Auto-Block Threshold: {settings.autoBlockThreshold}%
+                      </Label>
                       <Slider
                         value={[settings.autoBlockThreshold]}
-                        onValueChange={(value) => updateSetting('autoBlockThreshold', value[0])}
+                        onValueChange={(value) =>
+                          updateSetting("autoBlockThreshold", value[0])
+                        }
                         max={100}
                         step={5}
                         className="w-full"
@@ -159,12 +206,19 @@ export default function SettingsPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="model-selection">AI Model</Label>
-                      <Select value={settings.modelSelection} onValueChange={(value) => updateSetting('modelSelection', value)}>
+                      <Select
+                        value={settings.modelSelection}
+                        onValueChange={(value) =>
+                          updateSetting("modelSelection", value)
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="chatgpt-4o">ChatGPT-4o (Recommended)</SelectItem>
+                          <SelectItem value="chatgpt-4o">
+                            ChatGPT-4o (Recommended)
+                          </SelectItem>
                           <SelectItem value="chatgpt-4">ChatGPT-4</SelectItem>
                           <SelectItem value="claude-3">Claude-3</SelectItem>
                         </SelectContent>
@@ -175,14 +229,25 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="analysis-speed">Analysis Speed</Label>
-                      <Select value={settings.analysisSpeed} onValueChange={(value) => updateSetting('analysisSpeed', value)}>
+                      <Select
+                        value={settings.analysisSpeed}
+                        onValueChange={(value) =>
+                          updateSetting("analysisSpeed", value)
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="fast">Fast (Lower Accuracy)</SelectItem>
-                          <SelectItem value="balanced">Balanced (Recommended)</SelectItem>
-                          <SelectItem value="thorough">Thorough (Higher Accuracy)</SelectItem>
+                          <SelectItem value="fast">
+                            Fast (Lower Accuracy)
+                          </SelectItem>
+                          <SelectItem value="balanced">
+                            Balanced (Recommended)
+                          </SelectItem>
+                          <SelectItem value="thorough">
+                            Thorough (Higher Accuracy)
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -223,19 +288,27 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="manual-review">Require Manual Review</Label>
+                      <Label htmlFor="manual-review">
+                        Require Manual Review
+                      </Label>
                       <Switch
                         id="manual-review"
                         checked={settings.requireManualReview}
-                        onCheckedChange={(checked) => updateSetting('requireManualReview', checked)}
+                        onCheckedChange={(checked) =>
+                          updateSetting("requireManualReview", checked)
+                        }
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Auto-Approve Threshold: {settings.autoApproveThreshold}%</Label>
+                      <Label>
+                        Auto-Approve Threshold: {settings.autoApproveThreshold}%
+                      </Label>
                       <Slider
                         value={[settings.autoApproveThreshold]}
-                        onValueChange={(value) => updateSetting('autoApproveThreshold', value[0])}
+                        onValueChange={(value) =>
+                          updateSetting("autoApproveThreshold", value[0])
+                        }
                         max={100}
                         step={5}
                         className="w-full"
@@ -245,10 +318,14 @@ export default function SettingsPage() {
 
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label>Escalation Threshold: {settings.escalationThreshold}%</Label>
+                      <Label>
+                        Escalation Threshold: {settings.escalationThreshold}%
+                      </Label>
                       <Slider
                         value={[settings.escalationThreshold]}
-                        onValueChange={(value) => updateSetting('escalationThreshold', value[0])}
+                        onValueChange={(value) =>
+                          updateSetting("escalationThreshold", value[0])
+                        }
                         max={100}
                         step={5}
                         className="w-full"
@@ -291,7 +368,9 @@ export default function SettingsPage() {
                       <Switch
                         id="2fa"
                         checked={settings.twoFactorAuth}
-                        onCheckedChange={(checked) => updateSetting('twoFactorAuth', checked)}
+                        onCheckedChange={(checked) =>
+                          updateSetting("twoFactorAuth", checked)
+                        }
                       />
                     </div>
 
@@ -300,17 +379,26 @@ export default function SettingsPage() {
                       <Switch
                         id="audit-logging"
                         checked={settings.auditLogging}
-                        onCheckedChange={(checked) => updateSetting('auditLogging', checked)}
+                        onCheckedChange={(checked) =>
+                          updateSetting("auditLogging", checked)
+                        }
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="session-timeout">Session Timeout (minutes)</Label>
+                      <Label htmlFor="session-timeout">
+                        Session Timeout (minutes)
+                      </Label>
                       <Input
                         id="session-timeout"
                         type="number"
                         value={settings.sessionTimeout}
-                        onChange={(e) => updateSetting('sessionTimeout', parseInt(e.target.value))}
+                        onChange={(e) =>
+                          updateSetting(
+                            "sessionTimeout",
+                            parseInt(e.target.value),
+                          )
+                        }
                         className="glass-effect"
                       />
                     </div>
@@ -318,18 +406,24 @@ export default function SettingsPage() {
 
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="ip-whitelist">IP Whitelist (comma-separated)</Label>
+                      <Label htmlFor="ip-whitelist">
+                        IP Whitelist (comma-separated)
+                      </Label>
                       <Input
                         id="ip-whitelist"
                         value={settings.ipWhitelist}
-                        onChange={(e) => updateSetting('ipWhitelist', e.target.value)}
+                        onChange={(e) =>
+                          updateSetting("ipWhitelist", e.target.value)
+                        }
                         placeholder="192.168.1.0/24, 10.0.0.0/8"
                         className="glass-effect"
                       />
                     </div>
 
                     <div className="p-4 cyber-card border border-green-500/20">
-                      <h4 className="font-medium mb-2 text-green-400">Security Status</h4>
+                      <h4 className="font-medium mb-2 text-green-400">
+                        Security Status
+                      </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span>Threat Level:</span>
@@ -368,7 +462,9 @@ export default function SettingsPage() {
                       <Switch
                         id="email-alerts"
                         checked={settings.emailAlerts}
-                        onCheckedChange={(checked) => updateSetting('emailAlerts', checked)}
+                        onCheckedChange={(checked) =>
+                          updateSetting("emailAlerts", checked)
+                        }
                       />
                     </div>
 
@@ -377,7 +473,9 @@ export default function SettingsPage() {
                       <Switch
                         id="high-risk-alerts"
                         checked={settings.highRiskAlerts}
-                        onCheckedChange={(checked) => updateSetting('highRiskAlerts', checked)}
+                        onCheckedChange={(checked) =>
+                          updateSetting("highRiskAlerts", checked)
+                        }
                       />
                     </div>
 
@@ -386,7 +484,9 @@ export default function SettingsPage() {
                       <Switch
                         id="daily-reports"
                         checked={settings.dailyReports}
-                        onCheckedChange={(checked) => updateSetting('dailyReports', checked)}
+                        onCheckedChange={(checked) =>
+                          updateSetting("dailyReports", checked)
+                        }
                       />
                     </div>
                   </div>
@@ -397,14 +497,18 @@ export default function SettingsPage() {
                       <Input
                         id="slack-webhook"
                         value={settings.slackWebhook}
-                        onChange={(e) => updateSetting('slackWebhook', e.target.value)}
+                        onChange={(e) =>
+                          updateSetting("slackWebhook", e.target.value)
+                        }
                         placeholder="https://hooks.slack.com/..."
                         className="glass-effect"
                       />
                     </div>
 
                     <div className="p-4 cyber-card border border-blue-500/20">
-                      <h4 className="font-medium mb-2 text-blue-400">Notification Stats</h4>
+                      <h4 className="font-medium mb-2 text-blue-400">
+                        Notification Stats
+                      </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span>Alerts Sent Today:</span>
@@ -439,12 +543,19 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="max-concurrent">Max Concurrent Analysis</Label>
+                      <Label htmlFor="max-concurrent">
+                        Max Concurrent Analysis
+                      </Label>
                       <Input
                         id="max-concurrent"
                         type="number"
                         value={settings.maxConcurrentAnalysis}
-                        onChange={(e) => updateSetting('maxConcurrentAnalysis', parseInt(e.target.value))}
+                        onChange={(e) =>
+                          updateSetting(
+                            "maxConcurrentAnalysis",
+                            parseInt(e.target.value),
+                          )
+                        }
                         className="glass-effect"
                       />
                     </div>
@@ -455,7 +566,9 @@ export default function SettingsPage() {
                         id="batch-size"
                         type="number"
                         value={settings.batchSize}
-                        onChange={(e) => updateSetting('batchSize', parseInt(e.target.value))}
+                        onChange={(e) =>
+                          updateSetting("batchSize", parseInt(e.target.value))
+                        }
                         className="glass-effect"
                       />
                     </div>
@@ -463,18 +576,27 @@ export default function SettingsPage() {
 
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="retention-days">Data Retention (days)</Label>
+                      <Label htmlFor="retention-days">
+                        Data Retention (days)
+                      </Label>
                       <Input
                         id="retention-days"
                         type="number"
                         value={settings.retentionDays}
-                        onChange={(e) => updateSetting('retentionDays', parseInt(e.target.value))}
+                        onChange={(e) =>
+                          updateSetting(
+                            "retentionDays",
+                            parseInt(e.target.value),
+                          )
+                        }
                         className="glass-effect"
                       />
                     </div>
 
                     <div className="p-4 cyber-card border border-purple-500/20">
-                      <h4 className="font-medium mb-2 text-purple-400">System Performance</h4>
+                      <h4 className="font-medium mb-2 text-purple-400">
+                        System Performance
+                      </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span>CPU Usage:</span>
@@ -512,7 +634,9 @@ export default function SettingsPage() {
                     <Textarea
                       id="custom-css"
                       value={settings.customCss}
-                      onChange={(e) => updateSetting('customCss', e.target.value)}
+                      onChange={(e) =>
+                        updateSetting("customCss", e.target.value)
+                      }
                       placeholder="/* Add your custom CSS here */\n.custom-style {\n  color: #primary;\n}"
                       className="glass-effect font-mono min-h-[200px]"
                       data-testid="textarea-custom-css"
@@ -524,7 +648,9 @@ export default function SettingsPage() {
                     <Textarea
                       id="custom-js"
                       value={settings.customJs}
-                      onChange={(e) => updateSetting('customJs', e.target.value)}
+                      onChange={(e) =>
+                        updateSetting("customJs", e.target.value)
+                      }
                       placeholder="// Add your custom JavaScript here\nconsole.log('Custom JS loaded');"
                       className="glass-effect font-mono min-h-[200px]"
                       data-testid="textarea-custom-js"
@@ -532,10 +658,14 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="p-4 cyber-card border border-yellow-500/20">
-                    <h4 className="font-medium mb-2 text-yellow-400">⚠️ Important Notes</h4>
+                    <h4 className="font-medium mb-2 text-yellow-400">
+                      ⚠️ Important Notes
+                    </h4>
                     <ul className="space-y-1 text-sm">
                       <li>• Custom CSS/JS will be applied to all pages</li>
-                      <li>• Always test changes before applying to production</li>
+                      <li>
+                        • Always test changes before applying to production
+                      </li>
                       <li>• Malformed code may break the site functionality</li>
                       <li>• Use browser developer tools to debug issues</li>
                     </ul>
@@ -562,7 +692,9 @@ export default function SettingsPage() {
                       <Input
                         id="smtp-host"
                         value={settings.smtpHost}
-                        onChange={(e) => updateSetting('smtpHost', e.target.value)}
+                        onChange={(e) =>
+                          updateSetting("smtpHost", e.target.value)
+                        }
                         placeholder="smtp.gmail.com"
                         className="glass-effect"
                         data-testid="input-smtp-host"
@@ -575,7 +707,9 @@ export default function SettingsPage() {
                         id="smtp-port"
                         type="number"
                         value={settings.smtpPort}
-                        onChange={(e) => updateSetting('smtpPort', parseInt(e.target.value))}
+                        onChange={(e) =>
+                          updateSetting("smtpPort", parseInt(e.target.value))
+                        }
                         className="glass-effect"
                         data-testid="input-smtp-port"
                       />
@@ -583,7 +717,12 @@ export default function SettingsPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="smtp-encryption">Encryption</Label>
-                      <Select value={settings.smtpEncryption} onValueChange={(value) => updateSetting('smtpEncryption', value)}>
+                      <Select
+                        value={settings.smtpEncryption}
+                        onValueChange={(value) =>
+                          updateSetting("smtpEncryption", value)
+                        }
+                      >
                         <SelectTrigger data-testid="select-smtp-encryption">
                           <SelectValue />
                         </SelectTrigger>
@@ -602,7 +741,9 @@ export default function SettingsPage() {
                       <Input
                         id="smtp-username"
                         value={settings.smtpUsername}
-                        onChange={(e) => updateSetting('smtpUsername', e.target.value)}
+                        onChange={(e) =>
+                          updateSetting("smtpUsername", e.target.value)
+                        }
                         placeholder="your-email@example.com"
                         className="glass-effect"
                         data-testid="input-smtp-username"
@@ -615,7 +756,9 @@ export default function SettingsPage() {
                         id="smtp-password"
                         type="password"
                         value={settings.smtpPassword}
-                        onChange={(e) => updateSetting('smtpPassword', e.target.value)}
+                        onChange={(e) =>
+                          updateSetting("smtpPassword", e.target.value)
+                        }
                         placeholder="••••••••"
                         className="glass-effect"
                         data-testid="input-smtp-password"
@@ -628,7 +771,9 @@ export default function SettingsPage() {
                         id="admin-email"
                         type="email"
                         value={settings.adminEmail}
-                        onChange={(e) => updateSetting('adminEmail', e.target.value)}
+                        onChange={(e) =>
+                          updateSetting("adminEmail", e.target.value)
+                        }
                         placeholder="admin@yoursite.com"
                         className="glass-effect"
                         data-testid="input-admin-email"
@@ -638,7 +783,11 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex justify-start">
-                  <Button variant="outline" className="mr-4" data-testid="button-test-email">
+                  <Button
+                    variant="outline"
+                    className="mr-4"
+                    data-testid="button-test-email"
+                  >
                     <Mail className="w-4 h-4 mr-2" />
                     Send Test Email
                   </Button>
@@ -663,7 +812,9 @@ export default function SettingsPage() {
                     <Input
                       id="ffmpeg-path"
                       value={settings.ffmpegPath}
-                      onChange={(e) => updateSetting('ffmpegPath', e.target.value)}
+                      onChange={(e) =>
+                        updateSetting("ffmpegPath", e.target.value)
+                      }
                       placeholder="/usr/bin/ffmpeg"
                       className="glass-effect"
                       data-testid="input-ffmpeg-path"
@@ -671,18 +822,21 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="flex items-center space-x-4">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => {
-                        updateSetting('ffmpegTestStatus', 'testing');
+                        updateSetting("ffmpegTestStatus", "testing");
                         setTimeout(() => {
-                          updateSetting('ffmpegTestStatus', Math.random() > 0.5 ? 'success' : 'failed');
+                          updateSetting(
+                            "ffmpegTestStatus",
+                            Math.random() > 0.5 ? "success" : "failed",
+                          );
                         }, 2000);
                       }}
-                      disabled={settings.ffmpegTestStatus === 'testing'}
+                      disabled={settings.ffmpegTestStatus === "testing"}
                       data-testid="button-test-ffmpeg"
                     >
-                      {settings.ffmpegTestStatus === 'testing' ? (
+                      {settings.ffmpegTestStatus === "testing" ? (
                         <>
                           <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                           Testing...
@@ -695,14 +849,14 @@ export default function SettingsPage() {
                       )}
                     </Button>
 
-                    {settings.ffmpegTestStatus === 'success' && (
+                    {settings.ffmpegTestStatus === "success" && (
                       <div className="flex items-center text-green-400">
                         <CheckCircle className="w-4 h-4 mr-2" />
                         FFMPEG is working correctly
                       </div>
                     )}
 
-                    {settings.ffmpegTestStatus === 'failed' && (
+                    {settings.ffmpegTestStatus === "failed" && (
                       <div className="flex items-center text-red-400">
                         <AlertTriangle className="w-4 h-4 mr-2" />
                         FFMPEG test failed
@@ -711,7 +865,9 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="p-4 cyber-card border border-blue-500/20">
-                    <h4 className="font-medium mb-2 text-blue-400">FFMPEG Information</h4>
+                    <h4 className="font-medium mb-2 text-blue-400">
+                      FFMPEG Information
+                    </h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Current Path:</span>
@@ -729,14 +885,28 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="p-4 cyber-card border border-yellow-500/20">
-                    <h4 className="font-medium mb-2 text-yellow-400">Installation Instructions</h4>
+                    <h4 className="font-medium mb-2 text-yellow-400">
+                      Installation Instructions
+                    </h4>
                     <div className="space-y-2 text-sm">
-                      <p><strong>Ubuntu/Debian:</strong></p>
-                      <code className="block bg-black/50 p-2 rounded">sudo apt update && sudo apt install ffmpeg</code>
-                      <p className="mt-2"><strong>CentOS/RHEL:</strong></p>
-                      <code className="block bg-black/50 p-2 rounded">sudo yum install epel-release && sudo yum install ffmpeg</code>
-                      <p className="mt-2"><strong>macOS:</strong></p>
-                      <code className="block bg-black/50 p-2 rounded">brew install ffmpeg</code>
+                      <p>
+                        <strong>Ubuntu/Debian:</strong>
+                      </p>
+                      <code className="block bg-black/50 p-2 rounded">
+                        sudo apt update && sudo apt install ffmpeg
+                      </code>
+                      <p className="mt-2">
+                        <strong>CentOS/RHEL:</strong>
+                      </p>
+                      <code className="block bg-black/50 p-2 rounded">
+                        sudo yum install epel-release && sudo yum install ffmpeg
+                      </code>
+                      <p className="mt-2">
+                        <strong>macOS:</strong>
+                      </p>
+                      <code className="block bg-black/50 p-2 rounded">
+                        brew install ffmpeg
+                      </code>
                     </div>
                   </div>
                 </div>

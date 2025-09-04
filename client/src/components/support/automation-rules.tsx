@@ -6,23 +6,29 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Plus,
   Search,
   Edit,
@@ -50,7 +56,7 @@ import {
   MessageSquare,
   Flag,
   Timer,
-  Hash
+  Hash,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -124,37 +130,57 @@ interface AutomationRulesProps {
 }
 
 const TRIGGERS = [
-  { id: 'ticket_created', name: 'Ticket Created', icon: Plus },
-  { id: 'status_changed', name: 'Status Changed', icon: Activity },
-  { id: 'priority_changed', name: 'Priority Changed', icon: Flag },
-  { id: 'assigned', name: 'Ticket Assigned', icon: User },
-  { id: 'message_received', name: 'Message Received', icon: MessageSquare },
-  { id: 'time_elapsed', name: 'Time Elapsed', icon: Clock },
-  { id: 'satisfaction_rated', name: 'Satisfaction Rated', icon: Target },
+  { id: "ticket_created", name: "Ticket Created", icon: Plus },
+  { id: "status_changed", name: "Status Changed", icon: Activity },
+  { id: "priority_changed", name: "Priority Changed", icon: Flag },
+  { id: "assigned", name: "Ticket Assigned", icon: User },
+  { id: "message_received", name: "Message Received", icon: MessageSquare },
+  { id: "time_elapsed", name: "Time Elapsed", icon: Clock },
+  { id: "satisfaction_rated", name: "Satisfaction Rated", icon: Target },
 ];
 
 const CONDITIONS = [
-  { field: 'priority', operators: ['equals', 'not_equals'], name: 'Priority' },
-  { field: 'status', operators: ['equals', 'not_equals'], name: 'Status' },
-  { field: 'category', operators: ['equals', 'not_equals'], name: 'Category' },
-  { field: 'assignee', operators: ['equals', 'not_equals', 'is_empty'], name: 'Assignee' },
-  { field: 'customer_email', operators: ['contains', 'not_contains', 'equals'], name: 'Customer Email' },
-  { field: 'subject', operators: ['contains', 'not_contains'], name: 'Subject' },
-  { field: 'description', operators: ['contains', 'not_contains'], name: 'Description' },
-  { field: 'tags', operators: ['contains', 'not_contains'], name: 'Tags' },
-  { field: 'response_time', operators: ['greater_than', 'less_than'], name: 'Response Time (hours)' },
+  { field: "priority", operators: ["equals", "not_equals"], name: "Priority" },
+  { field: "status", operators: ["equals", "not_equals"], name: "Status" },
+  { field: "category", operators: ["equals", "not_equals"], name: "Category" },
+  {
+    field: "assignee",
+    operators: ["equals", "not_equals", "is_empty"],
+    name: "Assignee",
+  },
+  {
+    field: "customer_email",
+    operators: ["contains", "not_contains", "equals"],
+    name: "Customer Email",
+  },
+  {
+    field: "subject",
+    operators: ["contains", "not_contains"],
+    name: "Subject",
+  },
+  {
+    field: "description",
+    operators: ["contains", "not_contains"],
+    name: "Description",
+  },
+  { field: "tags", operators: ["contains", "not_contains"], name: "Tags" },
+  {
+    field: "response_time",
+    operators: ["greater_than", "less_than"],
+    name: "Response Time (hours)",
+  },
 ];
 
 const ACTIONS = [
-  { type: 'assign', name: 'Assign to Agent', icon: User },
-  { type: 'change_priority', name: 'Change Priority', icon: Flag },
-  { type: 'change_status', name: 'Change Status', icon: Activity },
-  { type: 'add_tag', name: 'Add Tag', icon: Tag },
-  { type: 'remove_tag', name: 'Remove Tag', icon: Tag },
-  { type: 'send_email', name: 'Send Email', icon: Mail },
-  { type: 'add_note', name: 'Add Internal Note', icon: MessageSquare },
-  { type: 'escalate', name: 'Escalate Ticket', icon: TrendingUp },
-  { type: 'close_ticket', name: 'Close Ticket', icon: XCircle },
+  { type: "assign", name: "Assign to Agent", icon: User },
+  { type: "change_priority", name: "Change Priority", icon: Flag },
+  { type: "change_status", name: "Change Status", icon: Activity },
+  { type: "add_tag", name: "Add Tag", icon: Tag },
+  { type: "remove_tag", name: "Remove Tag", icon: Tag },
+  { type: "send_email", name: "Send Email", icon: Mail },
+  { type: "add_note", name: "Add Internal Note", icon: MessageSquare },
+  { type: "escalate", name: "Escalate Ticket", icon: TrendingUp },
+  { type: "close_ticket", name: "Close Ticket", icon: XCircle },
 ];
 
 export function AutomationRules({
@@ -166,7 +192,7 @@ export function AutomationRules({
   onDeleteRule,
   onToggleRule,
   currentUser,
-  className = ""
+  className = "",
 }: AutomationRulesProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
@@ -182,23 +208,26 @@ export function AutomationRules({
     conditions: [] as Array<{ field: string; operator: string; value: any }>,
     actions: [] as Array<{ type: string; value: any; delay?: number }>,
     departmentId: currentUser.departmentId,
-    priority: 1
+    priority: 1,
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const filteredRules = rules.filter(rule => {
-    const matchesSearch = 
+  const filteredRules = rules.filter((rule) => {
+    const matchesSearch =
       rule.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       rule.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesDepartment = selectedDepartment === "all" || rule.departmentId === selectedDepartment;
-    const matchesTrigger = selectedTrigger === "all" || rule.trigger === selectedTrigger;
+    const matchesDepartment =
+      selectedDepartment === "all" || rule.departmentId === selectedDepartment;
+    const matchesTrigger =
+      selectedTrigger === "all" || rule.trigger === selectedTrigger;
 
     // Role-based filtering
-    const canView = currentUser.role === 'admin' || 
-                   currentUser.role === 'supervisor' ||
-                   rule.departmentId === currentUser.departmentId;
+    const canView =
+      currentUser.role === "admin" ||
+      currentUser.role === "supervisor" ||
+      rule.departmentId === currentUser.departmentId;
 
     return matchesSearch && matchesDepartment && matchesTrigger && canView;
   });
@@ -211,7 +240,7 @@ export function AutomationRules({
       conditions: [],
       actions: [],
       departmentId: currentUser.departmentId,
-      priority: 1
+      priority: 1,
     });
     setFormErrors({});
   };
@@ -221,8 +250,10 @@ export function AutomationRules({
 
     if (!formData.name.trim()) errors.name = "Name is required";
     if (!formData.trigger) errors.trigger = "Trigger is required";
-    if (formData.conditions.length === 0) errors.conditions = "At least one condition is required";
-    if (formData.actions.length === 0) errors.actions = "At least one action is required";
+    if (formData.conditions.length === 0)
+      errors.conditions = "At least one condition is required";
+    if (formData.actions.length === 0)
+      errors.actions = "At least one action is required";
     if (!formData.departmentId) errors.departmentId = "Department is required";
 
     setFormErrors(errors);
@@ -258,65 +289,73 @@ export function AutomationRules({
       conditions: rule.conditions,
       actions: rule.actions,
       departmentId: rule.departmentId,
-      priority: rule.priority
+      priority: rule.priority,
     });
     setIsCreateDialogOpen(true);
   };
 
   const addCondition = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      conditions: [...prev.conditions, { field: '', operator: '', value: '' }]
+      conditions: [...prev.conditions, { field: "", operator: "", value: "" }],
     }));
   };
 
-  const updateCondition = (index: number, updates: Partial<typeof formData.conditions[0]>) => {
-    setFormData(prev => ({
+  const updateCondition = (
+    index: number,
+    updates: Partial<(typeof formData.conditions)[0]>,
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      conditions: prev.conditions.map((condition, i) => 
-        i === index ? { ...condition, ...updates } : condition
-      )
+      conditions: prev.conditions.map((condition, i) =>
+        i === index ? { ...condition, ...updates } : condition,
+      ),
     }));
   };
 
   const removeCondition = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      conditions: prev.conditions.filter((_, i) => i !== index)
+      conditions: prev.conditions.filter((_, i) => i !== index),
     }));
   };
 
   const addAction = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      actions: [...prev.actions, { type: '', value: '', delay: 0 }]
+      actions: [...prev.actions, { type: "", value: "", delay: 0 }],
     }));
   };
 
-  const updateAction = (index: number, updates: Partial<typeof formData.actions[0]>) => {
-    setFormData(prev => ({
+  const updateAction = (
+    index: number,
+    updates: Partial<(typeof formData.actions)[0]>,
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      actions: prev.actions.map((action, i) => 
-        i === index ? { ...action, ...updates } : action
-      )
+      actions: prev.actions.map((action, i) =>
+        i === index ? { ...action, ...updates } : action,
+      ),
     }));
   };
 
   const removeAction = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      actions: prev.actions.filter((_, i) => i !== index)
+      actions: prev.actions.filter((_, i) => i !== index),
     }));
   };
 
   const RuleCard = ({ rule }: { rule: AutomationRule }) => {
-    const triggerInfo = TRIGGERS.find(t => t.id === rule.trigger);
+    const triggerInfo = TRIGGERS.find((t) => t.id === rule.trigger);
     const TriggerIcon = triggerInfo?.icon || Zap;
 
     return (
-      <Card className={`hover:shadow-lg transition-all duration-300 border-l-4 ${
-        rule.isActive ? 'border-l-green-500' : 'border-l-gray-300'
-      }`}>
+      <Card
+        className={`hover:shadow-lg transition-all duration-300 border-l-4 ${
+          rule.isActive ? "border-l-green-500" : "border-l-gray-300"
+        }`}
+      >
         <CardContent className="p-6">
           <div className="space-y-4">
             {/* Header */}
@@ -337,7 +376,9 @@ export function AutomationRules({
                 </div>
 
                 <h3 className="font-bold text-lg">{rule.name}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-2">{rule.description}</p>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {rule.description}
+                </p>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -358,7 +399,7 @@ export function AutomationRules({
                       Edit Rule
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => onDeleteRule(rule.id)}
                       className="text-red-600"
                     >
@@ -375,9 +416,14 @@ export function AutomationRules({
               <h4 className="font-medium text-sm mb-2">When:</h4>
               <div className="space-y-1 text-sm">
                 {rule.conditions.slice(0, 2).map((condition, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-muted-foreground">
-                    <span className="capitalize">{condition.field.replace('_', ' ')}</span>
-                    <span>{condition.operator.replace('_', ' ')}</span>
+                  <div
+                    key={index}
+                    className="flex items-center space-x-2 text-muted-foreground"
+                  >
+                    <span className="capitalize">
+                      {condition.field.replace("_", " ")}
+                    </span>
+                    <span>{condition.operator.replace("_", " ")}</span>
                     <span className="font-medium">"{condition.value}"</span>
                   </div>
                 ))}
@@ -394,11 +440,16 @@ export function AutomationRules({
               <h4 className="font-medium text-sm mb-2">Then:</h4>
               <div className="space-y-1 text-sm">
                 {rule.actions.slice(0, 2).map((action, index) => {
-                  const actionInfo = ACTIONS.find(a => a.type === action.type);
+                  const actionInfo = ACTIONS.find(
+                    (a) => a.type === action.type,
+                  );
                   const ActionIcon = actionInfo?.icon || Zap;
-                  
+
                   return (
-                    <div key={index} className="flex items-center space-x-2 text-muted-foreground">
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 text-muted-foreground"
+                    >
                       <ActionIcon className="h-3 w-3" />
                       <span>{actionInfo?.name}</span>
                       {action.delay && action.delay > 0 && (
@@ -433,7 +484,12 @@ export function AutomationRules({
 
               <div className="text-right">
                 {rule.lastExecutedAt ? (
-                  <div>Last executed {formatDistanceToNow(new Date(rule.lastExecutedAt), { addSuffix: true })}</div>
+                  <div>
+                    Last executed{" "}
+                    {formatDistanceToNow(new Date(rule.lastExecutedAt), {
+                      addSuffix: true,
+                    })}
+                  </div>
                 ) : (
                   <div>Never executed</div>
                 )}
@@ -459,8 +515,8 @@ export function AutomationRules({
           </p>
         </div>
 
-        <Dialog 
-          open={isCreateDialogOpen} 
+        <Dialog
+          open={isCreateDialogOpen}
           onOpenChange={(open) => {
             setIsCreateDialogOpen(open);
             if (!open) {
@@ -475,11 +531,13 @@ export function AutomationRules({
               New Automation Rule
             </Button>
           </DialogTrigger>
-          
+
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingRule ? "Edit Automation Rule" : "Create New Automation Rule"}
+                {editingRule
+                  ? "Edit Automation Rule"
+                  : "Create New Automation Rule"}
               </DialogTitle>
             </DialogHeader>
 
@@ -497,7 +555,9 @@ export function AutomationRules({
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    }
                     placeholder="e.g., Auto-assign urgent tickets"
                     className={formErrors.name ? "border-red-500" : ""}
                     data-testid="rule-name-input"
@@ -511,9 +571,16 @@ export function AutomationRules({
                   <Label htmlFor="department">Department *</Label>
                   <Select
                     value={formData.departmentId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, departmentId: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, departmentId: value }))
+                    }
                   >
-                    <SelectTrigger className={formErrors.departmentId ? "border-red-500" : ""} data-testid="rule-department-select">
+                    <SelectTrigger
+                      className={
+                        formErrors.departmentId ? "border-red-500" : ""
+                      }
+                      data-testid="rule-department-select"
+                    >
                       <SelectValue placeholder="Select department" />
                     </SelectTrigger>
                     <SelectContent>
@@ -525,7 +592,9 @@ export function AutomationRules({
                     </SelectContent>
                   </Select>
                   {formErrors.departmentId && (
-                    <p className="text-sm text-red-600">{formErrors.departmentId}</p>
+                    <p className="text-sm text-red-600">
+                      {formErrors.departmentId}
+                    </p>
                   )}
                 </div>
               </div>
@@ -535,9 +604,14 @@ export function AutomationRules({
                   <Label htmlFor="trigger">Trigger *</Label>
                   <Select
                     value={formData.trigger}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, trigger: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, trigger: value }))
+                    }
                   >
-                    <SelectTrigger className={formErrors.trigger ? "border-red-500" : ""} data-testid="rule-trigger-select">
+                    <SelectTrigger
+                      className={formErrors.trigger ? "border-red-500" : ""}
+                      data-testid="rule-trigger-select"
+                    >
                       <SelectValue placeholder="Select trigger" />
                     </SelectTrigger>
                     <SelectContent>
@@ -563,7 +637,12 @@ export function AutomationRules({
                   <Label htmlFor="priority">Priority</Label>
                   <Select
                     value={formData.priority.toString()}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, priority: parseInt(value) }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        priority: parseInt(value),
+                      }))
+                    }
                   >
                     <SelectTrigger data-testid="rule-priority-select">
                       <SelectValue />
@@ -584,7 +663,12 @@ export function AutomationRules({
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Describe what this rule does..."
                   rows={2}
                   data-testid="rule-description-input"
@@ -594,8 +678,15 @@ export function AutomationRules({
               {/* Conditions */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label className="text-base font-semibold">Conditions (When) *</Label>
-                  <Button type="button" onClick={addCondition} variant="outline" size="sm">
+                  <Label className="text-base font-semibold">
+                    Conditions (When) *
+                  </Label>
+                  <Button
+                    type="button"
+                    onClick={addCondition}
+                    variant="outline"
+                    size="sm"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Condition
                   </Button>
@@ -606,7 +697,9 @@ export function AutomationRules({
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <Select
                         value={condition.field}
-                        onValueChange={(value) => updateCondition(index, { field: value })}
+                        onValueChange={(value) =>
+                          updateCondition(index, { field: value })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Field" />
@@ -622,25 +715,30 @@ export function AutomationRules({
 
                       <Select
                         value={condition.operator}
-                        onValueChange={(value) => updateCondition(index, { operator: value })}
+                        onValueChange={(value) =>
+                          updateCondition(index, { operator: value })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Operator" />
                         </SelectTrigger>
                         <SelectContent>
-                          {condition.field && CONDITIONS
-                            .find(c => c.field === condition.field)
-                            ?.operators.map((operator) => (
-                            <SelectItem key={operator} value={operator}>
-                              {operator.replace('_', ' ').toUpperCase()}
-                            </SelectItem>
-                          ))}
+                          {condition.field &&
+                            CONDITIONS.find(
+                              (c) => c.field === condition.field,
+                            )?.operators.map((operator) => (
+                              <SelectItem key={operator} value={operator}>
+                                {operator.replace("_", " ").toUpperCase()}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
 
                       <Input
                         value={condition.value}
-                        onChange={(e) => updateCondition(index, { value: e.target.value })}
+                        onChange={(e) =>
+                          updateCondition(index, { value: e.target.value })
+                        }
                         placeholder="Value"
                       />
 
@@ -657,15 +755,24 @@ export function AutomationRules({
                 ))}
 
                 {formErrors.conditions && (
-                  <p className="text-sm text-red-600">{formErrors.conditions}</p>
+                  <p className="text-sm text-red-600">
+                    {formErrors.conditions}
+                  </p>
                 )}
               </div>
 
               {/* Actions */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label className="text-base font-semibold">Actions (Then) *</Label>
-                  <Button type="button" onClick={addAction} variant="outline" size="sm">
+                  <Label className="text-base font-semibold">
+                    Actions (Then) *
+                  </Label>
+                  <Button
+                    type="button"
+                    onClick={addAction}
+                    variant="outline"
+                    size="sm"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Action
                   </Button>
@@ -676,7 +783,9 @@ export function AutomationRules({
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                       <Select
                         value={action.type}
-                        onValueChange={(value) => updateAction(index, { type: value })}
+                        onValueChange={(value) =>
+                          updateAction(index, { type: value })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Action" />
@@ -685,7 +794,10 @@ export function AutomationRules({
                           {ACTIONS.map((actionType) => {
                             const Icon = actionType.icon;
                             return (
-                              <SelectItem key={actionType.type} value={actionType.type}>
+                              <SelectItem
+                                key={actionType.type}
+                                value={actionType.type}
+                              >
                                 <div className="flex items-center space-x-2">
                                   <Icon className="h-4 w-4" />
                                   <span>{actionType.name}</span>
@@ -698,14 +810,20 @@ export function AutomationRules({
 
                       <Input
                         value={action.value}
-                        onChange={(e) => updateAction(index, { value: e.target.value })}
+                        onChange={(e) =>
+                          updateAction(index, { value: e.target.value })
+                        }
                         placeholder="Value"
                       />
 
                       <Input
                         type="number"
                         value={action.delay || 0}
-                        onChange={(e) => updateAction(index, { delay: parseInt(e.target.value) || 0 })}
+                        onChange={(e) =>
+                          updateAction(index, {
+                            delay: parseInt(e.target.value) || 0,
+                          })
+                        }
                         placeholder="Delay (min)"
                         min={0}
                       />
@@ -730,20 +848,24 @@ export function AutomationRules({
               </div>
 
               <div className="flex items-center justify-end space-x-2 pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsCreateDialogOpen(false)}
                 >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
                   className="bg-gradient-to-r from-primary to-purple-600"
                   data-testid="save-rule-btn"
                 >
-                  {isSubmitting ? "Saving..." : (editingRule ? "Update Rule" : "Create Rule")}
+                  {isSubmitting
+                    ? "Saving..."
+                    : editingRule
+                      ? "Update Rule"
+                      : "Create Rule"}
                 </Button>
               </div>
             </div>
@@ -755,14 +877,16 @@ export function AutomationRules({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{rules.length}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {rules.length}
+            </div>
             <div className="text-sm text-muted-foreground">Total Rules</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-green-600">
-              {rules.filter(r => r.isActive).length}
+              {rules.filter((r) => r.isActive).length}
             </div>
             <div className="text-sm text-muted-foreground">Active</div>
           </CardContent>
@@ -772,13 +896,22 @@ export function AutomationRules({
             <div className="text-2xl font-bold text-purple-600">
               {rules.reduce((sum, r) => sum + r.executionCount, 0)}
             </div>
-            <div className="text-sm text-muted-foreground">Total Executions</div>
+            <div className="text-sm text-muted-foreground">
+              Total Executions
+            </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-orange-600">
-              {rules.filter(r => r.lastExecutedAt && new Date(r.lastExecutedAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)).length}
+              {
+                rules.filter(
+                  (r) =>
+                    r.lastExecutedAt &&
+                    new Date(r.lastExecutedAt) >
+                      new Date(Date.now() - 24 * 60 * 60 * 1000),
+                ).length
+              }
             </div>
             <div className="text-sm text-muted-foreground">Executed Today</div>
           </CardContent>
@@ -803,7 +936,10 @@ export function AutomationRules({
             </div>
 
             <div className="flex space-x-2">
-              <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+              <Select
+                value={selectedDepartment}
+                onValueChange={setSelectedDepartment}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
@@ -817,7 +953,10 @@ export function AutomationRules({
                 </SelectContent>
               </Select>
 
-              <Select value={selectedTrigger} onValueChange={setSelectedTrigger}>
+              <Select
+                value={selectedTrigger}
+                onValueChange={setSelectedTrigger}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Trigger" />
                 </SelectTrigger>
@@ -846,15 +985,16 @@ export function AutomationRules({
         <Card>
           <CardContent className="p-12 text-center">
             <Bot className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Automation Rules Found</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              No Automation Rules Found
+            </h3>
             <p className="text-muted-foreground mb-6">
-              {searchQuery ? 
-                "No rules match your search criteria." :
-                "Start automating your support workflow by creating your first automation rule."
-              }
+              {searchQuery
+                ? "No rules match your search criteria."
+                : "Start automating your support workflow by creating your first automation rule."}
             </p>
             {!searchQuery && (
-              <Button 
+              <Button
                 onClick={() => setIsCreateDialogOpen(true)}
                 className="bg-gradient-to-r from-primary to-purple-600"
               >

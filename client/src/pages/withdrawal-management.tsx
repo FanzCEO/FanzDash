@@ -1,26 +1,45 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
-import { 
-  CreditCard, 
-  DollarSign, 
-  TrendingUp, 
-  Clock, 
-  Search, 
-  Eye, 
+import {
+  CreditCard,
+  DollarSign,
+  TrendingUp,
+  Clock,
+  Search,
+  Eye,
   CheckCircle,
   XCircle,
   AlertTriangle,
   Filter,
   Download,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -30,9 +49,35 @@ interface WithdrawalRequest {
   username: string;
   profileUrl?: string;
   amount: string;
-  gateway: 'PayPal' | 'Payoneer' | 'Zelle' | 'Western Union' | 'Bitcoin' | 'Mercado Pago' | 'Bank' | 'Paxum' | 'Cosmo Payment' | 'ePayService' | 'Yoursafe' | 'MassPay' | 'Skrill' | 'Neteller' | 'NOWPayments' | 'CoinPayments' | 'CoinGate' | 'BTCPay Server' | 'PayRam' | 'Confirmo' | 'USDT/USDC' | 'ACH/SEPA' | 'Paxum Bank' | 'Credit Unions' | 'Crypto Banks' | 'Alt Fintech';
+  gateway:
+    | "PayPal"
+    | "Payoneer"
+    | "Zelle"
+    | "Western Union"
+    | "Bitcoin"
+    | "Mercado Pago"
+    | "Bank"
+    | "Paxum"
+    | "Cosmo Payment"
+    | "ePayService"
+    | "Yoursafe"
+    | "MassPay"
+    | "Skrill"
+    | "Neteller"
+    | "NOWPayments"
+    | "CoinPayments"
+    | "CoinGate"
+    | "BTCPay Server"
+    | "PayRam"
+    | "Confirmo"
+    | "USDT/USDC"
+    | "ACH/SEPA"
+    | "Paxum Bank"
+    | "Credit Unions"
+    | "Crypto Banks"
+    | "Alt Fintech";
   account: string;
-  status: 'pending' | 'paid' | 'rejected';
+  status: "pending" | "paid" | "rejected";
   datePaid?: string;
   rejectionReason?: string;
   date: string;
@@ -58,11 +103,11 @@ export default function WithdrawalManagement() {
       account: "sarah@paxum.com",
       status: "pending",
       date: "2025-01-15T10:00:00Z",
-      createdAt: "2025-01-15T10:00:00Z"
+      createdAt: "2025-01-15T10:00:00Z",
     },
     {
       id: "2",
-      userId: "user_2", 
+      userId: "user_2",
       username: "alex_creator",
       profileUrl: "/alex_creator",
       amount: "500.00",
@@ -71,7 +116,7 @@ export default function WithdrawalManagement() {
       status: "paid",
       datePaid: "2025-01-14T16:30:00Z",
       date: "2025-01-13T15:30:00Z",
-      createdAt: "2025-01-13T15:30:00Z"
+      createdAt: "2025-01-13T15:30:00Z",
     },
     {
       id: "3",
@@ -84,7 +129,7 @@ export default function WithdrawalManagement() {
       status: "rejected",
       rejectionReason: "Invalid crypto wallet address provided",
       date: "2025-01-12T12:00:00Z",
-      createdAt: "2025-01-12T12:00:00Z"
+      createdAt: "2025-01-12T12:00:00Z",
     },
     {
       id: "4",
@@ -96,7 +141,7 @@ export default function WithdrawalManagement() {
       account: "jenny.cam@cosmopayment.com",
       status: "pending",
       date: "2025-01-11T09:00:00Z",
-      createdAt: "2025-01-11T09:00:00Z"
+      createdAt: "2025-01-11T09:00:00Z",
     },
     {
       id: "5",
@@ -109,7 +154,7 @@ export default function WithdrawalManagement() {
       status: "paid",
       datePaid: "2025-01-10T14:20:00Z",
       date: "2025-01-09T14:20:00Z",
-      createdAt: "2025-01-09T14:20:00Z"
+      createdAt: "2025-01-09T14:20:00Z",
     },
     {
       id: "6",
@@ -122,7 +167,7 @@ export default function WithdrawalManagement() {
       status: "paid",
       datePaid: "2025-01-09T11:15:00Z",
       date: "2025-01-08T11:15:00Z",
-      createdAt: "2025-01-08T11:15:00Z"
+      createdAt: "2025-01-08T11:15:00Z",
     },
     {
       id: "7",
@@ -134,7 +179,7 @@ export default function WithdrawalManagement() {
       account: "0x742d35Cc6532C02bAB897C2e4d2e5a6b",
       status: "pending",
       date: "2025-01-07T16:45:00Z",
-      createdAt: "2025-01-07T16:45:00Z"
+      createdAt: "2025-01-07T16:45:00Z",
     },
     {
       id: "8",
@@ -147,36 +192,40 @@ export default function WithdrawalManagement() {
       status: "paid",
       datePaid: "2025-01-06T13:20:00Z",
       date: "2025-01-05T13:20:00Z",
-      createdAt: "2025-01-05T13:20:00Z"
-    }
+      createdAt: "2025-01-05T13:20:00Z",
+    },
   ];
 
   const isLoading = false;
 
   const refreshMutation = useMutation({
-    mutationFn: () => apiRequest('/api/admin/withdrawals/refresh', 'POST'),
+    mutationFn: () => apiRequest("/api/admin/withdrawals/refresh", "POST"),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/withdrawals'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/withdrawals"] });
       toast({ title: "Withdrawal data refreshed" });
-    }
+    },
   });
 
   const exportMutation = useMutation({
-    mutationFn: (filters: any) => apiRequest('/api/admin/withdrawals/export', 'POST', filters),
+    mutationFn: (filters: any) =>
+      apiRequest("/api/admin/withdrawals/export", "POST", filters),
     onSuccess: (data) => {
       // Handle file download
       toast({ title: "Export generated successfully" });
-    }
+    },
   });
 
-  const filteredRequests = withdrawalRequests.filter(request => {
-    const matchesSearch = !searchQuery || 
+  const filteredRequests = withdrawalRequests.filter((request) => {
+    const matchesSearch =
+      !searchQuery ||
       request.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       request.id.includes(searchQuery) ||
       request.account.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" || request.status === statusFilter;
-    const matchesGateway = gatewayFilter === "all" || request.gateway === gatewayFilter;
+    const matchesStatus =
+      statusFilter === "all" || request.status === statusFilter;
+    const matchesGateway =
+      gatewayFilter === "all" || request.gateway === gatewayFilter;
 
     return matchesSearch && matchesStatus && matchesGateway;
   });
@@ -185,26 +234,33 @@ export default function WithdrawalManagement() {
     const variants = {
       pending: "outline",
       paid: "default",
-      rejected: "destructive"
+      rejected: "destructive",
     } as const;
 
     return (
       <Badge variant={variants[status as keyof typeof variants] || "secondary"}>
-        {status === 'pending' ? 'Pending to Pay' : status.charAt(0).toUpperCase() + status.slice(1)}
+        {status === "pending"
+          ? "Pending to Pay"
+          : status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
   };
 
   const getGatewayDisplay = (gateway: string) => {
-    return gateway === 'Bank' ? 'Bank Transfer' : gateway;
+    return gateway === "Bank" ? "Bank Transfer" : gateway;
   };
 
   const getStats = () => {
     const totalRequests = withdrawalRequests.length;
-    const pendingRequests = withdrawalRequests.filter(r => r.status === 'pending').length;
-    const totalAmount = withdrawalRequests.reduce((sum, r) => sum + parseFloat(r.amount), 0);
+    const pendingRequests = withdrawalRequests.filter(
+      (r) => r.status === "pending",
+    ).length;
+    const totalAmount = withdrawalRequests.reduce(
+      (sum, r) => sum + parseFloat(r.amount),
+      0,
+    );
     const pendingAmount = withdrawalRequests
-      .filter(r => r.status === 'pending')
+      .filter((r) => r.status === "pending")
       .reduce((sum, r) => sum + parseFloat(r.amount), 0);
 
     return { totalRequests, pendingRequests, totalAmount, pendingAmount };
@@ -216,15 +272,20 @@ export default function WithdrawalManagement() {
     exportMutation.mutate({
       status: statusFilter,
       gateway: gatewayFilter,
-      search: searchQuery
+      search: searchQuery,
     });
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6" data-testid="withdrawal-management">
+    <div
+      className="container mx-auto p-6 space-y-6"
+      data-testid="withdrawal-management"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold cyber-text-glow">Withdrawal Management</h1>
+          <h1 className="text-3xl font-bold cyber-text-glow">
+            Withdrawal Management
+          </h1>
           <p className="text-muted-foreground">
             Manage creator withdrawal requests and payment processing
           </p>
@@ -283,7 +344,9 @@ export default function WithdrawalManagement() {
               <DollarSign className="h-8 w-8 text-green-500" />
               <div>
                 <p className="text-sm font-medium">Total Amount</p>
-                <p className="text-2xl font-bold">${stats.totalAmount.toFixed(2)}</p>
+                <p className="text-2xl font-bold">
+                  ${stats.totalAmount.toFixed(2)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -295,7 +358,9 @@ export default function WithdrawalManagement() {
               <TrendingUp className="h-8 w-8 text-blue-500" />
               <div>
                 <p className="text-sm font-medium">Pending Amount</p>
-                <p className="text-2xl font-bold">${stats.pendingAmount.toFixed(2)}</p>
+                <p className="text-2xl font-bold">
+                  ${stats.pendingAmount.toFixed(2)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -323,9 +388,12 @@ export default function WithdrawalManagement() {
                 data-testid="input-search"
               />
             </div>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]" data-testid="select-status-filter">
+              <SelectTrigger
+                className="w-[180px]"
+                data-testid="select-status-filter"
+              >
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -337,45 +405,92 @@ export default function WithdrawalManagement() {
             </Select>
 
             <Select value={gatewayFilter} onValueChange={setGatewayFilter}>
-              <SelectTrigger className="w-[180px]" data-testid="select-gateway-filter">
+              <SelectTrigger
+                className="w-[180px]"
+                data-testid="select-gateway-filter"
+              >
                 <SelectValue placeholder="Filter by gateway" />
               </SelectTrigger>
               <SelectContent className="max-h-[400px] overflow-y-auto">
                 <SelectItem value="all">All Gateways</SelectItem>
-                
+
                 {/* Payout Platforms & Digital Wallets */}
-                <SelectItem value="Paxum">Paxum - E-wallet + card; $5 withdrawal</SelectItem>
-                <SelectItem value="Cosmo Payment">Cosmo Payment - Wallet + prepaid Visa; $3–6 withdrawals</SelectItem>
-                <SelectItem value="ePayService">ePayService - Wallet + card; €1 SEPA, $2–3 ATM</SelectItem>
-                <SelectItem value="Yoursafe">Yoursafe (Bitsafe) - EU IBAN accounts; €4/mo</SelectItem>
-                <SelectItem value="MassPay">MassPay - API for global payouts</SelectItem>
-                <SelectItem value="Skrill">Skrill - E-wallet + card; ~2.5% merchant fee</SelectItem>
-                <SelectItem value="Neteller">Neteller - Sister of Skrill; adult/gambling crossover</SelectItem>
-                <SelectItem value="Payoneer">Payoneer - Global payouts; $3 bank withdrawal</SelectItem>
-                <SelectItem value="ACH/SEPA">Direct Deposit/ACH/SEPA - Traditional bank transfers</SelectItem>
-                
+                <SelectItem value="Paxum">
+                  Paxum - E-wallet + card; $5 withdrawal
+                </SelectItem>
+                <SelectItem value="Cosmo Payment">
+                  Cosmo Payment - Wallet + prepaid Visa; $3–6 withdrawals
+                </SelectItem>
+                <SelectItem value="ePayService">
+                  ePayService - Wallet + card; €1 SEPA, $2–3 ATM
+                </SelectItem>
+                <SelectItem value="Yoursafe">
+                  Yoursafe (Bitsafe) - EU IBAN accounts; €4/mo
+                </SelectItem>
+                <SelectItem value="MassPay">
+                  MassPay - API for global payouts
+                </SelectItem>
+                <SelectItem value="Skrill">
+                  Skrill - E-wallet + card; ~2.5% merchant fee
+                </SelectItem>
+                <SelectItem value="Neteller">
+                  Neteller - Sister of Skrill; adult/gambling crossover
+                </SelectItem>
+                <SelectItem value="Payoneer">
+                  Payoneer - Global payouts; $3 bank withdrawal
+                </SelectItem>
+                <SelectItem value="ACH/SEPA">
+                  Direct Deposit/ACH/SEPA - Traditional bank transfers
+                </SelectItem>
+
                 {/* Crypto Payment Solutions */}
-                <SelectItem value="NOWPayments">NOWPayments - Adult-friendly; 100+ cryptos; 0.5% fee</SelectItem>
-                <SelectItem value="CoinPayments">CoinPayments - 75+ cryptos; 0.5–1% fees</SelectItem>
-                <SelectItem value="CoinGate">CoinGate - 1% fee; Bitcoin/Ethereum/etc.</SelectItem>
-                <SelectItem value="BTCPay Server">BTCPay Server - Open-source, self-hosted; 0% fee</SelectItem>
-                <SelectItem value="PayRam">PayRam - Non-custodial; 0% fee</SelectItem>
-                <SelectItem value="Confirmo">Confirmo - EU-based; ~1% fee</SelectItem>
-                <SelectItem value="USDT/USDC">Stablecoin Payouts (USDT/USDC) - Direct to wallets</SelectItem>
-                
+                <SelectItem value="NOWPayments">
+                  NOWPayments - Adult-friendly; 100+ cryptos; 0.5% fee
+                </SelectItem>
+                <SelectItem value="CoinPayments">
+                  CoinPayments - 75+ cryptos; 0.5–1% fees
+                </SelectItem>
+                <SelectItem value="CoinGate">
+                  CoinGate - 1% fee; Bitcoin/Ethereum/etc.
+                </SelectItem>
+                <SelectItem value="BTCPay Server">
+                  BTCPay Server - Open-source, self-hosted; 0% fee
+                </SelectItem>
+                <SelectItem value="PayRam">
+                  PayRam - Non-custodial; 0% fee
+                </SelectItem>
+                <SelectItem value="Confirmo">
+                  Confirmo - EU-based; ~1% fee
+                </SelectItem>
+                <SelectItem value="USDT/USDC">
+                  Stablecoin Payouts (USDT/USDC) - Direct to wallets
+                </SelectItem>
+
                 {/* Banks & Financial Institutions */}
-                <SelectItem value="Paxum Bank">Paxum Bank (Dominica) - Offshore bank for adult industry</SelectItem>
-                <SelectItem value="Credit Unions">Select Credit Unions - US adult entertainer banking</SelectItem>
-                <SelectItem value="Crypto Banks">Crypto-Friendly Banks - Bank Frick (Liechtenstein)</SelectItem>
-                <SelectItem value="Alt Fintech">Alt Fintech Options - Wise, Revolut Business</SelectItem>
-                
+                <SelectItem value="Paxum Bank">
+                  Paxum Bank (Dominica) - Offshore bank for adult industry
+                </SelectItem>
+                <SelectItem value="Credit Unions">
+                  Select Credit Unions - US adult entertainer banking
+                </SelectItem>
+                <SelectItem value="Crypto Banks">
+                  Crypto-Friendly Banks - Bank Frick (Liechtenstein)
+                </SelectItem>
+                <SelectItem value="Alt Fintech">
+                  Alt Fintech Options - Wise, Revolut Business
+                </SelectItem>
+
                 {/* Legacy Options */}
                 <SelectItem value="PayPal">PayPal (Legacy)</SelectItem>
                 <SelectItem value="Bank">Bank Transfer (Legacy)</SelectItem>
                 <SelectItem value="Bitcoin">Bitcoin (Legacy)</SelectItem>
                 <SelectItem value="Zelle">Zelle (Legacy)</SelectItem>
-                <SelectItem value="Western Union">Western Union (Legacy)</SelectItem>
-                <SelectItem value="Mercado Pago">Mercado Pago (Legacy)</SelectItem>
+                <SelectItem value="Western Union">
+                  Western Union (Legacy)
+                </SelectItem>
+                <SelectItem value="Mercado Pago">
+                  Mercado Pago (Legacy)
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -402,25 +517,32 @@ export default function WithdrawalManagement() {
                       <TableCell>
                         {request.profileUrl ? (
                           <Link href={request.profileUrl}>
-                            <Button variant="link" className="p-0 h-auto text-left">
+                            <Button
+                              variant="link"
+                              className="p-0 h-auto text-left"
+                            >
                               {request.username}
                               <Eye className="h-3 w-3 ml-1" />
                             </Button>
                           </Link>
                         ) : (
-                          <span className="text-muted-foreground">No Available</span>
+                          <span className="text-muted-foreground">
+                            No Available
+                          </span>
                         )}
                       </TableCell>
                       <TableCell>
                         <div className="font-medium">${request.amount}</div>
                       </TableCell>
-                      <TableCell>{getGatewayDisplay(request.gateway)}</TableCell>
+                      <TableCell>
+                        {getGatewayDisplay(request.gateway)}
+                      </TableCell>
                       <TableCell>{getStatusBadge(request.status)}</TableCell>
                       <TableCell>
-                        {new Date(request.date).toLocaleDateString('en-US', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
+                        {new Date(request.date).toLocaleDateString("en-US", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
                         })}
                       </TableCell>
                       <TableCell>
@@ -439,11 +561,16 @@ export default function WithdrawalManagement() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell
+                      colSpan={7}
+                      className="text-center py-8 text-muted-foreground"
+                    >
                       <div className="flex flex-col items-center space-y-2">
                         <AlertTriangle className="h-8 w-8" />
                         <span>No results found</span>
-                        {(searchQuery || statusFilter !== "all" || gatewayFilter !== "all") && (
+                        {(searchQuery ||
+                          statusFilter !== "all" ||
+                          gatewayFilter !== "all") && (
                           <Button
                             variant="link"
                             onClick={() => {

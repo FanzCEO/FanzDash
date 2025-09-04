@@ -6,15 +6,21 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
-  Brain, 
-  Zap, 
-  Shield, 
-  Target, 
-  Activity, 
+import {
+  Brain,
+  Zap,
+  Shield,
+  Target,
+  Activity,
   Upload,
   FileImage,
   FileVideo,
@@ -23,13 +29,18 @@ import {
   Network,
   CheckCircle,
   AlertTriangle,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 
 interface AIAnalysisResult {
   id: string;
   contentId: string;
-  analysisType: "nudenet" | "chatgpt-4o" | "perspective" | "detoxify" | "pdq-hash";
+  analysisType:
+    | "nudenet"
+    | "chatgpt-4o"
+    | "perspective"
+    | "detoxify"
+    | "pdq-hash";
   confidence: number;
   result: any;
   processingTime: number;
@@ -52,7 +63,7 @@ export function AIAnalysisEngine() {
   const [processingStats, setProcessingStats] = useState({
     queueSize: 0,
     processing: 0,
-    avgProcessingTime: 0
+    avgProcessingTime: 0,
   });
 
   const { toast } = useToast();
@@ -121,12 +132,18 @@ export function AIAnalysisEngine() {
 
   const getAnalysisIcon = (type: string) => {
     switch (type) {
-      case "chatgpt-4o": return <Brain className="w-4 h-4 text-primary" />;
-      case "nudenet": return <FileImage className="w-4 h-4 text-secondary" />;
-      case "perspective": return <Shield className="w-4 h-4 text-accent" />;
-      case "detoxify": return <AlertTriangle className="w-4 h-4 text-destructive" />;
-      case "pdq-hash": return <Target className="w-4 h-4 text-muted-foreground" />;
-      default: return <Activity className="w-4 h-4" />;
+      case "chatgpt-4o":
+        return <Brain className="w-4 h-4 text-primary" />;
+      case "nudenet":
+        return <FileImage className="w-4 h-4 text-secondary" />;
+      case "perspective":
+        return <Shield className="w-4 h-4 text-accent" />;
+      case "detoxify":
+        return <AlertTriangle className="w-4 h-4 text-destructive" />;
+      case "pdq-hash":
+        return <Target className="w-4 h-4 text-muted-foreground" />;
+      default:
+        return <Activity className="w-4 h-4" />;
     }
   };
 
@@ -143,7 +160,7 @@ export function AIAnalysisEngine() {
       setProcessingStats({
         queueSize: Math.floor(Math.random() * 50) + 10,
         processing: Math.floor(Math.random() * 8) + 2,
-        avgProcessingTime: Math.floor(Math.random() * 500) + 100
+        avgProcessingTime: Math.floor(Math.random() * 500) + 100,
       });
     }, 3000);
     return () => clearInterval(interval);
@@ -161,7 +178,9 @@ export function AIAnalysisEngine() {
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Queue Size</div>
-                <div className="text-xl font-bold cyber-text-glow">{processingStats.queueSize}</div>
+                <div className="text-xl font-bold cyber-text-glow">
+                  {processingStats.queueSize}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -175,7 +194,9 @@ export function AIAnalysisEngine() {
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Processing</div>
-                <div className="text-xl font-bold cyber-text-glow">{processingStats.processing}</div>
+                <div className="text-xl font-bold cyber-text-glow">
+                  {processingStats.processing}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -189,7 +210,9 @@ export function AIAnalysisEngine() {
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Avg Time</div>
-                <div className="text-xl font-bold cyber-text-glow">{processingStats.avgProcessingTime}ms</div>
+                <div className="text-xl font-bold cyber-text-glow">
+                  {processingStats.avgProcessingTime}ms
+                </div>
               </div>
             </div>
           </CardContent>
@@ -202,7 +225,9 @@ export function AIAnalysisEngine() {
                 <Network className="w-5 h-5 text-destructive cyber-pulse" />
               </div>
               <div>
-                <div className="text-sm text-muted-foreground">Models Active</div>
+                <div className="text-sm text-muted-foreground">
+                  Models Active
+                </div>
                 <div className="text-xl font-bold cyber-text-glow">5</div>
               </div>
             </div>
@@ -226,7 +251,9 @@ export function AIAnalysisEngine() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Content Type</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Content Type
+                </label>
                 <Select value={contentType} onValueChange={setContentType}>
                   <SelectTrigger className="glass-effect">
                     <SelectValue />
@@ -241,7 +268,9 @@ export function AIAnalysisEngine() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Priority</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Priority
+                </label>
                 <Select value={priority} onValueChange={setPriority}>
                   <SelectTrigger className="glass-effect">
                     <SelectValue />
@@ -256,18 +285,27 @@ export function AIAnalysisEngine() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Analysis Models</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Analysis Models
+                </label>
                 <div className="space-y-2">
                   {[
                     { id: "chatgpt-4o", label: "ChatGPT-4o", icon: Brain },
                     { id: "nudenet", label: "NudeNet", icon: FileImage },
-                    { id: "perspective", label: "Perspective API", icon: Shield },
+                    {
+                      id: "perspective",
+                      label: "Perspective API",
+                      icon: Shield,
+                    },
                     { id: "detoxify", label: "Detoxify", icon: AlertTriangle },
-                    { id: "pdq-hash", label: "PDQ Hash", icon: Target }
+                    { id: "pdq-hash", label: "PDQ Hash", icon: Target },
                   ].map((model) => {
                     const IconComponent = model.icon;
                     return (
-                      <label key={model.id} className="flex items-center space-x-2 cursor-pointer">
+                      <label
+                        key={model.id}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
                         <input
                           type="checkbox"
                           checked={analysisTypes.includes(model.id)}
@@ -275,7 +313,9 @@ export function AIAnalysisEngine() {
                             if (e.target.checked) {
                               setAnalysisTypes([...analysisTypes, model.id]);
                             } else {
-                              setAnalysisTypes(analysisTypes.filter(t => t !== model.id));
+                              setAnalysisTypes(
+                                analysisTypes.filter((t) => t !== model.id),
+                              );
                             }
                           }}
                           className="rounded border-primary"
@@ -290,7 +330,9 @@ export function AIAnalysisEngine() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Content to Analyze</label>
+              <label className="text-sm font-medium mb-2 block">
+                Content to Analyze
+              </label>
               {contentType === "text" ? (
                 <Textarea
                   value={selectedContent}
@@ -317,7 +359,9 @@ export function AIAnalysisEngine() {
               data-testid="submit-analysis"
             >
               <Zap className="w-4 h-4 mr-2" />
-              {analysisMutation.isPending ? "Processing..." : "Start AI Analysis"}
+              {analysisMutation.isPending
+                ? "Processing..."
+                : "Start AI Analysis"}
             </Button>
           </div>
         </CardContent>
@@ -334,24 +378,57 @@ export function AIAnalysisEngine() {
           </CardHeader>
           <CardContent className="space-y-4">
             {[
-              { name: "ChatGPT-4o", accuracy: 96.8, speed: "180ms", status: "optimal" },
-              { name: "NudeNet", accuracy: 94.2, speed: "45ms", status: "excellent" },
-              { name: "Perspective API", accuracy: 91.5, speed: "220ms", status: "good" },
-              { name: "Detoxify", accuracy: 89.3, speed: "35ms", status: "excellent" },
-              { name: "PDQ Hash", accuracy: 100, speed: "8ms", status: "perfect" }
+              {
+                name: "ChatGPT-4o",
+                accuracy: 96.8,
+                speed: "180ms",
+                status: "optimal",
+              },
+              {
+                name: "NudeNet",
+                accuracy: 94.2,
+                speed: "45ms",
+                status: "excellent",
+              },
+              {
+                name: "Perspective API",
+                accuracy: 91.5,
+                speed: "220ms",
+                status: "good",
+              },
+              {
+                name: "Detoxify",
+                accuracy: 89.3,
+                speed: "35ms",
+                status: "excellent",
+              },
+              {
+                name: "PDQ Hash",
+                accuracy: 100,
+                speed: "8ms",
+                status: "perfect",
+              },
             ].map((model) => (
               <div key={model.name} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{model.name}</span>
                   <div className="flex items-center space-x-2">
-                    <Badge variant={
-                      model.status === "perfect" ? "default" :
-                      model.status === "optimal" ? "secondary" :
-                      model.status === "excellent" ? "outline" : "secondary"
-                    }>
+                    <Badge
+                      variant={
+                        model.status === "perfect"
+                          ? "default"
+                          : model.status === "optimal"
+                            ? "secondary"
+                            : model.status === "excellent"
+                              ? "outline"
+                              : "secondary"
+                      }
+                    >
                       {model.status}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">{model.speed}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {model.speed}
+                    </span>
                   </div>
                 </div>
                 <Progress value={model.accuracy} className="h-2" />
@@ -388,10 +465,14 @@ export function AIAnalysisEngine() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         {getAnalysisIcon(result.analysisType)}
-                        <span className="font-mono text-sm">{result.analysisType}</span>
+                        <span className="font-mono text-sm">
+                          {result.analysisType}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className={`font-bold ${getConfidenceColor(result.confidence)}`}>
+                        <span
+                          className={`font-bold ${getConfidenceColor(result.confidence)}`}
+                        >
                           {(result.confidence * 100).toFixed(1)}%
                         </span>
                         <Badge variant="outline" className="text-xs">

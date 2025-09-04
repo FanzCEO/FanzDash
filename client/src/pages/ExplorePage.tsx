@@ -4,13 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
+import {
   Search,
   Filter,
   TrendingUp,
@@ -19,7 +19,7 @@ import {
   Globe,
   ChevronDown,
   Sparkles,
-  Eye
+  Eye,
 } from "lucide-react";
 import PostsFeed from "@/components/posts-feed";
 import EnhancedSidebar from "@/components/enhanced-sidebar";
@@ -29,7 +29,7 @@ interface ExplorePageProps {
   featuredCreators: any[];
   currentFilters: {
     query?: string;
-    sort?: 'latest' | 'oldest' | 'unlockable' | 'free';
+    sort?: "latest" | "oldest" | "unlockable" | "free";
   };
   onSearch: (query: string) => void;
   onFilter: (filters: any) => void;
@@ -60,7 +60,7 @@ export function ExplorePage({
   isLoading,
   user,
   settings,
-  className = ""
+  className = "",
 }: ExplorePageProps) {
   const [searchQuery, setSearchQuery] = useState(currentFilters.query || "");
   const [sortBy, setSortBy] = useState(currentFilters.sort || "latest");
@@ -87,7 +87,7 @@ export function ExplorePage({
                 allowReels: true,
                 disableExploreSection: false,
                 shop: false,
-                reelsPublic: true
+                reelsPublic: true,
               }}
               isGuest={false}
               className="sticky top-6"
@@ -104,7 +104,9 @@ export function ExplorePage({
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold">Explore</h1>
-                  <p className="text-muted-foreground">Discover amazing content from creators</p>
+                  <p className="text-muted-foreground">
+                    Discover amazing content from creators
+                  </p>
                 </div>
               </div>
 
@@ -135,33 +137,39 @@ export function ExplorePage({
                 {/* Sort Filter */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="h-12 px-4 bg-card/50 border-2 border-muted/20"
                       data-testid="explore-sort-dropdown"
                     >
                       <Filter className="h-4 w-4 mr-2" />
-                      {sortBy === 'latest' && 'Latest'}
-                      {sortBy === 'oldest' && 'Oldest'}
-                      {sortBy === 'unlockable' && 'Unlockable'}
-                      {sortBy === 'free' && 'Free'}
+                      {sortBy === "latest" && "Latest"}
+                      {sortBy === "oldest" && "Oldest"}
+                      {sortBy === "unlockable" && "Unlockable"}
+                      {sortBy === "free" && "Free"}
                       <ChevronDown className="h-4 w-4 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleSortChange('latest')}>
+                    <DropdownMenuItem
+                      onClick={() => handleSortChange("latest")}
+                    >
                       <Clock className="h-4 w-4 mr-2" />
                       Latest
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSortChange('oldest')}>
+                    <DropdownMenuItem
+                      onClick={() => handleSortChange("oldest")}
+                    >
                       <Clock className="h-4 w-4 mr-2" />
                       Oldest
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSortChange('unlockable')}>
+                    <DropdownMenuItem
+                      onClick={() => handleSortChange("unlockable")}
+                    >
                       <Unlock className="h-4 w-4 mr-2" />
                       Unlockable
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSortChange('free')}>
+                    <DropdownMenuItem onClick={() => handleSortChange("free")}>
                       <Globe className="h-4 w-4 mr-2" />
                       Free
                     </DropdownMenuItem>
@@ -170,9 +178,11 @@ export function ExplorePage({
               </div>
 
               {/* Active Filters */}
-              {(searchQuery || sortBy !== 'latest') && (
+              {(searchQuery || sortBy !== "latest") && (
                 <div className="flex items-center space-x-2 mt-4">
-                  <span className="text-sm text-muted-foreground">Active filters:</span>
+                  <span className="text-sm text-muted-foreground">
+                    Active filters:
+                  </span>
                   {searchQuery && (
                     <Badge variant="secondary" className="px-3 py-1">
                       Search: "{searchQuery}"
@@ -189,14 +199,14 @@ export function ExplorePage({
                       </Button>
                     </Badge>
                   )}
-                  {sortBy !== 'latest' && (
+                  {sortBy !== "latest" && (
                     <Badge variant="secondary" className="px-3 py-1">
                       Sort: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
                       <Button
                         variant="ghost"
                         size="sm"
                         className="h-4 w-4 p-0 ml-2"
-                        onClick={() => handleSortChange('latest')}
+                        onClick={() => handleSortChange("latest")}
                       >
                         ×
                       </Button>
@@ -253,14 +263,13 @@ export function ExplorePage({
                 <div className="inline-flex items-center justify-center w-24 h-24 bg-muted/20 rounded-3xl mb-6">
                   <Eye className="h-12 w-12 text-muted-foreground" />
                 </div>
-                
+
                 <h3 className="text-2xl font-bold mb-4">No Posts Found</h3>
-                
+
                 <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                  {searchQuery ? 
-                    `No posts match your search for "${searchQuery}". Try different keywords or explore creators.` :
-                    "No posts have been shared yet. Follow some creators to see their content in your explore feed."
-                  }
+                  {searchQuery
+                    ? `No posts match your search for "${searchQuery}". Try different keywords or explore creators.`
+                    : "No posts have been shared yet. Follow some creators to see their content in your explore feed."}
                 </p>
 
                 <div className="flex justify-center space-x-4">
@@ -298,7 +307,13 @@ export function ExplorePage({
                     Trending Tags
                   </h3>
                   <div className="space-y-2">
-                    {['#photography', '#fitness', '#art', '#music', '#lifestyle'].map((tag, index) => (
+                    {[
+                      "#photography",
+                      "#fitness",
+                      "#art",
+                      "#music",
+                      "#lifestyle",
+                    ].map((tag, index) => (
                       <Button
                         key={tag}
                         variant="ghost"
@@ -329,9 +344,12 @@ export function ExplorePage({
                     <h3 className="font-bold mb-4">Suggested Creators</h3>
                     <div className="space-y-3">
                       {featuredCreators.slice(0, 5).map((creator) => (
-                        <div key={creator.id} className="flex items-center space-x-3">
-                          <img 
-                            src={creator.avatar || "/api/placeholder/40/40"} 
+                        <div
+                          key={creator.id}
+                          className="flex items-center space-x-3"
+                        >
+                          <img
+                            src={creator.avatar || "/api/placeholder/40/40"}
                             alt={creator.name}
                             className="w-10 h-10 rounded-full object-cover"
                           />
@@ -345,7 +363,11 @@ export function ExplorePage({
                               @{creator.username}
                             </p>
                           </div>
-                          <Button size="sm" variant="outline" className="text-xs">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs"
+                          >
                             Follow
                           </Button>
                         </div>
@@ -361,15 +383,21 @@ export function ExplorePage({
                   <h3 className="font-bold mb-4">Explore Stats</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Posts today</span>
+                      <span className="text-sm text-muted-foreground">
+                        Posts today
+                      </span>
                       <Badge variant="secondary">247</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Active creators</span>
+                      <span className="text-sm text-muted-foreground">
+                        Active creators
+                      </span>
                       <Badge variant="secondary">1.2k</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Trending now</span>
+                      <span className="text-sm text-muted-foreground">
+                        Trending now
+                      </span>
                       <Badge className="bg-green-500">Live</Badge>
                     </div>
                   </div>
@@ -382,17 +410,29 @@ export function ExplorePage({
                   <h3 className="font-bold mb-4">Quick Actions</h3>
                   <div className="space-y-2">
                     <Link href="/creators">
-                      <Button variant="outline" size="sm" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start"
+                      >
                         Browse All Creators
                       </Button>
                     </Link>
                     <Link href="/categories">
-                      <Button variant="outline" size="sm" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start"
+                      >
                         Browse Categories
                       </Button>
                     </Link>
                     <Link href="/live">
-                      <Button variant="outline" size="sm" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start"
+                      >
                         Live Streams
                       </Button>
                     </Link>

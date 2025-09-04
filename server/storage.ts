@@ -1,8 +1,8 @@
-import { 
-  users, 
-  contentItems, 
-  moderationResults, 
-  liveStreams, 
+import {
+  users,
+  contentItems,
+  moderationResults,
+  liveStreams,
   moderationSettings,
   appealRequests,
   streamTokens,
@@ -54,7 +54,7 @@ import {
   // platformMessages,
   // paymentProcessorSettings,
   // systemLimits,
-  type User, 
+  type User,
   type InsertUser,
   type ContentItem,
   type InsertContentItem,
@@ -127,7 +127,7 @@ import {
   type CronJob,
   type InsertCronJob,
   type CronJobLog,
-  type InsertCronJobLog
+  type InsertCronJobLog,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, count, and, or, sql } from "drizzle-orm";
@@ -141,11 +141,17 @@ export interface IStorage {
   // Content operations
   getContentItem(id: string): Promise<ContentItem | undefined>;
   createContentItem(content: InsertContentItem): Promise<ContentItem>;
-  updateContentStatus(id: string, status: string, moderatorId?: string): Promise<void>;
+  updateContentStatus(
+    id: string,
+    status: string,
+    moderatorId?: string,
+  ): Promise<void>;
   getPendingContent(limit?: number): Promise<ContentItem[]>;
 
   // Moderation results
-  createModerationResult(result: InsertModerationResult): Promise<ModerationResult>;
+  createModerationResult(
+    result: InsertModerationResult,
+  ): Promise<ModerationResult>;
   getModerationResults(contentId: string): Promise<ModerationResult[]>;
 
   // Live streams
@@ -156,7 +162,7 @@ export interface IStorage {
   // Settings
   getModerationSettings(): Promise<ModerationSettings[]>;
   updateModerationSettings(settings: InsertModerationSettings): Promise<void>;
-  
+
   // Audio Call Settings
   getAudioCallSettings(): Promise<any>;
   updateAudioCallSettings(settings: any): Promise<void>;
@@ -164,7 +170,10 @@ export interface IStorage {
   // Appeals
   getAppealRequests(): Promise<AppealRequest[]>;
   createAppealRequest(appeal: InsertAppealRequest): Promise<AppealRequest>;
-  updateAppealRequest(id: string, updates: Partial<AppealRequest>): Promise<void>;
+  updateAppealRequest(
+    id: string,
+    updates: Partial<AppealRequest>,
+  ): Promise<void>;
 
   // Stats
   getDashboardStats(): Promise<{
@@ -183,7 +192,7 @@ export interface IStorage {
   getPlatformStats(): Promise<any>;
   getRecentAnalysis(limit: number): Promise<any[]>;
   processContentAnalysis(request: any): Promise<any>;
-  
+
   // AI Analysis operations
   createAnalysisResult(data: {
     contentUrl: string;
@@ -193,81 +202,97 @@ export interface IStorage {
     confidence: number;
     processingTime: number;
   }): Promise<any>;
-  
+
   getRecentAnalysisResults(limit: number): Promise<any[]>;
-  
+
   // Payment Processor operations
   getPaymentProcessors(): Promise<PaymentProcessor[]>;
-  createPaymentProcessor(processor: InsertPaymentProcessor): Promise<PaymentProcessor>;
-  createPaymentTransaction(transaction: InsertPaymentTransaction): Promise<PaymentTransaction>;
-  
+  createPaymentProcessor(
+    processor: InsertPaymentProcessor,
+  ): Promise<PaymentProcessor>;
+  createPaymentTransaction(
+    transaction: InsertPaymentTransaction,
+  ): Promise<PaymentTransaction>;
+
   // GetStream operations
   createStreamToken(token: InsertStreamToken): Promise<StreamToken>;
   createStreamChannel(channel: InsertStreamChannel): Promise<StreamChannel>;
-  
+
   // Coconut Encoding operations
   createEncodingJob(job: InsertEncodingJob): Promise<EncodingJob>;
   getEncodingJob(id: string): Promise<EncodingJob | undefined>;
   updateEncodingJobStatus(jobId: string, updates: any): Promise<void>;
-  
+
   // AI Companion operations
   createAICompanion(companion: InsertAICompanion): Promise<AICompanion>;
   getAICompanion(id: string): Promise<AICompanion | undefined>;
-  
+
   // VR/WebXR operations
   createVRSession(session: InsertVRSession): Promise<VRSession>;
   createWebRTCRoom(room: InsertWebRTCRoom): Promise<WebRTCRoom>;
-  
+
   // Geo-Collaboration operations
-  createGeoCollaboration(collaboration: InsertGeoCollaboration): Promise<GeoCollaboration>;
-  getNearbyCollaborations(lat: number, lng: number, radius: number): Promise<GeoCollaboration[]>;
-  
+  createGeoCollaboration(
+    collaboration: InsertGeoCollaboration,
+  ): Promise<GeoCollaboration>;
+  getNearbyCollaborations(
+    lat: number,
+    lng: number,
+    radius: number,
+  ): Promise<GeoCollaboration[]>;
+
   // Tax Management
   getTaxRates(): Promise<TaxRate[]>;
   createTaxRate(rate: InsertTaxRate): Promise<TaxRate>;
   updateTaxRate(id: string, updates: Partial<TaxRate>): Promise<void>;
-  
+
   // Advertising System
   getAdCampaigns(): Promise<AdCampaign[]>;
   createAdCampaign(campaign: InsertAdCampaign): Promise<AdCampaign>;
   updateAdCampaign(id: string, updates: Partial<AdCampaign>): Promise<void>;
-  
+
   // Live Streaming Enhanced
   getLiveStreamSessions(): Promise<LiveStreamSession[]>;
-  createLiveStreamSession(session: InsertLiveStreamSession): Promise<LiveStreamSession>;
+  createLiveStreamSession(
+    session: InsertLiveStreamSession,
+  ): Promise<LiveStreamSession>;
   getPrivateShowRequests(): Promise<PrivateShowRequest[]>;
-  createPrivateShowRequest(request: InsertPrivateShowRequest): Promise<PrivateShowRequest>;
-  
+  createPrivateShowRequest(
+    request: InsertPrivateShowRequest,
+  ): Promise<PrivateShowRequest>;
+
   // Gift System
   getGiftCatalog(): Promise<GiftCatalog[]>;
   createGift(gift: InsertGiftCatalog): Promise<GiftCatalog>;
-  createGiftTransaction(transaction: InsertGiftTransaction): Promise<GiftTransaction>;
-  
+  createGiftTransaction(
+    transaction: InsertGiftTransaction,
+  ): Promise<GiftTransaction>;
+
   // User Deposits
   getUserDeposits(userId: string): Promise<UserDeposit[]>;
   createUserDeposit(deposit: InsertUserDeposit): Promise<UserDeposit>;
-  
+
   // Countries Management
   getCountries(): Promise<Country[]>;
   getCountry(id: string): Promise<Country | undefined>;
   createCountry(country: InsertCountry): Promise<Country>;
   updateCountry(id: string, updates: Partial<Country>): Promise<void>;
   deleteCountry(id: string): Promise<void>;
-  
+
   // States Management
   getStates(countryId?: string): Promise<State[]>;
   getState(id: string): Promise<State | undefined>;
   createState(state: InsertState): Promise<State>;
   updateState(id: string, updates: Partial<State>): Promise<void>;
   deleteState(id: string): Promise<void>;
-  
+
   // Languages Management
   getLanguages(): Promise<Language[]>;
   getLanguage(id: string): Promise<Language | undefined>;
   createLanguage(language: InsertLanguage): Promise<Language>;
   updateLanguage(id: string, updates: Partial<Language>): Promise<void>;
   deleteLanguage(id: string): Promise<void>;
-  
+
   // Cron Jobs Management
   getCronJobs(): Promise<CronJob[]>;
   getCronJob(id: string): Promise<CronJob | undefined>;
@@ -276,7 +301,7 @@ export interface IStorage {
   deleteCronJob(id: string): Promise<void>;
   toggleCronJob(id: string, isActive: boolean): Promise<void>;
   runCronJob(id: string): Promise<void>;
-  
+
   // Cron Job Logs
   getCronJobLogs(jobId?: string): Promise<CronJobLog[]>;
   createCronJobLog(log: InsertCronJobLog): Promise<CronJobLog>;
@@ -284,102 +309,140 @@ export interface IStorage {
 
   // API Integrations Management
   getApiIntegrations(): Promise<ApiIntegration[]>;
-  getApiIntegrationByService(serviceName: string): Promise<ApiIntegration | undefined>;
+  getApiIntegrationByService(
+    serviceName: string,
+  ): Promise<ApiIntegration | undefined>;
   createApiIntegration(data: InsertApiIntegration): Promise<ApiIntegration>;
-  updateApiIntegration(id: string, updates: Partial<ApiIntegration>): Promise<void>;
+  updateApiIntegration(
+    id: string,
+    updates: Partial<ApiIntegration>,
+  ): Promise<void>;
   deleteApiIntegration(id: string): Promise<void>;
-  
+
   // Live Streaming Private Requests
   getPrivateStreamRequests(): Promise<LiveStreamingPrivateRequest[]>;
-  getPrivateStreamRequest(id: string): Promise<LiveStreamingPrivateRequest | undefined>;
-  createPrivateStreamRequest(data: InsertLiveStreamingPrivateRequest): Promise<LiveStreamingPrivateRequest>;
-  updatePrivateStreamRequest(id: string, updates: Partial<LiveStreamingPrivateRequest>): Promise<void>;
+  getPrivateStreamRequest(
+    id: string,
+  ): Promise<LiveStreamingPrivateRequest | undefined>;
+  createPrivateStreamRequest(
+    data: InsertLiveStreamingPrivateRequest,
+  ): Promise<LiveStreamingPrivateRequest>;
+  updatePrivateStreamRequest(
+    id: string,
+    updates: Partial<LiveStreamingPrivateRequest>,
+  ): Promise<void>;
   deletePrivateStreamRequest(id: string): Promise<void>;
-  
+
   // Maintenance Mode Management
   getMaintenanceMode(): Promise<MaintenanceMode | undefined>;
   updateMaintenanceMode(data: Partial<MaintenanceMode>): Promise<void>;
-  
+
   // Enhanced Member Management
   getMemberProfiles(): Promise<MemberProfile[]>;
   getMemberProfile(id: string): Promise<MemberProfile | undefined>;
   getMemberProfileByUserId(userId: string): Promise<MemberProfile | undefined>;
   createMemberProfile(data: InsertMemberProfile): Promise<MemberProfile>;
-  updateMemberProfile(id: string, updates: Partial<MemberProfile>): Promise<void>;
+  updateMemberProfile(
+    id: string,
+    updates: Partial<MemberProfile>,
+  ): Promise<void>;
   deleteMemberProfile(id: string): Promise<void>;
-  
+
   // Content Moderation Settings
   getModerationSettings(): Promise<ModerationSettings | undefined>;
   updateModerationSettings(data: Partial<ModerationSettings>): Promise<void>;
-  
+
   // Platform Messages System
   getPlatformMessages(): Promise<PlatformMessage[]>;
   getPlatformMessage(id: string): Promise<PlatformMessage | undefined>;
   createPlatformMessage(data: InsertPlatformMessage): Promise<PlatformMessage>;
-  updatePlatformMessage(id: string, updates: Partial<PlatformMessage>): Promise<void>;
+  updatePlatformMessage(
+    id: string,
+    updates: Partial<PlatformMessage>,
+  ): Promise<void>;
   deletePlatformMessage(id: string): Promise<void>;
   markMessageAsRead(id: string): Promise<void>;
-  
+
   // Payment Processor Settings
   getPaymentProcessorSettings(): Promise<PaymentProcessorSettings[]>;
-  getPaymentProcessorSetting(id: string): Promise<PaymentProcessorSettings | undefined>;
-  getPaymentProcessorByName(processorName: string): Promise<PaymentProcessorSettings | undefined>;
-  createPaymentProcessorSettings(data: InsertPaymentProcessorSettings): Promise<PaymentProcessorSettings>;
-  updatePaymentProcessorSettings(id: string, updates: Partial<PaymentProcessorSettings>): Promise<void>;
+  getPaymentProcessorSetting(
+    id: string,
+  ): Promise<PaymentProcessorSettings | undefined>;
+  getPaymentProcessorByName(
+    processorName: string,
+  ): Promise<PaymentProcessorSettings | undefined>;
+  createPaymentProcessorSettings(
+    data: InsertPaymentProcessorSettings,
+  ): Promise<PaymentProcessorSettings>;
+  updatePaymentProcessorSettings(
+    id: string,
+    updates: Partial<PaymentProcessorSettings>,
+  ): Promise<void>;
   deletePaymentProcessorSettings(id: string): Promise<void>;
-  
+
   // System Limits Configuration
   getSystemLimits(): Promise<SystemLimit[]>;
   getSystemLimit(id: string): Promise<SystemLimit | undefined>;
   createSystemLimit(data: InsertSystemLimit): Promise<SystemLimit>;
   updateSystemLimit(id: string, updates: Partial<SystemLimit>): Promise<void>;
   deleteSystemLimit(id: string): Promise<void>;
-  
+
   // RBAC System
   getRoles(): Promise<Role[]>;
   createRole(role: InsertRole): Promise<Role>;
   assignUserRole(userRole: InsertUserRole): Promise<UserRole>;
   getUserRoles(userId: string): Promise<UserRole[]>;
-  
+
   // Announcements
   getAnnouncements(): Promise<Announcement[]>;
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
-  
+
   // CMS System
   getCmsPages(): Promise<CmsPage[]>;
   createCmsPage(page: InsertCmsPage): Promise<CmsPage>;
   updateCmsPage(id: string, updates: Partial<CmsPage>): Promise<void>;
-  
+
   // Platform Limits
   getPlatformLimits(): Promise<PlatformLimit[]>;
   createPlatformLimit(limit: InsertPlatformLimit): Promise<PlatformLimit>;
-  
+
   // Reserved Names
   getReservedNames(): Promise<ReservedName[]>;
   isNameReserved(name: string): Promise<boolean>;
-  
+
   // System Settings
   getSystemSettings(): Promise<SystemSetting[]>;
   getSystemSetting(key: string): Promise<SystemSetting | undefined>;
   updateSystemSetting(key: string, value: string): Promise<void>;
-  
+
   // Audio Calls
   createAudioCall(call: InsertAudioCall): Promise<AudioCall>;
   getAudioCalls(userId: string): Promise<AudioCall[]>;
-  
+
   // Extended Payment Processors
   getExtendedPaymentProcessors(): Promise<ExtendedPaymentProcessor[]>;
-  createExtendedPaymentProcessor(processor: InsertExtendedPaymentProcessor): Promise<ExtendedPaymentProcessor>;
-  
+  createExtendedPaymentProcessor(
+    processor: InsertExtendedPaymentProcessor,
+  ): Promise<ExtendedPaymentProcessor>;
+
   // Interactive functionality
   addPlatformConnection(connection: any): Promise<any>;
   removePlatformConnection(id: string): Promise<void>;
   updateUserRole(id: string, role: string): Promise<void>;
   updateSettings(settings: any): Promise<void>;
   createCrisisIncident(incident: any): Promise<any>;
-  processAppeal(id: string, decision: string, reasoning: string, moderatorId: string): Promise<void>;
+  processAppeal(
+    id: string,
+    decision: string,
+    reasoning: string,
+    moderatorId: string,
+  ): Promise<void>;
   addVaultFile(file: any): Promise<any>;
-  searchAuditLogs(query: string, dateRange: string, actionType: string): Promise<any[]>;
+  searchAuditLogs(
+    query: string,
+    dateRange: string,
+    actionType: string,
+  ): Promise<any[]>;
   calculateModelPerformanceStats(analyses: any[]): any;
 }
 
@@ -390,38 +453,42 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, username));
     return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const result = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
+    const result = await db.insert(users).values(insertUser).returning();
     return result[0];
   }
 
   async getContentItem(id: string): Promise<ContentItem | undefined> {
-    const [item] = await db.select().from(contentItems).where(eq(contentItems.id, id));
+    const [item] = await db
+      .select()
+      .from(contentItems)
+      .where(eq(contentItems.id, id));
     return item || undefined;
   }
 
   async createContentItem(content: InsertContentItem): Promise<ContentItem> {
-    const [item] = await db
-      .insert(contentItems)
-      .values(content)
-      .returning();
+    const [item] = await db.insert(contentItems).values(content).returning();
     return item;
   }
 
-  async updateContentStatus(id: string, status: string, moderatorId?: string): Promise<void> {
+  async updateContentStatus(
+    id: string,
+    status: string,
+    moderatorId?: string,
+  ): Promise<void> {
     await db
       .update(contentItems)
-      .set({ 
-        status, 
+      .set({
+        status,
         moderatorId,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
       .where(eq(contentItems.id, id));
   }
@@ -435,7 +502,9 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
   }
 
-  async createModerationResult(result: InsertModerationResult): Promise<ModerationResult> {
+  async createModerationResult(
+    result: InsertModerationResult,
+  ): Promise<ModerationResult> {
     const [moderationResult] = await db
       .insert(moderationResults)
       .values(result)
@@ -466,7 +535,10 @@ export class DatabaseStorage implements IStorage {
     return liveStream;
   }
 
-  async updateLiveStream(id: string, updates: Partial<LiveStream>): Promise<void> {
+  async updateLiveStream(
+    id: string,
+    updates: Partial<LiveStream>,
+  ): Promise<void> {
     await db
       .update(liveStreams)
       .set({ ...updates, updatedAt: new Date() })
@@ -480,7 +552,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(moderationSettings.type);
   }
 
-  async updateModerationSettings(settings: InsertModerationSettings): Promise<void> {
+  async updateModerationSettings(
+    settings: InsertModerationSettings,
+  ): Promise<void> {
     const existing = await db
       .select()
       .from(moderationSettings)
@@ -493,38 +567,30 @@ export class DatabaseStorage implements IStorage {
         .set({ ...settings, updatedAt: new Date() })
         .where(eq(moderationSettings.type, settings.type!));
     } else {
-      await db
-        .insert(moderationSettings)
-        .values(settings);
+      await db.insert(moderationSettings).values(settings);
     }
   }
 
   // Audio Call Settings
   async getAudioCallSettings(): Promise<any> {
-    const settings = await db
-      .select()
-      .from(audioCallSettings)
-      .limit(1);
-    
+    const settings = await db.select().from(audioCallSettings).limit(1);
+
     if (settings.length > 0) {
       return settings[0];
     }
-    
+
     // Return default settings if none exist
     return {
       audioCallStatus: false,
       agoraAppId: null,
       audioCallMinPrice: 1,
       audioCallMaxPrice: 100,
-      audioCallMaxDuration: 60
+      audioCallMaxDuration: 60,
     };
   }
 
   async updateAudioCallSettings(settings: any): Promise<void> {
-    const existing = await db
-      .select()
-      .from(audioCallSettings)
-      .limit(1);
+    const existing = await db.select().from(audioCallSettings).limit(1);
 
     if (existing.length > 0) {
       await db
@@ -532,9 +598,7 @@ export class DatabaseStorage implements IStorage {
         .set({ ...settings, updatedAt: new Date() })
         .where(eq(audioCallSettings.id, existing[0].id));
     } else {
-      await db
-        .insert(audioCallSettings)
-        .values(settings);
+      await db.insert(audioCallSettings).values(settings);
     }
   }
 
@@ -545,7 +609,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(appealRequests.createdAt));
   }
 
-  async createAppealRequest(appeal: InsertAppealRequest): Promise<AppealRequest> {
+  async createAppealRequest(
+    appeal: InsertAppealRequest,
+  ): Promise<AppealRequest> {
     const [appealRequest] = await db
       .insert(appealRequests)
       .values(appeal)
@@ -553,7 +619,10 @@ export class DatabaseStorage implements IStorage {
     return appealRequest;
   }
 
-  async updateAppealRequest(id: string, updates: Partial<AppealRequest>): Promise<void> {
+  async updateAppealRequest(
+    id: string,
+    updates: Partial<AppealRequest>,
+  ): Promise<void> {
     await db
       .update(appealRequests)
       .set({ ...updates, updatedAt: new Date() })
@@ -574,9 +643,12 @@ export class DatabaseStorage implements IStorage {
       .from(contentItems)
       .where(
         and(
-          or(eq(contentItems.status, "approved"), eq(contentItems.status, "rejected")),
-          sql`${contentItems.updatedAt} >= ${today}`
-        )
+          or(
+            eq(contentItems.status, "approved"),
+            eq(contentItems.status, "rejected"),
+          ),
+          sql`${contentItems.updatedAt} >= ${today}`,
+        ),
       );
 
     const [autoBlocked] = await db
@@ -585,8 +657,8 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(contentItems.status, "auto_blocked"),
-          sql`${contentItems.createdAt} >= ${today}`
-        )
+          sql`${contentItems.createdAt} >= ${today}`,
+        ),
       );
 
     const [pendingReview] = await db
@@ -624,20 +696,20 @@ export class DatabaseStorage implements IStorage {
           requireManualReview: false,
           allowedContentTypes: ["image", "video", "text"],
           blockedKeywords: [],
-          customRules: []
+          customRules: [],
         },
         stats: {
           totalContent: 15847,
           dailyContent: 234,
           blockedContent: 89,
           flaggedContent: 23,
-          lastSync: new Date().toISOString()
+          lastSync: new Date().toISOString(),
         },
         createdAt: "2024-01-10T10:00:00Z",
-        lastActive: new Date().toISOString()
+        lastActive: new Date().toISOString(),
       },
       {
-        id: "platform-2", 
+        id: "platform-2",
         name: "FanzLive Streaming",
         domain: "live.fanz.com",
         niche: "live_streaming",
@@ -650,22 +722,22 @@ export class DatabaseStorage implements IStorage {
           requireManualReview: true,
           allowedContentTypes: ["live_stream", "video"],
           blockedKeywords: [],
-          customRules: []
+          customRules: [],
         },
         stats: {
           totalContent: 8934,
           dailyContent: 167,
           blockedContent: 34,
           flaggedContent: 12,
-          lastSync: new Date().toISOString()
+          lastSync: new Date().toISOString(),
         },
         createdAt: "2024-01-12T14:00:00Z",
-        lastActive: new Date().toISOString()
+        lastActive: new Date().toISOString(),
       },
       {
         id: "platform-3",
         name: "FanzSocial Community",
-        domain: "social.fanz.com", 
+        domain: "social.fanz.com",
         niche: "social_media",
         status: "active",
         apiEndpoint: "https://api.social.fanz.com/v1",
@@ -676,18 +748,18 @@ export class DatabaseStorage implements IStorage {
           requireManualReview: false,
           allowedContentTypes: ["text", "image"],
           blockedKeywords: ["spam", "harassment"],
-          customRules: []
+          customRules: [],
         },
         stats: {
           totalContent: 32156,
           dailyContent: 456,
           blockedContent: 123,
           flaggedContent: 67,
-          lastSync: new Date().toISOString()
+          lastSync: new Date().toISOString(),
         },
         createdAt: "2024-01-08T09:00:00Z",
-        lastActive: new Date().toISOString()
-      }
+        lastActive: new Date().toISOString(),
+      },
     ];
   }
 
@@ -702,17 +774,17 @@ export class DatabaseStorage implements IStorage {
         requireManualReview: platformData.requireManualReview || false,
         allowedContentTypes: ["image", "video", "text", "live_stream"],
         blockedKeywords: [],
-        customRules: []
+        customRules: [],
       },
       stats: {
         totalContent: 0,
         dailyContent: 0,
         blockedContent: 0,
         flaggedContent: 0,
-        lastSync: new Date().toISOString()
+        lastSync: new Date().toISOString(),
       },
       createdAt: new Date().toISOString(),
-      lastActive: new Date().toISOString()
+      lastActive: new Date().toISOString(),
     };
     return platform;
   }
@@ -724,12 +796,12 @@ export class DatabaseStorage implements IStorage {
   async testPlatformConnection(platformId: string): Promise<any> {
     const latency = Math.floor(Math.random() * 200) + 50;
     const success = Math.random() > 0.1;
-    
+
     return {
       success,
       latency,
       timestamp: new Date().toISOString(),
-      error: success ? undefined : "Connection timeout"
+      error: success ? undefined : "Connection timeout",
     };
   }
 
@@ -742,7 +814,7 @@ export class DatabaseStorage implements IStorage {
         status: "connected",
         lastHeartbeat: new Date().toISOString(),
         latency: 145,
-        errorCount: 0
+        errorCount: 0,
       },
       {
         id: "conn-2",
@@ -751,7 +823,7 @@ export class DatabaseStorage implements IStorage {
         status: "connected",
         lastHeartbeat: new Date().toISOString(),
         latency: 89,
-        errorCount: 0
+        errorCount: 0,
       },
       {
         id: "conn-3",
@@ -760,8 +832,8 @@ export class DatabaseStorage implements IStorage {
         status: "connected",
         lastHeartbeat: new Date().toISOString(),
         latency: 67,
-        errorCount: 0
-      }
+        errorCount: 0,
+      },
     ];
   }
 
@@ -772,7 +844,7 @@ export class DatabaseStorage implements IStorage {
       totalContent: 56937,
       flaggedContent: 102,
       avgResponseTime: 134,
-      uptime: 99.9
+      uptime: 99.9,
     };
   }
 
@@ -785,13 +857,18 @@ export class DatabaseStorage implements IStorage {
       result: {
         riskScore: Math.random(),
         flaggedContent: Math.random() > 0.7 ? ["explicit_content"] : [],
-        recommendations: Math.random() > 0.7 ? ["Block content"] : ["Approve content"]
+        recommendations:
+          Math.random() > 0.7 ? ["Block content"] : ["Approve content"],
       },
       processingTime: Math.floor(Math.random() * 2000) + 500,
       modelVersion: "gpt-4o",
       createdAt: new Date(Date.now() - i * 60000).toISOString(),
-      platformName: ["FanzMain Adult", "FanzLive Streaming", "FanzSocial Community"][i % 3],
-      contentType: ["image", "video", "text", "live_stream"][i % 4]
+      platformName: [
+        "FanzMain Adult",
+        "FanzLive Streaming",
+        "FanzSocial Community",
+      ][i % 3],
+      contentType: ["image", "video", "text", "live_stream"][i % 4],
     }));
   }
 
@@ -803,55 +880,73 @@ export class DatabaseStorage implements IStorage {
       analysisId: `analysis-${Date.now()}`,
       riskScore,
       confidence,
-      recommendations: riskScore > 0.7 ? ["Block content"] : ["Approve content"],
+      recommendations:
+        riskScore > 0.7 ? ["Block content"] : ["Approve content"],
       processingTime: Math.floor(Math.random() * 2000) + 500,
-      flaggedContent: riskScore > 0.7 ? ["explicit_content"] : []
+      flaggedContent: riskScore > 0.7 ? ["explicit_content"] : [],
     };
   }
 
   // AI Analysis operations implementation
-
-
 
   calculateModelPerformanceStats(analyses: any[]): any {
     if (!analyses || analyses.length === 0) {
       return {};
     }
 
-    const modelGroups = analyses.reduce((acc: Record<string, any[]>, analysis: any) => {
-      const modelType = analysis.analysisType;
-      if (!acc[modelType]) {
-        acc[modelType] = [];
-      }
-      acc[modelType].push(analysis);
-      return acc;
-    }, {} as Record<string, any[]>);
+    const modelGroups = analyses.reduce(
+      (acc: Record<string, any[]>, analysis: any) => {
+        const modelType = analysis.analysisType;
+        if (!acc[modelType]) {
+          acc[modelType] = [];
+        }
+        acc[modelType].push(analysis);
+        return acc;
+      },
+      {} as Record<string, any[]>,
+    );
 
     const stats: Record<string, any> = {};
 
-    Object.entries(modelGroups).forEach(([modelType, modelAnalyses]: [string, any[]]) => {
-      const totalAnalyses = modelAnalyses.length;
-      const avgSpeed = Math.round(
-        modelAnalyses.reduce((sum: number, a: any) => sum + (a.processingTime || 0), 0) / totalAnalyses
-      );
-      
-      // Calculate accuracy based on confidence scores
-      const avgConfidence = modelAnalyses.reduce((sum: number, a: any) => sum + (a.confidence || 0), 0) / totalAnalyses;
-      const accuracy = Math.round(avgConfidence * 100);
-      
-      const status = accuracy > 95 ? "optimal" : accuracy > 90 ? "excellent" : accuracy > 85 ? "good" : "needs_review";
+    Object.entries(modelGroups).forEach(
+      ([modelType, modelAnalyses]: [string, any[]]) => {
+        const totalAnalyses = modelAnalyses.length;
+        const avgSpeed = Math.round(
+          modelAnalyses.reduce(
+            (sum: number, a: any) => sum + (a.processingTime || 0),
+            0,
+          ) / totalAnalyses,
+        );
 
-      stats[modelType.replace('-', '')] = {
-        accuracy,
-        avgSpeed,
-        status,
-        count: totalAnalyses
-      };
-    });
+        // Calculate accuracy based on confidence scores
+        const avgConfidence =
+          modelAnalyses.reduce(
+            (sum: number, a: any) => sum + (a.confidence || 0),
+            0,
+          ) / totalAnalyses;
+        const accuracy = Math.round(avgConfidence * 100);
+
+        const status =
+          accuracy > 95
+            ? "optimal"
+            : accuracy > 90
+              ? "excellent"
+              : accuracy > 85
+                ? "good"
+                : "needs_review";
+
+        stats[modelType.replace("-", "")] = {
+          accuracy,
+          avgSpeed,
+          status,
+          count: totalAnalyses,
+        };
+      },
+    );
 
     return stats;
   }
-  // Interactive functionality methods  
+  // Interactive functionality methods
   async createAnalysisResult(data: {
     contentUrl: string;
     contentType: string;
@@ -863,7 +958,7 @@ export class DatabaseStorage implements IStorage {
     const analysisResult = {
       id: `analysis-${Date.now()}`,
       ...data,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
     return analysisResult;
   }
@@ -871,10 +966,10 @@ export class DatabaseStorage implements IStorage {
   async getRecentAnalysisResults(limit: number): Promise<any[]> {
     return Array.from({ length: Math.min(limit, 10) }, (_, i) => ({
       id: `analysis-${Date.now() - i * 1000}`,
-      contentType: ['image', 'text', 'video'][Math.floor(Math.random() * 3)],
+      contentType: ["image", "text", "video"][Math.floor(Math.random() * 3)],
       riskScore: Math.random(),
       confidence: Math.random() * 0.3 + 0.7,
-      createdAt: new Date(Date.now() - i * 60000).toISOString()
+      createdAt: new Date(Date.now() - i * 60000).toISOString(),
     }));
   }
 
@@ -898,7 +993,12 @@ export class DatabaseStorage implements IStorage {
     return { ...incident, id: incident.id || `incident-${Date.now()}` };
   }
 
-  async processAppeal(id: string, decision: string, reasoning: string, moderatorId: string): Promise<void> {
+  async processAppeal(
+    id: string,
+    decision: string,
+    reasoning: string,
+    moderatorId: string,
+  ): Promise<void> {
     console.log(`Processed appeal ${id}: ${decision} by ${moderatorId}`);
   }
 
@@ -906,7 +1006,11 @@ export class DatabaseStorage implements IStorage {
     return { ...file, id: file.id || `vault-${Date.now()}` };
   }
 
-  async searchAuditLogs(query: string, dateRange: string, actionType: string): Promise<any[]> {
+  async searchAuditLogs(
+    query: string,
+    dateRange: string,
+    actionType: string,
+  ): Promise<any[]> {
     return [
       {
         id: `audit-${Date.now()}`,
@@ -914,8 +1018,8 @@ export class DatabaseStorage implements IStorage {
         user: "current-user",
         query,
         dateRange,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     ];
   }
 
@@ -928,7 +1032,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(paymentProcessors.name);
   }
 
-  async createPaymentProcessor(processor: InsertPaymentProcessor): Promise<PaymentProcessor> {
+  async createPaymentProcessor(
+    processor: InsertPaymentProcessor,
+  ): Promise<PaymentProcessor> {
     const [result] = await db
       .insert(paymentProcessors)
       .values(processor)
@@ -936,7 +1042,9 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async createPaymentTransaction(transaction: InsertPaymentTransaction): Promise<PaymentTransaction> {
+  async createPaymentTransaction(
+    transaction: InsertPaymentTransaction,
+  ): Promise<PaymentTransaction> {
     const [result] = await db
       .insert(paymentTransactions)
       .values(transaction)
@@ -946,14 +1054,13 @@ export class DatabaseStorage implements IStorage {
 
   // GetStream operations
   async createStreamToken(token: InsertStreamToken): Promise<StreamToken> {
-    const [result] = await db
-      .insert(streamTokens)
-      .values(token)
-      .returning();
+    const [result] = await db.insert(streamTokens).values(token).returning();
     return result;
   }
 
-  async createStreamChannel(channel: InsertStreamChannel): Promise<StreamChannel> {
+  async createStreamChannel(
+    channel: InsertStreamChannel,
+  ): Promise<StreamChannel> {
     const [result] = await db
       .insert(streamChannels)
       .values(channel)
@@ -963,10 +1070,7 @@ export class DatabaseStorage implements IStorage {
 
   // Coconut Encoding operations
   async createEncodingJob(job: InsertEncodingJob): Promise<EncodingJob> {
-    const [result] = await db
-      .insert(encodingJobs)
-      .values(job)
-      .returning();
+    const [result] = await db.insert(encodingJobs).values(job).returning();
     return result;
   }
 
@@ -1004,23 +1108,19 @@ export class DatabaseStorage implements IStorage {
 
   // VR/WebXR operations
   async createVRSession(session: InsertVRSession): Promise<VRSession> {
-    const [result] = await db
-      .insert(vrSessions)
-      .values(session)
-      .returning();
+    const [result] = await db.insert(vrSessions).values(session).returning();
     return result;
   }
 
   async createWebRTCRoom(room: InsertWebRTCRoom): Promise<WebRTCRoom> {
-    const [result] = await db
-      .insert(webrtcRooms)
-      .values(room)
-      .returning();
+    const [result] = await db.insert(webrtcRooms).values(room).returning();
     return result;
   }
 
   // Geo-Collaboration operations
-  async createGeoCollaboration(collaboration: InsertGeoCollaboration): Promise<GeoCollaboration> {
+  async createGeoCollaboration(
+    collaboration: InsertGeoCollaboration,
+  ): Promise<GeoCollaboration> {
     const [result] = await db
       .insert(geoCollaborations)
       .values(collaboration)
@@ -1028,12 +1128,16 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getNearbyCollaborations(lat: number, lng: number, radius: number): Promise<GeoCollaboration[]> {
+  async getNearbyCollaborations(
+    lat: number,
+    lng: number,
+    radius: number,
+  ): Promise<GeoCollaboration[]> {
     // For now, return all collaborations (in production, use PostGIS for geo queries)
     return await db
       .select()
       .from(geoCollaborations)
-      .where(eq(geoCollaborations.status, 'open'))
+      .where(eq(geoCollaborations.status, "open"))
       .orderBy(desc(geoCollaborations.createdAt))
       .limit(50);
   }
@@ -1048,10 +1152,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTaxRate(rate: InsertTaxRate): Promise<TaxRate> {
-    const [result] = await db
-      .insert(taxRates)
-      .values(rate)
-      .returning();
+    const [result] = await db.insert(taxRates).values(rate).returning();
     return result;
   }
 
@@ -1071,14 +1172,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createAdCampaign(campaign: InsertAdCampaign): Promise<AdCampaign> {
-    const [result] = await db
-      .insert(adCampaigns)
-      .values(campaign)
-      .returning();
+    const [result] = await db.insert(adCampaigns).values(campaign).returning();
     return result;
   }
 
-  async updateAdCampaign(id: string, updates: Partial<AdCampaign>): Promise<void> {
+  async updateAdCampaign(
+    id: string,
+    updates: Partial<AdCampaign>,
+  ): Promise<void> {
     await db
       .update(adCampaigns)
       .set({ ...updates, updatedAt: new Date() })
@@ -1093,7 +1194,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(liveStreamSessions.createdAt));
   }
 
-  async createLiveStreamSession(session: InsertLiveStreamSession): Promise<LiveStreamSession> {
+  async createLiveStreamSession(
+    session: InsertLiveStreamSession,
+  ): Promise<LiveStreamSession> {
     const [result] = await db
       .insert(liveStreamSessions)
       .values(session)
@@ -1108,7 +1211,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(privateShowRequests.createdAt));
   }
 
-  async createPrivateShowRequest(request: InsertPrivateShowRequest): Promise<PrivateShowRequest> {
+  async createPrivateShowRequest(
+    request: InsertPrivateShowRequest,
+  ): Promise<PrivateShowRequest> {
     const [result] = await db
       .insert(privateShowRequests)
       .values(request)
@@ -1126,14 +1231,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createGift(gift: InsertGiftCatalog): Promise<GiftCatalog> {
-    const [result] = await db
-      .insert(giftCatalog)
-      .values(gift)
-      .returning();
+    const [result] = await db.insert(giftCatalog).values(gift).returning();
     return result;
   }
 
-  async createGiftTransaction(transaction: InsertGiftTransaction): Promise<GiftTransaction> {
+  async createGiftTransaction(
+    transaction: InsertGiftTransaction,
+  ): Promise<GiftTransaction> {
     const [result] = await db
       .insert(giftTransactions)
       .values(transaction)
@@ -1143,10 +1247,7 @@ export class DatabaseStorage implements IStorage {
 
   // User Deposits implementation (initial)
   async createUserDeposit(deposit: InsertUserDeposit): Promise<UserDeposit> {
-    const [result] = await db
-      .insert(userDeposits)
-      .values(deposit)
-      .returning();
+    const [result] = await db.insert(userDeposits).values(deposit).returning();
     return result;
   }
 
@@ -1160,18 +1261,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createRole(role: InsertRole): Promise<Role> {
-    const [result] = await db
-      .insert(roles)
-      .values(role)
-      .returning();
+    const [result] = await db.insert(roles).values(role).returning();
     return result;
   }
 
   async assignUserRole(userRole: InsertUserRole): Promise<UserRole> {
-    const [result] = await db
-      .insert(userRoles)
-      .values(userRole)
-      .returning();
+    const [result] = await db.insert(userRoles).values(userRole).returning();
     return result;
   }
 
@@ -1191,7 +1286,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(announcements.priority), desc(announcements.createdAt));
   }
 
-  async createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement> {
+  async createAnnouncement(
+    announcement: InsertAnnouncement,
+  ): Promise<Announcement> {
     const [result] = await db
       .insert(announcements)
       .values(announcement)
@@ -1201,17 +1298,11 @@ export class DatabaseStorage implements IStorage {
 
   // CMS System implementation
   async getCmsPages(): Promise<CmsPage[]> {
-    return await db
-      .select()
-      .from(cmsPages)
-      .orderBy(desc(cmsPages.updatedAt));
+    return await db.select().from(cmsPages).orderBy(desc(cmsPages.updatedAt));
   }
 
   async createCmsPage(page: InsertCmsPage): Promise<CmsPage> {
-    const [result] = await db
-      .insert(cmsPages)
-      .values(page)
-      .returning();
+    const [result] = await db.insert(cmsPages).values(page).returning();
     return result;
   }
 
@@ -1231,11 +1322,10 @@ export class DatabaseStorage implements IStorage {
       .orderBy(platformLimits.limitType, platformLimits.userRole);
   }
 
-  async createPlatformLimit(limit: InsertPlatformLimit): Promise<PlatformLimit> {
-    const [result] = await db
-      .insert(platformLimits)
-      .values(limit)
-      .returning();
+  async createPlatformLimit(
+    limit: InsertPlatformLimit,
+  ): Promise<PlatformLimit> {
+    const [result] = await db.insert(platformLimits).values(limit).returning();
     return result;
   }
 
@@ -1252,10 +1342,12 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db
       .select()
       .from(reservedNames)
-      .where(and(
-        eq(reservedNames.name, name.toLowerCase()),
-        eq(reservedNames.isActive, true)
-      ))
+      .where(
+        and(
+          eq(reservedNames.name, name.toLowerCase()),
+          eq(reservedNames.isActive, true),
+        ),
+      )
       .limit(1);
     return !!result;
   }
@@ -1287,16 +1379,13 @@ export class DatabaseStorage implements IStorage {
     } else {
       await db
         .insert(systemSettings)
-        .values({ key, value, category: 'general' });
+        .values({ key, value, category: "general" });
     }
   }
 
   // Audio Calls implementation
   async createAudioCall(call: InsertAudioCall): Promise<AudioCall> {
-    const [result] = await db
-      .insert(audioCalls)
-      .values(call)
-      .returning();
+    const [result] = await db.insert(audioCalls).values(call).returning();
     return result;
   }
 
@@ -1304,19 +1393,15 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(audioCalls)
-      .where(or(
-        eq(audioCalls.callerId, userId),
-        eq(audioCalls.receiverId, userId)
-      ))
+      .where(
+        or(eq(audioCalls.callerId, userId), eq(audioCalls.receiverId, userId)),
+      )
       .orderBy(desc(audioCalls.createdAt));
   }
 
   // Blog Posts implementation
   async getBlogPosts(): Promise<BlogPost[]> {
-    return await db
-      .select()
-      .from(blogPosts)
-      .orderBy(desc(blogPosts.createdAt));
+    return await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
   }
 
   async getBlogPost(id: string): Promise<BlogPost | undefined> {
@@ -1329,10 +1414,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
-    const [result] = await db
-      .insert(blogPosts)
-      .values(post)
-      .returning();
+    const [result] = await db.insert(blogPosts).values(post).returning();
     return result;
   }
 
@@ -1344,9 +1426,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteBlogPost(id: string): Promise<void> {
-    await db
-      .delete(blogPosts)
-      .where(eq(blogPosts.id, id));
+    await db.delete(blogPosts).where(eq(blogPosts.id, id));
   }
 
   // User Deposits implementation
@@ -1358,8 +1438,8 @@ export class DatabaseStorage implements IStorage {
         .where(
           or(
             sql`${userDeposits.transactionId} ILIKE ${`%${searchQuery}%`}`,
-            sql`${userDeposits.id} ILIKE ${`%${searchQuery}%`}`
-          )
+            sql`${userDeposits.id} ILIKE ${`%${searchQuery}%`}`,
+          ),
         )
         .orderBy(desc(userDeposits.createdAt));
     }
@@ -1387,24 +1467,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteUserDeposit(id: string): Promise<void> {
-    await db
-      .delete(userDeposits)
-      .where(eq(userDeposits.id, id));
+    await db.delete(userDeposits).where(eq(userDeposits.id, id));
   }
 
   // Countries implementation
   async getCountries(): Promise<Country[]> {
-    return await db
-      .select()
-      .from(countries)
-      .orderBy(countries.countryName);
+    return await db.select().from(countries).orderBy(countries.countryName);
   }
 
   async createCountry(country: InsertCountry): Promise<Country> {
-    const [result] = await db
-      .insert(countries)
-      .values(country)
-      .returning();
+    const [result] = await db.insert(countries).values(country).returning();
     return result;
   }
 
@@ -1425,9 +1497,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCountry(id: string): Promise<void> {
-    await db
-      .delete(countries)
-      .where(eq(countries.id, id));
+    await db.delete(countries).where(eq(countries.id, id));
   }
 
   // States implementation
@@ -1439,10 +1509,7 @@ export class DatabaseStorage implements IStorage {
         .where(eq(states.countryId, countryId))
         .orderBy(states.stateName);
     }
-    return await db
-      .select()
-      .from(states)
-      .orderBy(states.stateName);
+    return await db.select().from(states).orderBy(states.stateName);
   }
 
   async getState(id: string): Promise<State | undefined> {
@@ -1455,10 +1522,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createState(state: InsertState): Promise<State> {
-    const [result] = await db
-      .insert(states)
-      .values(state)
-      .returning();
+    const [result] = await db.insert(states).values(state).returning();
     return result;
   }
 
@@ -1470,17 +1534,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteState(id: string): Promise<void> {
-    await db
-      .delete(states)
-      .where(eq(states.id, id));
+    await db.delete(states).where(eq(states.id, id));
   }
 
   // Languages implementation
   async getLanguages(): Promise<Language[]> {
-    return await db
-      .select()
-      .from(languages)
-      .orderBy(languages.languageName);
+    return await db.select().from(languages).orderBy(languages.languageName);
   }
 
   async getLanguage(id: string): Promise<Language | undefined> {
@@ -1493,10 +1552,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createLanguage(language: InsertLanguage): Promise<Language> {
-    const [result] = await db
-      .insert(languages)
-      .values(language)
-      .returning();
+    const [result] = await db.insert(languages).values(language).returning();
     return result;
   }
 
@@ -1508,9 +1564,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteLanguage(id: string): Promise<void> {
-    await db
-      .delete(languages)
-      .where(eq(languages.id, id));
+    await db.delete(languages).where(eq(languages.id, id));
   }
 
   // Extended Payment Processors implementation
@@ -1518,14 +1572,21 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(extendedPaymentProcessors)
-      .where(and(
-        eq(extendedPaymentProcessors.isBanned, false),
-        eq(extendedPaymentProcessors.adultFriendly, true)
-      ))
-      .orderBy(extendedPaymentProcessors.region, extendedPaymentProcessors.name);
+      .where(
+        and(
+          eq(extendedPaymentProcessors.isBanned, false),
+          eq(extendedPaymentProcessors.adultFriendly, true),
+        ),
+      )
+      .orderBy(
+        extendedPaymentProcessors.region,
+        extendedPaymentProcessors.name,
+      );
   }
 
-  async createExtendedPaymentProcessor(processor: InsertExtendedPaymentProcessor): Promise<ExtendedPaymentProcessor> {
+  async createExtendedPaymentProcessor(
+    processor: InsertExtendedPaymentProcessor,
+  ): Promise<ExtendedPaymentProcessor> {
     const [result] = await db
       .insert(extendedPaymentProcessors)
       .values(processor)
@@ -1535,10 +1596,7 @@ export class DatabaseStorage implements IStorage {
 
   // Cron Jobs implementation
   async getCronJobs(): Promise<CronJob[]> {
-    return await db
-      .select()
-      .from(cronJobs)
-      .orderBy(cronJobs.name);
+    return await db.select().from(cronJobs).orderBy(cronJobs.name);
   }
 
   async getCronJob(id: string): Promise<CronJob | undefined> {
@@ -1551,10 +1609,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createCronJob(cronJob: InsertCronJob): Promise<CronJob> {
-    const [result] = await db
-      .insert(cronJobs)
-      .values(cronJob)
-      .returning();
+    const [result] = await db.insert(cronJobs).values(cronJob).returning();
     return result;
   }
 
@@ -1567,14 +1622,10 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCronJob(id: string): Promise<void> {
     // Delete associated logs first
-    await db
-      .delete(cronJobLogs)
-      .where(eq(cronJobLogs.jobId, id));
-    
+    await db.delete(cronJobLogs).where(eq(cronJobLogs.jobId, id));
+
     // Delete the job
-    await db
-      .delete(cronJobs)
-      .where(eq(cronJobs.id, id));
+    await db.delete(cronJobs).where(eq(cronJobs.id, id));
   }
 
   async toggleCronJob(id: string, isActive: boolean): Promise<void> {
@@ -1588,11 +1639,11 @@ export class DatabaseStorage implements IStorage {
     // Update running status and last run time
     await db
       .update(cronJobs)
-      .set({ 
-        isRunning: true, 
+      .set({
+        isRunning: true,
         lastRunAt: new Date(),
         retryCount: 0,
-        updatedAt: new Date() 
+        updatedAt: new Date(),
       })
       .where(eq(cronJobs.id, id));
   }
@@ -1608,30 +1659,30 @@ export class DatabaseStorage implements IStorage {
     if (jobId) {
       return await query.where(eq(cronJobLogs.jobId, jobId));
     }
-    
+
     return await query;
   }
 
   async createCronJobLog(log: InsertCronJobLog): Promise<CronJobLog> {
-    const [result] = await db
-      .insert(cronJobLogs)
-      .values(log)
-      .returning();
+    const [result] = await db.insert(cronJobLogs).values(log).returning();
     return result;
   }
 
   async deleteCronJobLogs(jobId: string): Promise<void> {
-    await db
-      .delete(cronJobLogs)
-      .where(eq(cronJobLogs.jobId, jobId));
+    await db.delete(cronJobLogs).where(eq(cronJobLogs.jobId, jobId));
   }
 
   // API Integrations implementation
   async getApiIntegrations(): Promise<ApiIntegration[]> {
-    return await db.select().from(apiIntegrations).orderBy(apiIntegrations.serviceName);
+    return await db
+      .select()
+      .from(apiIntegrations)
+      .orderBy(apiIntegrations.serviceName);
   }
 
-  async getApiIntegrationByService(serviceName: string): Promise<ApiIntegration | undefined> {
+  async getApiIntegrationByService(
+    serviceName: string,
+  ): Promise<ApiIntegration | undefined> {
     const [result] = await db
       .select()
       .from(apiIntegrations)
@@ -1640,15 +1691,17 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async createApiIntegration(data: InsertApiIntegration): Promise<ApiIntegration> {
-    const [result] = await db
-      .insert(apiIntegrations)
-      .values(data)
-      .returning();
+  async createApiIntegration(
+    data: InsertApiIntegration,
+  ): Promise<ApiIntegration> {
+    const [result] = await db.insert(apiIntegrations).values(data).returning();
     return result;
   }
 
-  async updateApiIntegration(id: string, updates: Partial<ApiIntegration>): Promise<void> {
+  async updateApiIntegration(
+    id: string,
+    updates: Partial<ApiIntegration>,
+  ): Promise<void> {
     await db
       .update(apiIntegrations)
       .set({ ...updates, updatedAt: new Date() })
@@ -1667,7 +1720,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(liveStreamingPrivateRequests.createdAt));
   }
 
-  async getPrivateStreamRequest(id: string): Promise<LiveStreamingPrivateRequest | undefined> {
+  async getPrivateStreamRequest(
+    id: string,
+  ): Promise<LiveStreamingPrivateRequest | undefined> {
     const [result] = await db
       .select()
       .from(liveStreamingPrivateRequests)
@@ -1676,7 +1731,9 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async createPrivateStreamRequest(data: InsertLiveStreamingPrivateRequest): Promise<LiveStreamingPrivateRequest> {
+  async createPrivateStreamRequest(
+    data: InsertLiveStreamingPrivateRequest,
+  ): Promise<LiveStreamingPrivateRequest> {
     const [result] = await db
       .insert(liveStreamingPrivateRequests)
       .values(data)
@@ -1684,7 +1741,10 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async updatePrivateStreamRequest(id: string, updates: Partial<LiveStreamingPrivateRequest>): Promise<void> {
+  async updatePrivateStreamRequest(
+    id: string,
+    updates: Partial<LiveStreamingPrivateRequest>,
+  ): Promise<void> {
     await db
       .update(liveStreamingPrivateRequests)
       .set(updates)
@@ -1692,15 +1752,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deletePrivateStreamRequest(id: string): Promise<void> {
-    await db.delete(liveStreamingPrivateRequests).where(eq(liveStreamingPrivateRequests.id, id));
+    await db
+      .delete(liveStreamingPrivateRequests)
+      .where(eq(liveStreamingPrivateRequests.id, id));
   }
 
   // Maintenance Mode implementation
   async getMaintenanceMode(): Promise<MaintenanceMode | undefined> {
-    const [result] = await db
-      .select()
-      .from(maintenanceMode)
-      .limit(1);
+    const [result] = await db.select().from(maintenanceMode).limit(1);
     return result;
   }
 
@@ -1733,7 +1792,9 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getMemberProfileByUserId(userId: string): Promise<MemberProfile | undefined> {
+  async getMemberProfileByUserId(
+    userId: string,
+  ): Promise<MemberProfile | undefined> {
     const [result] = await db
       .select()
       .from(memberProfiles)
@@ -1743,14 +1804,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createMemberProfile(data: InsertMemberProfile): Promise<MemberProfile> {
-    const [result] = await db
-      .insert(memberProfiles)
-      .values(data)
-      .returning();
+    const [result] = await db.insert(memberProfiles).values(data).returning();
     return result;
   }
 
-  async updateMemberProfile(id: string, updates: Partial<MemberProfile>): Promise<void> {
+  async updateMemberProfile(
+    id: string,
+    updates: Partial<MemberProfile>,
+  ): Promise<void> {
     await db
       .update(memberProfiles)
       .set({ ...updates, updatedAt: new Date() })
@@ -1763,14 +1824,13 @@ export class DatabaseStorage implements IStorage {
 
   // Content Moderation Settings implementation
   async getModerationSettings(): Promise<ModerationSettings | undefined> {
-    const [result] = await db
-      .select()
-      .from(moderationSettings)
-      .limit(1);
+    const [result] = await db.select().from(moderationSettings).limit(1);
     return result;
   }
 
-  async updateModerationSettings(data: Partial<ModerationSettings>): Promise<void> {
+  async updateModerationSettings(
+    data: Partial<ModerationSettings>,
+  ): Promise<void> {
     const existing = await this.getModerationSettings();
     if (existing) {
       await db
@@ -1778,7 +1838,9 @@ export class DatabaseStorage implements IStorage {
         .set({ ...data, updatedAt: new Date() })
         .where(eq(moderationSettings.id, existing.id));
     } else {
-      await db.insert(moderationSettings).values(data as InsertModerationSettings);
+      await db
+        .insert(moderationSettings)
+        .values(data as InsertModerationSettings);
     }
   }
 
@@ -1799,15 +1861,17 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async createPlatformMessage(data: InsertPlatformMessage): Promise<PlatformMessage> {
-    const [result] = await db
-      .insert(platformMessages)
-      .values(data)
-      .returning();
+  async createPlatformMessage(
+    data: InsertPlatformMessage,
+  ): Promise<PlatformMessage> {
+    const [result] = await db.insert(platformMessages).values(data).returning();
     return result;
   }
 
-  async updatePlatformMessage(id: string, updates: Partial<PlatformMessage>): Promise<void> {
+  async updatePlatformMessage(
+    id: string,
+    updates: Partial<PlatformMessage>,
+  ): Promise<void> {
     await db
       .update(platformMessages)
       .set(updates)
@@ -1833,7 +1897,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(paymentProcessorSettings.processorName);
   }
 
-  async getPaymentProcessorSetting(id: string): Promise<PaymentProcessorSettings | undefined> {
+  async getPaymentProcessorSetting(
+    id: string,
+  ): Promise<PaymentProcessorSettings | undefined> {
     const [result] = await db
       .select()
       .from(paymentProcessorSettings)
@@ -1842,7 +1908,9 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getPaymentProcessorByName(processorName: string): Promise<PaymentProcessorSettings | undefined> {
+  async getPaymentProcessorByName(
+    processorName: string,
+  ): Promise<PaymentProcessorSettings | undefined> {
     const [result] = await db
       .select()
       .from(paymentProcessorSettings)
@@ -1851,7 +1919,9 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async createPaymentProcessorSettings(data: InsertPaymentProcessorSettings): Promise<PaymentProcessorSettings> {
+  async createPaymentProcessorSettings(
+    data: InsertPaymentProcessorSettings,
+  ): Promise<PaymentProcessorSettings> {
     const [result] = await db
       .insert(paymentProcessorSettings)
       .values(data)
@@ -1859,7 +1929,10 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async updatePaymentProcessorSettings(id: string, updates: Partial<PaymentProcessorSettings>): Promise<void> {
+  async updatePaymentProcessorSettings(
+    id: string,
+    updates: Partial<PaymentProcessorSettings>,
+  ): Promise<void> {
     await db
       .update(paymentProcessorSettings)
       .set({ ...updates, updatedAt: new Date() })
@@ -1867,7 +1940,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deletePaymentProcessorSettings(id: string): Promise<void> {
-    await db.delete(paymentProcessorSettings).where(eq(paymentProcessorSettings.id, id));
+    await db
+      .delete(paymentProcessorSettings)
+      .where(eq(paymentProcessorSettings.id, id));
   }
 
   // System Limits implementation
@@ -1888,14 +1963,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createSystemLimit(data: InsertSystemLimit): Promise<SystemLimit> {
-    const [result] = await db
-      .insert(systemLimits)
-      .values(data)
-      .returning();
+    const [result] = await db.insert(systemLimits).values(data).returning();
     return result;
   }
 
-  async updateSystemLimit(id: string, updates: Partial<SystemLimit>): Promise<void> {
+  async updateSystemLimit(
+    id: string,
+    updates: Partial<SystemLimit>,
+  ): Promise<void> {
     await db
       .update(systemLimits)
       .set({ ...updates, updatedAt: new Date() })

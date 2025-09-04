@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Database, 
-  HardDrive, 
-  RefreshCw, 
+import {
+  Database,
+  HardDrive,
+  RefreshCw,
   Download,
   Upload,
   Trash2,
   Archive,
   Shield,
   BarChart3,
-  Activity
+  Activity,
 } from "lucide-react";
 
 export default function DataPage() {
@@ -30,11 +30,26 @@ export default function DataPage() {
     queries: 15847432,
     performance: "Optimal",
     tables: [
-      { name: "content_items", size: "234.5 GB", rows: 3456789, performance: 95 },
-      { name: "moderation_results", size: "189.2 GB", rows: 2847329, performance: 92 },
-      { name: "user_sessions", size: "145.8 GB", rows: 1923847, performance: 88 },
+      {
+        name: "content_items",
+        size: "234.5 GB",
+        rows: 3456789,
+        performance: 95,
+      },
+      {
+        name: "moderation_results",
+        size: "189.2 GB",
+        rows: 2847329,
+        performance: 92,
+      },
+      {
+        name: "user_sessions",
+        size: "145.8 GB",
+        rows: 1923847,
+        performance: 88,
+      },
       { name: "audit_logs", size: "127.4 GB", rows: 1547893, performance: 94 },
-      { name: "live_streams", size: "89.7 GB", rows: 847392, performance: 96 }
+      { name: "live_streams", size: "89.7 GB", rows: 847392, performance: 96 },
     ],
     recentOperations: [
       {
@@ -43,7 +58,7 @@ export default function DataPage() {
         status: "Completed",
         timestamp: "2025-08-29T18:00:00Z",
         duration: "45 minutes",
-        size: "847.3 GB"
+        size: "847.3 GB",
       },
       {
         id: "op-002",
@@ -51,7 +66,7 @@ export default function DataPage() {
         status: "Running",
         timestamp: "2025-08-29T17:30:00Z",
         duration: "12 minutes",
-        progress: 67
+        progress: 67,
       },
       {
         id: "op-003",
@@ -59,24 +74,24 @@ export default function DataPage() {
         status: "Completed",
         timestamp: "2025-08-29T16:15:00Z",
         duration: "2 hours 15 minutes",
-        size: "156.2 GB"
-      }
-    ]
+        size: "156.2 GB",
+      },
+    ],
   };
 
   const runOptimization = async () => {
     setIsOptimizing(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       toast({
         title: "Database Optimization Complete",
-        description: "Database performance optimized, queries 15% faster"
+        description: "Database performance optimized, queries 15% faster",
       });
     } catch (error) {
       toast({
         title: "Optimization Failed",
         description: "Unable to complete database optimization",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
     setIsOptimizing(false);
@@ -91,10 +106,14 @@ export default function DataPage() {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case "completed": return "text-green-400 bg-green-500/20";
-      case "running": return "text-blue-400 bg-blue-500/20";
-      case "failed": return "text-red-400 bg-red-500/20";
-      default: return "text-gray-400 bg-gray-500/20";
+      case "completed":
+        return "text-green-400 bg-green-500/20";
+      case "running":
+        return "text-blue-400 bg-blue-500/20";
+      case "failed":
+        return "text-red-400 bg-red-500/20";
+      default:
+        return "text-gray-400 bg-gray-500/20";
     }
   };
 
@@ -104,10 +123,14 @@ export default function DataPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Data Management</h1>
-            <p className="text-muted-foreground">Database Operations & Performance Monitoring</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Data Management
+            </h1>
+            <p className="text-muted-foreground">
+              Database Operations & Performance Monitoring
+            </p>
           </div>
-          <Button 
+          <Button
             onClick={runOptimization}
             disabled={isOptimizing}
             className="neon-button"
@@ -145,7 +168,9 @@ export default function DataPage() {
               <div className="text-2xl font-bold text-green-400">
                 {databaseMetrics.connections}
               </div>
-              <div className="text-xs text-muted-foreground">Active Connections</div>
+              <div className="text-xs text-muted-foreground">
+                Active Connections
+              </div>
             </CardContent>
           </Card>
 
@@ -182,17 +207,15 @@ export default function DataPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span>Database Usage</span>
-                <span className="font-bold text-primary">{databaseMetrics.usage}%</span>
+                <span className="font-bold text-primary">
+                  {databaseMetrics.usage}%
+                </span>
               </div>
-              <Progress 
-                value={databaseMetrics.usage} 
-                className="h-4"
-              />
+              <Progress value={databaseMetrics.usage} className="h-4" />
               <div className="text-sm text-muted-foreground">
-                {databaseMetrics.usage > 80 ? 
-                  "High usage detected. Consider archiving old data." : 
-                  "Storage usage is within normal parameters."
-                }
+                {databaseMetrics.usage > 80
+                  ? "High usage detected. Consider archiving old data."
+                  : "Storage usage is within normal parameters."}
               </div>
             </div>
           </CardContent>
@@ -209,7 +232,10 @@ export default function DataPage() {
           <CardContent>
             <div className="space-y-4">
               {databaseMetrics.tables.map((table) => (
-                <div key={table.name} className="p-4 cyber-card border border-primary/20">
+                <div
+                  key={table.name}
+                  className="p-4 cyber-card border border-primary/20"
+                >
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <div className="font-medium text-lg">{table.name}</div>
@@ -218,16 +244,17 @@ export default function DataPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className={`text-lg font-bold ${getPerformanceColor(table.performance)}`}>
+                      <div
+                        className={`text-lg font-bold ${getPerformanceColor(table.performance)}`}
+                      >
                         {table.performance}%
                       </div>
-                      <div className="text-xs text-muted-foreground">Performance</div>
+                      <div className="text-xs text-muted-foreground">
+                        Performance
+                      </div>
                     </div>
                   </div>
-                  <Progress 
-                    value={table.performance} 
-                    className="h-2"
-                  />
+                  <Progress value={table.performance} className="h-2" />
                 </div>
               ))}
             </div>
@@ -245,17 +272,27 @@ export default function DataPage() {
           <CardContent>
             <div className="space-y-4">
               {databaseMetrics.recentOperations.map((operation) => (
-                <div key={operation.id} className="flex items-center justify-between p-4 cyber-card border border-primary/20">
+                <div
+                  key={operation.id}
+                  className="flex items-center justify-between p-4 cyber-card border border-primary/20"
+                >
                   <div className="flex items-center space-x-4">
                     <div className="p-2 bg-primary/10 rounded-lg">
-                      {operation.type === "Backup" && <Archive className="w-5 h-5 text-blue-400" />}
-                      {operation.type === "Index Optimization" && <RefreshCw className="w-5 h-5 text-green-400" />}
-                      {operation.type === "Data Migration" && <Database className="w-5 h-5 text-purple-400" />}
+                      {operation.type === "Backup" && (
+                        <Archive className="w-5 h-5 text-blue-400" />
+                      )}
+                      {operation.type === "Index Optimization" && (
+                        <RefreshCw className="w-5 h-5 text-green-400" />
+                      )}
+                      {operation.type === "Data Migration" && (
+                        <Database className="w-5 h-5 text-purple-400" />
+                      )}
                     </div>
                     <div>
                       <div className="font-medium">{operation.type}</div>
                       <div className="text-sm text-muted-foreground">
-                        {new Date(operation.timestamp).toLocaleString()} • {operation.duration}
+                        {new Date(operation.timestamp).toLocaleString()} •{" "}
+                        {operation.duration}
                         {operation.size && ` • ${operation.size}`}
                       </div>
                     </div>
@@ -289,22 +326,38 @@ export default function DataPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Button variant="outline" className="h-16 flex-col" data-testid="backup-button">
+              <Button
+                variant="outline"
+                className="h-16 flex-col"
+                data-testid="backup-button"
+              >
                 <Archive className="w-6 h-6 mb-2 text-blue-400" />
                 <span>Create Backup</span>
               </Button>
-              
-              <Button variant="outline" className="h-16 flex-col" data-testid="restore-button">
+
+              <Button
+                variant="outline"
+                className="h-16 flex-col"
+                data-testid="restore-button"
+              >
                 <Upload className="w-6 h-6 mb-2 text-green-400" />
                 <span>Restore Data</span>
               </Button>
-              
-              <Button variant="outline" className="h-16 flex-col" data-testid="export-button">
+
+              <Button
+                variant="outline"
+                className="h-16 flex-col"
+                data-testid="export-button"
+              >
                 <Download className="w-6 h-6 mb-2 text-purple-400" />
                 <span>Export Data</span>
               </Button>
-              
-              <Button variant="outline" className="h-16 flex-col" data-testid="cleanup-button">
+
+              <Button
+                variant="outline"
+                className="h-16 flex-col"
+                data-testid="cleanup-button"
+              >
                 <Trash2 className="w-6 h-6 mb-2 text-orange-400" />
                 <span>Cleanup Old Data</span>
               </Button>

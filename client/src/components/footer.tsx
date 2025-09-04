@@ -1,15 +1,15 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Globe, 
+import {
+  Globe,
   Smartphone,
   Facebook,
   Twitter,
   Instagram,
   Youtube,
   Github,
-  Linkedin
+  Linkedin,
 } from "lucide-react";
 
 interface FooterProps {
@@ -43,7 +43,7 @@ interface FooterProps {
     id: string;
     title: string;
     slug: string;
-    access: 'all' | 'creators' | 'members';
+    access: "all" | "creators" | "members";
   }>;
   categories: Array<{
     id: string;
@@ -70,38 +70,38 @@ export function Footer({
   currentLanguage,
   blogsCount,
   categoriesCount,
-  className = ""
+  className = "",
 }: FooterProps) {
-  const logoUrl = currentUser?.darkMode 
-    ? `/public/img/${settings.logo}` 
+  const logoUrl = currentUser?.darkMode
+    ? `/public/img/${settings.logo}`
     : `/public/img/${settings.logo2}`;
 
   const hasSocialMedia = !!(
-    settings.facebook || 
-    settings.twitter || 
-    settings.instagram || 
-    settings.youtube || 
-    settings.github || 
+    settings.facebook ||
+    settings.twitter ||
+    settings.instagram ||
+    settings.youtube ||
+    settings.github ||
     settings.linkedin ||
     settings.tiktok ||
     settings.telegram
   );
 
-  const accessiblePages = pages.filter(page => {
-    if (page.access === 'all') return true;
-    if (page.access === 'creators' && currentUser) return true; // Simplified check
-    if (page.access === 'members' && currentUser) return true;
+  const accessiblePages = pages.filter((page) => {
+    if (page.access === "all") return true;
+    if (page.access === "creators" && currentUser) return true; // Simplified check
+    if (page.access === "members" && currentUser) return true;
     return false;
   });
 
   return (
     <footer className={`py-8 ${className}`}>
       {/* Main Footer */}
-      <div 
+      <div
         className="py-12 hidden lg:block"
         style={{
           backgroundColor: settings.footerBackgroundColor,
-          color: settings.footerTextColor
+          color: settings.footerTextColor,
         }}
       >
         <div className="container mx-auto px-4">
@@ -109,21 +109,23 @@ export function Footer({
             {/* Logo and Social */}
             <div className="col-span-1">
               <Link href="/">
-                <img 
-                  src={logoUrl} 
+                <img
+                  src={logoUrl}
                   alt={settings.title}
                   className="max-w-32 mb-4"
                 />
               </Link>
-              
+
               {hasSocialMedia && (
                 <div>
-                  <p className="mb-3 text-sm">Keep connected with us. Follow us on social media.</p>
+                  <p className="mb-3 text-sm">
+                    Keep connected with us. Follow us on social media.
+                  </p>
                   <div className="flex space-x-3">
                     {settings.facebook && (
-                      <a 
-                        href={settings.facebook} 
-                        target="_blank" 
+                      <a
+                        href={settings.facebook}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground"
                       >
@@ -131,9 +133,9 @@ export function Footer({
                       </a>
                     )}
                     {settings.twitter && (
-                      <a 
-                        href={settings.twitter} 
-                        target="_blank" 
+                      <a
+                        href={settings.twitter}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground"
                       >
@@ -141,9 +143,9 @@ export function Footer({
                       </a>
                     )}
                     {settings.instagram && (
-                      <a 
-                        href={settings.instagram} 
-                        target="_blank" 
+                      <a
+                        href={settings.instagram}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground"
                       >
@@ -151,9 +153,9 @@ export function Footer({
                       </a>
                     )}
                     {settings.youtube && (
-                      <a 
-                        href={settings.youtube} 
-                        target="_blank" 
+                      <a
+                        href={settings.youtube}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground"
                       >
@@ -161,9 +163,9 @@ export function Footer({
                       </a>
                     )}
                     {settings.github && (
-                      <a 
-                        href={settings.github} 
-                        target="_blank" 
+                      <a
+                        href={settings.github}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground"
                       >
@@ -171,9 +173,9 @@ export function Footer({
                       </a>
                     )}
                     {settings.linkedin && (
-                      <a 
-                        href={settings.linkedin} 
-                        target="_blank" 
+                      <a
+                        href={settings.linkedin}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground"
                       >
@@ -186,8 +188,8 @@ export function Footer({
 
               {/* PWA Install Button */}
               <div id="installContainer" className="mt-4 hidden">
-                <Button 
-                  id="butInstall" 
+                <Button
+                  id="butInstall"
                   className="w-full rounded-full"
                   variant="outline"
                 >
@@ -210,7 +212,7 @@ export function Footer({
                     </Link>
                   </li>
                 ))}
-                
+
                 {!settings.disableContact && (
                   <li>
                     <Link href="/contact">
@@ -220,7 +222,7 @@ export function Footer({
                     </Link>
                   </li>
                 )}
-                
+
                 {blogsCount > 0 && (
                   <li>
                     <Link href="/blog">
@@ -236,7 +238,9 @@ export function Footer({
             {/* Categories */}
             {!settings.disableCreatorsSection && categoriesCount > 0 && (
               <div className="col-span-1">
-                <h6 className="text-sm font-semibold uppercase mb-4">Categories</h6>
+                <h6 className="text-sm font-semibold uppercase mb-4">
+                  Categories
+                </h6>
                 <ul className="space-y-2">
                   {categories.slice(0, 6).map((category) => (
                     <li key={category.id}>
@@ -247,7 +251,7 @@ export function Footer({
                       </Link>
                     </li>
                   ))}
-                  
+
                   {categoriesCount > 6 && (
                     <li>
                       <Link href="/creators">
@@ -319,13 +323,17 @@ export function Footer({
                 {!currentUser && languages.length > 1 && (
                   <li className="mt-4">
                     <div className="relative">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="w-full justify-start"
                       >
                         <Globe className="h-4 w-4 mr-2" />
-                        {languages.find(lang => lang.abbreviation === currentLanguage)?.name}
+                        {
+                          languages.find(
+                            (lang) => lang.abbreviation === currentLanguage,
+                          )?.name
+                        }
                       </Button>
                     </div>
                   </li>
@@ -337,11 +345,11 @@ export function Footer({
       </div>
 
       {/* Copyright */}
-      <div 
+      <div
         className="py-4 text-center border-t"
         style={{
           backgroundColor: settings.footerBackgroundColor,
-          color: settings.footerTextColor
+          color: settings.footerTextColor,
         }}
       >
         <div className="container mx-auto px-4">
@@ -349,9 +357,10 @@ export function Footer({
           <div className="lg:hidden mb-4">
             <div className="text-center">
               <p className="text-sm text-muted-foreground mb-3">
-                &copy; {new Date().getFullYear()} {settings.title}, All rights reserved.
+                &copy; {new Date().getFullYear()} {settings.title}, All rights
+                reserved.
               </p>
-              
+
               <div className="flex flex-wrap justify-center gap-4 text-xs">
                 {accessiblePages.slice(0, 4).map((page) => (
                   <Link key={page.id} href={`/p/${page.slug}`}>
@@ -360,7 +369,7 @@ export function Footer({
                     </span>
                   </Link>
                 ))}
-                
+
                 {!settings.disableContact && (
                   <Link href="/contact">
                     <span className="hover:underline cursor-pointer">
@@ -368,12 +377,10 @@ export function Footer({
                     </span>
                   </Link>
                 )}
-                
+
                 {blogsCount > 0 && (
                   <Link href="/blog">
-                    <span className="hover:underline cursor-pointer">
-                      Blog
-                    </span>
+                    <span className="hover:underline cursor-pointer">Blog</span>
                   </Link>
                 )}
               </div>
@@ -391,11 +398,12 @@ export function Footer({
           {/* Desktop Copyright */}
           <div className="hidden lg:block">
             <p className="text-sm">
-              &copy; {new Date().getFullYear()} {settings.title}, All rights reserved.
-              
+              &copy; {new Date().getFullYear()} {settings.title}, All rights
+              reserved.
               {settings.showAddressCompanyFooter && (
                 <span className="ml-2 text-xs">
-                  {settings.company} - Address: {settings.address} {settings.city} {settings.country}
+                  {settings.company} - Address: {settings.address}{" "}
+                  {settings.city} {settings.country}
                 </span>
               )}
             </p>

@@ -21,13 +21,13 @@ export function TaxBreakdown({
   taxRates,
   currencySymbol,
   showSubtotal = true,
-  className = ""
+  className = "",
 }: TaxBreakdownProps) {
-  const taxAmounts = taxRates.map(tax => ({
+  const taxAmounts = taxRates.map((tax) => ({
     ...tax,
-    amount: (subtotal * tax.percentage) / 100
+    amount: (subtotal * tax.percentage) / 100,
   }));
-  
+
   const totalTaxes = taxAmounts.reduce((sum, tax) => sum + tax.amount, 0);
   const total = subtotal + totalTaxes;
 
@@ -50,15 +50,16 @@ export function TaxBreakdown({
             <div className="flex justify-between items-center text-sm">
               <span>Subtotal:</span>
               <span className="font-semibold">
-                {currencySymbol}<span data-testid="subtotal-amount">{subtotal.toFixed(2)}</span>
+                {currencySymbol}
+                <span data-testid="subtotal-amount">{subtotal.toFixed(2)}</span>
               </span>
             </div>
           )}
 
           {/* Tax Items */}
           {taxAmounts.map((tax, index) => (
-            <div 
-              key={tax.id} 
+            <div
+              key={tax.id}
               className="flex justify-between items-center text-sm"
               data-testid={`tax-item-${index + 1}`}
             >
@@ -66,7 +67,10 @@ export function TaxBreakdown({
                 {tax.name} {tax.percentage}%:
               </span>
               <span className="font-semibold">
-                {currencySymbol}<span data-testid={`tax-amount-${index + 1}`}>{tax.amount.toFixed(2)}</span>
+                {currencySymbol}
+                <span data-testid={`tax-amount-${index + 1}`}>
+                  {tax.amount.toFixed(2)}
+                </span>
               </span>
             </div>
           ))}
@@ -85,8 +89,9 @@ export function TaxBreakdown({
           {/* Tax Summary */}
           {taxRates.length > 0 && (
             <div className="text-xs text-muted-foreground text-center pt-1">
-              Total taxes: {currencySymbol}{totalTaxes.toFixed(2)} 
-              ({((totalTaxes / subtotal) * 100).toFixed(1)}%)
+              Total taxes: {currencySymbol}
+              {totalTaxes.toFixed(2)}(
+              {((totalTaxes / subtotal) * 100).toFixed(1)}%)
             </div>
           )}
         </div>

@@ -20,14 +20,16 @@ export default function ServerError500() {
             <div className="mb-6">
               <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
               <h1 className="text-6xl font-bold text-red-500 mb-4">500</h1>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">Server Error</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                Server Error
+              </h2>
               <p className="text-gray-600">
                 Something went wrong on our servers. We're working to fix it.
               </p>
             </div>
 
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={refreshPage}
                 className="w-full bg-red-600 hover:bg-red-700"
                 data-testid="button-refresh"
@@ -36,7 +38,7 @@ export default function ServerError500() {
                 Try Again
               </Button>
 
-              <Button 
+              <Button
                 onClick={goBack}
                 variant="outline"
                 className="w-full"
@@ -47,7 +49,7 @@ export default function ServerError500() {
               </Button>
 
               <Link href="/">
-                <Button 
+                <Button
                   variant="ghost"
                   className="w-full"
                   data-testid="button-go-home"
@@ -67,8 +69,10 @@ export default function ServerError500() {
           </p>
           <div className="bg-white/10 backdrop-blur rounded-lg p-4">
             <p className="text-white text-xs">
-              <strong>Error Code:</strong> 500<br />
-              <strong>Time:</strong> {new Date().toLocaleString()}<br />
+              <strong>Error Code:</strong> 500
+              <br />
+              <strong>Time:</strong> {new Date().toLocaleString()}
+              <br />
               <strong>Status:</strong> Internal Server Error
             </p>
           </div>

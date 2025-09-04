@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Image as ImageIcon,
   Video,
   Music,
@@ -25,13 +25,13 @@ import {
   Upload,
   Play,
   AlertTriangle,
-  Clock
+  Clock,
 } from "lucide-react";
 
 interface MediaFile {
   id: string;
   file: File;
-  type: 'image' | 'video' | 'audio' | 'zip' | 'epub';
+  type: "image" | "video" | "audio" | "zip" | "epub";
   preview?: string;
   progress?: number;
 }
@@ -70,14 +70,14 @@ interface PostData {
   title?: string;
   isLocked: boolean;
   scheduledDate?: Date;
-  type: 'post' | 'reel' | 'live';
+  type: "post" | "reel" | "live";
 }
 
 export function PostCreationForm({
   currentUser,
   settings,
   onSubmit,
-  className = ""
+  className = "",
 }: PostCreationFormProps) {
   const [description, setDescription] = useState("");
   const [media, setMedia] = useState<MediaFile[]>([]);
@@ -98,38 +98,58 @@ export function PostCreationForm({
   const epubFileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock emoji data
-  const emojis = ["😀", "😂", "😍", "👍", "❤️", "😢", "😮", "😡", "🔥", "💯", "🎉", "👏", "🙌", "💪", "🤔", "😎"];
+  const emojis = [
+    "😀",
+    "😂",
+    "😍",
+    "👍",
+    "❤️",
+    "😢",
+    "😮",
+    "😡",
+    "🔥",
+    "💯",
+    "🎉",
+    "👏",
+    "🙌",
+    "💪",
+    "🤔",
+    "😎",
+  ];
 
   const charactersRemaining = settings.updateLength - description.length;
-  const canSubmit = (description.trim().length > 0 || media.length > 0) && !isSubmitting;
+  const canSubmit =
+    (description.trim().length > 0 || media.length > 0) && !isSubmitting;
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    
+
     if (media.length + files.length > settings.maxFiles) {
       setErrors([`Maximum ${settings.maxFiles} files allowed`]);
       return;
     }
 
-    const newMedia = files.map(file => ({
+    const newMedia = files.map((file) => ({
       id: Math.random().toString(36).substr(2, 9),
       file,
       type: getFileType(file),
-      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
-      progress: 0
+      preview: file.type.startsWith("image/")
+        ? URL.createObjectURL(file)
+        : undefined,
+      progress: 0,
     }));
 
-    setMedia(prev => [...prev, ...newMedia]);
+    setMedia((prev) => [...prev, ...newMedia]);
     simulateUpload(newMedia);
   };
 
-  const getFileType = (file: File): MediaFile['type'] => {
-    if (file.type.startsWith('image/')) return 'image';
-    if (file.type.startsWith('video/')) return 'video';
-    if (file.type.startsWith('audio/')) return 'audio';
-    if (file.type === 'application/zip') return 'zip';
-    if (file.type === 'application/epub+zip') return 'epub';
-    return 'image';
+  const getFileType = (file: File): MediaFile["type"] => {
+    if (file.type.startsWith("image/")) return "image";
+    if (file.type.startsWith("video/")) return "video";
+    if (file.type.startsWith("audio/")) return "audio";
+    if (file.type === "application/zip") return "zip";
+    if (file.type === "application/epub+zip") return "epub";
+    return "image";
   };
 
   const simulateUpload = (files: MediaFile[]) => {
@@ -137,7 +157,7 @@ export function PostCreationForm({
     setUploadProgress(0);
 
     const interval = setInterval(() => {
-      setUploadProgress(prev => {
+      setUploadProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setIsUploading(false);
@@ -149,11 +169,11 @@ export function PostCreationForm({
   };
 
   const removeMedia = (id: string) => {
-    setMedia(prev => prev.filter(item => item.id !== id));
+    setMedia((prev) => prev.filter((item) => item.id !== id));
   };
 
   const insertEmoji = (emoji: string) => {
-    setDescription(prev => prev + emoji);
+    setDescription((prev) => prev + emoji);
     setShowEmojis(false);
   };
 
@@ -168,7 +188,9 @@ export function PostCreationForm({
       }
 
       if (description.length > settings.updateLength) {
-        setErrors([`Post is too long. Maximum ${settings.updateLength} characters allowed.`]);
+        setErrors([
+          `Post is too long. Maximum ${settings.updateLength} characters allowed.`,
+        ]);
         return;
       }
 
@@ -179,11 +201,11 @@ export function PostCreationForm({
         title: showTitle ? title.trim() : undefined,
         isLocked,
         scheduledDate,
-        type: 'post'
+        type: "post",
       };
 
       await onSubmit(postData);
-      
+
       // Reset form
       setDescription("");
       setMedia([]);
@@ -192,7 +214,6 @@ export function PostCreationForm({
       setShowPrice(false);
       setShowTitle(false);
       setScheduledDate(undefined);
-      
     } catch (error) {
       setErrors(["Failed to create post. Please try again."]);
     } finally {
@@ -207,7 +228,9 @@ export function PostCreationForm({
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Uploading files...</span>
-            <span className="text-sm text-muted-foreground">{uploadProgress}%</span>
+            <span className="text-sm text-muted-foreground">
+              {uploadProgress}%
+            </span>
           </div>
           <Progress value={uploadProgress} className="h-2" />
         </div>
@@ -239,9 +262,11 @@ export function PostCreationForm({
           <div className="flex space-x-3 mb-4">
             <Avatar className="h-12 w-12 flex-shrink-0">
               <AvatarImage src={currentUser.avatar} />
-              <AvatarFallback>{currentUser.name.charAt(0).toUpperCase()}</AvatarFallback>
+              <AvatarFallback>
+                {currentUser.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
-            
+
             <div className="flex-1">
               <Textarea
                 value={description}
@@ -271,7 +296,9 @@ export function PostCreationForm({
           {showPrice && (
             <div className="mb-4">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium">{settings.currencySymbol}</span>
+                <span className="text-sm font-medium">
+                  {settings.currencySymbol}
+                </span>
                 <Input
                   type="number"
                   value={price || ""}
@@ -326,25 +353,31 @@ export function PostCreationForm({
                 {media.map((item) => (
                   <div key={item.id} className="relative group">
                     <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                      {item.type === 'image' && item.preview ? (
-                        <img 
-                          src={item.preview} 
-                          alt="Preview" 
-                          className="w-full h-full object-cover" 
+                      {item.type === "image" && item.preview ? (
+                        <img
+                          src={item.preview}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
                         />
-                      ) : item.type === 'video' ? (
+                      ) : item.type === "video" ? (
                         <div className="w-full h-full flex items-center justify-center bg-gray-200">
                           <Play className="h-8 w-8 text-gray-500" />
                         </div>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                          {item.type === 'audio' && <Music className="h-8 w-8 text-gray-500" />}
-                          {item.type === 'zip' && <FileArchive className="h-8 w-8 text-gray-500" />}
-                          {item.type === 'epub' && <FileArchive className="h-8 w-8 text-gray-500" />}
+                          {item.type === "audio" && (
+                            <Music className="h-8 w-8 text-gray-500" />
+                          )}
+                          {item.type === "zip" && (
+                            <FileArchive className="h-8 w-8 text-gray-500" />
+                          )}
+                          {item.type === "epub" && (
+                            <FileArchive className="h-8 w-8 text-gray-500" />
+                          )}
                         </div>
                       )}
                     </div>
-                    
+
                     <Button
                       variant="destructive"
                       size="sm"
@@ -391,16 +424,17 @@ export function PostCreationForm({
               </Button>
 
               {/* PPV Price */}
-              {settings.allowPPV && (currentUser.freeSubscription || !settings.allowPPV) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowPrice(!showPrice)}
-                  className={`h-8 ${showPrice ? 'bg-primary/10 text-primary' : ''}`}
-                >
-                  <DollarSign className="h-4 w-4" />
-                </Button>
-              )}
+              {settings.allowPPV &&
+                (currentUser.freeSubscription || !settings.allowPPV) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowPrice(!showPrice)}
+                    className={`h-8 ${showPrice ? "bg-primary/10 text-primary" : ""}`}
+                  >
+                    <DollarSign className="h-4 w-4" />
+                  </Button>
+                )}
 
               {/* Lock/Unlock */}
               {!settings.disableFreePost && (
@@ -408,9 +442,13 @@ export function PostCreationForm({
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsLocked(!isLocked)}
-                  className={`h-8 ${isLocked ? 'bg-orange-100 text-orange-600' : ''}`}
+                  className={`h-8 ${isLocked ? "bg-orange-100 text-orange-600" : ""}`}
                 >
-                  {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                  {isLocked ? (
+                    <Lock className="h-4 w-4" />
+                  ) : (
+                    <Unlock className="h-4 w-4" />
+                  )}
                 </Button>
               )}
 
@@ -424,7 +462,7 @@ export function PostCreationForm({
                     tomorrow.setDate(tomorrow.getDate() + 1);
                     setScheduledDate(tomorrow);
                   }}
-                  className={`h-8 ${scheduledDate ? 'bg-blue-100 text-blue-600' : ''}`}
+                  className={`h-8 ${scheduledDate ? "bg-blue-100 text-blue-600" : ""}`}
                 >
                   <Calendar className="h-4 w-4" />
                 </Button>
@@ -435,7 +473,7 @@ export function PostCreationForm({
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowTitle(!showTitle)}
-                className={`h-8 ${showTitle ? 'bg-gray-100' : ''}`}
+                className={`h-8 ${showTitle ? "bg-gray-100" : ""}`}
               >
                 <Type className="h-4 w-4" />
               </Button>
@@ -462,7 +500,9 @@ export function PostCreationForm({
 
             <div className="flex items-center space-x-3">
               {/* Character Count */}
-              <span className={`text-sm ${charactersRemaining < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+              <span
+                className={`text-sm ${charactersRemaining < 0 ? "text-red-500" : "text-muted-foreground"}`}
+              >
                 {charactersRemaining}
               </span>
 
@@ -490,11 +530,11 @@ export function PostCreationForm({
         ref={fileInputRef}
         type="file"
         multiple
-        accept={`image/*,video/mp4,video/quicktime${settings.disableAudio ? '' : ',audio/mp3'}`}
+        accept={`image/*,video/mp4,video/quicktime${settings.disableAudio ? "" : ",audio/mp3"}`}
         onChange={handleFileSelect}
         className="hidden"
       />
-      
+
       {settings.allowZipFiles && (
         <input
           ref={zipFileInputRef}
@@ -504,7 +544,7 @@ export function PostCreationForm({
           className="hidden"
         />
       )}
-      
+
       {settings.allowEpubFiles && (
         <input
           ref={epubFileInputRef}

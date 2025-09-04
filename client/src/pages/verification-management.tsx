@@ -3,9 +3,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { UserCheck, Search, Filter, Eye, CheckCircle, XCircle, Clock, AlertTriangle, FileText } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  UserCheck,
+  Search,
+  Filter,
+  Eye,
+  CheckCircle,
+  XCircle,
+  Clock,
+  AlertTriangle,
+  FileText,
+} from "lucide-react";
 import { SEOHeadTags } from "@/components/SEOHeadTags";
 
 export default function VerificationManagementPage() {
@@ -17,7 +40,7 @@ export default function VerificationManagementPage() {
     pendingReviews: 47,
     approvedToday: 23,
     rejectedToday: 5,
-    totalVerified: 8920
+    totalVerified: 8920,
   };
 
   const verificationRequests = [
@@ -29,7 +52,7 @@ export default function VerificationManagementPage() {
       submittedDate: "2025-01-04T10:30:00Z",
       documentType: "Government ID",
       priority: "high",
-      reviewedBy: null
+      reviewedBy: null,
     },
     {
       id: "VER-001235",
@@ -39,7 +62,7 @@ export default function VerificationManagementPage() {
       submittedDate: "2025-01-04T09:15:00Z",
       documentType: "Passport",
       priority: "normal",
-      reviewedBy: "admin_reviewer"
+      reviewedBy: "admin_reviewer",
     },
     {
       id: "VER-001236",
@@ -49,7 +72,7 @@ export default function VerificationManagementPage() {
       submittedDate: "2025-01-04T08:45:00Z",
       documentType: "Utility Bill",
       priority: "normal",
-      reviewedBy: null
+      reviewedBy: null,
     },
     {
       id: "VER-001237",
@@ -59,20 +82,26 @@ export default function VerificationManagementPage() {
       submittedDate: "2025-01-03T16:20:00Z",
       documentType: "Business License",
       priority: "low",
-      reviewedBy: "admin_reviewer"
-    }
+      reviewedBy: "admin_reviewer",
+    },
   ];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
-        return <Badge className="bg-green-500/20 text-green-400">Approved</Badge>;
+        return (
+          <Badge className="bg-green-500/20 text-green-400">Approved</Badge>
+        );
       case "pending":
-        return <Badge className="bg-yellow-500/20 text-yellow-400">Pending</Badge>;
+        return (
+          <Badge className="bg-yellow-500/20 text-yellow-400">Pending</Badge>
+        );
       case "rejected":
         return <Badge className="bg-red-500/20 text-red-400">Rejected</Badge>;
       case "under_review":
-        return <Badge className="bg-blue-500/20 text-blue-400">Under Review</Badge>;
+        return (
+          <Badge className="bg-blue-500/20 text-blue-400">Under Review</Badge>
+        );
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -106,17 +135,21 @@ export default function VerificationManagementPage() {
 
   return (
     <div className="min-h-screen p-6 cyber-bg">
-      <SEOHeadTags 
+      <SEOHeadTags
         title="Verification Management - FanzDash"
         description="Manage document verification workflows and user identity verification"
         canonicalUrl="https://fanzdash.com/verification-management"
       />
-      
+
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold cyber-text-glow">Verification Management</h1>
-            <p className="text-muted-foreground">Document verification workflows</p>
+            <h1 className="text-3xl font-bold cyber-text-glow">
+              Verification Management
+            </h1>
+            <p className="text-muted-foreground">
+              Document verification workflows
+            </p>
           </div>
           <Button className="cyber-button">
             <FileText className="w-4 h-4 mr-2" />
@@ -130,8 +163,12 @@ export default function VerificationManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Pending Reviews</p>
-                  <p className="text-2xl font-bold cyber-text-glow">{verificationStats.pendingReviews}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Pending Reviews
+                  </p>
+                  <p className="text-2xl font-bold cyber-text-glow">
+                    {verificationStats.pendingReviews}
+                  </p>
                 </div>
                 <Clock className="w-8 h-8 text-yellow-400" />
               </div>
@@ -142,8 +179,12 @@ export default function VerificationManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Approved Today</p>
-                  <p className="text-2xl font-bold text-green-400">{verificationStats.approvedToday}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Approved Today
+                  </p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {verificationStats.approvedToday}
+                  </p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-green-400" />
               </div>
@@ -154,8 +195,12 @@ export default function VerificationManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Rejected Today</p>
-                  <p className="text-2xl font-bold text-red-400">{verificationStats.rejectedToday}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Rejected Today
+                  </p>
+                  <p className="text-2xl font-bold text-red-400">
+                    {verificationStats.rejectedToday}
+                  </p>
                 </div>
                 <XCircle className="w-8 h-8 text-red-400" />
               </div>
@@ -166,8 +211,12 @@ export default function VerificationManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Verified</p>
-                  <p className="text-2xl font-bold text-blue-400">{verificationStats.totalVerified.toLocaleString()}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Verified
+                  </p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {verificationStats.totalVerified.toLocaleString()}
+                  </p>
                 </div>
                 <UserCheck className="w-8 h-8 text-blue-400" />
               </div>
@@ -181,7 +230,7 @@ export default function VerificationManagementPage() {
             <div className="flex gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input 
+                <Input
                   placeholder="Search verifications..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -239,10 +288,14 @@ export default function VerificationManagementPage() {
               <TableBody>
                 {verificationRequests.map((request) => (
                   <TableRow key={request.id}>
-                    <TableCell className="font-mono text-sm">{request.id}</TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {request.id}
+                    </TableCell>
                     <TableCell>{request.user}</TableCell>
                     <TableCell>{request.type}</TableCell>
-                    <TableCell className="text-muted-foreground">{request.documentType}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {request.documentType}
+                    </TableCell>
                     <TableCell>{getPriorityBadge(request.priority)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -254,7 +307,9 @@ export default function VerificationManagementPage() {
                       {new Date(request.submittedDate).toLocaleString()}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {request.reviewedBy || <span className="text-muted-foreground">-</span>}
+                      {request.reviewedBy || (
+                        <span className="text-muted-foreground">-</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -262,9 +317,12 @@ export default function VerificationManagementPage() {
                           <Eye className="w-3 h-3 mr-1" />
                           Review
                         </Button>
-                        {request.status === 'pending' && (
+                        {request.status === "pending" && (
                           <>
-                            <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
+                            >
                               <CheckCircle className="w-3 h-3" />
                             </Button>
                             <Button size="sm" variant="destructive">

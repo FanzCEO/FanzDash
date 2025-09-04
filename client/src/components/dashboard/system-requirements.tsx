@@ -5,11 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Server, 
-  CheckCircle, 
-  XCircle, 
-  RefreshCw, 
+import {
+  Server,
+  CheckCircle,
+  XCircle,
+  RefreshCw,
   AlertTriangle,
   Info,
   HardDrive,
@@ -17,7 +17,7 @@ import {
   Database,
   Shield,
   Globe,
-  FileText
+  FileText,
 } from "lucide-react";
 
 interface SystemRequirement {
@@ -59,7 +59,7 @@ interface SystemRequirementsProps {
 export function SystemRequirements({
   onCheck,
   onFix,
-  className = ""
+  className = "",
 }: SystemRequirementsProps) {
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -73,7 +73,7 @@ export function SystemRequirements({
       setSystemHealth(health);
       setLastChecked(new Date());
     } catch (error) {
-      console.error('Failed to check system health:', error);
+      console.error("Failed to check system health:", error);
     } finally {
       setIsChecking(false);
     }
@@ -81,13 +81,13 @@ export function SystemRequirements({
 
   const handleFix = async (requirement: string) => {
     if (!onFix) return;
-    
+
     setIsFixing(requirement);
     try {
       await onFix(requirement);
       await checkSystemHealth(); // Recheck after fix attempt
     } catch (error) {
-      console.error('Failed to fix requirement:', error);
+      console.error("Failed to fix requirement:", error);
     } finally {
       setIsFixing(null);
     }
@@ -99,34 +99,41 @@ export function SystemRequirements({
       try {
         await checkSystemHealth();
       } catch (error) {
-        console.error('Failed to initialize system check:', error);
+        console.error("Failed to initialize system check:", error);
       }
     };
-    
+
     initializeSystemCheck();
   }, []);
 
-  const RequirementItem = ({ requirement }: { requirement: SystemRequirement }) => (
+  const RequirementItem = ({
+    requirement,
+  }: {
+    requirement: SystemRequirement;
+  }) => (
     <div className="flex items-center justify-between p-4 rounded-lg border border-muted/20 bg-card/50">
       <div className="flex items-start space-x-3">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-          requirement.status 
-            ? 'bg-green-100 text-green-600' 
-            : requirement.critical 
-              ? 'bg-red-100 text-red-600'
-              : 'bg-yellow-100 text-yellow-600'
-        }`}>
+        <div
+          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+            requirement.status
+              ? "bg-green-100 text-green-600"
+              : requirement.critical
+                ? "bg-red-100 text-red-600"
+                : "bg-yellow-100 text-yellow-600"
+          }`}
+        >
           {requirement.status ? (
             <CheckCircle className="h-4 w-4" />
           ) : (
             <XCircle className="h-4 w-4" />
           )}
         </div>
-        
+
         <div className="flex-1">
           <h4 className="font-semibold">{requirement.name}</h4>
           <p className="text-sm text-muted-foreground mb-1">
-            Required: <span className="font-medium">{requirement.required}</span>
+            Required:{" "}
+            <span className="font-medium">{requirement.required}</span>
           </p>
           <p className="text-sm text-muted-foreground">
             Current: <span className="font-medium">{requirement.current}</span>
@@ -149,9 +156,9 @@ export function SystemRequirements({
           <>
             <Badge variant={requirement.critical ? "destructive" : "secondary"}>
               <XCircle className="h-3 w-3 mr-1" />
-              {requirement.critical ? 'Critical' : 'Warning'}
+              {requirement.critical ? "Critical" : "Warning"}
             </Badge>
-            
+
             {onFix && (
               <Button
                 size="sm"
@@ -162,7 +169,7 @@ export function SystemRequirements({
                 {isFixing === requirement.name ? (
                   <RefreshCw className="h-3 w-3 animate-spin" />
                 ) : (
-                  'Fix'
+                  "Fix"
                 )}
               </Button>
             )}
@@ -173,15 +180,15 @@ export function SystemRequirements({
   );
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-yellow-600";
+    return "text-red-600";
   };
 
   const getScoreBg = (score: number) => {
-    if (score >= 80) return 'bg-green-500';
-    if (score >= 60) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (score >= 80) return "bg-green-500";
+    if (score >= 60) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   return (
@@ -227,14 +234,16 @@ export function SystemRequirements({
                 <div className="text-center">
                   <div className="relative w-20 h-20 mx-auto mb-3">
                     <div className="absolute inset-0 rounded-full bg-muted/20"></div>
-                    <div 
+                    <div
                       className={`absolute inset-0 rounded-full ${getScoreBg(systemHealth.overallScore)}`}
                       style={{
-                        background: `conic-gradient(${getScoreBg(systemHealth.overallScore).replace('bg-', 'rgb(var(--')} ${systemHealth.overallScore}%, transparent ${systemHealth.overallScore}%)`
+                        background: `conic-gradient(${getScoreBg(systemHealth.overallScore).replace("bg-", "rgb(var(--")} ${systemHealth.overallScore}%, transparent ${systemHealth.overallScore}%)`,
                       }}
                     ></div>
                     <div className="absolute inset-2 rounded-full bg-background flex items-center justify-center">
-                      <span className={`text-lg font-bold ${getScoreColor(systemHealth.overallScore)}`}>
+                      <span
+                        className={`text-lg font-bold ${getScoreColor(systemHealth.overallScore)}`}
+                      >
                         {systemHealth.overallScore}
                       </span>
                     </div>
@@ -246,15 +255,21 @@ export function SystemRequirements({
                   <div className="w-12 h-12 mx-auto mb-3 bg-red-100 rounded-full flex items-center justify-center">
                     <AlertTriangle className="h-6 w-6 text-red-600" />
                   </div>
-                  <p className="text-2xl font-bold text-red-600">{systemHealth.criticalIssues}</p>
-                  <p className="text-sm text-muted-foreground">Critical Issues</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {systemHealth.criticalIssues}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Critical Issues
+                  </p>
                 </div>
 
                 <div className="text-center">
                   <div className="w-12 h-12 mx-auto mb-3 bg-yellow-100 rounded-full flex items-center justify-center">
                     <Info className="h-6 w-6 text-yellow-600" />
                   </div>
-                  <p className="text-2xl font-bold text-yellow-600">{systemHealth.warnings}</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {systemHealth.warnings}
+                  </p>
                   <p className="text-sm text-muted-foreground">Warnings</p>
                 </div>
 
@@ -263,7 +278,7 @@ export function SystemRequirements({
                     <CheckCircle className="h-6 w-6 text-blue-600" />
                   </div>
                   <p className="text-2xl font-bold text-blue-600">
-                    {systemHealth.extensions.filter(e => e.status).length}
+                    {systemHealth.extensions.filter((e) => e.status).length}
                   </p>
                   <p className="text-sm text-muted-foreground">Extensions OK</p>
                 </div>
@@ -282,7 +297,9 @@ export function SystemRequirements({
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                <strong>{systemHealth.criticalIssues} critical issue(s) found!</strong>
+                <strong>
+                  {systemHealth.criticalIssues} critical issue(s) found!
+                </strong>
                 <br />
                 These must be resolved before the system can operate properly.
               </AlertDescription>
@@ -327,15 +344,24 @@ export function SystemRequirements({
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span>Used: {(systemHealth.storage.used / (1024 ** 3)).toFixed(2)} GB</span>
-                    <span>Available: {(systemHealth.storage.available / (1024 ** 3)).toFixed(2)} GB</span>
+                    <span>
+                      Used: {(systemHealth.storage.used / 1024 ** 3).toFixed(2)}{" "}
+                      GB
+                    </span>
+                    <span>
+                      Available:{" "}
+                      {(systemHealth.storage.available / 1024 ** 3).toFixed(2)}{" "}
+                      GB
+                    </span>
                   </div>
-                  <Progress 
-                    value={systemHealth.storage.percentage} 
+                  <Progress
+                    value={systemHealth.storage.percentage}
                     className="h-2"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    {systemHealth.storage.percentage.toFixed(1)}% of {(systemHealth.storage.total / (1024 ** 3)).toFixed(2)} GB used
+                    {systemHealth.storage.percentage.toFixed(1)}% of{" "}
+                    {(systemHealth.storage.total / 1024 ** 3).toFixed(2)} GB
+                    used
                   </p>
                 </div>
               </CardContent>
@@ -349,7 +375,8 @@ export function SystemRequirements({
                 <Shield className="h-5 w-5" />
                 <span>PHP Extensions</span>
                 <Badge variant="outline">
-                  {systemHealth.extensions.filter(e => e.status).length} / {systemHealth.extensions.length} passed
+                  {systemHealth.extensions.filter((e) => e.status).length} /{" "}
+                  {systemHealth.extensions.length} passed
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -369,7 +396,8 @@ export function SystemRequirements({
                 <Globe className="h-5 w-5" />
                 <span>File Permissions</span>
                 <Badge variant="outline">
-                  {systemHealth.permissions.filter(p => p.status).length} / {systemHealth.permissions.length} passed
+                  {systemHealth.permissions.filter((p) => p.status).length} /{" "}
+                  {systemHealth.permissions.length} passed
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -396,12 +424,13 @@ export function SystemRequirements({
                   <span>Used: {systemHealth.memory.usage}</span>
                   <span>Limit: {systemHealth.memory.limit}</span>
                 </div>
-                <Progress 
-                  value={systemHealth.memory.percentage} 
+                <Progress
+                  value={systemHealth.memory.percentage}
                   className="h-2"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  {systemHealth.memory.percentage.toFixed(1)}% of available memory used
+                  {systemHealth.memory.percentage.toFixed(1)}% of available
+                  memory used
                 </p>
               </div>
             </CardContent>
@@ -413,11 +442,17 @@ export function SystemRequirements({
         <Card className="py-12">
           <CardContent className="text-center">
             <Server className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">System Check Required</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              System Check Required
+            </h3>
             <p className="text-muted-foreground mb-6">
-              Run a system health check to see the current status of your installation
+              Run a system health check to see the current status of your
+              installation
             </p>
-            <Button onClick={checkSystemHealth} className="bg-gradient-to-r from-primary to-purple-600">
+            <Button
+              onClick={checkSystemHealth}
+              className="bg-gradient-to-r from-primary to-purple-600"
+            >
               <RefreshCw className="h-4 w-4 mr-2" />
               Check System Health
             </Button>
