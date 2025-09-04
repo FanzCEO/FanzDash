@@ -53,6 +53,7 @@ import ContactManagement from "@/pages/contact-management";
 import VideoEncodingPage from "@/pages/video-encoding";
 import StickersManagementPage from "@/pages/stickers-management";
 import WebSocketSettingsPage from "@/pages/websocket-settings";
+import StarzStudioAdmin from "@/pages/StarzStudioAdmin";
 import TransactionManagementPage from "@/pages/transaction-management";
 import VerificationManagementPage from "@/pages/verification-management";
 import SubscriptionManagementPage from "@/pages/subscription-management";
@@ -120,6 +121,7 @@ function Router() {
           <Route path="/vr-rendering" component={VRRenderingEngine} />
           <Route path="/future-tech" component={FutureTechManager} />
           <Route path="/ai-cfo" component={AICFODashboard} />
+          <Route path="/starz-studio" component={StarzStudioAdmin} />
           <Route path="/blog" component={BlogManagement} />
           <Route path="/blog/create" component={BlogCreate} />
           <Route path="/blog/edit/:id" component={BlogEdit} />

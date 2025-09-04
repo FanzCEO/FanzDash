@@ -38,6 +38,7 @@ import { aiPredictiveAnalytics } from "./aiPredictiveAnalytics";
 import { aiContentModerationService } from "./aiContentModeration";
 import { creatorAutomationSystem } from "./creatorAutomation";
 import { ecosystemMaintenance } from "./ecosystemMaintenance";
+import { starzStudioService } from "./starzStudioService";
 
 // Store connected WebSocket clients
 let connectedModerators: Set<WebSocket> = new Set();
@@ -924,6 +925,251 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to get ecosystem summary' });
     }
   });
+
+  // ===== STARZ STUDIO ADMIN PANEL API ROUTES =====
+  
+  // Start Starz Studio service
+  await starzStudioService.startService();
+
+  // Platform Cluster Management
+  app.get('/api/starz-studio/clusters', (req, res) => {
+    try {
+      const clusters = starzStudioService.getPlatformClusters();
+      res.json({ success: true, clusters });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get platform clusters' });
+    }
+  });
+
+  app.post('/api/starz-studio/clusters/sync', async (req, res) => {
+    try {
+      await starzStudioService.syncWithPlatformClusters();
+      res.json({ success: true, message: 'Platform clusters synchronized' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to sync platform clusters' });
+    }
+  });
+
+  // Project Management
+  app.get('/api/starz-studio/projects', (req, res) => {
+    try {
+      const projects = starzStudioService.getProjects();
+      res.json({ success: true, projects });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get projects' });
+    }
+  });
+
+  app.get('/api/starz-studio/projects/:id', (req, res) => {
+    try {
+      const project = starzStudioService.getProject(req.params.id);
+      if (!project) {
+        return res.status(404).json({ success: false, error: 'Project not found' });
+      }
+      res.json({ success: true, project });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get project' });
+    }
+  });
+
+  app.post('/api/starz-studio/projects', async (req, res) => {
+    try {
+      const { name, description, creatorId, priority, targetClusters, budget } = req.body;
+      
+      if (!name || !creatorId) {
+        return res.status(400).json({ success: false, error: 'Name and creator ID are required' });
+      }
+
+      const projectId = await starzStudioService.createProject({
+        name,
+        description,
+        creatorId,
+        priority: priority || 'medium',
+        targetClusters: targetClusters || ['fanzlab'],
+        budget: budget || { allocated: 1000 }
+      });
+
+      res.json({ success: true, projectId, message: 'Project created successfully' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to create project' });
+    }
+  });
+
+  app.put('/api/starz-studio/projects/:id', async (req, res) => {
+    try {
+      const updates = req.body;
+      await starzStudioService.updateProject(req.params.id, updates);
+      res.json({ success: true, message: 'Project updated successfully' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to update project' });
+    }
+  });
+
+  // AI Production Planning
+  app.post('/api/starz-studio/projects/:id/production-plan', async (req, res) => {
+    try {
+      const { concept } = req.body;
+      
+      if (!concept) {
+        return res.status(400).json({ success: false, error: 'Concept is required' });
+      }
+
+      const planId = await starzStudioService.generateProductionPlan(req.params.id, concept);
+      res.json({ success: true, planId, message: 'Production plan generated successfully' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to generate production plan' });
+    }
+  });
+
+  // AI Job Management
+  app.post('/api/starz-studio/ai-jobs', async (req, res) => {
+    try {
+      const { projectId, type, input, priority } = req.body;
+      
+      if (!projectId || !type) {
+        return res.status(400).json({ success: false, error: 'Project ID and job type are required' });
+      }
+
+      const jobId = await starzStudioService.queueAIJob({
+        projectId,
+        type,
+        input,
+        priority: priority || 5
+      });
+
+      res.json({ success: true, jobId, message: 'AI job queued successfully' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to queue AI job' });
+    }
+  });
+
+  // Content Variant Generation
+  app.post('/api/starz-studio/projects/:id/variants', async (req, res) => {
+    try {
+      const { baseContent } = req.body;
+      
+      if (!baseContent) {
+        return res.status(400).json({ success: false, error: 'Base content is required' });
+      }
+
+      const variantIds = await starzStudioService.generateContentVariants(req.params.id, baseContent);
+      res.json({ success: true, variantIds, message: 'Content variants generation started' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to generate content variants' });
+    }
+  });
+
+  // Real-time Collaboration
+  app.post('/api/starz-studio/projects/:id/join', async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ success: false, error: 'User ID is required' });
+      }
+
+      await starzStudioService.joinProjectCollaboration(req.params.id, userId);
+      res.json({ success: true, message: 'Joined project collaboration' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to join project collaboration' });
+    }
+  });
+
+  app.post('/api/starz-studio/projects/:id/leave', async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ success: false, error: 'User ID is required' });
+      }
+
+      await starzStudioService.leaveProjectCollaboration(req.params.id, userId);
+      res.json({ success: true, message: 'Left project collaboration' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to leave project collaboration' });
+    }
+  });
+
+  // Analytics and Reporting
+  app.get('/api/starz-studio/analytics', (req, res) => {
+    try {
+      const analytics = starzStudioService.getAnalytics();
+      res.json({ success: true, analytics });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get analytics' });
+    }
+  });
+
+  // Service Status and Health
+  app.get('/api/starz-studio/status', (req, res) => {
+    try {
+      const status = starzStudioService.getServiceStatus();
+      res.json({ success: true, status });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get service status' });
+    }
+  });
+
+  // Integration with AI CFO for cost tracking
+  app.get('/api/starz-studio/finance/integration', async (req, res) => {
+    try {
+      const studioAnalytics = starzStudioService.getAnalytics();
+      const cfoData = await aiFinanceCopilot.generateFinancialReport();
+      
+      const integration = {
+        contentProductionCosts: studioAnalytics.aiMetrics.costPerJob * studioAnalytics.aiMetrics.jobsProcessed,
+        contentRevenue: studioAnalytics.overview.totalRevenue,
+        platformROI: studioAnalytics.overview.averageROI,
+        budgetEfficiency: cfoData.recommendations?.filter(r => r.category === 'cost_optimization') || [],
+        financialHealth: {
+          profitMargin: ((studioAnalytics.overview.totalRevenue - (studioAnalytics.aiMetrics.costPerJob * studioAnalytics.aiMetrics.jobsProcessed)) / Math.max(studioAnalytics.overview.totalRevenue, 1)) * 100,
+          contentProductionEfficiency: studioAnalytics.performance.contentProductionRate,
+          averageProjectROI: studioAnalytics.overview.averageROI
+        }
+      };
+      
+      res.json({ success: true, integration });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get finance integration data' });
+    }
+  });
+
+  // Multi-platform publishing control
+  app.post('/api/starz-studio/publish/:projectId', async (req, res) => {
+    try {
+      const { targetClusters, publishSettings } = req.body;
+      const project = starzStudioService.getProject(req.params.projectId);
+      
+      if (!project) {
+        return res.status(404).json({ success: false, error: 'Project not found' });
+      }
+
+      // Update project status and trigger publishing workflow
+      await starzStudioService.updateProject(req.params.projectId, {
+        status: 'published',
+        timeline: {
+          ...project.timeline,
+          published: new Date()
+        }
+      });
+
+      // Queue AI jobs for cross-platform optimization
+      for (const clusterId of targetClusters || project.targetClusters) {
+        await starzStudioService.queueAIJob({
+          projectId: req.params.projectId,
+          type: 'optimization',
+          input: { clusterId, publishSettings },
+          priority: 8
+        });
+      }
+
+      res.json({ success: true, message: 'Multi-platform publishing initiated' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to initiate publishing' });
+    }
+  });
+
+  // ===== END STARZ STUDIO API ROUTES =====
 
   // Start all monitoring systems
   systemMonitoring.startMonitoring();

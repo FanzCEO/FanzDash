@@ -43,7 +43,9 @@ import {
   Siren,
   ChevronDown,
   ChevronRight,
-  Search
+  Search,
+  Film,
+  Calculator as CalculatorIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -230,6 +232,18 @@ const navigationCategories: NavigationCategory[] = [
         href: "/risk-management",
         icon: AlertTriangle,
         description: "Predictive threat assessment"
+      },
+      {
+        name: "AI CFO & Financial Copilot",
+        href: "/ai-cfo",
+        icon: CalculatorIcon,
+        description: "AI-powered financial analysis and automated ecosystem maintenance"
+      },
+      {
+        name: "Starz Studio Admin Panel",
+        href: "/starz-studio",
+        icon: Film,
+        description: "AI-powered content production service for multi-platform publishing"
       }
     ]
   },
