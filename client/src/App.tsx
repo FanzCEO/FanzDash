@@ -49,6 +49,12 @@ import EmailManagement from "@/pages/email-management";
 import UserManagement from "@/pages/user-management";
 import SEOConfiguration from "@/pages/seo-configuration";
 import ContactManagement from "@/pages/contact-management";
+import VideoEncodingPage from "@/pages/video-encoding";
+import StickersManagementPage from "@/pages/stickers-management";
+import WebSocketSettingsPage from "@/pages/websocket-settings";
+import TransactionManagementPage from "@/pages/transaction-management";
+import VerificationManagementPage from "@/pages/verification-management";
+import SubscriptionManagementPage from "@/pages/subscription-management";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import PasswordReset from "@/pages/auth/password-reset";
@@ -108,6 +114,12 @@ function Router() {
           <Route path="/email-management" component={EmailManagement} />
           <Route path="/user-management" component={UserManagement} />
           <Route path="/contact-management" component={ContactManagement} />
+          <Route path="/video-encoding" component={VideoEncodingPage} />
+          <Route path="/stickers-management" component={StickersManagementPage} />
+          <Route path="/websocket-settings" component={WebSocketSettingsPage} />
+          <Route path="/transaction-management" component={TransactionManagementPage} />
+          <Route path="/verification-management" component={VerificationManagementPage} />
+          <Route path="/subscription-management" component={SubscriptionManagementPage} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/password/reset" component={PasswordReset} />
