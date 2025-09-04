@@ -14,9 +14,11 @@ import {
   Clock,
   FileCheck,
   Users,
-  Zap
+  Zap,
+  Filter
 } from "lucide-react";
 import { ComplianceGuard } from "./ComplianceGuard";
+import { FilterableContentGrid } from "./FilterableContentGrid";
 
 interface ContentItem {
   id: string;
@@ -50,6 +52,7 @@ export function IntelligentModerationWorkflow() {
   const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showComplianceGuard, setShowComplianceGuard] = useState(false);
+  const [showFilteredView, setShowFilteredView] = useState(false);
   
   // Mock content queue with AI analysis results
   useEffect(() => {
@@ -196,6 +199,57 @@ export function IntelligentModerationWorkflow() {
     }
   };
 
+  // Convert ContentItems to FilterableItems for the grid
+  const convertToFilterableItems = (items: ContentItem[]) => {
+    return items.map(item => ({
+      id: item.id,
+      title: item.title,
+      type: item.type,
+      status: item.moderationStatus,
+      priority: item.aiAnalysis?.compliance_risk === 'critical' ? 'Critical' : 
+                item.aiAnalysis?.compliance_risk === 'high' ? 'High' :
+                item.aiAnalysis?.compliance_risk === 'medium' ? 'Medium' : 'Low',
+      creator: item.creator,
+      assignedTo: 'AI System',
+      tags: [
+        ...(item.coStars || []),
+        ...(item.aiAnalysis?.flags || []),
+        item.aiAnalysis?.compliance_risk || 'unknown'
+      ],
+      metadata: {
+        contentType: item.type,
+        moderationStatus: item.moderationStatus,
+        complianceRisk: item.aiAnalysis?.compliance_risk,
+        hasCoStars: item.coStars && item.coStars.length > 0,
+        verified2257: !item.aiAnalysis?.flags?.includes('2257-forms-missing'),
+        flagged: item.aiAnalysis?.flags && item.aiAnalysis.flags.length > 0,
+        aiConfidence: item.aiAnalysis?.confidence,
+        gpt5Score: item.aiAnalysis?.gpt5_score,
+        gpt4oScore: item.aiAnalysis?.gpt4o_vision_score
+      },
+      createdAt: item.uploadedAt,
+      updatedAt: item.uploadedAt
+    }));
+  };
+
+  const filterableItems = convertToFilterableItems(contentQueue);
+
+  const handleItemSelect = (item: any) => {
+    const originalItem = contentQueue.find(c => c.id === item.id);
+    if (originalItem) {
+      setSelectedItem(originalItem);
+    }
+  };
+
+  const handleItemAction = (action: string, item: any) => {
+    const originalItem = contentQueue.find(c => c.id === item.id);
+    if (originalItem) {
+      if (action === 'view') {
+        runAIAnalysis(originalItem);
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -204,6 +258,14 @@ export function IntelligentModerationWorkflow() {
           <p className="text-gray-400 mt-1">AI-powered content review with 18 U.S.C. § 2257 compliance</p>
         </div>
         <div className="flex items-center gap-4">
+          <Button
+            variant={showFilteredView ? "default" : "outline"}
+            onClick={() => setShowFilteredView(!showFilteredView)}
+            className="bg-cyan-600 hover:bg-cyan-700"
+          >
+            <Filter className="w-4 h-4 mr-2" />
+            {showFilteredView ? 'Grid View' : 'Filter View'}
+          </Button>
           <Badge variant="outline" className="text-cyan-400 border-cyan-400">
             {contentQueue.filter(item => item.moderationStatus === 'pending').length} Pending Review
           </Badge>
@@ -213,8 +275,18 @@ export function IntelligentModerationWorkflow() {
         </div>
       </div>
 
-      {/* Content Queue */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Filterable Grid View */}
+      {showFilteredView ? (
+        <FilterableContentGrid
+          category="media-content"
+          items={filterableItems}
+          onItemSelect={handleItemSelect}
+          onItemAction={handleItemAction}
+        />
+      ) : (
+
+        /* Original Content Queue */
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {contentQueue.map((item) => (
           <Card key={item.id} className="bg-black/40 border-primary/20 cyber-border" data-testid={`content-card-${item.id}`}>
             <CardHeader>
@@ -326,7 +398,8 @@ export function IntelligentModerationWorkflow() {
             </CardContent>
           </Card>
         ))}
-      </div>
+        </div>
+      )}
 
       {/* AI Analysis Modal */}
       {selectedItem && isAnalyzing && (
