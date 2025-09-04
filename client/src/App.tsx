@@ -55,6 +55,7 @@ import NotFound404 from "@/pages/error/404";
 import ServerError500 from "@/pages/error/500";
 import Maintenance503 from "@/pages/error/503";
 import ProfileDisabled from "@/pages/error/profile-disabled";
+import DemoUIShowcase from "@/pages/demo-ui-showcase";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -113,6 +114,7 @@ function Router() {
           <Route path="/error/500" component={ServerError500} />
           <Route path="/error/503" component={Maintenance503} />
           <Route path="/error/profile-disabled" component={ProfileDisabled} />
+          <Route path="/demo-ui" component={DemoUIShowcase} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>
