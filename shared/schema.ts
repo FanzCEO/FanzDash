@@ -5,9 +5,9 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  fanzId: varchar("fanz_id").notNull().unique(), // Unique FanzID for each user
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  fanzId: varchar("fanz_id").unique(), // Unique FanzID for each user
+  username: text("username").unique(),
+  password: text("password"), // Made optional for OAuth-only users
   email: varchar("email").notNull().unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
@@ -24,6 +24,33 @@ export const users = pgTable("users", {
   country: varchar("country"),
   postalCode: varchar("postal_code"),
   verificationStatus: varchar("verification_status").default("pending"), // 'verified', 'declined', 'pending'
+  
+  // Enhanced auth fields
+  passwordHash: varchar("password_hash"),
+  emailVerified: boolean("email_verified").default(false),
+  accountLocked: boolean("account_locked").default(false),
+  loginAttempts: integer("login_attempts").default(0),
+  fanzIdEnabled: boolean("fanz_id_enabled").default(false),
+  
+  // OAuth provider IDs
+  googleId: varchar("google_id"),
+  githubId: varchar("github_id"), 
+  facebookId: varchar("facebook_id"),
+  twitterId: varchar("twitter_id"),
+  linkedinId: varchar("linkedin_id"),
+  
+  // 2FA/TOTP
+  totpSecret: varchar("totp_secret"),
+  totpEnabled: boolean("totp_enabled").default(false),
+  backupCodes: jsonb("backup_codes").$type<string[]>(),
+  
+  // WebAuthn/Biometrics
+  webauthnEnabled: boolean("webauthn_enabled").default(false),
+  
+  // SSO
+  samlNameId: varchar("saml_name_id"),
+  ssoProvider: varchar("sso_provider"),
+  
   createdBy: varchar("created_by"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -2225,4 +2252,95 @@ export type Podcast = typeof podcasts.$inferSelect;
 export type InsertPodcast = typeof podcasts.$inferInsert;
 export type PodcastEpisode = typeof podcastEpisodes.$inferSelect;
 export type InsertPodcastEpisode = typeof podcastEpisodes.$inferInsert;
+
+// Device tracking and security tables for enhanced authentication
+export const trustedDevices = pgTable("trusted_devices", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  deviceFingerprint: text("device_fingerprint").notNull().unique(),
+  deviceName: varchar("device_name"),
+  browser: varchar("browser"),
+  os: varchar("os"),
+  ipAddress: varchar("ip_address"),
+  location: jsonb("location"), // city, country, coordinates
+  isTrusted: boolean("is_trusted").default(false),
+  lastUsedAt: timestamp("last_used_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const loginSessions = pgTable("login_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sessionToken: varchar("session_token").notNull().unique(),
+  deviceFingerprint: text("device_fingerprint"),
+  ipAddress: varchar("ip_address"),
+  location: jsonb("location"),
+  userAgent: text("user_agent"),
+  authMethod: varchar("auth_method"), // 'password', 'oauth_google', 'webauthn', 'totp', etc.
+  requiresVerification: boolean("requires_verification").default(false),
+  verifiedAt: timestamp("verified_at"),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const oauthStates = pgTable("oauth_states", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  state: varchar("state").notNull().unique(),
+  provider: varchar("provider").notNull(),
+  redirectUrl: varchar("redirect_url"),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const webauthnCredentials = pgTable("webauthn_credentials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  credentialId: text("credential_id").notNull().unique(),
+  credentialPublicKey: text("credential_public_key").notNull(),
+  counter: integer("counter").notNull().default(0),
+  deviceName: varchar("device_name"),
+  transports: jsonb("transports").$type<string[]>(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const emailVerificationTokens = pgTable("email_verification_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  token: varchar("token").notNull().unique(),
+  email: varchar("email").notNull(),
+  purpose: varchar("purpose").notNull(), // 'email_verification', 'device_verification', 'password_reset'
+  deviceFingerprint: text("device_fingerprint"),
+  ipAddress: varchar("ip_address"),
+  expiresAt: timestamp("expires_at").notNull(),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const securityAuditLog = pgTable("security_audit_log", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  event: varchar("event").notNull(), // 'login', 'logout', 'device_added', 'suspicious_login', etc.
+  details: jsonb("details"),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  deviceFingerprint: text("device_fingerprint"),
+  location: jsonb("location"),
+  riskScore: integer("risk_score").default(0), // 0-100
+  success: boolean("success").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Enhanced authentication types
+export type TrustedDevice = typeof trustedDevices.$inferSelect;
+export type InsertTrustedDevice = typeof trustedDevices.$inferInsert;
+export type LoginSession = typeof loginSessions.$inferSelect;
+export type InsertLoginSession = typeof loginSessions.$inferInsert;
+export type OAuthState = typeof oauthStates.$inferSelect;
+export type InsertOAuthState = typeof oauthStates.$inferInsert;
+export type WebAuthnCredential = typeof webauthnCredentials.$inferSelect;
+export type InsertWebAuthnCredential = typeof webauthnCredentials.$inferInsert;
+export type EmailVerificationToken = typeof emailVerificationTokens.$inferSelect;
+export type InsertEmailVerificationToken = typeof emailVerificationTokens.$inferInsert;
+export type SecurityAuditLogEntry = typeof securityAuditLog.$inferSelect;
+export type InsertSecurityAuditLogEntry = typeof securityAuditLog.$inferInsert;
 

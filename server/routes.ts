@@ -118,7 +118,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: 'healthy', timestamp: new Date(), version: '1.0.0' });
   });
 
-  // Auth routes
+  // Initialize session middleware and passport
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
+  
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Mount authentication routes
+  app.use(authRoutes);
+
+  // Legacy auth routes (keeping for backward compatibility)
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
