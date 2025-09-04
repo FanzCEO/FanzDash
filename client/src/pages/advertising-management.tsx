@@ -84,7 +84,7 @@ export default function AdvertisingManagement() {
   });
 
   const getStatusBadge = (status: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
       draft: "secondary",
       pending: "outline",
       approved: "default",

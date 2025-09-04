@@ -19,10 +19,10 @@ interface PaymentProcessor {
   isBanned: boolean;
   adultFriendly: boolean;
   supportedCurrencies: string[];
-  fees: any;
+  fees?: any;
   processingTime: string;
-  minimumAmount: string;
-  maximumAmount: string;
+  minimumAmount?: string;
+  maximumAmount?: string;
   testMode: boolean;
 }
 
@@ -66,6 +66,31 @@ export default function PaymentProcessorManagement() {
       id: '7', name: 'MercadoPago', slug: 'mercadopago', processorType: 'regional' as const,
       region: 'LatAm', status: 'active' as const, isBanned: false, adultFriendly: true,
       supportedCurrencies: ['USD', 'ARS', 'BRL'], processingTime: '1-2 days', testMode: false
+    },
+    {
+      id: '8', name: 'NowPayments', slug: 'nowpayments', processorType: 'crypto' as const,
+      region: 'Global', status: 'active' as const, isBanned: false, adultFriendly: true,
+      supportedCurrencies: ['BTC', 'ETH', 'USDT', 'LTC', 'XMR'], processingTime: 'instant', testMode: false
+    },
+    {
+      id: '9', name: 'OpenPix', slug: 'openpix', processorType: 'regional' as const,
+      region: 'Brazil', status: 'active' as const, isBanned: false, adultFriendly: true,
+      supportedCurrencies: ['BRL', 'USD'], processingTime: 'instant', testMode: false
+    },
+    {
+      id: '10', name: 'Payku', slug: 'payku', processorType: 'regional' as const,
+      region: 'Chile', status: 'active' as const, isBanned: false, adultFriendly: true,
+      supportedCurrencies: ['CLP', 'USD'], processingTime: '1-2 days', testMode: false
+    },
+    {
+      id: '11', name: 'Paystack', slug: 'paystack', processorType: 'regional' as const,
+      region: 'Africa', status: 'active' as const, isBanned: false, adultFriendly: true,
+      supportedCurrencies: ['NGN', 'GHS', 'USD'], processingTime: '1-3 days', testMode: false
+    },
+    {
+      id: '12', name: 'Mollie', slug: 'mollie', processorType: 'regional' as const,
+      region: 'Europe', status: 'active' as const, isBanned: false, adultFriendly: true,
+      supportedCurrencies: ['EUR', 'USD', 'GBP'], processingTime: '1-2 days', testMode: false
     }
   ];
   const isLoading = false;
