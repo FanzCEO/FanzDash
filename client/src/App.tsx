@@ -74,6 +74,8 @@ import APIIntegrationManagement from "@/pages/api-integration-management";
 import PlatformModeration from "@/pages/platform-moderation";
 import ComplianceMonitoring from "@/pages/compliance-monitoring";
 import IntelligentModerationPage from "@/pages/intelligent-moderation";
+import VRRenderingEngine from "@/pages/VRRenderingEngine";
+import FutureTechManager from "@/pages/FutureTechManager";
 
 function Router() {
   return (
@@ -114,6 +116,8 @@ function Router() {
           <Route path="/platform-moderation" component={PlatformModeration} />
           <Route path="/compliance-monitoring" component={ComplianceMonitoring} />
           <Route path="/intelligent-moderation" component={IntelligentModerationPage} />
+          <Route path="/vr-rendering" component={VRRenderingEngine} />
+          <Route path="/future-tech" component={FutureTechManager} />
           <Route path="/blog" component={BlogManagement} />
           <Route path="/blog/create" component={BlogCreate} />
           <Route path="/blog/edit/:id" component={BlogEdit} />
