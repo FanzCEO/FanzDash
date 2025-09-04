@@ -1,0 +1,68 @@
+Here’s your master bullet-point list of adult-friendly financial providers (active in 2025). I’ve grouped them by category for clarity, with notes on fees and coverage.
+
+⸻
+
+🏦 Payment Processors & Merchant Accounts
+	•	CCBill – Global adult IPSP; ~5–12% fees; strongest reputation; handles billing, compliance, fraud.
+	•	Segpay – Adult specialist; ~4–6% + fee; global cards; compliance & fraud focus.
+	•	Epoch – Adult subscription billing pioneer; ~15% small-volume; global recurring billing.
+	•	Verotel – Netherlands-based; ~15% low-volume; FastTrack onboarding; global.
+	•	Vendo – EU focus; ~5–10%; affiliate tools & conversion optimization.
+	•	Netbilling – US gateway + merchant accounts; ~2.5–5% + $0.25; monthly fee ~$25.
+	•	PaymentCloud – US-based; custom ~3–4% + $0.30; no setup fees; domestic + some offshore.
+	•	PayKings – High-risk network; ~3–5%; strong support; US + international.
+	•	Durango Merchant Services – Offshore accounts; ~4%+; ideal for global adult merchants.
+	•	Corepay – Adult specialists; ~3–5%; US + offshore; quick approvals.
+	•	Instabill – Offshore-friendly; ~4–6%; offers crypto/gift card payouts.
+	•	Host Merchant Services – US high-risk accounts; fair pricing; free hosting bundle.
+	•	Payment Nerds – No monthly fees; flat ~3.5%; US + Canada; discreet billing descriptors.
+	•	SensaPay – Global; ~2.95–5%; subscription support + fraud tools.
+	•	Tower Payments – US-based; clear terms; adult e-commerce focus.
+	•	Zen Payments – US; ~3%+; fast onboarding for adult & OnlyFans-style platforms.
+	•	Easy Pay Direct – US gateway; $49/mo + ~3–5% fees; manages multiple bank MIDs.
+	•	eMerchantBroker (EMB) – High-risk specialists; 4%+; domestic + offshore; quick approvals.
+
+⸻
+
+💳 Payout Platforms & Digital Wallets
+	•	Paxum – E-wallet + card; adult industry staple; $5 withdrawal; global.
+	•	Cosmo Payment – Wallet + prepaid Visa; withdrawals $3–6; tailored to adult payouts.
+	•	ePayService – Wallet + card; free incoming; €1 SEPA, $2–3 ATM; popular in EU/CIS.
+	•	Yoursafe (Bitsafe) – EU IBAN accounts; €4/mo; €1 SEPA; adult-inclusive.
+	•	MassPay – API for global payouts; fees depend on method; instant/same-day.
+	•	Skrill – E-wallet + card; ~2.5% merchant fee; adult-friendly; global reach.
+	•	Neteller – Sister of Skrill; similar fees; used for adult/gambling crossover.
+	•	Payoneer – Global payouts; $3 bank withdrawal; not branded adult-friendly but used historically.
+	•	Direct Deposit/ACH/SEPA – Traditional bank transfers; fees low/free; depends on bank tolerance.
+
+⸻
+
+₿ Crypto Payment Solutions
+	•	NOWPayments – Adult-friendly; 100+ cryptos; 0.5% fee; global.
+	•	CoinPayments – 75+ cryptos; 0.5–1% fees; global; used by Pornhub in past.
+	•	CoinGate – 1% fee; Bitcoin/Ethereum/etc.; EU/global; adult-permissive.
+	•	BTCPay Server – Open-source, self-hosted; 0% fee; censorship-proof.
+	•	PayRam – Non-custodial; 0% fee (up to 5% for fiat/off-ramp); adult/gambling focus.
+	•	Confirmo – EU-based; ~1% fee; explicit adult support.
+	•	Stablecoin Payouts (USDT/USDC) – Direct payouts to wallets; only network fee; global adoption.
+
+⸻
+
+🏛️ Banks & Financial Institutions
+	•	Paxum Bank (Dominica) – Offshore bank built for adult industry; wires, accounts, loans.
+	•	Bitsafe / Yoursafe – Dutch EMI offering IBANs/cards for adult workers & companies.
+	•	High-Risk Acquiring Banks – EU, Asia, Caribbean banks underwriting processors (via CCBill, Segpay, etc.).
+	•	Select Credit Unions – Some US credit unions quietly bank legal adult entertainers.
+	•	Crypto-Friendly Banks – e.g., Bank Frick (Liechtenstein); higher fees but tolerant of high-risk.
+	•	Alt Fintech Options – Wise, Revolut Business, crypto Visa/Mastercards; unofficial adult use.
+
+⸻
+
+⚡️ Key takeaway:
+Adult businesses have a full spectrum of options in 2025:
+	•	Credit card processors like CCBill/Segpay for customer payments.
+	•	Wallets/payout platforms like Paxum/Cosmo/Yoursafe to pay creators.
+	•	Crypto gateways like NOWPayments for censorship resistance.
+	•	Offshore banks like Paxum Bank for corporate banking.
+
+Would you like me to now make a comparison table (columns: provider | service type | fees | region | notes) so you can see all this side-by-side at a glance?

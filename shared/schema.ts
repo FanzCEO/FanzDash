@@ -2061,6 +2061,101 @@ export const contactMessages = pgTable("contact_messages", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Radio Broadcasting Tables
+export const radioStations = pgTable("radio_stations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  streamUrl: text("stream_url").notNull(),
+  status: varchar("status").notNull().default("offline"), // 'live', 'offline', 'scheduled'
+  currentDJ: varchar("current_dj"),
+  listeners: integer("listeners").default(0),
+  maxListeners: integer("max_listeners").default(1000),
+  genre: varchar("genre").notNull(),
+  bitrate: varchar("bitrate").default("256kbps"),
+  isModerated: boolean("is_moderated").default(true),
+  moderationLevel: varchar("moderation_level").default("medium"), // 'low', 'medium', 'high'
+  autoModerationEnabled: boolean("auto_moderation_enabled").default(true),
+  settings: jsonb("settings").default('{}'),
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  lastActive: timestamp("last_active").defaultNow(),
+});
+
+export const radioModerationActions = pgTable("radio_moderation_actions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  stationId: varchar("station_id").references(() => radioStations.id).notNull(),
+  action: varchar("action").notNull(), // 'mute', 'kick', 'ban', 'warning', 'content_flag'
+  targetUser: varchar("target_user"),
+  targetType: varchar("target_type").default("user"), // 'user', 'content', 'stream'
+  reason: text("reason").notNull(),
+  duration: varchar("duration"), // e.g., '10 minutes', 'permanent'
+  moderatorId: varchar("moderator_id").references(() => users.id).notNull(),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const radioChat = pgTable("radio_chat", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  stationId: varchar("station_id").references(() => radioStations.id).notNull(),
+  userId: varchar("user_id").references(() => users.id),
+  username: varchar("username").notNull(),
+  message: text("message").notNull(),
+  isModerated: boolean("is_moderated").default(false),
+  isFlagged: boolean("is_flagged").default(false),
+  moderatedBy: varchar("moderated_by").references(() => users.id),
+  moderationReason: text("moderation_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Podcast Management Tables
+export const podcasts = pgTable("podcasts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  hostName: varchar("host_name").notNull(),
+  hostId: varchar("host_id").references(() => users.id).notNull(),
+  category: varchar("category").notNull(),
+  status: varchar("status").notNull().default("draft"), // 'active', 'draft', 'archived'
+  coverImageUrl: text("cover_image_url"),
+  rssUrl: text("rss_url"),
+  website: text("website"),
+  language: varchar("language").default("English"),
+  isExplicit: boolean("is_explicit").default(false),
+  totalEpisodes: integer("total_episodes").default(0),
+  totalListeners: integer("total_listeners").default(0),
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default('0.00'),
+  settings: jsonb("settings").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  lastEpisodeDate: timestamp("last_episode_date"),
+});
+
+export const podcastEpisodes = pgTable("podcast_episodes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  podcastId: varchar("podcast_id").references(() => podcasts.id).notNull(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  audioUrl: text("audio_url").notNull(),
+  duration: varchar("duration"), // e.g., "58:32"
+  fileSize: varchar("file_size"), // e.g., "84.2 MB"
+  status: varchar("status").notNull().default("draft"), // 'published', 'draft', 'scheduled', 'processing'
+  publishDate: timestamp("publish_date"),
+  seasonNumber: integer("season_number"),
+  episodeNumber: integer("episode_number").notNull(),
+  isExplicit: boolean("is_explicit").default(false),
+  transcript: text("transcript"),
+  chapters: jsonb("chapters"), // array of {time, title}
+  listens: integer("listens").default(0),
+  downloads: integer("downloads").default(0),
+  rating: decimal("rating", { precision: 3, scale: 2 }).default('0.00'),
+  tags: jsonb("tags").default('[]'),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert Schemas for authentication tables
 export const insertEmailTemplateSchema = createInsertSchema(emailTemplates).omit({
   id: true,
@@ -2116,4 +2211,18 @@ export type UserActivity = typeof userActivity.$inferSelect;
 export type InsertUserActivity = z.infer<typeof insertUserActivitySchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+
+// Radio Broadcasting Types
+export type RadioStation = typeof radioStations.$inferSelect;
+export type InsertRadioStation = typeof radioStations.$inferInsert;
+export type RadioModerationAction = typeof radioModerationActions.$inferSelect;
+export type InsertRadioModerationAction = typeof radioModerationActions.$inferInsert;
+export type RadioChat = typeof radioChat.$inferSelect;
+export type InsertRadioChat = typeof radioChat.$inferInsert;
+
+// Podcast Types
+export type Podcast = typeof podcasts.$inferSelect;
+export type InsertPodcast = typeof podcasts.$inferInsert;
+export type PodcastEpisode = typeof podcastEpisodes.$inferSelect;
+export type InsertPodcastEpisode = typeof podcastEpisodes.$inferInsert;
 

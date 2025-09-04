@@ -2096,5 +2096,143 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Radio Broadcasting API Routes
+  app.get("/api/radio/stations", async (req, res) => {
+    try {
+      const stations = await storage.getRadioStations();
+      res.json(stations);
+    } catch (error) {
+      console.error("Error fetching radio stations:", error);
+      res.status(500).json({ message: "Failed to fetch radio stations" });
+    }
+  });
+
+  app.post("/api/radio/stations", async (req, res) => {
+    try {
+      const { name, genre } = req.body;
+      const stationData = {
+        name,
+        genre,
+        description: "",
+        streamUrl: `https://stream.fanzunlimited.com/${name.toLowerCase().replace(/\s+/g, '-')}`,
+        createdBy: "admin" // In production, use actual user ID from auth
+      };
+      
+      const station = await storage.createRadioStation(stationData);
+      res.json(station);
+    } catch (error) {
+      console.error("Error creating radio station:", error);
+      res.status(500).json({ message: "Failed to create radio station" });
+    }
+  });
+
+  app.post("/api/radio/moderate", async (req, res) => {
+    try {
+      const { stationId, action, targetUser, reason } = req.body;
+      const moderationData = {
+        stationId,
+        action,
+        targetUser,
+        reason,
+        moderatorId: "admin" // In production, use actual user ID from auth
+      };
+      
+      const result = await storage.createRadioModerationAction(moderationData);
+      res.json(result);
+    } catch (error) {
+      console.error("Error creating radio moderation action:", error);
+      res.status(500).json({ message: "Failed to process radio moderation" });
+    }
+  });
+
+  app.get("/api/radio/moderation", async (req, res) => {
+    try {
+      const actions = await storage.getRadioModerationActions();
+      res.json(actions);
+    } catch (error) {
+      console.error("Error fetching radio moderation actions:", error);
+      res.status(500).json({ message: "Failed to fetch radio moderation actions" });
+    }
+  });
+
+  app.get("/api/radio/:stationId/chat", async (req, res) => {
+    try {
+      const { stationId } = req.params;
+      const messages = await storage.getRadioChatMessages(stationId);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching radio chat messages:", error);
+      res.status(500).json({ message: "Failed to fetch radio chat messages" });
+    }
+  });
+
+  // Podcast Management API Routes
+  app.get("/api/podcasts", async (req, res) => {
+    try {
+      const podcasts = await storage.getPodcasts();
+      res.json(podcasts);
+    } catch (error) {
+      console.error("Error fetching podcasts:", error);
+      res.status(500).json({ message: "Failed to fetch podcasts" });
+    }
+  });
+
+  app.post("/api/podcasts", async (req, res) => {
+    try {
+      const { title, category } = req.body;
+      const podcastData = {
+        title,
+        category,
+        description: "",
+        hostName: "Host Admin",
+        hostId: "admin" // In production, use actual user ID from auth
+      };
+      
+      const podcast = await storage.createPodcast(podcastData);
+      res.json(podcast);
+    } catch (error) {
+      console.error("Error creating podcast:", error);
+      res.status(500).json({ message: "Failed to create podcast" });
+    }
+  });
+
+  app.get("/api/podcasts/:id/episodes", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const episodes = await storage.getPodcastEpisodes(id);
+      res.json(episodes);
+    } catch (error) {
+      console.error("Error fetching podcast episodes:", error);
+      res.status(500).json({ message: "Failed to fetch podcast episodes" });
+    }
+  });
+
+  app.post("/api/podcasts/:id/episodes", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const episodeData = {
+        ...req.body,
+        podcastId: id
+      };
+      
+      const episode = await storage.createPodcastEpisode(episodeData);
+      res.json(episode);
+    } catch (error) {
+      console.error("Error creating podcast episode:", error);
+      res.status(500).json({ message: "Failed to create podcast episode" });
+    }
+  });
+
+  app.get("/api/podcast-analytics/:podcastId", async (req, res) => {
+    try {
+      const { podcastId } = req.params;
+      const analytics = await storage.getPodcastAnalytics(podcastId);
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching podcast analytics:", error);
+      res.status(500).json({ message: "Failed to fetch podcast analytics" });
+    }
+  });
+
   return httpServer;
 }

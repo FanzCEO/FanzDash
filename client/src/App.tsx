@@ -56,6 +56,8 @@ import TransactionManagementPage from "@/pages/transaction-management";
 import VerificationManagementPage from "@/pages/verification-management";
 import SubscriptionManagementPage from "@/pages/subscription-management";
 import ThemeGeneratorPage from "@/pages/theme-generator";
+import RadioBroadcastingPage from "@/pages/radio-broadcasting";
+import PodcastManagementPage from "@/pages/podcast-management";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import PasswordReset from "@/pages/auth/password-reset";
@@ -97,6 +99,8 @@ function Router() {
           <Route path="/tax-management" component={TaxManagement} />
           <Route path="/advertising" component={AdvertisingManagement} />
           <Route path="/audio-calls" component={AudioCallSettings} />
+          <Route path="/radio-broadcasting" component={RadioBroadcastingPage} />
+          <Route path="/podcast-management" component={PodcastManagementPage} />
           <Route path="/blog" component={BlogManagement} />
           <Route path="/blog/create" component={BlogCreate} />
           <Route path="/blog/edit/:id" component={BlogEdit} />

@@ -32,7 +32,9 @@ import {
   Receipt,
   UserCheck,
   Mail,
-  Sparkles
+  Sparkles,
+  Radio,
+  Mic
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -138,6 +140,18 @@ const navigationItems = [
     href: "/audio-calls",
     icon: Settings,
     description: "Agora WebRTC & pricing controls"
+  },
+  {
+    name: "Live Radio Broadcasting",
+    href: "/radio-broadcasting",
+    icon: Radio,
+    description: "Enterprise radio management & moderation"
+  },
+  {
+    name: "Podcast Management",
+    href: "/podcast-management", 
+    icon: Mic,
+    description: "Podcast hosting & analytics platform"
   },
   {
     name: "Blog Management",
