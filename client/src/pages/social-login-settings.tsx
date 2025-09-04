@@ -46,8 +46,8 @@ export default function SocialLoginSettings() {
     {
       id: "1",
       provider: "facebook",
-      clientId: "1234567890123456",
-      clientSecret: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+      clientId: "your-facebook-app-id",
+      clientSecret: "your-facebook-app-secret",
       isEnabled: true,
       callbackUrl: `${window.location.origin}/oauth/facebook/callback`,
       scopes: ["email", "public_profile"],
@@ -56,8 +56,8 @@ export default function SocialLoginSettings() {
     {
       id: "2", 
       provider: "twitter",
-      clientId: "abcd1234efgh5678",
-      clientSecret: "xyz9876543210abcdefghijklmnopqrstuvwxyz",
+      clientId: "your-twitter-api-key",
+      clientSecret: "your-twitter-api-secret",
       isEnabled: false,
       callbackUrl: `${window.location.origin}/oauth/twitter/callback`,
       scopes: ["tweet.read", "users.read"],
@@ -66,8 +66,8 @@ export default function SocialLoginSettings() {
     {
       id: "3",
       provider: "google", 
-      clientId: "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
-      clientSecret: "GOCSPX-AbCdEfGhIjKlMnOpQrStUvWxYz",
+      clientId: "your-google-client-id.apps.googleusercontent.com",
+      clientSecret: "your-google-client-secret",
       isEnabled: true,
       callbackUrl: `${window.location.origin}/oauth/google/callback`,
       scopes: ["openid", "email", "profile"],
