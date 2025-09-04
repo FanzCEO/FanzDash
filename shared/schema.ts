@@ -1901,3 +1901,59 @@ export type InsertWebsocketSettings = z.infer<typeof insertWebsocketSettingsSche
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema>;
 
+// Withdrawal Management System
+export const withdrawalRequests = pgTable("withdrawal_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  gateway: varchar("gateway").notNull(), // 'PayPal', 'Payoneer', 'Zelle', 'Western Union', 'Bitcoin', 'Mercado Pago', 'Bank'
+  account: text("account").notNull(), // Account details/address
+  status: varchar("status").default("pending"), // 'pending', 'paid', 'rejected'
+  datePaid: timestamp("date_paid"),
+  rejectionReason: text("rejection_reason"),
+  processingNotes: text("processing_notes"),
+  transactionId: text("transaction_id"), // External transaction reference
+  fee: decimal("fee", { precision: 10, scale: 2 }).default("0"),
+  netAmount: decimal("net_amount", { precision: 10, scale: 2 }),
+  currency: varchar("currency").default("USD"),
+  date: timestamp("date").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Withdrawal Settings Configuration
+export const withdrawalSettings = pgTable("withdrawal_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  minimumAmount: decimal("minimum_amount", { precision: 10, scale: 2 }).default("50.00"),
+  maximumAmount: decimal("maximum_amount", { precision: 10, scale: 2 }).default("10000.00"),
+  processingFee: decimal("processing_fee", { precision: 5, scale: 4 }).default("0.0250"), // 2.5%
+  fixedFee: decimal("fixed_fee", { precision: 10, scale: 2 }).default("2.00"),
+  processingDays: integer("processing_days").default(7),
+  autoApprovalThreshold: decimal("auto_approval_threshold", { precision: 10, scale: 2 }).default("1000.00"),
+  enabledGateways: jsonb("enabled_gateways").default('["PayPal", "Bank"]'),
+  requireVerification: boolean("require_verification").default(true),
+  weeklyLimit: decimal("weekly_limit", { precision: 10, scale: 2 }),
+  monthlyLimit: decimal("monthly_limit", { precision: 10, scale: 2 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert Schemas for withdrawal tables
+export const insertWithdrawalRequestSchema = createInsertSchema(withdrawalRequests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWithdrawalSettingsSchema = createInsertSchema(withdrawalSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Type definitions for withdrawal tables
+export type WithdrawalRequest = typeof withdrawalRequests.$inferSelect;
+export type InsertWithdrawalRequest = z.infer<typeof insertWithdrawalRequestSchema>;
+export type WithdrawalSettings = typeof withdrawalSettings.$inferSelect;
+export type InsertWithdrawalSettings = z.infer<typeof insertWithdrawalSettingsSchema>;
+

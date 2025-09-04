@@ -234,6 +234,12 @@ const navigationItems = [
     description: "Creator subscription plans"
   },
   {
+    name: "Withdrawal Management",
+    href: "/withdrawal-management",
+    icon: Receipt,
+    description: "Creator withdrawal requests & payouts"
+  },
+  {
     name: "System Settings",
     href: "/settings",
     icon: Settings,

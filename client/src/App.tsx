@@ -43,6 +43,8 @@ import SocialLoginSettings from "@/pages/social-login-settings";
 import StorageSettings from "@/pages/storage-settings";
 import TaxRateManagement from "@/pages/tax-rate-management";
 import ThemeSettings from "@/pages/theme-settings";
+import WithdrawalManagement from "@/pages/withdrawal-management";
+import WithdrawalView from "@/pages/withdrawal-view";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -89,6 +91,8 @@ function Router() {
           <Route path="/storage-settings" component={StorageSettings} />
           <Route path="/tax-rate-management" component={TaxRateManagement} />
           <Route path="/theme-settings" component={ThemeSettings} />
+          <Route path="/withdrawal-management" component={WithdrawalManagement} />
+          <Route path="/withdrawal-view/:id" component={WithdrawalView} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>
