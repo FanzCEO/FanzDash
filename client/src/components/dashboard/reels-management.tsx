@@ -111,28 +111,33 @@ export function ReelsManagement({
     return matchesSearch && matchesFilter;
   });
 
-  const handlePlayPause = (reelId: string) => {
+  const handlePlayPause = async (reelId: string) => {
     const video = videoRefs.current.get(reelId);
     if (!video) return;
 
     const newPlayingReels = new Set(playingReels);
     
-    if (playingReels.has(reelId)) {
-      video.pause();
-      newPlayingReels.delete(reelId);
-    } else {
-      // Pause all other videos
-      playingReels.forEach(id => {
-        const otherVideo = videoRefs.current.get(id);
-        if (otherVideo) otherVideo.pause();
-      });
+    try {
+      if (playingReels.has(reelId)) {
+        video.pause();
+        newPlayingReels.delete(reelId);
+      } else {
+        // Pause all other videos
+        playingReels.forEach(id => {
+          const otherVideo = videoRefs.current.get(id);
+          if (otherVideo) otherVideo.pause();
+        });
+        
+        await video.play();
+        newPlayingReels.clear();
+        newPlayingReels.add(reelId);
+      }
       
-      video.play();
-      newPlayingReels.clear();
-      newPlayingReels.add(reelId);
+      setPlayingReels(newPlayingReels);
+    } catch (error) {
+      console.error('Error playing/pausing video:', error);
+      // Don't update state if video operation failed
     }
-    
-    setPlayingReels(newPlayingReels);
   };
 
   const handleMuteToggle = (reelId: string) => {
@@ -203,9 +208,13 @@ export function ReelsManagement({
                 loop
                 muted={mutedReels.has(reel.id)}
                 onEnded={() => {
-                  const newPlayingReels = new Set(playingReels);
-                  newPlayingReels.delete(reel.id);
-                  setPlayingReels(newPlayingReels);
+                  try {
+                    const newPlayingReels = new Set(playingReels);
+                    newPlayingReels.delete(reel.id);
+                    setPlayingReels(newPlayingReels);
+                  } catch (error) {
+                    console.error('Error handling video end:', error);
+                  }
                 }}
               />
               

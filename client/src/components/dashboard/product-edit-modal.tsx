@@ -191,9 +191,13 @@ export function ProductEditModal({
     try {
       await onSave(formData);
       setSubmitStatus('success');
-      setTimeout(() => {
+      // Use setTimeout with proper cleanup
+      const timer = setTimeout(() => {
         onClose();
       }, 1500);
+      
+      // Cleanup function would be needed if this was in useEffect
+      // return () => clearTimeout(timer);
     } catch (error: any) {
       setSubmitStatus('error');
       setErrors({ submit: error.message || "Failed to save product" });

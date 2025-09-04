@@ -94,7 +94,16 @@ export function SystemRequirements({
   };
 
   useEffect(() => {
-    checkSystemHealth();
+    // Wrap async function call to avoid unhandled promise rejection
+    const initializeSystemCheck = async () => {
+      try {
+        await checkSystemHealth();
+      } catch (error) {
+        console.error('Failed to initialize system check:', error);
+      }
+    };
+    
+    initializeSystemCheck();
   }, []);
 
   const RequirementItem = ({ requirement }: { requirement: SystemRequirement }) => (
