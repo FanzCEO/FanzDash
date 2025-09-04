@@ -17,7 +17,20 @@ import {
   BookOpen,
   CreditCard,
   Globe2,
-  Clock
+  Clock,
+  Store,
+  Play,
+  LogIn,
+  Cloud,
+  Calculator,
+  Palette,
+  Video,
+  Sticker,
+  Wifi,
+  ShoppingCart,
+  FileCheck,
+  Receipt,
+  UserCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -147,6 +160,78 @@ const navigationItems = [
     href: "/cron-jobs",
     icon: Clock,
     description: "Automated task scheduling & monitoring"
+  },
+  {
+    name: "Shop Management",
+    href: "/shop-management",
+    icon: Store,
+    description: "Digital/physical products marketplace"
+  },
+  {
+    name: "Stories Management", 
+    href: "/stories-management",
+    icon: Play,
+    description: "Ephemeral content & story features"
+  },
+  {
+    name: "Social Login Settings",
+    href: "/social-login-settings", 
+    icon: LogIn,
+    description: "OAuth integrations (Facebook, Google, X)"
+  },
+  {
+    name: "Storage Settings",
+    href: "/storage-settings",
+    icon: Cloud,
+    description: "Cloud storage providers & CDN"
+  },
+  {
+    name: "Tax Rate Management",
+    href: "/tax-rate-management",
+    icon: Calculator,
+    description: "Geographic tax configuration"
+  },
+  {
+    name: "Theme Settings",
+    href: "/theme-settings",
+    icon: Palette,
+    description: "Branding, colors, and customization"
+  },
+  {
+    name: "Video Encoding",
+    href: "/video-encoding",
+    icon: Video,
+    description: "FFMPEG/Coconut configuration"
+  },
+  {
+    name: "Stickers Management",
+    href: "/stickers-management",
+    icon: Sticker,
+    description: "Emoji & sticker collections"
+  },
+  {
+    name: "WebSocket Settings",
+    href: "/websocket-settings",
+    icon: Wifi,
+    description: "Pusher & real-time configuration"
+  },
+  {
+    name: "Transaction Management",
+    href: "/transaction-management",
+    icon: Receipt,
+    description: "Financial transactions & payments"
+  },
+  {
+    name: "Verification Management",
+    href: "/verification-management",
+    icon: UserCheck,
+    description: "Document verification workflows"
+  },
+  {
+    name: "Subscription Management",
+    href: "/subscription-management",
+    icon: CreditCard,
+    description: "Creator subscription plans"
   },
   {
     name: "System Settings",

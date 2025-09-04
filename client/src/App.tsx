@@ -37,6 +37,12 @@ import DepositsManagement from "@/pages/deposits-management";
 import DepositView from "@/pages/deposit-view";
 import LocationManagement from "@/pages/location-management";
 import CronManagement from "@/pages/cron-management";
+import ShopManagement from "@/pages/shop-management";
+import StoriesManagement from "@/pages/stories-management";
+import SocialLoginSettings from "@/pages/social-login-settings";
+import StorageSettings from "@/pages/storage-settings";
+import TaxRateManagement from "@/pages/tax-rate-management";
+import ThemeSettings from "@/pages/theme-settings";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -77,6 +83,12 @@ function Router() {
           <Route path="/deposits/:id" component={DepositView} />
           <Route path="/locations" component={LocationManagement} />
           <Route path="/cron-jobs" component={CronManagement} />
+          <Route path="/shop-management" component={ShopManagement} />
+          <Route path="/stories-management" component={StoriesManagement} />
+          <Route path="/social-login-settings" component={SocialLoginSettings} />
+          <Route path="/storage-settings" component={StorageSettings} />
+          <Route path="/tax-rate-management" component={TaxRateManagement} />
+          <Route path="/theme-settings" component={ThemeSettings} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>

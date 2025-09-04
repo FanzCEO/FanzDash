@@ -1588,3 +1588,316 @@ export const systemLimits = pgTable("system_limits", {
 export type SystemLimit = typeof systemLimits.$inferSelect;
 export type InsertSystemLimit = z.infer<typeof insertSystemLimitSchema>;
 
+// === ADDITIONAL SPONZY v6.8 FEATURES ===
+
+// Shop/Marketplace System
+export const shopSettings = pgTable("shop_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  shopEnabled: boolean("shop_enabled").default(false),
+  allowFreeItems: boolean("allow_free_items").default(false),
+  allowExternalLinks: boolean("allow_external_links").default(false),
+  digitalProductsEnabled: boolean("digital_products_enabled").default(false),
+  customContentEnabled: boolean("custom_content_enabled").default(false),
+  physicalProductsEnabled: boolean("physical_products_enabled").default(false),
+  minPriceProduct: decimal("min_price_product", { precision: 10, scale: 2 }).default("1.00"),
+  maxPriceProduct: decimal("max_price_product", { precision: 10, scale: 2 }).default("1000.00"),
+  commissionRate: decimal("commission_rate", { precision: 5, scale: 4 }).default("0.20"), // 20%
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const shopProducts = pgTable("shop_products", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sellerId: varchar("seller_id").references(() => users.id).notNull(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  type: varchar("type").notNull(), // 'digital', 'physical', 'custom_content'
+  category: varchar("category"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency").default("USD"),
+  imageUrls: jsonb("image_urls").default('[]'),
+  downloadUrl: text("download_url"), // For digital products
+  fileSize: integer("file_size"), // In bytes
+  externalUrl: text("external_url"), // For external links
+  stock: integer("stock"), // For physical products
+  isActive: boolean("is_active").default(true),
+  totalSales: integer("total_sales").default(0),
+  tags: jsonb("tags").default('[]'),
+  metadata: jsonb("metadata").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Social Login Configuration
+export const socialLoginProviders = pgTable("social_login_providers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  provider: varchar("provider").notNull().unique(), // 'facebook', 'twitter', 'google', 'apple'
+  clientId: text("client_id"),
+  clientSecret: text("client_secret"),
+  isEnabled: boolean("is_enabled").default(false),
+  callbackUrl: text("callback_url"),
+  scopes: jsonb("scopes").default('[]'),
+  additionalConfig: jsonb("additional_config").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Cloud Storage Configuration
+export const storageProviders = pgTable("storage_providers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  provider: varchar("provider").notNull().unique(), // 's3', 'dospace', 'wasabi', 'backblaze', 'vultr', 'r2'
+  isDefault: boolean("is_default").default(false),
+  isEnabled: boolean("is_enabled").default(false),
+  region: varchar("region"),
+  bucket: varchar("bucket"),
+  accessKey: text("access_key"),
+  secretKey: text("secret_key"),
+  endpoint: text("endpoint"),
+  cdnEnabled: boolean("cdn_enabled").default(false),
+  cdnUrl: text("cdn_url"),
+  forceHttps: boolean("force_https").default(true),
+  additionalConfig: jsonb("additional_config").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Stories System
+export const storyBackgrounds = pgTable("story_backgrounds", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  imageUrl: text("image_url").notNull(),
+  category: varchar("category").default("default"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const storyFonts = pgTable("story_fonts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  fontFamily: varchar("font_family").notNull(),
+  googleFontName: varchar("google_font_name"), // For Google Fonts
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const storyPosts = pgTable("story_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  title: varchar("title"),
+  mediaType: varchar("media_type").notNull(), // 'image', 'video', 'text'
+  mediaUrl: text("media_url"),
+  textContent: text("text_content"),
+  backgroundColor: varchar("background_color"),
+  backgroundImageUrl: text("background_image_url"),
+  fontFamily: varchar("font_family"),
+  fontSize: integer("font_size"),
+  textColor: varchar("text_color"),
+  duration: integer("duration").default(24), // Hours before expiry
+  viewCount: integer("view_count").default(0),
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const storySettings = pgTable("story_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  storyStatus: boolean("story_status").default(false),
+  storyImage: boolean("story_image").default(true),
+  storyText: boolean("story_text").default(true),
+  storyVideo: boolean("story_video").default(true),
+  maxVideoLength: integer("max_video_length").default(30), // seconds
+  autoDeleteAfter: integer("auto_delete_after").default(24), // hours
+  allowDownload: boolean("allow_download").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Stickers/Emojis Management
+export const stickers = pgTable("stickers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name"),
+  url: text("url").notNull(),
+  category: varchar("category").default("general"),
+  isAnimated: boolean("is_animated").default(false),
+  fileSize: integer("file_size"),
+  isActive: boolean("is_active").default(true),
+  usageCount: integer("usage_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Theme & Branding Settings
+export const themeSettings = pgTable("theme_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  homeStyle: integer("home_style").default(0), // 0, 1, 2 for different layouts
+  logoUrl: text("logo_url"),
+  logoBlueUrl: text("logo_blue_url"),
+  faviconUrl: text("favicon_url"),
+  watermarkVideoUrl: text("watermark_video_url"),
+  indexImageTopUrl: text("index_image_top_url"),
+  backgroundUrl: text("background_url"),
+  avatarDefaultUrl: text("avatar_default_url"),
+  coverDefaultUrl: text("cover_default_url"),
+  primaryColor: varchar("primary_color").default("#007bff"),
+  themePwaColor: varchar("theme_pwa_color").default("#007bff"),
+  navbarBackgroundColor: varchar("navbar_background_color").default("#ffffff"),
+  navbarTextColor: varchar("navbar_text_color").default("#000000"),
+  footerBackgroundColor: varchar("footer_background_color").default("#f8f9fa"),
+  footerTextColor: varchar("footer_text_color").default("#6c757d"),
+  buttonStyle: varchar("button_style").default("rounded"), // 'rounded', 'square'
+  customCss: text("custom_css"),
+  customJs: text("custom_js"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Video Encoding Configuration
+export const videoEncodingSettings = pgTable("video_encoding_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  encodingEnabled: boolean("encoding_enabled").default(false),
+  encodingMethod: varchar("encoding_method").default("ffmpeg"), // 'ffmpeg', 'coconut'
+  watermarkEnabled: boolean("watermark_enabled").default(false),
+  watermarkPosition: varchar("watermark_position").default("bottomright"),
+  ffmpegPath: text("ffmpeg_path").default("/usr/bin/ffmpeg"),
+  ffprobePath: text("ffprobe_path").default("/usr/bin/ffprobe"),
+  coconutApiKey: text("coconut_api_key"),
+  coconutRegion: varchar("coconut_region").default("Virginia"),
+  outputFormats: jsonb("output_formats").default('["mp4", "webm"]'),
+  qualitySettings: jsonb("quality_settings").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// WebSocket/Pusher Configuration
+export const websocketSettings = pgTable("websocket_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  websocketsEnabled: boolean("websockets_enabled").default(false),
+  pusherAppId: text("pusher_app_id"),
+  pusherAppKey: text("pusher_app_key"),
+  pusherAppSecret: text("pusher_app_secret"),
+  pusherCluster: varchar("pusher_cluster").default("us2"),
+  pusherUseTls: boolean("pusher_use_tls").default(true),
+  customWebsocketUrl: text("custom_websocket_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Enhanced Subscription Management
+export const subscriptionPlans = pgTable("subscription_plans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency").default("USD"),
+  billingCycle: varchar("billing_cycle").default("monthly"), // 'monthly', 'yearly', 'weekly'
+  trialDays: integer("trial_days").default(0),
+  benefits: jsonb("benefits").default('[]'),
+  isActive: boolean("is_active").default(true),
+  subscriberCount: integer("subscriber_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert Schemas for new tables
+export const insertShopSettingsSchema = createInsertSchema(shopSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertShopProductSchema = createInsertSchema(shopProducts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSocialLoginProviderSchema = createInsertSchema(socialLoginProviders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertStorageProviderSchema = createInsertSchema(storageProviders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertStoryBackgroundSchema = createInsertSchema(storyBackgrounds).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertStoryFontSchema = createInsertSchema(storyFonts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertStoryPostSchema = createInsertSchema(storyPosts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertStorySettingsSchema = createInsertSchema(storySettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertStickerSchema = createInsertSchema(stickers).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertThemeSettingsSchema = createInsertSchema(themeSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertVideoEncodingSettingsSchema = createInsertSchema(videoEncodingSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWebsocketSettingsSchema = createInsertSchema(websocketSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Type definitions for new tables
+export type ShopSettings = typeof shopSettings.$inferSelect;
+export type InsertShopSettings = z.infer<typeof insertShopSettingsSchema>;
+export type ShopProduct = typeof shopProducts.$inferSelect;
+export type InsertShopProduct = z.infer<typeof insertShopProductSchema>;
+export type SocialLoginProvider = typeof socialLoginProviders.$inferSelect;
+export type InsertSocialLoginProvider = z.infer<typeof insertSocialLoginProviderSchema>;
+export type StorageProvider = typeof storageProviders.$inferSelect;
+export type InsertStorageProvider = z.infer<typeof insertStorageProviderSchema>;
+export type StoryBackground = typeof storyBackgrounds.$inferSelect;
+export type InsertStoryBackground = z.infer<typeof insertStoryBackgroundSchema>;
+export type StoryFont = typeof storyFonts.$inferSelect;
+export type InsertStoryFont = z.infer<typeof insertStoryFontSchema>;
+export type StoryPost = typeof storyPosts.$inferSelect;
+export type InsertStoryPost = z.infer<typeof insertStoryPostSchema>;
+export type StorySettings = typeof storySettings.$inferSelect;
+export type InsertStorySettings = z.infer<typeof insertStorySettingsSchema>;
+export type Sticker = typeof stickers.$inferSelect;
+export type InsertSticker = z.infer<typeof insertStickerSchema>;
+export type ThemeSettings = typeof themeSettings.$inferSelect;
+export type InsertThemeSettings = z.infer<typeof insertThemeSettingsSchema>;
+export type VideoEncodingSettings = typeof videoEncodingSettings.$inferSelect;
+export type InsertVideoEncodingSettings = z.infer<typeof insertVideoEncodingSettingsSchema>;
+export type WebsocketSettings = typeof websocketSettings.$inferSelect;
+export type InsertWebsocketSettings = z.infer<typeof insertWebsocketSettingsSchema>;
+export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
+export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema>;
+
