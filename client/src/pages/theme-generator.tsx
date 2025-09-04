@@ -278,7 +278,7 @@ export default function ThemeGeneratorPage() {
       metadata: {
         version: "1.0",
         exportedAt: new Date().toISOString(),
-        generator: "FanzDash Theme Generator"
+        generator: "Fanz™ Theme Generator"
       }
     };
     
@@ -329,9 +329,9 @@ export default function ThemeGeneratorPage() {
   return (
     <div className="min-h-screen p-6 cyber-bg">
       <SEOHeadTags 
-        title="Dynamic Theme Color Palette Generator - FanzDash"
+        title="Dynamic Theme Color Palette Generator - Fanz™ Unlimited Network LLC"
         description="Generate custom color palettes using advanced color theory algorithms. Create, preview, and export professional themes with accessibility validation."
-        canonicalUrl="https://fanzdash.com/theme-generator"
+        canonicalUrl="https://fanzunlimited.com/theme-generator"
       />
       
       <div className="space-y-6">
