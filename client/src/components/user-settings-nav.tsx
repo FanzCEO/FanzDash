@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { 
   User,
   Edit,
-  Dashboard,
+  LayoutDashboard,
   MessageSquare,
   Wallet,
   UserPlus,
@@ -57,7 +57,7 @@ export function UserSettingsNav({ currentUser, className = "" }: UserSettingsNav
     ...(currentUser?.isVerified ? [{
       name: "Dashboard",
       href: "/dashboard",
-      icon: Dashboard,
+      icon: LayoutDashboard,
       active: location === "/dashboard"
     }] : []),
     {
@@ -127,7 +127,7 @@ export function UserSettingsNav({ currentUser, className = "" }: UserSettingsNav
     ...(currentUser?.isVerified ? [{
       name: "Settings",
       href: "/my/live/private/settings",
-      icon: Dashboard,
+      icon: LayoutDashboard,
       active: location === "/my/live/private/settings"
     }, {
       name: "Requests Received",
