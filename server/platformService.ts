@@ -110,7 +110,7 @@ export class PlatformManagementService {
   async getAllConnectionsStatus(): Promise<ConnectionHealth[]> {
     const statuses: ConnectionHealth[] = [];
     
-    for (const [platformId] of this.connections) {
+    for (const platformId of Array.from(this.connections.keys())) {
       const health = await this.getConnectionHealth(platformId);
       statuses.push(health);
     }
