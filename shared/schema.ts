@@ -255,31 +255,7 @@ export const form2257Verifications = pgTable("form_2257_verifications", {
   expiresAt: timestamp("expires_at"),
 });
 
-// Integrated Chat System
-export const chatRooms = pgTable("chat_rooms", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: varchar("name").notNull(),
-  type: varchar("type").notNull(), // 'direct', 'group', 'broadcast', 'emergency'
-  participants: jsonb("participants").notNull(), // Array of user IDs
-  isActive: boolean("is_active").default(true),
-  createdBy: varchar("created_by").references(() => users.id).notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const chatMessages = pgTable("chat_messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  roomId: varchar("room_id").references(() => chatRooms.id).notNull(),
-  senderId: varchar("sender_id").references(() => users.id).notNull(),
-  content: text("content").notNull(),
-  messageType: varchar("message_type").default("text"), // 'text', 'image', 'file', 'system'
-  attachmentUrl: text("attachment_url"),
-  isEdited: boolean("is_edited").default(false),
-  editedAt: timestamp("edited_at"),
-  isDeleted: boolean("is_deleted").default(false),
-  readBy: jsonb("read_by").default('[]'), // Array of user IDs who read the message
-  createdAt: timestamp("created_at").defaultNow(),
-});
+// Integrated Chat System - definitions moved to end of file
 
 // Email Integration System
 export const emailAccounts = pgTable("email_accounts", {
@@ -1113,16 +1089,7 @@ export const insertForm2257VerificationSchema = createInsertSchema(form2257Verif
   processedAt: true,
 });
 
-export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
-  id: true,
-  createdAt: true,
-});
+// Chat schemas moved to after table definitions
 
 export const insertEmailAccountSchema = createInsertSchema(emailAccounts).omit({
   id: true,
@@ -2343,4 +2310,217 @@ export type EmailVerificationToken = typeof emailVerificationTokens.$inferSelect
 export type InsertEmailVerificationToken = typeof emailVerificationTokens.$inferInsert;
 export type SecurityAuditLogEntry = typeof securityAuditLog.$inferSelect;
 export type InsertSecurityAuditLogEntry = typeof securityAuditLog.$inferInsert;
+
+// Chat system tables
+export const chatRooms = pgTable("chat_rooms", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  createdBy: varchar("created_by").notNull().references(() => users.id, { onDelete: "cascade" }),
+  isPrivate: boolean("is_private").default(false),
+  settings: jsonb("settings").$type<{
+    maxParticipants?: number;
+    allowFileUploads?: boolean;
+    moderationLevel?: string;
+  }>(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const chatMessages = pgTable("chat_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  roomId: varchar("room_id").notNull().references(() => chatRooms.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  messageType: varchar("message_type").default("text"), // text, image, file, system
+  metadata: jsonb("metadata"),
+  isEdited: boolean("is_edited").default(false),
+  isDeleted: boolean("is_deleted").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const chatParticipants = pgTable("chat_participants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  roomId: varchar("room_id").notNull().references(() => chatRooms.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  role: varchar("role").default("member"), // admin, moderator, member
+  joinedAt: timestamp("joined_at").defaultNow(),
+  leftAt: timestamp("left_at"),
+  lastReadAt: timestamp("last_read_at"),
+});
+
+// 2257 Compliance and Verification System
+export const form2257Records = pgTable("form_2257_records", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  
+  // Basic Information
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
+  dateOfBirth: date("date_of_birth").notNull(),
+  placeOfBirth: varchar("place_of_birth").notNull(),
+  
+  // Primary ID Documentation
+  primaryIdType: varchar("primary_id_type").notNull(), // driver_license, passport, state_id
+  primaryIdNumber: varchar("primary_id_number").notNull(),
+  primaryIdIssuer: varchar("primary_id_issuer").notNull(),
+  primaryIdIssueDate: date("primary_id_issue_date").notNull(),
+  primaryIdExpirationDate: date("primary_id_expiration_date"),
+  primaryIdImageFront: varchar("primary_id_image_front"), // Object storage path
+  primaryIdImageBack: varchar("primary_id_image_back"), // Object storage path
+  
+  // Secondary ID Documentation (if required)
+  secondaryIdType: varchar("secondary_id_type"),
+  secondaryIdNumber: varchar("secondary_id_number"),
+  secondaryIdIssuer: varchar("secondary_id_issuer"),
+  secondaryIdIssueDate: date("secondary_id_issue_date"),
+  secondaryIdExpirationDate: date("secondary_id_expiration_date"),
+  secondaryIdImageFront: varchar("secondary_id_image_front"),
+  secondaryIdImageBack: varchar("secondary_id_image_back"),
+  
+  // Performance Information
+  performerNames: jsonb("performer_names").$type<string[]>(), // Stage names, aliases
+  performanceDate: date("performance_date").notNull(),
+  performanceDescription: text("performance_description"),
+  
+  // Legal Compliance
+  ageVerified: boolean("age_verified").default(false),
+  consentProvided: boolean("consent_provided").default(false),
+  legalGuardianConsent: boolean("legal_guardian_consent").default(false),
+  
+  // Verification Status
+  verificationStatus: varchar("verification_status").default("pending"), // pending, approved, rejected, expired
+  verifiedBy: varchar("verified_by").references(() => users.id),
+  verifiedAt: timestamp("verified_at"),
+  rejectionReason: text("rejection_reason"),
+  
+  // Compliance Officer Information
+  custodianName: varchar("custodian_name").notNull(),
+  custodianTitle: varchar("custodian_title").notNull(),
+  custodianAddress: text("custodian_address").notNull(),
+  
+  // Record Keeping
+  recordLocation: varchar("record_location").notNull(),
+  retentionDate: date("retention_date").notNull(),
+  
+  // Digital Signatures and Timestamps
+  performerSignature: varchar("performer_signature"), // Digital signature path
+  custodianSignature: varchar("custodian_signature"),
+  witnessSignature: varchar("witness_signature"),
+  
+  // Audit Trail
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  deviceFingerprint: text("device_fingerprint"),
+  geoLocation: jsonb("geo_location"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const form2257Amendments = pgTable("form_2257_amendments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  recordId: varchar("record_id").notNull().references(() => form2257Records.id, { onDelete: "cascade" }),
+  amendmentType: varchar("amendment_type").notNull(), // correction, update, addition
+  previousValue: jsonb("previous_value"),
+  newValue: jsonb("new_value"),
+  reason: text("reason").notNull(),
+  amendedBy: varchar("amended_by").notNull().references(() => users.id),
+  amendmentDate: timestamp("amendment_date").defaultNow(),
+  custodianApproval: boolean("custodian_approval").default(false),
+  approvedBy: varchar("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+});
+
+export const complianceChecklist = pgTable("compliance_checklist", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  recordId: varchar("record_id").notNull().references(() => form2257Records.id, { onDelete: "cascade" }),
+  
+  // Required Document Checks
+  primaryIdPresent: boolean("primary_id_present").default(false),
+  primaryIdValid: boolean("primary_id_valid").default(false),
+  primaryIdPhotoMatch: boolean("primary_id_photo_match").default(false),
+  
+  secondaryIdPresent: boolean("secondary_id_present").default(false),
+  secondaryIdValid: boolean("secondary_id_valid").default(false),
+  
+  // Age Verification Checks
+  ageCalculationCorrect: boolean("age_calculation_correct").default(false),
+  minimumAgeVerified: boolean("minimum_age_verified").default(false),
+  
+  // Performance Documentation
+  performanceDescriptionComplete: boolean("performance_description_complete").default(false),
+  performerNamesComplete: boolean("performer_names_complete").default(false),
+  performanceDateValid: boolean("performance_date_valid").default(false),
+  
+  // Legal Requirements
+  consentDocumented: boolean("consent_documented").default(false),
+  custodianInfoComplete: boolean("custodian_info_complete").default(false),
+  recordLocationDocumented: boolean("record_location_documented").default(false),
+  
+  // Digital Compliance
+  digitalSignaturesPresent: boolean("digital_signatures_present").default(false),
+  auditTrailComplete: boolean("audit_trail_complete").default(false),
+  retentionPolicyCompliant: boolean("retention_policy_compliant").default(false),
+  
+  // Overall Compliance
+  complianceScore: integer("compliance_score").default(0), // 0-100
+  isCompliant: boolean("is_compliant").default(false),
+  
+  checkedBy: varchar("checked_by").notNull().references(() => users.id),
+  checkedAt: timestamp("checked_at").defaultNow(),
+  notes: text("notes"),
+});
+
+// Chat types
+export type ChatRoom = typeof chatRooms.$inferSelect;
+export type InsertChatRoom = typeof chatRooms.$inferInsert;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = typeof chatMessages.$inferInsert;
+export type ChatParticipant = typeof chatParticipants.$inferSelect;
+export type InsertChatParticipant = typeof chatParticipants.$inferInsert;
+
+// Chat schemas (now that tables are defined)
+export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertChatParticipantSchema = createInsertSchema(chatParticipants).omit({
+  id: true,
+  joinedAt: true
+});
+
+// 2257 Compliance schemas
+export const insertForm2257RecordSchema = createInsertSchema(form2257Records).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertForm2257AmendmentSchema = createInsertSchema(form2257Amendments).omit({
+  id: true,
+  amendmentDate: true
+});
+
+export const insertComplianceChecklistSchema = createInsertSchema(complianceChecklist).omit({
+  id: true,
+  checkedAt: true
+});
+
+// 2257 Compliance types
+export type Form2257Record = typeof form2257Records.$inferSelect;
+export type InsertForm2257Record = typeof form2257Records.$inferInsert;
+export type Form2257Amendment = typeof form2257Amendments.$inferSelect;
+export type InsertForm2257Amendment = typeof form2257Amendments.$inferInsert;
+export type ComplianceChecklist = typeof complianceChecklist.$inferSelect;
+export type InsertComplianceChecklist = typeof complianceChecklist.$inferInsert;
 

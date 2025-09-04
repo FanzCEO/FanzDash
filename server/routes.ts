@@ -20,6 +20,11 @@ import {
   insertCronJobLogSchema
 } from "@shared/schema";
 import { aiModerationService } from "./openaiService";
+import session from 'express-session';
+import passport from 'passport';
+import authRoutes from './auth/authRoutes';
+import ChatService from './chatService';
+import Compliance2257Service from './compliance2257Service';
 
 // Import all our internal systems
 import { videoEncoder } from "./videoEncoder";
@@ -43,6 +48,10 @@ import { complianceMonitor, ViolationType, RiskLevel } from "./complianceMonitor
 
 // Store connected WebSocket clients
 let connectedModerators: Set<WebSocket> = new Set();
+
+// Initialize chat service and compliance service
+let chatService: ChatService;
+const complianceService = new Compliance2257Service();
 
 function broadcastToModerators(message: any) {
   connectedModerators.forEach((ws) => {
@@ -144,6 +153,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // ============= CHAT SYSTEM APIS =============
+  
+  // Create chat room
+  app.post('/api/chat/rooms', isAuthenticated, async (req: any, res) => {
+    try {
+      const { name, description, isPrivate } = req.body;
+      const userId = req.user.claims.sub;
+      
+      const room = await chatService.createChatRoom(userId, name, description, isPrivate);
+      res.json({ success: true, room });
+    } catch (error) {
+      console.error('Create chat room error:', error);
+      res.status(500).json({ error: 'Failed to create chat room' });
+    }
+  });
+
+  // Get user's chat rooms
+  app.get('/api/chat/rooms', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const rooms = await chatService.getRoomsByUser(userId);
+      res.json({ success: true, rooms });
+    } catch (error) {
+      console.error('Get chat rooms error:', error);
+      res.status(500).json({ error: 'Failed to get chat rooms' });
+    }
+  });
+
+  // Get connected users
+  app.get('/api/chat/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const { roomId } = req.query;
+      const users = chatService.getConnectedUsers(roomId as string);
+      res.json({ success: true, users });
+    } catch (error) {
+      console.error('Get connected users error:', error);
+      res.status(500).json({ error: 'Failed to get connected users' });
+    }
+  });
+
+  // ============= 2257 COMPLIANCE APIS =============
+  
+  // Create 2257 record
+  app.post('/api/compliance/2257', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const metadata = {
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        deviceFingerprint: 'placeholder', // Would use device fingerprinting
+        geoLocation: null, // Would use IP geolocation
+      };
+      
+      const record = await complianceService.createRecord(userId, req.body, metadata);
+      res.json({ success: true, record });
+    } catch (error) {
+      console.error('Create 2257 record error:', error);
+      res.status(500).json({ error: 'Failed to create 2257 record' });
+    }
+  });
+
+  // Get user's 2257 records
+  app.get('/api/compliance/2257', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const records = await complianceService.getRecordsByUser(userId);
+      res.json({ success: true, records });
+    } catch (error) {
+      console.error('Get 2257 records error:', error);
+      res.status(500).json({ error: 'Failed to get 2257 records' });
+    }
+  });
+
+  // Verify compliance for a record
+  app.post('/api/compliance/2257/:recordId/verify', isAuthenticated, async (req: any, res) => {
+    try {
+      const { recordId } = req.params;
+      const verifiedBy = req.user.claims.sub;
+      
+      const result = await complianceService.verifyCompliance(recordId, verifiedBy);
+      res.json({ success: true, compliance: result });
+    } catch (error) {
+      console.error('Verify compliance error:', error);
+      res.status(500).json({ error: 'Failed to verify compliance' });
+    }
+  });
+
+  // Get compliance statistics
+  app.get('/api/compliance/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const stats = await complianceService.getComplianceStats();
+      res.json({ success: true, stats });
+    } catch (error) {
+      console.error('Get compliance stats error:', error);
+      res.status(500).json({ error: 'Failed to get compliance stats' });
+    }
+  });
+
+  // Export compliance report
+  app.get('/api/compliance/export', isAuthenticated, async (req: any, res) => {
+    try {
+      const report = await complianceService.exportComplianceReport(req.query);
+      res.json({ success: true, report });
+    } catch (error) {
+      console.error('Export compliance report error:', error);
+      res.status(500).json({ error: 'Failed to export compliance report' });
     }
   });
 
