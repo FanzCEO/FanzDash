@@ -134,6 +134,67 @@ export interface IStorage {
   createGeoCollaboration(collaboration: InsertGeoCollaboration): Promise<GeoCollaboration>;
   getNearbyCollaborations(lat: number, lng: number, radius: number): Promise<GeoCollaboration[]>;
   
+  // Tax Management
+  getTaxRates(): Promise<TaxRate[]>;
+  createTaxRate(rate: InsertTaxRate): Promise<TaxRate>;
+  updateTaxRate(id: string, updates: Partial<TaxRate>): Promise<void>;
+  
+  // Advertising System
+  getAdCampaigns(): Promise<AdCampaign[]>;
+  createAdCampaign(campaign: InsertAdCampaign): Promise<AdCampaign>;
+  updateAdCampaign(id: string, updates: Partial<AdCampaign>): Promise<void>;
+  
+  // Live Streaming Enhanced
+  getLiveStreamSessions(): Promise<LiveStreamSession[]>;
+  createLiveStreamSession(session: InsertLiveStreamSession): Promise<LiveStreamSession>;
+  getPrivateShowRequests(): Promise<PrivateShowRequest[]>;
+  createPrivateShowRequest(request: InsertPrivateShowRequest): Promise<PrivateShowRequest>;
+  
+  // Gift System
+  getGiftCatalog(): Promise<GiftCatalog[]>;
+  createGift(gift: InsertGiftCatalog): Promise<GiftCatalog>;
+  createGiftTransaction(transaction: InsertGiftTransaction): Promise<GiftTransaction>;
+  
+  // User Deposits
+  getUserDeposits(userId: string): Promise<UserDeposit[]>;
+  createUserDeposit(deposit: InsertUserDeposit): Promise<UserDeposit>;
+  
+  // RBAC System
+  getRoles(): Promise<Role[]>;
+  createRole(role: InsertRole): Promise<Role>;
+  assignUserRole(userRole: InsertUserRole): Promise<UserRole>;
+  getUserRoles(userId: string): Promise<UserRole[]>;
+  
+  // Announcements
+  getAnnouncements(): Promise<Announcement[]>;
+  createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
+  
+  // CMS System
+  getCmsPages(): Promise<CmsPage[]>;
+  createCmsPage(page: InsertCmsPage): Promise<CmsPage>;
+  updateCmsPage(id: string, updates: Partial<CmsPage>): Promise<void>;
+  
+  // Platform Limits
+  getPlatformLimits(): Promise<PlatformLimit[]>;
+  createPlatformLimit(limit: InsertPlatformLimit): Promise<PlatformLimit>;
+  
+  // Reserved Names
+  getReservedNames(): Promise<ReservedName[]>;
+  isNameReserved(name: string): Promise<boolean>;
+  
+  // System Settings
+  getSystemSettings(): Promise<SystemSetting[]>;
+  getSystemSetting(key: string): Promise<SystemSetting | undefined>;
+  updateSystemSetting(key: string, value: string): Promise<void>;
+  
+  // Audio Calls
+  createAudioCall(call: InsertAudioCall): Promise<AudioCall>;
+  getAudioCalls(userId: string): Promise<AudioCall[]>;
+  
+  // Extended Payment Processors
+  getExtendedPaymentProcessors(): Promise<ExtendedPaymentProcessor[]>;
+  createExtendedPaymentProcessor(processor: InsertExtendedPaymentProcessor): Promise<ExtendedPaymentProcessor>;
+  
   // Interactive functionality
   addPlatformConnection(connection: any): Promise<any>;
   removePlatformConnection(id: string): Promise<void>;
@@ -760,6 +821,307 @@ export class DatabaseStorage implements IStorage {
       .where(eq(geoCollaborations.status, 'open'))
       .orderBy(desc(geoCollaborations.createdAt))
       .limit(50);
+  }
+
+  // Tax Management implementation
+  async getTaxRates(): Promise<TaxRate[]> {
+    return await db
+      .select()
+      .from(taxRates)
+      .where(eq(taxRates.isActive, true))
+      .orderBy(taxRates.country, taxRates.state);
+  }
+
+  async createTaxRate(rate: InsertTaxRate): Promise<TaxRate> {
+    const [result] = await db
+      .insert(taxRates)
+      .values(rate)
+      .returning();
+    return result;
+  }
+
+  async updateTaxRate(id: string, updates: Partial<TaxRate>): Promise<void> {
+    await db
+      .update(taxRates)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(taxRates.id, id));
+  }
+
+  // Advertising System implementation
+  async getAdCampaigns(): Promise<AdCampaign[]> {
+    return await db
+      .select()
+      .from(adCampaigns)
+      .orderBy(desc(adCampaigns.createdAt));
+  }
+
+  async createAdCampaign(campaign: InsertAdCampaign): Promise<AdCampaign> {
+    const [result] = await db
+      .insert(adCampaigns)
+      .values(campaign)
+      .returning();
+    return result;
+  }
+
+  async updateAdCampaign(id: string, updates: Partial<AdCampaign>): Promise<void> {
+    await db
+      .update(adCampaigns)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(adCampaigns.id, id));
+  }
+
+  // Live Streaming Enhanced implementation
+  async getLiveStreamSessions(): Promise<LiveStreamSession[]> {
+    return await db
+      .select()
+      .from(liveStreamSessions)
+      .orderBy(desc(liveStreamSessions.createdAt));
+  }
+
+  async createLiveStreamSession(session: InsertLiveStreamSession): Promise<LiveStreamSession> {
+    const [result] = await db
+      .insert(liveStreamSessions)
+      .values(session)
+      .returning();
+    return result;
+  }
+
+  async getPrivateShowRequests(): Promise<PrivateShowRequest[]> {
+    return await db
+      .select()
+      .from(privateShowRequests)
+      .orderBy(desc(privateShowRequests.createdAt));
+  }
+
+  async createPrivateShowRequest(request: InsertPrivateShowRequest): Promise<PrivateShowRequest> {
+    const [result] = await db
+      .insert(privateShowRequests)
+      .values(request)
+      .returning();
+    return result;
+  }
+
+  // Gift System implementation
+  async getGiftCatalog(): Promise<GiftCatalog[]> {
+    return await db
+      .select()
+      .from(giftCatalog)
+      .where(eq(giftCatalog.isActive, true))
+      .orderBy(giftCatalog.category, giftCatalog.price);
+  }
+
+  async createGift(gift: InsertGiftCatalog): Promise<GiftCatalog> {
+    const [result] = await db
+      .insert(giftCatalog)
+      .values(gift)
+      .returning();
+    return result;
+  }
+
+  async createGiftTransaction(transaction: InsertGiftTransaction): Promise<GiftTransaction> {
+    const [result] = await db
+      .insert(giftTransactions)
+      .values(transaction)
+      .returning();
+    return result;
+  }
+
+  // User Deposits implementation
+  async getUserDeposits(userId: string): Promise<UserDeposit[]> {
+    return await db
+      .select()
+      .from(userDeposits)
+      .where(eq(userDeposits.userId, userId))
+      .orderBy(desc(userDeposits.createdAt));
+  }
+
+  async createUserDeposit(deposit: InsertUserDeposit): Promise<UserDeposit> {
+    const [result] = await db
+      .insert(userDeposits)
+      .values(deposit)
+      .returning();
+    return result;
+  }
+
+  // RBAC System implementation
+  async getRoles(): Promise<Role[]> {
+    return await db
+      .select()
+      .from(roles)
+      .where(eq(roles.isActive, true))
+      .orderBy(roles.name);
+  }
+
+  async createRole(role: InsertRole): Promise<Role> {
+    const [result] = await db
+      .insert(roles)
+      .values(role)
+      .returning();
+    return result;
+  }
+
+  async assignUserRole(userRole: InsertUserRole): Promise<UserRole> {
+    const [result] = await db
+      .insert(userRoles)
+      .values(userRole)
+      .returning();
+    return result;
+  }
+
+  async getUserRoles(userId: string): Promise<UserRole[]> {
+    return await db
+      .select()
+      .from(userRoles)
+      .where(eq(userRoles.userId, userId));
+  }
+
+  // Announcements implementation
+  async getAnnouncements(): Promise<Announcement[]> {
+    return await db
+      .select()
+      .from(announcements)
+      .where(eq(announcements.isActive, true))
+      .orderBy(desc(announcements.priority), desc(announcements.createdAt));
+  }
+
+  async createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement> {
+    const [result] = await db
+      .insert(announcements)
+      .values(announcement)
+      .returning();
+    return result;
+  }
+
+  // CMS System implementation
+  async getCmsPages(): Promise<CmsPage[]> {
+    return await db
+      .select()
+      .from(cmsPages)
+      .orderBy(desc(cmsPages.updatedAt));
+  }
+
+  async createCmsPage(page: InsertCmsPage): Promise<CmsPage> {
+    const [result] = await db
+      .insert(cmsPages)
+      .values(page)
+      .returning();
+    return result;
+  }
+
+  async updateCmsPage(id: string, updates: Partial<CmsPage>): Promise<void> {
+    await db
+      .update(cmsPages)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(cmsPages.id, id));
+  }
+
+  // Platform Limits implementation
+  async getPlatformLimits(): Promise<PlatformLimit[]> {
+    return await db
+      .select()
+      .from(platformLimits)
+      .where(eq(platformLimits.isActive, true))
+      .orderBy(platformLimits.limitType, platformLimits.userRole);
+  }
+
+  async createPlatformLimit(limit: InsertPlatformLimit): Promise<PlatformLimit> {
+    const [result] = await db
+      .insert(platformLimits)
+      .values(limit)
+      .returning();
+    return result;
+  }
+
+  // Reserved Names implementation
+  async getReservedNames(): Promise<ReservedName[]> {
+    return await db
+      .select()
+      .from(reservedNames)
+      .where(eq(reservedNames.isActive, true))
+      .orderBy(reservedNames.category, reservedNames.name);
+  }
+
+  async isNameReserved(name: string): Promise<boolean> {
+    const [result] = await db
+      .select()
+      .from(reservedNames)
+      .where(and(
+        eq(reservedNames.name, name.toLowerCase()),
+        eq(reservedNames.isActive, true)
+      ))
+      .limit(1);
+    return !!result;
+  }
+
+  // System Settings implementation
+  async getSystemSettings(): Promise<SystemSetting[]> {
+    return await db
+      .select()
+      .from(systemSettings)
+      .orderBy(systemSettings.category, systemSettings.key);
+  }
+
+  async getSystemSetting(key: string): Promise<SystemSetting | undefined> {
+    const [setting] = await db
+      .select()
+      .from(systemSettings)
+      .where(eq(systemSettings.key, key))
+      .limit(1);
+    return setting || undefined;
+  }
+
+  async updateSystemSetting(key: string, value: string): Promise<void> {
+    const existing = await this.getSystemSetting(key);
+    if (existing) {
+      await db
+        .update(systemSettings)
+        .set({ value, updatedAt: new Date() })
+        .where(eq(systemSettings.key, key));
+    } else {
+      await db
+        .insert(systemSettings)
+        .values({ key, value, category: 'general' });
+    }
+  }
+
+  // Audio Calls implementation
+  async createAudioCall(call: InsertAudioCall): Promise<AudioCall> {
+    const [result] = await db
+      .insert(audioCalls)
+      .values(call)
+      .returning();
+    return result;
+  }
+
+  async getAudioCalls(userId: string): Promise<AudioCall[]> {
+    return await db
+      .select()
+      .from(audioCalls)
+      .where(or(
+        eq(audioCalls.callerId, userId),
+        eq(audioCalls.receiverId, userId)
+      ))
+      .orderBy(desc(audioCalls.createdAt));
+  }
+
+  // Extended Payment Processors implementation
+  async getExtendedPaymentProcessors(): Promise<ExtendedPaymentProcessor[]> {
+    return await db
+      .select()
+      .from(extendedPaymentProcessors)
+      .where(and(
+        eq(extendedPaymentProcessors.isBanned, false),
+        eq(extendedPaymentProcessors.adultFriendly, true)
+      ))
+      .orderBy(extendedPaymentProcessors.region, extendedPaymentProcessors.name);
+  }
+
+  async createExtendedPaymentProcessor(processor: InsertExtendedPaymentProcessor): Promise<ExtendedPaymentProcessor> {
+    const [result] = await db
+      .insert(extendedPaymentProcessors)
+      .values(processor)
+      .returning();
+    return result;
   }
 }
 

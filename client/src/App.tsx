@@ -26,6 +26,9 @@ import Verification2257 from "@/pages/verification-2257";
 import ChatSystem from "@/pages/chat-system";
 import StreamManagement from "@/pages/stream-management";
 import PaymentManagement from "@/pages/payment-management";
+import PaymentProcessorManagement from "@/pages/payment-processor-management";
+import TaxManagement from "@/pages/tax-management";
+import AdvertisingManagement from "@/pages/advertising-management";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -55,6 +58,9 @@ function Router() {
           <Route path="/chat-system" component={ChatSystem} />
           <Route path="/stream-management" component={StreamManagement} />
           <Route path="/payment-management" component={PaymentManagement} />
+          <Route path="/payment-processors" component={PaymentProcessorManagement} />
+          <Route path="/tax-management" component={TaxManagement} />
+          <Route path="/advertising" component={AdvertisingManagement} />
           <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>
