@@ -1,1 +1,373 @@
-import { useState, useEffect, useRef } from \"react\";\nimport { useQuery, useMutation, useQueryClient } from \"@tanstack/react-query\";\nimport { Button } from \"@/components/ui/button\";\nimport { Input } from \"@/components/ui/input\";\nimport { Card, CardContent, CardDescription, CardHeader, CardTitle } from \"@/components/ui/card\";\nimport { Badge } from \"@/components/ui/badge\";\nimport { Avatar, AvatarFallback } from \"@/components/ui/avatar\";\nimport { ScrollArea } from \"@/components/ui/scroll-area\";\nimport { Separator } from \"@/components/ui/separator\";\nimport { apiRequest } from \"@/lib/queryClient\";\nimport { useToast } from \"@/hooks/use-toast\";\nimport { Send, Users, MessageCircle, Phone, Video, Settings } from \"lucide-react\";\n\ninterface ChatRoom {\n  id: string;\n  name: string;\n  type: 'direct' | 'group' | 'broadcast' | 'emergency';\n  participants: string[];\n  isActive: boolean;\n  createdAt: string;\n  lastMessage?: ChatMessage;\n}\n\ninterface ChatMessage {\n  id: string;\n  roomId: string;\n  senderId: string;\n  content: string;\n  messageType: 'text' | 'image' | 'file' | 'system';\n  attachmentUrl?: string;\n  isEdited: boolean;\n  isDeleted: boolean;\n  createdAt: string;\n  senderName?: string;\n}\n\ninterface User {\n  id: string;\n  username: string;\n  role: string;\n  isActive: boolean;\n}\n\nexport default function ChatSystem() {\n  const { toast } = useToast();\n  const queryClient = useQueryClient();\n  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);\n  const [messageInput, setMessageInput] = useState(\"\");\n  const [searchTerm, setSearchTerm] = useState(\"\");\n  const messagesEndRef = useRef<HTMLDivElement>(null);\n\n  const { data: rooms = [], isLoading: roomsLoading } = useQuery<ChatRoom[]>({\n    queryKey: [\"/api/chat/rooms\"],\n    refetchInterval: 3000, // Refresh every 3 seconds\n  });\n\n  const { data: messages = [], isLoading: messagesLoading } = useQuery<ChatMessage[]>({\n    queryKey: [\"/api/chat/messages\", selectedRoom],\n    enabled: !!selectedRoom,\n    refetchInterval: 1000, // Refresh every second for real-time feel\n  });\n\n  const { data: users = [] } = useQuery<User[]>({\n    queryKey: [\"/api/users\"],\n  });\n\n  const sendMessageMutation = useMutation({\n    mutationFn: async ({ roomId, content }: { roomId: string; content: string }) => {\n      return apiRequest(\"/api/chat/messages\", {\n        method: \"POST\",\n        body: JSON.stringify({ roomId, content, messageType: \"text\" }),\n      });\n    },\n    onSuccess: () => {\n      queryClient.invalidateQueries({ queryKey: [\"/api/chat/messages\", selectedRoom] });\n      queryClient.invalidateQueries({ queryKey: [\"/api/chat/rooms\"] });\n      setMessageInput(\"\");\n      scrollToBottom();\n    },\n    onError: (error: Error) => {\n      toast({\n        title: \"Message Failed\",\n        description: error.message,\n        variant: \"destructive\",\n      });\n    },\n  });\n\n  const createRoomMutation = useMutation({\n    mutationFn: async ({ name, type, participants }: { name: string; type: string; participants: string[] }) => {\n      return apiRequest(\"/api/chat/rooms\", {\n        method: \"POST\",\n        body: JSON.stringify({ name, type, participants }),\n      });\n    },\n    onSuccess: () => {\n      queryClient.invalidateQueries({ queryKey: [\"/api/chat/rooms\"] });\n      toast({\n        title: \"Room Created\",\n        description: \"Chat room has been created successfully.\",\n      });\n    },\n    onError: (error: Error) => {\n      toast({\n        title: \"Room Creation Failed\",\n        description: error.message,\n        variant: \"destructive\",\n      });\n    },\n  });\n\n  const scrollToBottom = () => {\n    messagesEndRef.current?.scrollIntoView({ behavior: \"smooth\" });\n  };\n\n  useEffect(() => {\n    scrollToBottom();\n  }, [messages]);\n\n  const handleSendMessage = () => {\n    if (!messageInput.trim() || !selectedRoom) return;\n    \n    sendMessageMutation.mutate({\n      roomId: selectedRoom,\n      content: messageInput.trim(),\n    });\n  };\n\n  const handleKeyPress = (e: React.KeyboardEvent) => {\n    if (e.key === \"Enter\" && !e.shiftKey) {\n      e.preventDefault();\n      handleSendMessage();\n    }\n  };\n\n  const getRoomTypeIcon = (type: string) => {\n    switch (type) {\n      case \"direct\":\n        return <MessageCircle className=\"w-4 h-4\" />;\n      case \"group\":\n        return <Users className=\"w-4 h-4\" />;\n      case \"broadcast\":\n        return <Phone className=\"w-4 h-4\" />;\n      case \"emergency\":\n        return <Video className=\"w-4 h-4 text-red-400\" />;\n      default:\n        return <MessageCircle className=\"w-4 h-4\" />;\n    }\n  };\n\n  const getRoomTypeBadge = (type: string) => {\n    const colors = {\n      direct: \"bg-blue-500\",\n      group: \"bg-green-500\",\n      broadcast: \"bg-purple-500\",\n      emergency: \"bg-red-500\",\n    };\n    return <Badge className={`${colors[type as keyof typeof colors]} text-white text-xs`}>{type}</Badge>;\n  };\n\n  const formatTime = (dateString: string) => {\n    return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });\n  };\n\n  const filteredRooms = rooms.filter(room => \n    room.name.toLowerCase().includes(searchTerm.toLowerCase())\n  );\n\n  if (roomsLoading) {\n    return (\n      <div className=\"min-h-screen bg-black p-6\">\n        <div className=\"animate-pulse space-y-4\">\n          <div className=\"h-8 bg-gray-800 rounded w-1/3\"></div>\n          <div className=\"h-96 bg-gray-800 rounded\"></div>\n        </div>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"min-h-screen bg-black text-white\">\n      <div className=\"border-b border-cyan-500/20 p-6\">\n        <h1 className=\"text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2\">Communication Hub</h1>\n        <p className=\"text-cyan-100/80\">Secure admin and moderator communication system</p>\n      </div>\n\n      <div className=\"flex h-[calc(100vh-180px)]\">\n        {/* Sidebar - Chat Rooms */}\n        <div className=\"w-80 border-r border-cyan-500/20 bg-gray-900/30\">\n          <div className=\"p-4 border-b border-gray-700\">\n            <div className=\"flex items-center justify-between mb-4\">\n              <h2 className=\"text-lg font-semibold text-cyan-400\">Chat Rooms</h2>\n              <Button\n                size=\"sm\"\n                className=\"bg-cyan-600 hover:bg-cyan-700\"\n                onClick={() => createRoomMutation.mutate({\n                  name: \"New Discussion\",\n                  type: \"group\",\n                  participants: []\n                })}\n                data-testid=\"button-create-room\"\n              >\n                <Users className=\"w-3 h-3 mr-1\" />\n                New\n              </Button>\n            </div>\n            <Input\n              placeholder=\"Search rooms...\"\n              value={searchTerm}\n              onChange={(e) => setSearchTerm(e.target.value)}\n              className=\"bg-gray-800 border-gray-700 text-white\"\n              data-testid=\"input-search-rooms\"\n            />\n          </div>\n          \n          <ScrollArea className=\"h-full\">\n            <div className=\"p-2 space-y-1\">\n              {filteredRooms.map((room) => (\n                <div\n                  key={room.id}\n                  className={`p-3 rounded-lg cursor-pointer transition-colors ${\n                    selectedRoom === room.id \n                      ? \"bg-cyan-600/20 border border-cyan-500/30\" \n                      : \"hover:bg-gray-800/50\"\n                  }`}\n                  onClick={() => setSelectedRoom(room.id)}\n                  data-testid={`room-${room.id}`}\n                >\n                  <div className=\"flex items-center justify-between mb-1\">\n                    <div className=\"flex items-center gap-2\">\n                      {getRoomTypeIcon(room.type)}\n                      <span className=\"font-medium text-sm truncate\">{room.name}</span>\n                    </div>\n                    {getRoomTypeBadge(room.type)}\n                  </div>\n                  \n                  {room.lastMessage && (\n                    <div className=\"text-xs text-gray-400 truncate\">\n                      {room.lastMessage.content}\n                    </div>\n                  )}\n                  \n                  <div className=\"flex justify-between items-center mt-2 text-xs text-gray-500\">\n                    <span>{room.participants.length} members</span>\n                    {room.lastMessage && (\n                      <span>{formatTime(room.lastMessage.createdAt)}</span>\n                    )}\n                  </div>\n                </div>\n              ))}\n              \n              {filteredRooms.length === 0 && (\n                <div className=\"text-center text-gray-400 py-8\">\n                  <MessageCircle className=\"w-12 h-12 mx-auto mb-2 opacity-50\" />\n                  <p>No chat rooms found</p>\n                </div>\n              )}\n            </div>\n          </ScrollArea>\n        </div>\n\n        {/* Main Chat Area */}\n        <div className=\"flex-1 flex flex-col\">\n          {selectedRoom ? (\n            <>\n              {/* Chat Header */}\n              <div className=\"p-4 border-b border-gray-700 bg-gray-900/30\">\n                <div className=\"flex items-center justify-between\">\n                  <div className=\"flex items-center gap-3\">\n                    {getRoomTypeIcon(rooms.find(r => r.id === selectedRoom)?.type || \"direct\")}\n                    <div>\n                      <h3 className=\"font-semibold text-white\">\n                        {rooms.find(r => r.id === selectedRoom)?.name}\n                      </h3>\n                      <p className=\"text-sm text-gray-400\">\n                        {rooms.find(r => r.id === selectedRoom)?.participants.length} members\n                      </p>\n                    </div>\n                  </div>\n                  <div className=\"flex items-center gap-2\">\n                    <Button size=\"sm\" variant=\"outline\" className=\"border-gray-600\">\n                      <Phone className=\"w-4 h-4\" />\n                    </Button>\n                    <Button size=\"sm\" variant=\"outline\" className=\"border-gray-600\">\n                      <Video className=\"w-4 h-4\" />\n                    </Button>\n                    <Button size=\"sm\" variant=\"outline\" className=\"border-gray-600\">\n                      <Settings className=\"w-4 h-4\" />\n                    </Button>\n                  </div>\n                </div>\n              </div>\n\n              {/* Messages */}\n              <ScrollArea className=\"flex-1 p-4\">\n                <div className=\"space-y-4\">\n                  {messagesLoading ? (\n                    <div className=\"animate-pulse space-y-3\">\n                      {[...Array(5)].map((_, i) => (\n                        <div key={i} className=\"flex gap-3\">\n                          <div className=\"w-8 h-8 bg-gray-700 rounded-full\"></div>\n                          <div className=\"flex-1\">\n                            <div className=\"h-4 bg-gray-700 rounded w-1/4 mb-2\"></div>\n                            <div className=\"h-3 bg-gray-700 rounded w-3/4\"></div>\n                          </div>\n                        </div>\n                      ))}\n                    </div>\n                  ) : messages.length === 0 ? (\n                    <div className=\"text-center text-gray-400 py-16\">\n                      <MessageCircle className=\"w-16 h-16 mx-auto mb-4 opacity-50\" />\n                      <p className=\"text-lg font-medium mb-2\">No messages yet</p>\n                      <p className=\"text-sm\">Start the conversation by sending a message</p>\n                    </div>\n                  ) : (\n                    messages.map((message) => (\n                      <div key={message.id} className=\"flex gap-3\" data-testid={`message-${message.id}`}>\n                        <Avatar className=\"w-8 h-8\">\n                          <AvatarFallback className=\"bg-cyan-600 text-white text-xs\">\n                            {message.senderName?.[0] || \"U\"}\n                          </AvatarFallback>\n                        </Avatar>\n                        <div className=\"flex-1\">\n                          <div className=\"flex items-center gap-2 mb-1\">\n                            <span className=\"font-medium text-sm text-white\">\n                              {message.senderName || \"Anonymous\"}\n                            </span>\n                            <span className=\"text-xs text-gray-500\">\n                              {formatTime(message.createdAt)}\n                            </span>\n                            {message.isEdited && (\n                              <Badge variant=\"secondary\" className=\"text-xs\">edited</Badge>\n                            )}\n                          </div>\n                          <div className=\"text-gray-100 text-sm\">\n                            {message.isDeleted ? (\n                              <span className=\"text-gray-500 italic\">Message deleted</span>\n                            ) : (\n                              message.content\n                            )}\n                          </div>\n                        </div>\n                      </div>\n                    ))\n                  )}\n                  <div ref={messagesEndRef} />\n                </div>\n              </ScrollArea>\n\n              {/* Message Input */}\n              <div className=\"p-4 border-t border-gray-700 bg-gray-900/30\">\n                <div className=\"flex gap-2\">\n                  <Input\n                    placeholder=\"Type your message...\"\n                    value={messageInput}\n                    onChange={(e) => setMessageInput(e.target.value)}\n                    onKeyPress={handleKeyPress}\n                    className=\"bg-gray-800 border-gray-700 text-white\"\n                    data-testid=\"input-message\"\n                  />\n                  <Button\n                    onClick={handleSendMessage}\n                    disabled={!messageInput.trim() || sendMessageMutation.isPending}\n                    className=\"bg-cyan-600 hover:bg-cyan-700\"\n                    data-testid=\"button-send-message\"\n                  >\n                    <Send className=\"w-4 h-4\" />\n                  </Button>\n                </div>\n              </div>\n            </>\n          ) : (\n            <div className=\"flex-1 flex items-center justify-center text-gray-400\">\n              <div className=\"text-center\">\n                <MessageCircle className=\"w-24 h-24 mx-auto mb-4 opacity-30\" />\n                <h3 className=\"text-xl font-medium mb-2\">Select a chat room</h3>\n                <p className=\"text-sm\">Choose a room from the sidebar to start messaging</p>\n              </div>\n            </div>\n          )}\n        </div>\n      </div>\n    </div>\n  );\n}"
+import { useState, useEffect, useRef } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Send, Users, MessageCircle, Phone, Video, Settings } from "lucide-react";
+
+interface ChatRoom {
+  id: string;
+  name: string;
+  type: 'direct' | 'group' | 'broadcast' | 'emergency';
+  participants: string[];
+  isActive: boolean;
+  createdAt: string;
+  lastMessage?: ChatMessage;
+}
+
+interface ChatMessage {
+  id: string;
+  roomId: string;
+  senderId: string;
+  content: string;
+  messageType: 'text' | 'image' | 'file' | 'system';
+  attachmentUrl?: string;
+  isEdited: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  senderName?: string;
+}
+
+interface User {
+  id: string;
+  username: string;
+  role: string;
+  isActive: boolean;
+}
+
+export default function ChatSystem() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const [messageInput, setMessageInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const { data: rooms = [], isLoading: roomsLoading } = useQuery<ChatRoom[]>({
+    queryKey: ["/api/chat/rooms"],
+    refetchInterval: 3000, // Refresh every 3 seconds
+  });
+
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<ChatMessage[]>({
+    queryKey: ["/api/chat/messages", selectedRoom],
+    enabled: !!selectedRoom,
+    refetchInterval: 1000, // Refresh every second for real-time feel
+  });
+
+  const { data: users = [] } = useQuery<User[]>({
+    queryKey: ["/api/users"],
+  });
+
+  const sendMessageMutation = useMutation({
+    mutationFn: async ({ roomId, content }: { roomId: string; content: string }) => {
+      return apiRequest("POST", "/api/chat/messages", { roomId, content, messageType: "text" });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/chat/messages", selectedRoom] });
+      queryClient.invalidateQueries({ queryKey: ["/api/chat/rooms"] });
+      setMessageInput("");
+      scrollToBottom();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Message Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const createRoomMutation = useMutation({
+    mutationFn: async ({ name, type, participants }: { name: string; type: string; participants: string[] }) => {
+      return apiRequest("POST", "/api/chat/rooms", { name, type, participants });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/chat/rooms"] });
+      toast({
+        title: "Room Created",
+        description: "New chat room created successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Room Creation Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = () => {
+    if (!selectedRoom || !messageInput.trim()) return;
+    
+    sendMessageMutation.mutate({
+      roomId: selectedRoom,
+      content: messageInput.trim()
+    });
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const createEmergencyRoom = () => {
+    createRoomMutation.mutate({
+      name: `Emergency - ${new Date().toLocaleTimeString()}`,
+      type: "emergency",
+      participants: []
+    });
+  };
+
+  const formatMessageTime = (timestamp: string) => {
+    return new Date(timestamp).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
+  const getRoomIcon = (type: string) => {
+    switch (type) {
+      case "emergency":
+        return "🚨";
+      case "broadcast":
+        return "📢";
+      case "group":
+        return "👥";
+      case "direct":
+      default:
+        return "💬";
+    }
+  };
+
+  const filteredRooms = rooms.filter(room =>
+    room.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (roomsLoading) {
+    return (
+      <div className="min-h-screen cyber-bg flex items-center justify-center">
+        <div className="text-center">
+          <MessageCircle className="w-16 h-16 mx-auto mb-4 cyber-pulse text-primary" />
+          <p className="cyber-text-glow">Loading Communication System...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen cyber-bg">
+      <div className="container mx-auto p-6 h-screen flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold cyber-text-glow">Secure Communication Hub</h1>
+            <p className="text-muted-foreground">Enterprise Team Communication & Crisis Response</p>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              onClick={createEmergencyRoom}
+              className="bg-red-600 hover:bg-red-700"
+              data-testid="button-create-emergency"
+            >
+              🚨 Emergency Room
+            </Button>
+            <Button variant="outline" className="border-cyan-500 text-cyan-400">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Rooms Sidebar */}
+          <Card className="bg-gray-900/50 border-cyan-500/20 lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="text-cyan-400">Chat Rooms</CardTitle>
+              <Input
+                placeholder="Search rooms..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-gray-800 border-gray-700"
+                data-testid="input-search-rooms"
+              />
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-96">
+                <div className="space-y-2">
+                  {filteredRooms.map((room) => (
+                    <div
+                      key={room.id}
+                      className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                        selectedRoom === room.id 
+                          ? "bg-cyan-500/20 border border-cyan-500/50" 
+                          : "bg-gray-800/50 hover:bg-gray-700/50"
+                      }`}
+                      onClick={() => setSelectedRoom(room.id)}
+                      data-testid={`room-${room.id}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{getRoomIcon(room.type)}</span>
+                          <div>
+                            <p className="font-medium text-white">{room.name}</p>
+                            <p className="text-xs text-gray-400">
+                              {room.participants.length} participants
+                            </p>
+                          </div>
+                        </div>
+                        {room.isActive && (
+                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                        )}
+                      </div>
+                      {room.lastMessage && (
+                        <p className="text-xs text-gray-500 mt-1 truncate">
+                          {room.lastMessage.content}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* Chat Area */}
+          <Card className="bg-gray-900/50 border-cyan-500/20 lg:col-span-3">
+            {selectedRoom ? (
+              <>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-cyan-400">
+                        {rooms.find(r => r.id === selectedRoom)?.name || "Chat Room"}
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        {rooms.find(r => r.id === selectedRoom)?.participants.length || 0} participants
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" className="border-cyan-500 text-cyan-400">
+                        <Phone className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" className="border-cyan-500 text-cyan-400">
+                        <Video className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" className="border-cyan-500 text-cyan-400">
+                        <Users className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="flex-1 flex flex-col">
+                  {/* Messages */}
+                  <ScrollArea className="flex-1 h-96 mb-4">
+                    <div className="space-y-4 p-4">
+                      {messagesLoading ? (
+                        <p className="text-center text-gray-400">Loading messages...</p>
+                      ) : messages.length === 0 ? (
+                        <p className="text-center text-gray-400">No messages yet. Start the conversation!</p>
+                      ) : (
+                        messages.map((message) => (
+                          <div key={message.id} className="flex gap-3">
+                            <Avatar className="w-8 h-8">
+                              <AvatarFallback className="bg-cyan-500/20 text-cyan-400">
+                                {message.senderName?.charAt(0) || "U"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium text-white">
+                                  {message.senderName || `User ${message.senderId}`}
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                  {formatMessageTime(message.createdAt)}
+                                </span>
+                                {message.isEdited && (
+                                  <Badge variant="secondary" className="text-xs">edited</Badge>
+                                )}
+                              </div>
+                              <p className="text-gray-300">{message.content}</p>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </ScrollArea>
+
+                  {/* Message Input */}
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Type your message..."
+                      value={messageInput}
+                      onChange={(e) => setMessageInput(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="flex-1 bg-gray-800 border-gray-700"
+                      data-testid="input-message"
+                    />
+                    <Button 
+                      onClick={handleSendMessage}
+                      disabled={!messageInput.trim() || sendMessageMutation.isPending}
+                      className="bg-cyan-500 hover:bg-cyan-600"
+                      data-testid="button-send-message"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </>
+            ) : (
+              <CardContent className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                  <p className="text-gray-400">Select a room to start chatting</p>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        </div>
+
+        {/* Online Users */}
+        <Card className="bg-gray-900/50 border-cyan-500/20 mt-6">
+          <CardHeader>
+            <CardTitle className="text-cyan-400">Team Status ({users.filter(u => u.isActive).length} online)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {users.map((user) => (
+                <div
+                  key={user.id}
+                  className="flex items-center gap-2 px-3 py-1 bg-gray-800/50 rounded-full"
+                >
+                  <div className={`w-2 h-2 rounded-full ${user.isActive ? 'bg-green-400' : 'bg-gray-500'}`} />
+                  <span className="text-sm text-white">{user.username}</span>
+                  <Badge variant="outline" className="text-xs">
+                    {user.role}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

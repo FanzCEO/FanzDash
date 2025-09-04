@@ -1,1 +1,428 @@
-import { useState } from \"react\";\nimport { useQuery, useMutation, useQueryClient } from \"@tanstack/react-query\";\nimport { Button } from \"@/components/ui/button\";\nimport { Input } from \"@/components/ui/input\";\nimport { Label } from \"@/components/ui/label\";\nimport { Textarea } from \"@/components/ui/textarea\";\nimport { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from \"@/components/ui/select\";\nimport { Card, CardContent, CardDescription, CardHeader, CardTitle } from \"@/components/ui/card\";\nimport { Badge } from \"@/components/ui/badge\";\nimport { ObjectUploader } from \"@/components/ObjectUploader\";\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\nimport { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from \"@/components/ui/form\";\nimport { apiRequest } from \"@/lib/queryClient\";\nimport { useToast } from \"@/hooks/use-toast\";\nimport { CheckCircle, XCircle, Clock, Upload, FileText, User, Calendar } from \"lucide-react\";\nimport type { UploadResult } from \"@uppy/core\";\n\nconst verification2257Schema = z.object({\n  stageName: z.string().min(1, \"Stage name is required\"),\n  legalName: z.string().min(1, \"Legal name is required\"),\n  address: z.string().min(1, \"Address is required\"),\n  city: z.string().min(1, \"City is required\"),\n  country: z.string().min(1, \"Country is required\"),\n  postalCode: z.string().min(1, \"Postal/ZIP code is required\"),\n  dateOfBirth: z.string().min(1, \"Date of birth is required\"),\n  idFrontImageUrl: z.string().optional(),\n  idBackImageUrl: z.string().optional(),\n  holdingIdImageUrl: z.string().optional(),\n  w9FormUrl: z.string().optional(),\n});\n\ntype Verification2257Form = z.infer<typeof verification2257Schema>;\n\ninterface Verification2257 {\n  id: string;\n  stageName: string;\n  legalName: string;\n  address: string;\n  city: string;\n  country: string;\n  postalCode: string;\n  status: 'pending' | 'verified' | 'declined';\n  actionTakenBy?: string;\n  actionReason?: string;\n  actionType?: string;\n  submittedAt: string;\n  processedAt?: string;\n  dateOfBirth: string;\n  idFrontImageUrl?: string;\n  idBackImageUrl?: string;\n  holdingIdImageUrl?: string;\n  w9FormUrl?: string;\n}\n\nexport default function Verification2257() {\n  const { toast } = useToast();\n  const queryClient = useQueryClient();\n  const [selectedVerification, setSelectedVerification] = useState<string | null>(null);\n  const [uploadingField, setUploadingField] = useState<string | null>(null);\n\n  const form = useForm<Verification2257Form>({\n    resolver: zodResolver(verification2257Schema),\n    defaultValues: {\n      stageName: \"\",\n      legalName: \"\",\n      address: \"\",\n      city: \"\",\n      country: \"\",\n      postalCode: \"\",\n      dateOfBirth: \"\",\n    },\n  });\n\n  const { data: verifications = [], isLoading } = useQuery<Verification2257[]>({\n    queryKey: [\"/api/2257-verifications\"],\n  });\n\n  const createVerificationMutation = useMutation({\n    mutationFn: async (data: Verification2257Form) => {\n      return apiRequest(\"/api/2257-verifications\", {\n        method: \"POST\",\n        body: JSON.stringify(data),\n      });\n    },\n    onSuccess: () => {\n      queryClient.invalidateQueries({ queryKey: [\"/api/2257-verifications\"] });\n      toast({\n        title: \"Verification Submitted\",\n        description: \"2257 form has been submitted for review.\",\n      });\n      form.reset();\n    },\n    onError: (error: Error) => {\n      toast({\n        title: \"Submission Failed\",\n        description: error.message,\n        variant: \"destructive\",\n      });\n    },\n  });\n\n  const updateVerificationMutation = useMutation({\n    mutationFn: async ({ id, ...data }: { id: string; status: string; actionReason?: string; actionType: string }) => {\n      return apiRequest(`/api/2257-verifications/${id}`, {\n        method: \"PATCH\",\n        body: JSON.stringify(data),\n      });\n    },\n    onSuccess: () => {\n      queryClient.invalidateQueries({ queryKey: [\"/api/2257-verifications\"] });\n      toast({\n        title: \"Verification Updated\",\n        description: \"Verification status has been updated.\",\n      });\n    },\n    onError: (error: Error) => {\n      toast({\n        title: \"Update Failed\",\n        description: error.message,\n        variant: \"destructive\",\n      });\n    },\n  });\n\n  const handleGetUploadParameters = async () => {\n    const response = await apiRequest(\"/api/objects/upload\", {\n      method: \"POST\",\n    });\n    return {\n      method: \"PUT\" as const,\n      url: response.uploadURL,\n    };\n  };\n\n  const handleUploadComplete = (field: string) => (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {\n    if (result.successful && result.successful[0]) {\n      const uploadUrl = result.successful[0].uploadURL;\n      form.setValue(field as keyof Verification2257Form, uploadUrl);\n      setUploadingField(null);\n      toast({\n        title: \"Upload Complete\",\n        description: \"Document has been uploaded successfully.\",\n      });\n    }\n  };\n\n  const handleApprove = (id: string) => {\n    updateVerificationMutation.mutate({\n      id,\n      status: \"verified\",\n      actionType: \"approved\",\n    });\n  };\n\n  const handleDecline = (id: string, reason: string) => {\n    updateVerificationMutation.mutate({\n      id,\n      status: \"declined\",\n      actionType: \"declined\",\n      actionReason: reason,\n    });\n  };\n\n  const getStatusBadge = (status: string) => {\n    switch (status) {\n      case \"verified\":\n        return <Badge className=\"bg-green-500 text-white\"><CheckCircle className=\"w-3 h-3 mr-1\" />Verified</Badge>;\n      case \"declined\":\n        return <Badge className=\"bg-red-500 text-white\"><XCircle className=\"w-3 h-3 mr-1\" />Declined</Badge>;\n      default:\n        return <Badge className=\"bg-yellow-500 text-white\"><Clock className=\"w-3 h-3 mr-1\" />Pending</Badge>;\n    }\n  };\n\n  const onSubmit = (data: Verification2257Form) => {\n    createVerificationMutation.mutate(data);\n  };\n\n  if (isLoading) {\n    return (\n      <div className=\"min-h-screen bg-black p-6\">\n        <div className=\"animate-pulse space-y-4\">\n          <div className=\"h-8 bg-gray-800 rounded w-1/3\"></div>\n          <div className=\"h-64 bg-gray-800 rounded\"></div>\n        </div>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"min-h-screen bg-black text-white p-6 space-y-8\">\n      <div className=\"border-b border-cyan-500/20 pb-6\">\n        <h1 className=\"text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2\">2257 Form Verification System</h1>\n        <p className=\"text-cyan-100/80\">Creator verification and compliance management for FanzDash platform</p>\n      </div>\n\n      <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-8\">\n        {/* New Verification Form */}\n        <Card className=\"bg-gray-900/50 border-cyan-500/20\">\n          <CardHeader>\n            <CardTitle className=\"text-cyan-400 flex items-center gap-2\">\n              <User className=\"w-5 h-5\" />\n              Submit New Verification\n            </CardTitle>\n            <CardDescription className=\"text-gray-400\">\n              Complete the 2257 form verification for creator onboarding\n            </CardDescription>\n          </CardHeader>\n          <CardContent>\n            <Form {...form}>\n              <form onSubmit={form.handleSubmit(onSubmit)} className=\"space-y-6\">\n                <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n                  <FormField\n                    control={form.control}\n                    name=\"stageName\"\n                    render={({ field }) => (\n                      <FormItem>\n                        <FormLabel className=\"text-cyan-400\">Stage Name</FormLabel>\n                        <FormControl>\n                          <Input \n                            placeholder=\"Enter stage name\" \n                            className=\"bg-gray-800 border-gray-700 text-white\" \n                            data-testid=\"input-stage-name\"\n                            {...field} \n                          />\n                        </FormControl>\n                        <FormMessage />\n                      </FormItem>\n                    )}\n                  />\n                  <FormField\n                    control={form.control}\n                    name=\"legalName\"\n                    render={({ field }) => (\n                      <FormItem>\n                        <FormLabel className=\"text-cyan-400\">Legal Name</FormLabel>\n                        <FormControl>\n                          <Input \n                            placeholder=\"Enter legal name\" \n                            className=\"bg-gray-800 border-gray-700 text-white\" \n                            data-testid=\"input-legal-name\"\n                            {...field} \n                          />\n                        </FormControl>\n                        <FormMessage />\n                      </FormItem>\n                    )}\n                  />\n                </div>\n\n                <FormField\n                  control={form.control}\n                  name=\"address\"\n                  render={({ field }) => (\n                    <FormItem>\n                      <FormLabel className=\"text-cyan-400\">Address</FormLabel>\n                      <FormControl>\n                        <Textarea \n                          placeholder=\"Enter full address\" \n                          className=\"bg-gray-800 border-gray-700 text-white\" \n                          data-testid=\"input-address\"\n                          {...field} \n                        />\n                      </FormControl>\n                      <FormMessage />\n                    </FormItem>\n                  )}\n                />\n\n                <div className=\"grid grid-cols-1 md:grid-cols-3 gap-4\">\n                  <FormField\n                    control={form.control}\n                    name=\"city\"\n                    render={({ field }) => (\n                      <FormItem>\n                        <FormLabel className=\"text-cyan-400\">City</FormLabel>\n                        <FormControl>\n                          <Input \n                            placeholder=\"City\" \n                            className=\"bg-gray-800 border-gray-700 text-white\" \n                            data-testid=\"input-city\"\n                            {...field} \n                          />\n                        </FormControl>\n                        <FormMessage />\n                      </FormItem>\n                    )}\n                  />\n                  <FormField\n                    control={form.control}\n                    name=\"country\"\n                    render={({ field }) => (\n                      <FormItem>\n                        <FormLabel className=\"text-cyan-400\">Country</FormLabel>\n                        <FormControl>\n                          <Input \n                            placeholder=\"Country\" \n                            className=\"bg-gray-800 border-gray-700 text-white\" \n                            data-testid=\"input-country\"\n                            {...field} \n                          />\n                        </FormControl>\n                        <FormMessage />\n                      </FormItem>\n                    )}\n                  />\n                  <FormField\n                    control={form.control}\n                    name=\"postalCode\"\n                    render={({ field }) => (\n                      <FormItem>\n                        <FormLabel className=\"text-cyan-400\">Postal/ZIP</FormLabel>\n                        <FormControl>\n                          <Input \n                            placeholder=\"Postal/ZIP code\" \n                            className=\"bg-gray-800 border-gray-700 text-white\" \n                            data-testid=\"input-postal-code\"\n                            {...field} \n                          />\n                        </FormControl>\n                        <FormMessage />\n                      </FormItem>\n                    )}\n                  />\n                </div>\n\n                <FormField\n                  control={form.control}\n                  name=\"dateOfBirth\"\n                  render={({ field }) => (\n                    <FormItem>\n                      <FormLabel className=\"text-cyan-400 flex items-center gap-2\">\n                        <Calendar className=\"w-4 h-4\" />\n                        Date of Birth\n                      </FormLabel>\n                      <FormControl>\n                        <Input \n                          type=\"date\" \n                          className=\"bg-gray-800 border-gray-700 text-white\" \n                          data-testid=\"input-date-of-birth\"\n                          {...field} \n                        />\n                      </FormControl>\n                      <FormMessage />\n                    </FormItem>\n                  )}\n                />\n\n                {/* Document Upload Section */}\n                <div className=\"space-y-4\">\n                  <h3 className=\"text-lg font-semibold text-cyan-400 flex items-center gap-2\">\n                    <Upload className=\"w-5 h-5\" />\n                    Required Documents\n                  </h3>\n                  \n                  <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n                    <div className=\"space-y-2\">\n                      <Label className=\"text-cyan-400\">ID Front Image</Label>\n                      <ObjectUploader\n                        maxNumberOfFiles={1}\n                        maxFileSize={10485760}\n                        onGetUploadParameters={handleGetUploadParameters}\n                        onComplete={handleUploadComplete(\"idFrontImageUrl\")}\n                        buttonClassName=\"w-full bg-cyan-600 hover:bg-cyan-700\"\n                      >\n                        <Upload className=\"w-4 h-4 mr-2\" />\n                        Upload ID Front\n                      </ObjectUploader>\n                      {form.watch(\"idFrontImageUrl\") && (\n                        <p className=\"text-green-400 text-sm\">✓ ID front uploaded</p>\n                      )}\n                    </div>\n\n                    <div className=\"space-y-2\">\n                      <Label className=\"text-cyan-400\">ID Back Image</Label>\n                      <ObjectUploader\n                        maxNumberOfFiles={1}\n                        maxFileSize={10485760}\n                        onGetUploadParameters={handleGetUploadParameters}\n                        onComplete={handleUploadComplete(\"idBackImageUrl\")}\n                        buttonClassName=\"w-full bg-cyan-600 hover:bg-cyan-700\"\n                      >\n                        <Upload className=\"w-4 h-4 mr-2\" />\n                        Upload ID Back\n                      </ObjectUploader>\n                      {form.watch(\"idBackImageUrl\") && (\n                        <p className=\"text-green-400 text-sm\">✓ ID back uploaded</p>\n                      )}\n                    </div>\n\n                    <div className=\"space-y-2\">\n                      <Label className=\"text-cyan-400\">Holding ID with Signed Paper</Label>\n                      <ObjectUploader\n                        maxNumberOfFiles={1}\n                        maxFileSize={10485760}\n                        onGetUploadParameters={handleGetUploadParameters}\n                        onComplete={handleUploadComplete(\"holdingIdImageUrl\")}\n                        buttonClassName=\"w-full bg-cyan-600 hover:bg-cyan-700\"\n                      >\n                        <Upload className=\"w-4 h-4 mr-2\" />\n                        Upload Holding ID\n                      </ObjectUploader>\n                      {form.watch(\"holdingIdImageUrl\") && (\n                        <p className=\"text-green-400 text-sm\">✓ Holding ID uploaded</p>\n                      )}\n                    </div>\n\n                    <div className=\"space-y-2\">\n                      <Label className=\"text-cyan-400\">Form W-9 (Optional)</Label>\n                      <ObjectUploader\n                        maxNumberOfFiles={1}\n                        maxFileSize={10485760}\n                        onGetUploadParameters={handleGetUploadParameters}\n                        onComplete={handleUploadComplete(\"w9FormUrl\")}\n                        buttonClassName=\"w-full bg-gray-600 hover:bg-gray-700\"\n                      >\n                        <FileText className=\"w-4 h-4 mr-2\" />\n                        Upload W-9 Form\n                      </ObjectUploader>\n                      {form.watch(\"w9FormUrl\") && (\n                        <p className=\"text-green-400 text-sm\">✓ W-9 form uploaded</p>\n                      )}\n                    </div>\n                  </div>\n                </div>\n\n                <Button \n                  type=\"submit\" \n                  className=\"w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600\"\n                  disabled={createVerificationMutation.isPending}\n                  data-testid=\"button-submit-verification\"\n                >\n                  {createVerificationMutation.isPending ? \"Submitting...\" : \"Submit Verification\"}\n                </Button>\n              </form>\n            </Form>\n          </CardContent>\n        </Card>\n\n        {/* Verification List */}\n        <Card className=\"bg-gray-900/50 border-cyan-500/20\">\n          <CardHeader>\n            <CardTitle className=\"text-cyan-400\">Recent Verifications</CardTitle>\n            <CardDescription className=\"text-gray-400\">\n              Review and manage 2257 form submissions\n            </CardDescription>\n          </CardHeader>\n          <CardContent>\n            <div className=\"space-y-4 max-h-96 overflow-y-auto\">\n              {verifications.length === 0 ? (\n                <p className=\"text-gray-400 text-center py-8\">No verifications submitted yet</p>\n              ) : (\n                verifications.map((verification) => (\n                  <div key={verification.id} className=\"p-4 bg-gray-800/50 rounded-lg border border-gray-700\">\n                    <div className=\"flex justify-between items-start mb-2\">\n                      <div>\n                        <h3 className=\"font-semibold text-white\">{verification.stageName}</h3>\n                        <p className=\"text-sm text-gray-400\">{verification.legalName}</p>\n                      </div>\n                      {getStatusBadge(verification.status)}\n                    </div>\n                    <p className=\"text-sm text-gray-400 mb-3\">\n                      Submitted: {new Date(verification.submittedAt).toLocaleDateString()}\n                    </p>\n                    \n                    {verification.status === \"pending\" && (\n                      <div className=\"flex gap-2\">\n                        <Button\n                          size=\"sm\"\n                          className=\"bg-green-600 hover:bg-green-700\"\n                          onClick={() => handleApprove(verification.id)}\n                          data-testid={`button-approve-${verification.id}`}\n                        >\n                          <CheckCircle className=\"w-3 h-3 mr-1\" />\n                          Approve\n                        </Button>\n                        <Button\n                          size=\"sm\"\n                          variant=\"outline\"\n                          className=\"border-red-500 text-red-400 hover:bg-red-500 hover:text-white\"\n                          onClick={() => handleDecline(verification.id, \"Documentation incomplete\")}\n                          data-testid={`button-decline-${verification.id}`}\n                        >\n                          <XCircle className=\"w-3 h-3 mr-1\" />\n                          Decline\n                        </Button>\n                      </div>\n                    )}\n                  </div>\n                ))\n              )}\n            </div>\n          </CardContent>\n        </Card>\n      </div>\n    </div>\n  );\n}"
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { CheckCircle, XCircle, Clock, Upload, FileText, User, Calendar, Shield } from "lucide-react";
+
+const verification2257Schema = z.object({
+  stageName: z.string().min(1, "Stage name is required"),
+  legalName: z.string().min(1, "Legal name is required"),
+  address: z.string().min(1, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  country: z.string().min(1, "Country is required"),
+  postalCode: z.string().min(1, "Postal/ZIP code is required"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  idFrontImageUrl: z.string().optional(),
+  idBackImageUrl: z.string().optional(),
+  holdingIdImageUrl: z.string().optional(),
+  w9FormUrl: z.string().optional(),
+});
+
+type Verification2257Form = z.infer<typeof verification2257Schema>;
+
+interface Verification2257 {
+  id: string;
+  stageName: string;
+  legalName: string;
+  address: string;
+  city: string;
+  country: string;
+  postalCode: string;
+  status: 'pending' | 'verified' | 'declined';
+  actionTakenBy?: string;
+  actionReason?: string;
+  actionType?: string;
+  submittedAt: string;
+  processedAt?: string;
+  dateOfBirth: string;
+  idFrontImageUrl?: string;
+  idBackImageUrl?: string;
+  holdingIdImageUrl?: string;
+  w9FormUrl?: string;
+}
+
+export default function Verification2257() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [selectedVerification, setSelectedVerification] = useState<string | null>(null);
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
+
+  const form = useForm<Verification2257Form>({
+    resolver: zodResolver(verification2257Schema),
+    defaultValues: {
+      stageName: "",
+      legalName: "",
+      address: "",
+      city: "",
+      country: "",
+      postalCode: "",
+      dateOfBirth: "",
+    },
+  });
+
+  const { data: verifications = [], isLoading } = useQuery<Verification2257[]>({
+    queryKey: ["/api/2257-verifications"],
+  });
+
+  const createVerificationMutation = useMutation({
+    mutationFn: async (data: Verification2257Form) => {
+      return apiRequest("POST", "/api/2257-verifications", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/2257-verifications"] });
+      form.reset();
+      toast({
+        title: "Verification Submitted",
+        description: "2257 verification form has been submitted for review",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Submission Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateVerificationMutation = useMutation({
+    mutationFn: async ({ id, status, reason }: { id: string; status: string; reason?: string }) => {
+      return apiRequest("PATCH", `/api/2257-verifications/${id}`, { status, actionReason: reason });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/2257-verifications"] });
+      toast({
+        title: "Verification Updated",
+        description: "Verification status has been updated",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleFileUpload = (fieldName: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // For now, just store the file name as a placeholder
+      // In a real app, you'd upload to a server and get a URL back
+      form.setValue(fieldName as keyof Verification2257Form, file.name);
+      toast({
+        title: "File Selected",
+        description: `${fieldName} selected: ${file.name}`,
+      });
+    }
+  };
+
+  const handleApprove = (id: string) => {
+    updateVerificationMutation.mutate({ id, status: "verified" });
+  };
+
+  const handleDecline = (id: string, reason: string) => {
+    updateVerificationMutation.mutate({ id, status: "declined", reason });
+  };
+
+  const onSubmit = (data: Verification2257Form) => {
+    createVerificationMutation.mutate(data);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "verified":
+        return <Badge className="bg-green-600"><CheckCircle className="w-3 h-3 mr-1" />Verified</Badge>;
+      case "declined":
+        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Declined</Badge>;
+      case "pending":
+      default:
+        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen cyber-bg flex items-center justify-center">
+        <div className="text-center">
+          <FileText className="w-16 h-16 mx-auto mb-4 cyber-pulse text-primary" />
+          <p className="cyber-text-glow">Loading 2257 Verification System...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen cyber-bg">
+      <div className="container mx-auto p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold cyber-text-glow">2257 Record Verification</h1>
+            <p className="text-muted-foreground">Age Verification & Compliance Documentation</p>
+          </div>
+          <Badge variant="outline" className="border-cyan-500 text-cyan-400">
+            <Shield className="w-4 h-4 mr-2" />
+            Legal Compliance
+          </Badge>
+        </div>
+
+        {/* Verification Form */}
+        <Card className="bg-gray-900/50 border-cyan-500/20">
+          <CardHeader>
+            <CardTitle className="text-cyan-400">Submit New Verification</CardTitle>
+            <CardDescription className="text-gray-400">
+              Complete age verification and compliance documentation
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="stageName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-cyan-400">Stage/Performance Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-stage-name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="legalName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-cyan-400">Legal Full Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-legal-name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-cyan-400">Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="date" className="bg-gray-800 border-gray-700" data-testid="input-dob" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-cyan-400">Country</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-country" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-cyan-400">Address</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-address" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-cyan-400">City</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-city" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="postalCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-cyan-400">Postal/ZIP Code</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-gray-800 border-gray-700" data-testid="input-postal-code" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Document Upload Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-cyan-400">Required Documentation</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <Label className="text-cyan-400">ID Front Image</Label>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload("idFrontImageUrl")}
+                        className="bg-gray-800 border-gray-700"
+                        data-testid="input-id-front"
+                      />
+                      {form.watch("idFrontImageUrl") && (
+                        <p className="text-green-400 text-sm">✓ ID front selected</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label className="text-cyan-400">ID Back Image</Label>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload("idBackImageUrl")}
+                        className="bg-gray-800 border-gray-700"
+                        data-testid="input-id-back"
+                      />
+                      {form.watch("idBackImageUrl") && (
+                        <p className="text-green-400 text-sm">✓ ID back selected</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label className="text-cyan-400">Holding ID Photo</Label>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload("holdingIdImageUrl")}
+                        className="bg-gray-800 border-gray-700"
+                        data-testid="input-holding-id"
+                      />
+                      {form.watch("holdingIdImageUrl") && (
+                        <p className="text-green-400 text-sm">✓ Holding ID photo selected</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label className="text-cyan-400">W-9 Form (Optional)</Label>
+                      <Input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileUpload("w9FormUrl")}
+                        className="bg-gray-800 border-gray-700"
+                        data-testid="input-w9-form"
+                      />
+                      {form.watch("w9FormUrl") && (
+                        <p className="text-green-400 text-sm">✓ W-9 form selected</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
+                  disabled={createVerificationMutation.isPending}
+                  data-testid="button-submit-verification"
+                >
+                  {createVerificationMutation.isPending ? "Submitting..." : "Submit Verification"}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+
+        {/* Verification List */}
+        <Card className="bg-gray-900/50 border-cyan-500/20">
+          <CardHeader>
+            <CardTitle className="text-cyan-400">Recent Verifications</CardTitle>
+            <CardDescription className="text-gray-400">
+              Review and manage 2257 form submissions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {verifications.length === 0 ? (
+                <p className="text-gray-400 text-center py-8">No verifications submitted yet</p>
+              ) : (
+                verifications.map((verification) => (
+                  <div key={verification.id} className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold text-white">{verification.stageName}</h3>
+                        <p className="text-sm text-gray-400">{verification.legalName}</p>
+                      </div>
+                      {getStatusBadge(verification.status)}
+                    </div>
+                    <p className="text-sm text-gray-400 mb-3">
+                      Submitted: {new Date(verification.submittedAt).toLocaleDateString()}
+                    </p>
+                    
+                    {verification.status === "pending" && (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700"
+                          onClick={() => handleApprove(verification.id)}
+                          data-testid={`button-approve-${verification.id}`}
+                        >
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+                          onClick={() => handleDecline(verification.id, "Documentation incomplete")}
+                          data-testid={`button-decline-${verification.id}`}
+                        >
+                          <XCircle className="w-3 h-3 mr-1" />
+                          Decline
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
