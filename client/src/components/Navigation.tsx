@@ -31,7 +31,8 @@ import {
   FileCheck,
   Receipt,
   UserCheck,
-  Mail
+  Mail,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -197,6 +198,12 @@ const navigationItems = [
     href: "/theme-settings",
     icon: Palette,
     description: "Branding, colors, and customization"
+  },
+  {
+    name: "Theme Generator",
+    href: "/theme-generator",
+    icon: Sparkles,
+    description: "Dynamic color palette generator"
   },
   {
     name: "Video Encoding",

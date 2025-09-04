@@ -55,6 +55,7 @@ import WebSocketSettingsPage from "@/pages/websocket-settings";
 import TransactionManagementPage from "@/pages/transaction-management";
 import VerificationManagementPage from "@/pages/verification-management";
 import SubscriptionManagementPage from "@/pages/subscription-management";
+import ThemeGeneratorPage from "@/pages/theme-generator";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import PasswordReset from "@/pages/auth/password-reset";
@@ -120,6 +121,7 @@ function Router() {
           <Route path="/transaction-management" component={TransactionManagementPage} />
           <Route path="/verification-management" component={VerificationManagementPage} />
           <Route path="/subscription-management" component={SubscriptionManagementPage} />
+          <Route path="/theme-generator" component={ThemeGeneratorPage} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/password/reset" component={PasswordReset} />
