@@ -92,7 +92,6 @@
     "memorystore": "^1.6.7",
     "nanoid": "^5.1.5",
     "next-themes": "^0.4.6",
-    "node-saml": "^3.1.2",
     "nodemailer": "^7.0.6",
     "openai": "^5.19.1",
     "openid-client": "^6.7.1",
@@ -102,8 +101,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-linkedin-oauth2": "^2.0.0",
     "passport-local": "^1.0.0",
-    "passport-saml": "^3.2.4",
-    "passport-twitter": "^1.0.4",
+    "passport-twitter": "^0.1.5",
     "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
@@ -140,13 +138,13 @@
     "@types/ws": "^8.5.13",
     "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
-    "drizzle-kit": "^0.30.4",
+    "drizzle-kit": "^0.31.4",
     "esbuild": "^0.25.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
-    "vite": "^5.4.19"
+    "vite": "^7.1.4"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
