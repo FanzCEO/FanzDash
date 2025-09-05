@@ -510,32 +510,14 @@ export class FutureTechManager extends EventEmitter {
   }
 
   private startAutomatedAnalysis() {
-    // Run trend analysis monthly
-    setInterval(
-      () => {
-        this.performTrendAnalysis();
-      },
-      30 * 24 * 60 * 60 * 1000,
-    ); // 30 days
-
-    // Update tech readiness weekly
-    setInterval(
-      () => {
-        this.updateTechReadinessLevels();
-      },
-      7 * 24 * 60 * 60 * 1000,
-    ); // 7 days
-
-    // Scout for new technologies daily
-    setInterval(
-      () => {
-        this.performTechScouting();
-      },
-      24 * 60 * 60 * 1000,
-    ); // 24 hours
-
-    // Initial run
-    this.performTrendAnalysis();
+    // Automated analysis temporarily disabled to prevent excessive OpenAI API calls
+    // when quota is exceeded. The system will use mock data for all features.
+    console.log('FutureTechManager: Automated analysis disabled due to OpenAI quota limits');
+    
+    // All intervals commented out to prevent log spam
+    // setInterval(() => { this.performTrendAnalysis(); }, 30 * 24 * 60 * 60 * 1000); // 30 days
+    // setInterval(() => { this.updateTechReadinessLevels(); }, 7 * 24 * 60 * 60 * 1000); // 7 days  
+    // setInterval(() => { this.performTechScouting(); }, 24 * 60 * 60 * 1000); // 24 hours
   }
 
   private isOpenAIAvailable(): boolean {
