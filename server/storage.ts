@@ -721,7 +721,7 @@ export class DatabaseStorage implements IStorage {
     const [verifiedUsers] = await db
       .select({ count: count() })
       .from(users)
-      .where(eq(users.verified, true));
+      .where(eq(users.isActive, true));
 
     return {
       totalUsers: totalUsers.count,
@@ -785,12 +785,18 @@ export class DatabaseStorage implements IStorage {
     const [automatedActions] = await db
       .select({ count: count() })
       .from(moderationResults)
-      .where(eq(moderationResults.source, "ai"));
+      .where(
+        or(
+          eq(moderationResults.modelType, "nudenet"),
+          eq(moderationResults.modelType, "detoxify"),
+          eq(moderationResults.modelType, "pdq_hash")
+        )
+      );
 
     const [manualActions] = await db
       .select({ count: count() })
       .from(moderationResults)
-      .where(eq(moderationResults.source, "manual"));
+      .where(eq(moderationResults.modelType, "manual"));
 
     const [appealsToday] = await db
       .select({ count: count() })
