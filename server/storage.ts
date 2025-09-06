@@ -183,6 +183,27 @@ export interface IStorage {
     liveStreams: number;
   }>;
 
+  getUserStats(): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    newUsersToday: number;
+    verifiedUsers: number;
+  }>;
+
+  getContentStats(): Promise<{
+    totalContent: number;
+    pendingModeration: number;
+    approvedContent: number;
+    blockedContent: number;
+  }>;
+
+  getModerationStats(): Promise<{
+    totalActions: number;
+    automatedActions: number;
+    manualActions: number;
+    appealsToday: number;
+  }>;
+
   // Multi-platform operations
   getAllPlatforms(): Promise<any[]>;
   createPlatform(platformData: any): Promise<any>;
@@ -676,6 +697,111 @@ export class DatabaseStorage implements IStorage {
       autoBlocked: autoBlocked.count,
       pendingReview: pendingReview.count,
       liveStreams: activeStreams.count,
+    };
+  }
+
+  async getUserStats(): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    newUsersToday: number;
+    verifiedUsers: number;
+  }> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [totalUsers] = await db
+      .select({ count: count() })
+      .from(users);
+
+    const [newUsersToday] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(sql`${users.createdAt} >= ${today}`);
+
+    const [verifiedUsers] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(eq(users.verified, true));
+
+    return {
+      totalUsers: totalUsers.count,
+      activeUsers: totalUsers.count, // For now, treat all users as active
+      newUsersToday: newUsersToday.count,
+      verifiedUsers: verifiedUsers.count,
+    };
+  }
+
+  async getContentStats(): Promise<{
+    totalContent: number;
+    pendingModeration: number;
+    approvedContent: number;
+    blockedContent: number;
+  }> {
+    const [totalContent] = await db
+      .select({ count: count() })
+      .from(contentItems);
+
+    const [pendingModeration] = await db
+      .select({ count: count() })
+      .from(contentItems)
+      .where(eq(contentItems.status, "pending"));
+
+    const [approvedContent] = await db
+      .select({ count: count() })
+      .from(contentItems)
+      .where(eq(contentItems.status, "approved"));
+
+    const [blockedContent] = await db
+      .select({ count: count() })
+      .from(contentItems)
+      .where(
+        or(
+          eq(contentItems.status, "rejected"),
+          eq(contentItems.status, "auto_blocked")
+        )
+      );
+
+    return {
+      totalContent: totalContent.count,
+      pendingModeration: pendingModeration.count,
+      approvedContent: approvedContent.count,
+      blockedContent: blockedContent.count,
+    };
+  }
+
+  async getModerationStats(): Promise<{
+    totalActions: number;
+    automatedActions: number;
+    manualActions: number;
+    appealsToday: number;
+  }> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [totalActions] = await db
+      .select({ count: count() })
+      .from(moderationResults);
+
+    const [automatedActions] = await db
+      .select({ count: count() })
+      .from(moderationResults)
+      .where(eq(moderationResults.source, "ai"));
+
+    const [manualActions] = await db
+      .select({ count: count() })
+      .from(moderationResults)
+      .where(eq(moderationResults.source, "manual"));
+
+    const [appealsToday] = await db
+      .select({ count: count() })
+      .from(appealRequests)
+      .where(sql`${appealRequests.createdAt} >= ${today}`);
+
+    return {
+      totalActions: totalActions.count,
+      automatedActions: automatedActions.count,
+      manualActions: manualActions.count,
+      appealsToday: appealsToday.count,
     };
   }
 

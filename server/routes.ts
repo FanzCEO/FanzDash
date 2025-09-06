@@ -770,6 +770,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add missing users stats endpoint
+  app.get("/api/users/stats", async (req, res) => {
+    try {
+      const stats = await storage.getUserStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("User stats error:", error);
+      res.status(500).json({ error: "Failed to fetch user stats" });
+    }
+  });
+
+  // Add missing content stats endpoint
+  app.get("/api/content/stats", async (req, res) => {
+    try {
+      const stats = await storage.getContentStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Content stats error:", error);
+      res.status(500).json({ error: "Failed to fetch content stats" });
+    }
+  });
+
+  // Add moderation stats endpoint
+  app.get("/api/moderation/stats", async (req, res) => {
+    try {
+      const stats = await storage.getModerationStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Moderation stats error:", error);
+      res.status(500).json({ error: "Failed to fetch moderation stats" });
+    }
+  });
+
   // Content management
   app.get("/api/content/pending", async (req, res) => {
     try {
