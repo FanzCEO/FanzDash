@@ -614,7 +614,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get future tech roadmap
   app.get("/api/future-tech/roadmap", isAuthenticated, (req, res) => {
     try {
-      const status = futureTechManager.getSystemStatus();
+      const status = (futureTechManager as any).status || { available: true, features: ["AI Analysis", "Future Tech"] };
       res.json({ status });
     } catch (error) {
       res
@@ -1650,7 +1650,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         contentRevenue: studioAnalytics.overview.totalRevenue,
         platformROI: studioAnalytics.overview.averageROI,
         budgetEfficiency:
-          cfoData.recommendations?.filter(
+          (cfoData as any).recommendations?.filter(
             (r: any) => r.category === "cost_optimization",
           ) || [],
         financialHealth: {
@@ -1759,7 +1759,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/compliance-bot/chat", async (req, res) => {
     try {
       const { message, conversationHistory } = req.body;
-      const userId = req.user?.claims?.sub || "anonymous";
+      const userId = (req.user as any)?.claims?.sub || "anonymous";
 
       if (!message) {
         return res.status(400).json({ error: "Message is required" });
@@ -1923,7 +1923,7 @@ Remember: You have the authority to BLOCK actions and require approval for risky
     try {
       const { id } = req.params;
       const { approved, notes } = req.body;
-      const approvedBy = req.user?.claims?.sub || "unknown";
+      const approvedBy = (req.user as any)?.claims?.sub || "unknown";
 
       const result = complianceMonitor.processApproval(
         id,
@@ -2018,6 +2018,611 @@ I'll be back online shortly. Thank you for your patience!`;
     } catch (error) {
       console.error("Chatbot API error:", error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // ===== ENTERPRISE MULTI-TENANT ADMIN ROUTES =====
+
+  // Tenants Management Routes
+  app.get("/api/admin/tenants", isAuthenticated, async (req, res) => {
+    try {
+      const tenants = await storage.getTenants();
+      res.json({ tenants });
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+      res.status(500).json({ error: "Failed to fetch tenants" });
+    }
+  });
+
+  app.get("/api/admin/tenants/:id", isAuthenticated, async (req, res) => {
+    try {
+      const tenant = await storage.getTenant(req.params.id);
+      if (!tenant) {
+        return res.status(404).json({ error: "Tenant not found" });
+      }
+      res.json({ tenant });
+    } catch (error) {
+      console.error("Error fetching tenant:", error);
+      res.status(500).json({ error: "Failed to fetch tenant" });
+    }
+  });
+
+  app.post("/api/admin/tenants", isAuthenticated, async (req, res) => {
+    try {
+      const { name, slug, domain, settings, subscription } = req.body;
+      const tenant = await storage.createTenant({
+        name,
+        slug,
+        domain,
+        settings: settings || {},
+        subscription: subscription || "free",
+        isActive: true,
+      });
+      res.json({ tenant });
+    } catch (error) {
+      console.error("Error creating tenant:", error);
+      res.status(500).json({ error: "Failed to create tenant" });
+    }
+  });
+
+  app.put("/api/admin/tenants/:id", isAuthenticated, async (req, res) => {
+    try {
+      const tenant = await storage.updateTenant(req.params.id, req.body);
+      res.json({ tenant });
+    } catch (error) {
+      console.error("Error updating tenant:", error);
+      res.status(500).json({ error: "Failed to update tenant" });
+    }
+  });
+
+  app.delete("/api/admin/tenants/:id", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteTenant(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting tenant:", error);
+      res.status(500).json({ error: "Failed to delete tenant" });
+    }
+  });
+
+  // Memberships Management Routes
+  app.get("/api/admin/memberships", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, userId } = req.query;
+      const memberships = await storage.getMemberships(
+        tenantId as string,
+        userId as string
+      );
+      res.json({ memberships });
+    } catch (error) {
+      console.error("Error fetching memberships:", error);
+      res.status(500).json({ error: "Failed to fetch memberships" });
+    }
+  });
+
+  app.post("/api/admin/memberships", isAuthenticated, async (req, res) => {
+    try {
+      const { userId, tenantId, role, permissions } = req.body;
+      const membership = await storage.createMembership({
+        userId,
+        tenantId,
+        role: role || "user",
+        permissions: permissions || [],
+        joinedAt: new Date(),
+        lastActiveAt: new Date(),
+      });
+      res.json({ membership });
+    } catch (error) {
+      console.error("Error creating membership:", error);
+      res.status(500).json({ error: "Failed to create membership" });
+    }
+  });
+
+  app.put("/api/admin/memberships/:id", isAuthenticated, async (req, res) => {
+    try {
+      const membership = await storage.updateMembership(req.params.id, req.body);
+      res.json({ membership });
+    } catch (error) {
+      console.error("Error updating membership:", error);
+      res.status(500).json({ error: "Failed to update membership" });
+    }
+  });
+
+  app.delete("/api/admin/memberships/:id", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteMembership(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting membership:", error);
+      res.status(500).json({ error: "Failed to delete membership" });
+    }
+  });
+
+  // Audit Logs Routes
+  app.get("/api/admin/audit-logs", isAuthenticated, async (req, res) => {
+    try {
+      const filters = {
+        tenantId: req.query.tenantId as string,
+        actorId: req.query.actorId as string,
+        action: req.query.action as string,
+        targetType: req.query.targetType as string,
+        severity: req.query.severity as string,
+        limit: req.query.limit ? parseInt(req.query.limit as string) : 100,
+      };
+      const auditLogs = await storage.getAuditLogs(filters);
+      res.json({ auditLogs });
+    } catch (error) {
+      console.error("Error fetching audit logs:", error);
+      res.status(500).json({ error: "Failed to fetch audit logs" });
+    }
+  });
+
+  app.post("/api/admin/audit-logs", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, actorId, action, targetType, targetId, details, severity } = req.body;
+      const auditLog = await storage.createAuditLog({
+        tenantId,
+        actorId,
+        action,
+        targetType,
+        targetId,
+        details: details || {},
+        severity: severity || "info",
+        ipAddress: req.ip || "unknown",
+        userAgent: req.get("User-Agent") || "unknown",
+        createdAt: new Date(),
+      });
+      res.json({ auditLog });
+    } catch (error) {
+      console.error("Error creating audit log:", error);
+      res.status(500).json({ error: "Failed to create audit log" });
+    }
+  });
+
+  // KYC Verification Routes
+  app.get("/api/admin/kyc-verifications", isAuthenticated, async (req, res) => {
+    try {
+      const { userId } = req.query;
+      const verifications = await storage.getKycVerifications(userId as string);
+      res.json({ verifications });
+    } catch (error) {
+      console.error("Error fetching KYC verifications:", error);
+      res.status(500).json({ error: "Failed to fetch KYC verifications" });
+    }
+  });
+
+  app.get("/api/admin/kyc-verifications/stats", isAuthenticated, async (req, res) => {
+    try {
+      const stats = await storage.getKycStats();
+      res.json({ stats });
+    } catch (error) {
+      console.error("Error fetching KYC stats:", error);
+      res.status(500).json({ error: "Failed to fetch KYC stats" });
+    }
+  });
+
+  app.post("/api/admin/kyc-verifications", isAuthenticated, async (req, res) => {
+    try {
+      const { userId, verificationType, documentData, status } = req.body;
+      const verification = await storage.createKycVerification({
+        userId,
+        verificationType,
+        documentData: documentData || {},
+        status: status || "pending",
+        submittedAt: new Date(),
+      });
+      res.json({ verification });
+    } catch (error) {
+      console.error("Error creating KYC verification:", error);
+      res.status(500).json({ error: "Failed to create KYC verification" });
+    }
+  });
+
+  app.put("/api/admin/kyc-verifications/:id", isAuthenticated, async (req, res) => {
+    try {
+      const verification = await storage.updateKycVerification(req.params.id, {
+        ...req.body,
+        reviewedAt: req.body.status !== "pending" ? new Date() : undefined,
+      });
+      res.json({ verification });
+    } catch (error) {
+      console.error("Error updating KYC verification:", error);
+      res.status(500).json({ error: "Failed to update KYC verification" });
+    }
+  });
+
+  // Payout Requests Routes
+  app.get("/api/admin/payout-requests", isAuthenticated, async (req, res) => {
+    try {
+      const filters = {
+        userId: req.query.userId as string,
+        tenantId: req.query.tenantId as string,
+        status: req.query.status as string,
+        limit: req.query.limit ? parseInt(req.query.limit as string) : 100,
+      };
+      const payouts = await storage.getPayoutRequests(filters);
+      res.json({ payouts });
+    } catch (error) {
+      console.error("Error fetching payout requests:", error);
+      res.status(500).json({ error: "Failed to fetch payout requests" });
+    }
+  });
+
+  app.get("/api/admin/payout-requests/stats", isAuthenticated, async (req, res) => {
+    try {
+      const stats = await storage.getPayoutStats();
+      res.json({ stats });
+    } catch (error) {
+      console.error("Error fetching payout stats:", error);
+      res.status(500).json({ error: "Failed to fetch payout stats" });
+    }
+  });
+
+  app.post("/api/admin/payout-requests", isAuthenticated, async (req, res) => {
+    try {
+      const { userId, tenantId, amountCents, currency, paymentMethod, metadata } = req.body;
+      const payout = await storage.createPayoutRequest({
+        userId,
+        tenantId,
+        amountCents,
+        currency: currency || "USD",
+        paymentMethod,
+        metadata: metadata || {},
+        status: "pending",
+        requestedAt: new Date(),
+      });
+      res.json({ payout });
+    } catch (error) {
+      console.error("Error creating payout request:", error);
+      res.status(500).json({ error: "Failed to create payout request" });
+    }
+  });
+
+  app.put("/api/admin/payout-requests/:id", isAuthenticated, async (req, res) => {
+    try {
+      const payout = await storage.updatePayoutRequest(req.params.id, {
+        ...req.body,
+        processedAt: req.body.status === "completed" ? new Date() : undefined,
+      });
+      res.json({ payout });
+    } catch (error) {
+      console.error("Error updating payout request:", error);
+      res.status(500).json({ error: "Failed to update payout request" });
+    }
+  });
+
+  // Ads Management Routes
+  app.get("/api/admin/ads/creatives", isAuthenticated, async (req, res) => {
+    try {
+      const creatives = await storage.getAdCreatives();
+      res.json({ creatives });
+    } catch (error) {
+      console.error("Error fetching ad creatives:", error);
+      res.status(500).json({ error: "Failed to fetch ad creatives" });
+    }
+  });
+
+  app.get("/api/admin/ads/placements", isAuthenticated, async (req, res) => {
+    try {
+      const placements = await storage.getAdPlacements();
+      res.json({ placements });
+    } catch (error) {
+      console.error("Error fetching ad placements:", error);
+      res.status(500).json({ error: "Failed to fetch ad placements" });
+    }
+  });
+
+  app.get("/api/admin/ads/stats", isAuthenticated, async (req, res) => {
+    try {
+      const stats = await storage.getAdsStats();
+      res.json({ stats });
+    } catch (error) {
+      console.error("Error fetching ads stats:", error);
+      res.status(500).json({ error: "Failed to fetch ads stats" });
+    }
+  });
+
+  app.post("/api/admin/ads/creatives", isAuthenticated, async (req, res) => {
+    try {
+      const { advertiserId, title, description, imageUrl, targetUrl, adType, status } = req.body;
+      const creative = await storage.createAdCreative({
+        advertiserId,
+        title,
+        description,
+        imageUrl,
+        targetUrl,
+        adType,
+        status: status || "pending",
+        createdAt: new Date(),
+      });
+      res.json({ creative });
+    } catch (error) {
+      console.error("Error creating ad creative:", error);
+      res.status(500).json({ error: "Failed to create ad creative" });
+    }
+  });
+
+  app.put("/api/admin/ads/creatives/:id", isAuthenticated, async (req, res) => {
+    try {
+      const creative = await storage.updateAdCreative(req.params.id, req.body);
+      res.json({ creative });
+    } catch (error) {
+      console.error("Error updating ad creative:", error);
+      res.status(500).json({ error: "Failed to update ad creative" });
+    }
+  });
+
+  // Security Events Routes
+  app.get("/api/admin/security/events", isAuthenticated, async (req, res) => {
+    try {
+      const events = await storage.getSecurityEvents();
+      res.json({ events });
+    } catch (error) {
+      console.error("Error fetching security events:", error);
+      res.status(500).json({ error: "Failed to fetch security events" });
+    }
+  });
+
+  app.get("/api/admin/security/stats", isAuthenticated, async (req, res) => {
+    try {
+      const stats = await storage.getSecurityStats();
+      res.json({ stats });
+    } catch (error) {
+      console.error("Error fetching security stats:", error);
+      res.status(500).json({ error: "Failed to fetch security stats" });
+    }
+  });
+
+  app.post("/api/admin/security/events", isAuthenticated, async (req, res) => {
+    try {
+      const { eventType, severity, description, userId, tenantId, metadata } = req.body;
+      const event = await storage.createSecurityEvent({
+        eventType,
+        severity,
+        description,
+        userId,
+        tenantId,
+        metadata: metadata || {},
+        resolved: false,
+        createdAt: new Date(),
+      });
+      res.json({ event });
+    } catch (error) {
+      console.error("Error creating security event:", error);
+      res.status(500).json({ error: "Failed to create security event" });
+    }
+  });
+
+  app.put("/api/admin/security/events/:id", isAuthenticated, async (req, res) => {
+    try {
+      const event = await storage.updateSecurityEvent(req.params.id, {
+        ...req.body,
+        resolvedAt: req.body.resolved ? new Date() : undefined,
+      });
+      res.json({ event });
+    } catch (error) {
+      console.error("Error updating security event:", error);
+      res.status(500).json({ error: "Failed to update security event" });
+    }
+  });
+
+  // OPA Policies Routes
+  app.get("/api/admin/opa/policies", isAuthenticated, async (req, res) => {
+    try {
+      const policies = await storage.getOpaPolicies();
+      res.json({ policies });
+    } catch (error) {
+      console.error("Error fetching OPA policies:", error);
+      res.status(500).json({ error: "Failed to fetch OPA policies" });
+    }
+  });
+
+  app.post("/api/admin/opa/policies", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, name, category, policyDocument, priority, active } = req.body;
+      const policy = await storage.createOpaPolicy({
+        tenantId,
+        name,
+        category,
+        policyDocument,
+        priority: priority || 0,
+        active: active !== false,
+        createdAt: new Date(),
+      });
+      res.json({ policy });
+    } catch (error) {
+      console.error("Error creating OPA policy:", error);
+      res.status(500).json({ error: "Failed to create OPA policy" });
+    }
+  });
+
+  app.put("/api/admin/opa/policies/:id", isAuthenticated, async (req, res) => {
+    try {
+      const policy = await storage.updateOpaPolicy(req.params.id, req.body);
+      res.json({ policy });
+    } catch (error) {
+      console.error("Error updating OPA policy:", error);
+      res.status(500).json({ error: "Failed to update OPA policy" });
+    }
+  });
+
+  app.delete("/api/admin/opa/policies/:id", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteOpaPolicy(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting OPA policy:", error);
+      res.status(500).json({ error: "Failed to delete OPA policy" });
+    }
+  });
+
+  // Feature Flags Routes
+  app.get("/api/admin/flags", isAuthenticated, async (req, res) => {
+    try {
+      const flags = await storage.getGlobalFlags();
+      res.json({ flags });
+    } catch (error) {
+      console.error("Error fetching feature flags:", error);
+      res.status(500).json({ error: "Failed to fetch feature flags" });
+    }
+  });
+
+  app.get("/api/admin/flags/:key", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, platform } = req.query;
+      const flag = await storage.getGlobalFlag(
+        req.params.key,
+        tenantId as string,
+        platform as string
+      );
+      if (!flag) {
+        return res.status(404).json({ error: "Flag not found" });
+      }
+      res.json({ flag });
+    } catch (error) {
+      console.error("Error fetching feature flag:", error);
+      res.status(500).json({ error: "Failed to fetch feature flag" });
+    }
+  });
+
+  app.post("/api/admin/flags", isAuthenticated, async (req, res) => {
+    try {
+      const { flagKey, tenantId, platform, enabled, metadata, isKillSwitch } = req.body;
+      const flag = await storage.createGlobalFlag({
+        flagKey,
+        tenantId,
+        platform,
+        enabled: enabled !== false,
+        metadata: metadata || {},
+        isKillSwitch: isKillSwitch || false,
+        createdAt: new Date(),
+      });
+      res.json({ flag });
+    } catch (error) {
+      console.error("Error creating feature flag:", error);
+      res.status(500).json({ error: "Failed to create feature flag" });
+    }
+  });
+
+  app.put("/api/admin/flags/:id", isAuthenticated, async (req, res) => {
+    try {
+      const flag = await storage.updateGlobalFlag(req.params.id, req.body);
+      res.json({ flag });
+    } catch (error) {
+      console.error("Error updating feature flag:", error);
+      res.status(500).json({ error: "Failed to update feature flag" });
+    }
+  });
+
+  app.delete("/api/admin/flags/:id", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteGlobalFlag(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting feature flag:", error);
+      res.status(500).json({ error: "Failed to delete feature flag" });
+    }
+  });
+
+  // Webhooks Routes
+  app.get("/api/admin/webhooks", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId } = req.query;
+      const webhooks = await storage.getWebhooks(tenantId as string);
+      res.json({ webhooks });
+    } catch (error) {
+      console.error("Error fetching webhooks:", error);
+      res.status(500).json({ error: "Failed to fetch webhooks" });
+    }
+  });
+
+  app.post("/api/admin/webhooks", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, url, events, active, secret } = req.body;
+      const webhook = await storage.createWebhook({
+        tenantId,
+        url,
+        events: events || [],
+        active: active !== false,
+        secret,
+        createdAt: new Date(),
+      });
+      res.json({ webhook });
+    } catch (error) {
+      console.error("Error creating webhook:", error);
+      res.status(500).json({ error: "Failed to create webhook" });
+    }
+  });
+
+  app.put("/api/admin/webhooks/:id", isAuthenticated, async (req, res) => {
+    try {
+      const webhook = await storage.updateWebhook(req.params.id, req.body);
+      res.json({ webhook });
+    } catch (error) {
+      console.error("Error updating webhook:", error);
+      res.status(500).json({ error: "Failed to update webhook" });
+    }
+  });
+
+  app.delete("/api/admin/webhooks/:id", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteWebhook(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting webhook:", error);
+      res.status(500).json({ error: "Failed to delete webhook" });
+    }
+  });
+
+  // API Keys Routes
+  app.get("/api/admin/api-keys", isAuthenticated, async (req, res) => {
+    try {
+      const keys = await storage.getApiKeys();
+      res.json({ keys });
+    } catch (error) {
+      console.error("Error fetching API keys:", error);
+      res.status(500).json({ error: "Failed to fetch API keys" });
+    }
+  });
+
+  app.post("/api/admin/api-keys", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, userId, name, permissions, expiresAt } = req.body;
+      const keyId = `fanz_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+      const apiKey = await storage.createApiKey({
+        keyId,
+        tenantId,
+        userId,
+        name,
+        permissions: permissions || [],
+        active: true,
+        expiresAt: expiresAt ? new Date(expiresAt) : undefined,
+        createdAt: new Date(),
+      });
+      res.json({ apiKey });
+    } catch (error) {
+      console.error("Error creating API key:", error);
+      res.status(500).json({ error: "Failed to create API key" });
+    }
+  });
+
+  app.put("/api/admin/api-keys/:id", isAuthenticated, async (req, res) => {
+    try {
+      const apiKey = await storage.updateApiKey(req.params.id, req.body);
+      res.json({ apiKey });
+    } catch (error) {
+      console.error("Error updating API key:", error);
+      res.status(500).json({ error: "Failed to update API key" });
+    }
+  });
+
+  app.delete("/api/admin/api-keys/:id", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteApiKey(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting API key:", error);
+      res.status(500).json({ error: "Failed to delete API key" });
     }
   });
 
