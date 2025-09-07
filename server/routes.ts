@@ -43,6 +43,12 @@ import { aiPredictiveAnalytics } from "./aiPredictiveAnalytics";
 import { aiContentModerationService } from "./aiContentModeration";
 import { creatorAutomationSystem } from "./creatorAutomation";
 import { ecosystemMaintenance } from "./ecosystemMaintenance";
+
+// Security middleware imports
+import rateLimit from "express-rate-limit";
+import csrf from "csrf";
+import helmet from "helmet";
+import { body, validationResult } from "express-validator";
 import { starzStudioService } from "./starzStudioService";
 import {
   complianceMonitor,
@@ -140,7 +146,80 @@ function initializeWebRTCSignaling(roomId: string) {
   console.log(`Initializing WebRTC signaling for room: ${roomId}`);
 }
 
+// Security middleware configuration
+const createRateLimiter = (windowMs: number, max: number, message: string) => {
+  return rateLimit({
+    windowMs,
+    max,
+    message: { error: message, retryAfter: Math.ceil(windowMs / 1000) },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+      res.status(429).json({
+        error: message,
+        retryAfter: Math.ceil(windowMs / 1000),
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+};
+
+// Different rate limiters for different endpoint types
+const generalApiLimiter = createRateLimiter(15 * 60 * 1000, 1000, "Too many API requests"); // 1000 requests per 15 minutes
+const authLimiter = createRateLimiter(15 * 60 * 1000, 10, "Too many authentication attempts"); // 10 attempts per 15 minutes
+const uploadLimiter = createRateLimiter(60 * 60 * 1000, 50, "Too many upload requests"); // 50 uploads per hour
+const strictLimiter = createRateLimiter(15 * 60 * 1000, 100, "Rate limit exceeded"); // 100 requests per 15 minutes
+const adminLimiter = createRateLimiter(15 * 60 * 1000, 200, "Too many admin requests"); // 200 admin requests per 15 minutes
+
+// CSRF protection
+const csrfProtection = csrf({ cookie: true });
+
+// Input validation helpers
+const validateInput = (validations: any[]) => {
+  return async (req: any, res: any, next: any) => {
+    await Promise.all(validations.map(validation => validation.run(req)));
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: "Validation failed",
+        details: errors.array()
+      });
+    }
+    next();
+  };
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply security headers
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "wss:", "ws:"]
+      }
+    },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true
+    }
+  }));
+
+  // Apply general rate limiting to all routes
+  app.use('/api/', generalApiLimiter);
+
+  // Apply specific rate limiting to sensitive endpoints
+  app.use('/api/login', authLimiter);
+  app.use('/api/register', authLimiter);
+  app.use('/api/auth/*', authLimiter);
+  app.use('/api/admin/*', adminLimiter);
+  app.use('/api/upload/*', uploadLimiter);
+  app.use('/api/webhooks/*', strictLimiter);
+  app.use('/api/system/*', adminLimiter);
+  app.use('/api/security/*', adminLimiter);
   // Basic health check
   app.get("/api/health", (req, res) => {
     res.json({ status: "healthy", timestamp: new Date(), version: "1.0.0" });
@@ -3232,8 +3311,16 @@ I'll be back online shortly. Thank you for your patience!`;
         timestamp: new Date()
       });
     } catch (error) {
-      console.error("Ads webhook processing error:", error);
-      res.status(500).json({ error: "Ads webhook processing failed" });
+      // Secure error logging - avoid format string vulnerabilities
+      console.error("Ads webhook processing error:", { 
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+        timestamp: new Date().toISOString()
+      });
+      res.status(500).json({ 
+        error: "Ads webhook processing failed",
+        timestamp: new Date().toISOString()
+      });
     }
   });
 

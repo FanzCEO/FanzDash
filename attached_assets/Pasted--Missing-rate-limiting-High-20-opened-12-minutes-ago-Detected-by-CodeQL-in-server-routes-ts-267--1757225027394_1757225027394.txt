@@ -1,0 +1,100 @@
+
+Missing rate limiting
+High
+#20 opened 12 minutes ago • Detected by CodeQL in server/routes.ts :267
+main
+
+Missing rate limiting
+High
+#19 opened 12 minutes ago • Detected by CodeQL in server/vite.ts :82
+main
+
+Missing rate limiting
+High
+#18 opened 12 minutes ago • Detected by CodeQL in server/vite.ts :44
+main
+
+Missing rate limiting
+High
+#17 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :433
+main
+
+Missing rate limiting
+High
+#16 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :406
+main
+
+Missing rate limiting
+High
+#15 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :391
+main
+
+Missing rate limiting
+High
+#14 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :372
+main
+
+Missing rate limiting
+High
+#13 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :337
+main
+
+Missing rate limiting
+High
+#12 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :310
+main
+
+Missing rate limiting
+High
+#11 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :308
+main
+
+Missing rate limiting
+High
+#10 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :286
+main
+
+Missing rate limiting
+High
+#9 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :256
+main
+
+Missing rate limiting
+High
+#8 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :219
+main
+
+Missing rate limiting
+High
+#7 opened 12 minutes ago • Detected by CodeQL in server/auth/authRoutes.ts :36
+main
+
+Client-side cross-site scripting
+High
+#6 opened 12 minutes ago • Detected by CodeQL in server/auth/deviceSecurity.ts :314
+main
+
+Missing CSRF middleware
+High
+#5 opened 12 minutes ago • Detected by CodeQL in server/routes.ts :151
+main
+
+Use of externally-controlled format string
+High
+#4 opened 12 minutes ago • Detected by CodeQL in server/routes.ts :3305
+main
+
+Use of externally-controlled format string
+High
+#3 opened 12 minutes ago • Detected by CodeQL in server/routes.ts :3290
+main
+
+Use of externally-controlled format string
+High
+#2 opened 12 minutes ago • Detected by CodeQL in server/routes.ts :3287
+main
+
+Use of externally-controlled format string
+High
+#1 opened 12 minutes ago • Detected by CodeQL in server/routes.ts :3284
+main
