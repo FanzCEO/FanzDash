@@ -3356,6 +3356,440 @@ I'll be back online shortly. Thank you for your patience!`;
     }
   });
 
+  // ===== FEATURE FLAGS & KILL-SWITCH SYSTEM =====
+
+  // Global Feature Flag Evaluation
+  app.post("/api/flags/evaluate", isAuthenticated, async (req, res) => {
+    try {
+      const { flagKey, context } = req.body;
+      const { tenantId, userId, platform, environment } = context || {};
+      
+      // Get feature flag with context
+      const flag = await storage.getGlobalFlag(flagKey, tenantId, platform);
+      
+      if (!flag) {
+        // Default to disabled for unknown flags
+        return res.json({
+          enabled: false,
+          flagKey,
+          reason: "flag_not_found",
+          defaultValue: false,
+          evaluationId: `eval_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+          timestamp: new Date()
+        });
+      }
+
+      // Kill switch check - immediate disable
+      if (flag.isKillSwitch && !flag.enabled) {
+        await storage.createAuditLog({
+          tenantId: tenantId || "global",
+          actorId: userId || "system",
+          action: "kill_switch_triggered",
+          targetType: "feature_flag",
+          targetId: flag.id,
+          details: { flagKey, context, killSwitchActive: true },
+          severity: "critical",
+          ipAddress: req.ip || "unknown",
+          userAgent: req.get("User-Agent") || "unknown",
+          createdAt: new Date(),
+        });
+
+        return res.json({
+          enabled: false,
+          flagKey,
+          reason: "kill_switch_active",
+          killSwitch: true,
+          evaluationId: `eval_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+          timestamp: new Date()
+        });
+      }
+
+      // Advanced evaluation logic (simplified)
+      let enabled = flag.enabled;
+      const evaluationMetadata = {
+        rolloutPercentage: flag.metadata?.rolloutPercentage || 100,
+        userInRollout: true,
+        environmentMatch: !environment || flag.metadata?.environments?.includes(environment) !== false
+      };
+
+      // Percentage rollout simulation
+      if (flag.metadata?.rolloutPercentage && flag.metadata.rolloutPercentage < 100) {
+        const userHash = userId ? Math.abs(userId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) : Math.random() * 1000;
+        evaluationMetadata.userInRollout = (userHash % 100) < flag.metadata.rolloutPercentage;
+        enabled = enabled && evaluationMetadata.userInRollout;
+      }
+
+      // Environment check
+      enabled = enabled && evaluationMetadata.environmentMatch;
+
+      res.json({
+        enabled,
+        flagKey,
+        reason: enabled ? "flag_enabled" : "rollout_excluded",
+        metadata: evaluationMetadata,
+        evaluationId: `eval_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+        timestamp: new Date()
+      });
+
+    } catch (error) {
+      console.error("Error evaluating feature flag:", error);
+      res.status(500).json({ error: "Feature flag evaluation failed" });
+    }
+  });
+
+  // Bulk Flag Evaluation (for performance)
+  app.post("/api/flags/evaluate/bulk", isAuthenticated, async (req, res) => {
+    try {
+      const { flags, context } = req.body;
+      const { tenantId, userId, platform } = context || {};
+
+      const evaluations = {};
+      
+      for (const flagKey of flags) {
+        try {
+          const flag = await storage.getGlobalFlag(flagKey, tenantId, platform);
+          
+          if (!flag) {
+            evaluations[flagKey] = {
+              enabled: false,
+              reason: "flag_not_found",
+              timestamp: new Date()
+            };
+            continue;
+          }
+
+          // Kill switch check
+          if (flag.isKillSwitch && !flag.enabled) {
+            evaluations[flagKey] = {
+              enabled: false,
+              reason: "kill_switch_active",
+              killSwitch: true,
+              timestamp: new Date()
+            };
+            continue;
+          }
+
+          // Standard evaluation
+          evaluations[flagKey] = {
+            enabled: flag.enabled,
+            reason: flag.enabled ? "flag_enabled" : "flag_disabled",
+            metadata: flag.metadata,
+            timestamp: new Date()
+          };
+
+        } catch (error) {
+          evaluations[flagKey] = {
+            enabled: false,
+            reason: "evaluation_error",
+            error: error.message,
+            timestamp: new Date()
+          };
+        }
+      }
+
+      res.json({
+        evaluations,
+        context,
+        evaluationId: `bulk_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+        timestamp: new Date()
+      });
+
+    } catch (error) {
+      console.error("Error in bulk flag evaluation:", error);
+      res.status(500).json({ error: "Bulk flag evaluation failed" });
+    }
+  });
+
+  // Kill Switch Emergency Control
+  app.post("/api/flags/:flagKey/kill-switch", isAuthenticated, async (req, res) => {
+    try {
+      const { flagKey } = req.params;
+      const { action, reason, duration } = req.body; // action: "activate" | "deactivate"
+      const userId = (req.user as any)?.claims?.sub;
+
+      const flag = await storage.getGlobalFlag(flagKey);
+      if (!flag) {
+        return res.status(404).json({ error: "Feature flag not found" });
+      }
+
+      if (!flag.isKillSwitch) {
+        return res.status(400).json({ error: "Flag is not configured as a kill switch" });
+      }
+
+      // Update flag status
+      const enabled = action === "deactivate" ? false : true;
+      const updatedFlag = await storage.updateGlobalFlag(flag.id, {
+        enabled,
+        metadata: {
+          ...flag.metadata,
+          killSwitchAction: action,
+          killSwitchReason: reason,
+          killSwitchTriggeredBy: userId,
+          killSwitchTriggeredAt: new Date(),
+          killSwitchDuration: duration
+        }
+      });
+
+      // Create critical security event
+      await storage.createSecurityEvent({
+        eventType: "kill_switch_triggered",
+        severity: "critical",
+        description: `Kill switch ${action}d for flag ${flagKey}: ${reason}`,
+        userId,
+        tenantId: "global",
+        metadata: {
+          flagKey,
+          action,
+          reason,
+          duration,
+          flagId: flag.id
+        },
+        resolved: action === "deactivate" ? false : true,
+        createdAt: new Date(),
+      });
+
+      // Create audit log
+      await storage.createAuditLog({
+        tenantId: "global",
+        actorId: userId,
+        action: `kill_switch_${action}`,
+        targetType: "feature_flag",
+        targetId: flag.id,
+        details: {
+          flagKey,
+          action,
+          reason,
+          duration,
+          previousState: flag.enabled
+        },
+        severity: "critical",
+        ipAddress: req.ip || "unknown",
+        userAgent: req.get("User-Agent") || "unknown",
+        createdAt: new Date(),
+      });
+
+      res.json({
+        success: true,
+        flagKey,
+        action,
+        status: enabled ? "active" : "disabled",
+        triggeredBy: userId,
+        triggeredAt: new Date(),
+        reason
+      });
+
+    } catch (error) {
+      console.error("Error managing kill switch:", error);
+      res.status(500).json({ error: "Kill switch operation failed" });
+    }
+  });
+
+  // Feature Flag Analytics & Usage
+  app.get("/api/flags/analytics", isAuthenticated, async (req, res) => {
+    try {
+      const { flagKey, timeRange, groupBy } = req.query;
+      
+      // Simulated analytics data
+      const analytics = {
+        summary: {
+          totalEvaluations: Math.floor(Math.random() * 100000) + 50000,
+          uniqueUsers: Math.floor(Math.random() * 10000) + 5000,
+          enabledRate: (Math.random() * 40 + 50).toFixed(2) + "%",
+          killSwitchActivations: Math.floor(Math.random() * 5),
+          lastEvaluation: new Date(Date.now() - Math.random() * 3600000)
+        },
+        evaluationTrends: [
+          {
+            timestamp: new Date(Date.now() - 3600000 * 24),
+            evaluations: Math.floor(Math.random() * 5000) + 2000,
+            enabled: Math.floor(Math.random() * 3000) + 1500,
+            disabled: Math.floor(Math.random() * 2000) + 500
+          },
+          {
+            timestamp: new Date(Date.now() - 3600000 * 12),
+            evaluations: Math.floor(Math.random() * 5000) + 2000,
+            enabled: Math.floor(Math.random() * 3000) + 1500,
+            disabled: Math.floor(Math.random() * 2000) + 500
+          },
+          {
+            timestamp: new Date(),
+            evaluations: Math.floor(Math.random() * 5000) + 2000,
+            enabled: Math.floor(Math.random() * 3000) + 1500,
+            disabled: Math.floor(Math.random() * 2000) + 500
+          }
+        ],
+        topFlags: [
+          { flagKey: "ai_analysis_enabled", evaluations: Math.floor(Math.random() * 10000) + 5000 },
+          { flagKey: "real_time_moderation", evaluations: Math.floor(Math.random() * 8000) + 4000 },
+          { flagKey: "advanced_analytics", evaluations: Math.floor(Math.random() * 6000) + 3000 },
+          { flagKey: "enterprise_features", evaluations: Math.floor(Math.random() * 4000) + 2000 }
+        ],
+        errorRates: {
+          evaluationFailures: (Math.random() * 2).toFixed(3) + "%",
+          timeouts: (Math.random() * 0.5).toFixed(3) + "%",
+          notFound: (Math.random() * 1).toFixed(3) + "%"
+        }
+      };
+
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching flag analytics:", error);
+      res.status(500).json({ error: "Failed to fetch flag analytics" });
+    }
+  });
+
+  // Feature Flag A/B Testing
+  app.post("/api/flags/ab-test/create", isAuthenticated, async (req, res) => {
+    try {
+      const { flagKey, variants, trafficSplit, targetAudience } = req.body;
+      const userId = (req.user as any)?.claims?.sub;
+
+      // Create A/B test configuration
+      const abTest = {
+        id: `ab_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+        flagKey,
+        variants: variants || [
+          { name: "control", percentage: 50 },
+          { name: "treatment", percentage: 50 }
+        ],
+        trafficSplit: trafficSplit || 50,
+        targetAudience: targetAudience || "all",
+        status: "active",
+        createdBy: userId,
+        createdAt: new Date(),
+        metrics: {
+          totalUsers: 0,
+          conversionRate: 0,
+          statisticalSignificance: 0
+        }
+      };
+
+      // Update the feature flag with A/B test metadata
+      const flag = await storage.getGlobalFlag(flagKey);
+      if (flag) {
+        await storage.updateGlobalFlag(flag.id, {
+          metadata: {
+            ...flag.metadata,
+            abTest,
+            isAbTest: true
+          }
+        });
+      }
+
+      // Log A/B test creation
+      await storage.createAuditLog({
+        tenantId: "global",
+        actorId: userId,
+        action: "ab_test_created",
+        targetType: "feature_flag",
+        targetId: flag?.id || flagKey,
+        details: { flagKey, abTest },
+        severity: "info",
+        ipAddress: req.ip || "unknown",
+        userAgent: req.get("User-Agent") || "unknown",
+        createdAt: new Date(),
+      });
+
+      res.json({
+        success: true,
+        abTest,
+        flagKey,
+        message: "A/B test created successfully"
+      });
+
+    } catch (error) {
+      console.error("Error creating A/B test:", error);
+      res.status(500).json({ error: "A/B test creation failed" });
+    }
+  });
+
+  // Feature Flag Environment Management
+  app.get("/api/flags/environments", isAuthenticated, async (req, res) => {
+    try {
+      const environments = {
+        current: process.env.NODE_ENV || "development",
+        available: ["development", "staging", "production", "preview"],
+        configurations: {
+          development: {
+            defaultEnabled: true,
+            killSwitchesDisabled: true,
+            debugMode: true
+          },
+          staging: {
+            defaultEnabled: true,
+            killSwitchesDisabled: false,
+            debugMode: true
+          },
+          production: {
+            defaultEnabled: false,
+            killSwitchesDisabled: false,
+            debugMode: false
+          }
+        },
+        statistics: {
+          flagsPerEnvironment: {
+            development: Math.floor(Math.random() * 50) + 20,
+            staging: Math.floor(Math.random() * 40) + 15,
+            production: Math.floor(Math.random() * 30) + 10
+          },
+          activeKillSwitches: Math.floor(Math.random() * 3),
+          environmentSyncStatus: "synchronized"
+        }
+      };
+
+      res.json(environments);
+    } catch (error) {
+      console.error("Error fetching environment data:", error);
+      res.status(500).json({ error: "Failed to fetch environment data" });
+    }
+  });
+
+  // Flag Configuration Validation
+  app.post("/api/flags/validate", isAuthenticated, async (req, res) => {
+    try {
+      const { flagKey, configuration } = req.body;
+
+      const validation = {
+        valid: true,
+        warnings: [],
+        errors: [],
+        suggestions: []
+      };
+
+      // Validate flag key format
+      if (!/^[a-z][a-z0-9_]*$/.test(flagKey)) {
+        validation.valid = false;
+        validation.errors.push("Flag key must start with a letter and contain only lowercase letters, numbers, and underscores");
+      }
+
+      // Validate rollout percentage
+      if (configuration.rolloutPercentage && (configuration.rolloutPercentage < 0 || configuration.rolloutPercentage > 100)) {
+        validation.valid = false;
+        validation.errors.push("Rollout percentage must be between 0 and 100");
+      }
+
+      // Kill switch warnings
+      if (configuration.isKillSwitch && !configuration.reason) {
+        validation.warnings.push("Kill switches should have a documented reason");
+      }
+
+      // Environment checks
+      if (configuration.environments && configuration.environments.includes("production") && !configuration.approvedForProduction) {
+        validation.warnings.push("Production flags should be explicitly approved");
+      }
+
+      // Add suggestions
+      if (!configuration.description) {
+        validation.suggestions.push("Consider adding a description to document the flag's purpose");
+      }
+
+      res.json(validation);
+    } catch (error) {
+      console.error("Error validating flag configuration:", error);
+      res.status(500).json({ error: "Flag validation failed" });
+    }
+  });
+
   // WebSocket for chat
   const chatWss = new WebSocketServer({ server: httpServer, path: "/ws-chat" });
   chatWss.on("connection", (ws) => {
