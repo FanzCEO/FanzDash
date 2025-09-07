@@ -3081,7 +3081,353 @@ export const insertComplianceChecklistSchema = createInsertSchema(
   checkedAt: true,
 });
 
-// 2257 Compliance types
+// ===== ENTERPRISE MULTI-TENANT EXTENSIONS =====
+
+// Multi-Tenant Organizations
+export const tenants = pgTable("tenants", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  slug: varchar("slug").notNull().unique(), // e.g., 'boyfanz', 'fanzcommerce'
+  name: varchar("name").notNull(), // e.g., 'BoyFanz', 'FanzCommerce'
+  ssoDomain: varchar("sso_domain"), // e.g., 'boyfanz.com'
+  status: varchar("status").notNull().default("active"), // 'active', 'suspended', 'archived'
+  brandingConfig: jsonb("branding_config").default("{}"), // logos, colors, etc.
+  billingConfig: jsonb("billing_config").default("{}"),
+  maxUsers: integer("max_users").default(1000),
+  subscriptionTier: varchar("subscription_tier").default("enterprise"), // 'basic', 'pro', 'enterprise'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User-Tenant Relationships
+export const memberships = pgTable("memberships", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  tenantId: varchar("tenant_id")
+    .references(() => tenants.id)
+    .notNull(),
+  role: varchar("role").notNull().default("member"), // 'owner', 'admin', 'moderator', 'member'
+  permissions: jsonb("permissions").default("[]"), // array of permission strings
+  status: varchar("status").notNull().default("active"), // 'active', 'suspended', 'revoked'
+  invitedBy: varchar("invited_by").references(() => users.id),
+  joinedAt: timestamp("joined_at").defaultNow(),
+  lastActiveAt: timestamp("last_active_at").defaultNow(),
+});
+
+// Enhanced Audit Logs for Enterprise
+export const auditLogs = pgTable("audit_logs", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  actorId: varchar("actor_id")
+    .references(() => users.id)
+    .notNull(),
+  tenantId: varchar("tenant_id").references(() => tenants.id), // null for global actions
+  action: varchar("action").notNull(), // 'create', 'update', 'delete', 'login', 'logout', etc.
+  targetType: varchar("target_type").notNull(), // 'user', 'tenant', 'content', 'payment', etc.
+  targetId: varchar("target_id").notNull(),
+  diffJson: jsonb("diff_json"), // before/after changes
+  contextJson: jsonb("context_json"), // IP, user agent, etc.
+  severity: varchar("severity").notNull().default("info"), // 'info', 'warn', 'error', 'critical'
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// KYC Verification System
+export const kycVerifications = pgTable("kyc_verifications", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  provider: varchar("provider").notNull(), // 'verifymy', 'onfido', 'jumio'
+  status: varchar("status").notNull().default("pending"), // 'pending', 'verified', 'failed', 'expired'
+  externalId: varchar("external_id"), // provider's verification ID
+  dataJson: jsonb("data_json"), // verification results from provider
+  documentsJson: jsonb("documents_json"), // uploaded document references
+  webhookEvents: jsonb("webhook_events").default("[]"), // array of webhook events
+  verifiedAt: timestamp("verified_at"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Payout Management System
+export const payoutRequests = pgTable("payout_requests", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  tenantId: varchar("tenant_id").references(() => tenants.id),
+  amountCents: integer("amount_cents").notNull(), // amount in cents
+  currency: varchar("currency").notNull().default("USD"),
+  status: varchar("status").notNull().default("pending"), // 'pending', 'approved', 'processing', 'completed', 'failed', 'cancelled'
+  provider: varchar("provider").default("stripe"), // 'stripe', 'paypal', 'wise'
+  providerRef: varchar("provider_ref"), // external payout ID
+  webhookEvents: jsonb("webhook_events").default("[]"),
+  bankDetails: jsonb("bank_details"), // encrypted bank account info
+  approvedBy: varchar("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  processedAt: timestamp("processed_at"),
+  failureReason: text("failure_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Ads Management - Creative Content
+export const adCreatives = pgTable("ad_creatives", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  advertiserId: varchar("advertiser_id").notNull(), // external advertiser ID
+  campaignId: varchar("campaign_id"), // external campaign ID
+  type: varchar("type").notNull(), // 'banner', 'video', 'native', 'popup'
+  title: varchar("title"),
+  description: text("description"),
+  imageUrl: text("image_url"),
+  videoUrl: text("video_url"),
+  clickUrl: text("click_url").notNull(),
+  metaJson: jsonb("meta_json").default("{}"), // dimensions, format, etc.
+  targetingJson: jsonb("targeting_json").default("{}"), // audience targeting rules
+  status: varchar("status").notNull().default("pending"), // 'pending', 'approved', 'rejected', 'paused', 'active'
+  moderatedBy: varchar("moderated_by").references(() => users.id),
+  moderationNotes: text("moderation_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Ads Management - Placement Inventory
+export const adPlacements = pgTable("ad_placements", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  platform: varchar("platform").notNull(), // 'fanzroulette', 'fanztube', etc.
+  slot: varchar("slot").notNull(), // 'header-banner', 'sidebar', 'pre-roll'
+  dimensions: varchar("dimensions"), // '728x90', '300x250', etc.
+  type: varchar("type").notNull(), // 'banner', 'video', 'native'
+  status: varchar("status").notNull().default("active"), // 'active', 'paused', 'sold-out'
+  capsJson: jsonb("caps_json").default("{}"), // daily caps, frequency caps
+  rateCardJson: jsonb("rate_card_json").default("{}"), // pricing tiers, minimum bids
+  currentCreativeId: varchar("current_creative_id").references(() => adCreatives.id),
+  impressions: integer("impressions").default(0),
+  clicks: integer("clicks").default(0),
+  revenue: integer("revenue").default(0), // in cents
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Security Events for SIEM Integration
+export const securityEvents = pgTable("security_events", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  eventType: varchar("event_type").notNull(), // 'failed_login', 'suspicious_activity', 'policy_violation'
+  severity: varchar("severity").notNull(), // 'low', 'medium', 'high', 'critical'
+  userId: varchar("user_id").references(() => users.id),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  tenantId: varchar("tenant_id").references(() => tenants.id),
+  detailsJson: jsonb("details_json").default("{}"), // event-specific data
+  resolved: boolean("resolved").default(false),
+  resolvedBy: varchar("resolved_by").references(() => users.id),
+  resolvedAt: timestamp("resolved_at"),
+  alertSent: boolean("alert_sent").default(false),
+  siemExported: boolean("siem_exported").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// OPA Policy Engine
+export const opaPolicies = pgTable("opa_policies", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull().unique(),
+  version: varchar("version").notNull(),
+  regoS3Key: varchar("rego_s3_key").notNull(), // S3 path to .rego file
+  active: boolean("active").notNull().default(false),
+  tenantId: varchar("tenant_id").references(() => tenants.id), // null for global policies
+  category: varchar("category").default("content"), // 'content', 'user', 'financial', 'security'
+  priority: integer("priority").default(100), // higher number = higher priority
+  notes: text("notes"),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Feature Flags & Kill Switches
+export const globalFlags = pgTable("global_flags", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  flagKey: varchar("flag_key").notNull(), // 'uploads_enabled', 'payouts_enabled'
+  valueJson: jsonb("value_json").notNull(), // flag value (boolean, string, object)
+  tenantId: varchar("tenant_id").references(() => tenants.id), // null for global flags
+  platform: varchar("platform"), // null for all platforms
+  rolloutPercent: integer("rollout_percent").default(0), // 0-100
+  conditions: jsonb("conditions").default("[]"), // array of targeting conditions
+  notes: text("notes"),
+  isKillSwitch: boolean("is_kill_switch").default(false), // emergency kill switch
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Webhook Management
+export const webhooks = pgTable("webhooks", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  endpoint: text("endpoint").notNull(),
+  events: jsonb("events").notNull(), // array of event types
+  secret: varchar("secret").notNull(), // webhook signature secret
+  active: boolean("active").default(true),
+  retryPolicy: jsonb("retry_policy").default("{\"maxRetries\": 3, \"backoff\": \"exponential\"}"),
+  lastAttempt: timestamp("last_attempt"),
+  lastSuccess: timestamp("last_success"),
+  failureCount: integer("failure_count").default(0),
+  tenantId: varchar("tenant_id").references(() => tenants.id),
+  createdBy: varchar("created_by")
+    .references(() => users.id)
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// API Key Management
+export const apiKeys = pgTable("api_keys", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  keyId: varchar("key_id").notNull().unique(), // public key identifier
+  hashedKey: varchar("hashed_key").notNull(), // bcrypt hashed secret
+  name: varchar("name").notNull(),
+  permissions: jsonb("permissions").default("[]"), // array of permission strings
+  tenantId: varchar("tenant_id").references(() => tenants.id),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  lastUsed: timestamp("last_used"),
+  usageCount: integer("usage_count").default(0),
+  rateLimit: integer("rate_limit").default(1000), // requests per hour
+  active: boolean("active").default(true),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// ===== ENTERPRISE SCHEMAS & TYPES =====
+
+// Tenant schemas
+export const insertTenantSchema = createInsertSchema(tenants).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertMembershipSchema = createInsertSchema(memberships).omit({
+  id: true,
+  joinedAt: true,
+  lastActiveAt: true,
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertKycVerificationSchema = createInsertSchema(kycVerifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPayoutRequestSchema = createInsertSchema(payoutRequests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAdCreativeSchema = createInsertSchema(adCreatives).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAdPlacementSchema = createInsertSchema(adPlacements).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSecurityEventSchema = createInsertSchema(securityEvents).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertOpaPolicySchema = createInsertSchema(opaPolicies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertGlobalFlagSchema = createInsertSchema(globalFlags).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWebhookSchema = createInsertSchema(webhooks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertApiKeySchema = createInsertSchema(apiKeys).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Enterprise types
+export type Tenant = typeof tenants.$inferSelect;
+export type InsertTenant = typeof tenants.$inferInsert;
+export type Membership = typeof memberships.$inferSelect;
+export type InsertMembership = typeof memberships.$inferInsert;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = typeof auditLogs.$inferInsert;
+export type KycVerification = typeof kycVerifications.$inferSelect;
+export type InsertKycVerification = typeof kycVerifications.$inferInsert;
+export type PayoutRequest = typeof payoutRequests.$inferSelect;
+export type InsertPayoutRequest = typeof payoutRequests.$inferInsert;
+export type AdCreative = typeof adCreatives.$inferSelect;
+export type InsertAdCreative = typeof adCreatives.$inferInsert;
+export type AdPlacement = typeof adPlacements.$inferSelect;
+export type InsertAdPlacement = typeof adPlacements.$inferInsert;
+export type SecurityEvent = typeof securityEvents.$inferSelect;
+export type InsertSecurityEvent = typeof securityEvents.$inferInsert;
+export type OpaPolicy = typeof opaPolicies.$inferSelect;
+export type InsertOpaPolicy = typeof opaPolicies.$inferInsert;
+export type GlobalFlag = typeof globalFlags.$inferSelect;
+export type InsertGlobalFlag = typeof globalFlags.$inferInsert;
+export type Webhook = typeof webhooks.$inferSelect;
+export type InsertWebhook = typeof webhooks.$inferInsert;
+export type ApiKey = typeof apiKeys.$inferSelect;
+export type InsertApiKey = typeof apiKeys.$inferInsert;
+
+// ===== EXISTING 2257 COMPLIANCE TYPES =====
+
 export type Form2257Record = typeof form2257Records.$inferSelect;
 export type InsertForm2257Record = typeof form2257Records.$inferInsert;
 export type Form2257Amendment = typeof form2257Amendments.$inferSelect;

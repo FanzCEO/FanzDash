@@ -46,6 +46,19 @@ import {
   radioChat,
   podcasts,
   podcastEpisodes,
+  // Enterprise multi-tenant tables
+  tenants,
+  memberships,
+  auditLogs,
+  kycVerifications,
+  payoutRequests,
+  adCreatives,
+  adPlacements,
+  securityEvents,
+  opaPolicies,
+  globalFlags,
+  webhooks,
+  apiKeys,
   // apiIntegrations,
   // liveStreamingPrivateRequests,
   // maintenanceMode,
@@ -128,6 +141,31 @@ import {
   type InsertCronJob,
   type CronJobLog,
   type InsertCronJobLog,
+  // Enterprise multi-tenant types
+  type Tenant,
+  type InsertTenant,
+  type Membership,
+  type InsertMembership,
+  type AuditLog,
+  type InsertAuditLog,
+  type KycVerification,
+  type InsertKycVerification,
+  type PayoutRequest,
+  type InsertPayoutRequest,
+  type AdCreative,
+  type InsertAdCreative,
+  type AdPlacement,
+  type InsertAdPlacement,
+  type SecurityEvent,
+  type InsertSecurityEvent,
+  type OpaPolicy,
+  type InsertOpaPolicy,
+  type GlobalFlag,
+  type InsertGlobalFlag,
+  type Webhook,
+  type InsertWebhook,
+  type ApiKey,
+  type InsertApiKey,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, count, and, or, sql } from "drizzle-orm";
@@ -465,6 +503,150 @@ export interface IStorage {
     actionType: string,
   ): Promise<any[]>;
   calculateModelPerformanceStats(analyses: any[]): any;
+
+  // ===== ENTERPRISE MULTI-TENANT METHODS =====
+
+  // Tenants management
+  getTenants(): Promise<Tenant[]>;
+  getTenant(id: string): Promise<Tenant | undefined>;
+  getTenantBySlug(slug: string): Promise<Tenant | undefined>;
+  createTenant(tenant: InsertTenant): Promise<Tenant>;
+  updateTenant(id: string, updates: Partial<Tenant>): Promise<Tenant>;
+  deleteTenant(id: string): Promise<void>;
+
+  // Memberships management
+  getMemberships(tenantId?: string, userId?: string): Promise<Membership[]>;
+  getMembership(userId: string, tenantId: string): Promise<Membership | undefined>;
+  createMembership(membership: InsertMembership): Promise<Membership>;
+  updateMembership(id: string, updates: Partial<Membership>): Promise<Membership>;
+  deleteMembership(id: string): Promise<void>;
+
+  // Enhanced audit logging
+  createAuditLog(auditLog: InsertAuditLog): Promise<AuditLog>;
+  getAuditLogs(filters?: {
+    tenantId?: string;
+    actorId?: string;
+    action?: string;
+    targetType?: string;
+    severity?: string;
+    dateRange?: { from: Date; to: Date };
+    limit?: number;
+  }): Promise<AuditLog[]>;
+
+  // KYC verification system
+  getKycVerifications(userId?: string): Promise<KycVerification[]>;
+  getKycVerification(id: string): Promise<KycVerification | undefined>;
+  createKycVerification(kyc: InsertKycVerification): Promise<KycVerification>;
+  updateKycVerification(id: string, updates: Partial<KycVerification>): Promise<KycVerification>;
+  getKycStats(): Promise<{
+    pending: number;
+    verified: number;
+    failed: number;
+    expired: number;
+  }>;
+
+  // Payout management
+  getPayoutRequests(filters?: {
+    userId?: string;
+    tenantId?: string;
+    status?: string;
+    limit?: number;
+  }): Promise<PayoutRequest[]>;
+  getPayoutRequest(id: string): Promise<PayoutRequest | undefined>;
+  createPayoutRequest(payout: InsertPayoutRequest): Promise<PayoutRequest>;
+  updatePayoutRequest(id: string, updates: Partial<PayoutRequest>): Promise<PayoutRequest>;
+  getPayoutStats(): Promise<{
+    pending: number;
+    approved: number;
+    processing: number;
+    completed: number;
+    failed: number;
+    totalAmount: number;
+  }>;
+
+  // Ads management
+  getAdCreatives(filters?: {
+    advertiserId?: string;
+    status?: string;
+    limit?: number;
+  }): Promise<AdCreative[]>;
+  getAdCreative(id: string): Promise<AdCreative | undefined>;
+  createAdCreative(creative: InsertAdCreative): Promise<AdCreative>;
+  updateAdCreative(id: string, updates: Partial<AdCreative>): Promise<AdCreative>;
+  deleteAdCreative(id: string): Promise<void>;
+
+  getAdPlacements(platform?: string): Promise<AdPlacement[]>;
+  getAdPlacement(id: string): Promise<AdPlacement | undefined>;
+  createAdPlacement(placement: InsertAdPlacement): Promise<AdPlacement>;
+  updateAdPlacement(id: string, updates: Partial<AdPlacement>): Promise<AdPlacement>;
+  deleteAdPlacement(id: string): Promise<void>;
+
+  getAdsStats(): Promise<{
+    totalCreatives: number;
+    pendingReview: number;
+    activeCreatives: number;
+    totalPlacements: number;
+    totalRevenue: number;
+    totalImpressions: number;
+  }>;
+
+  // Security events
+  getSecurityEvents(filters?: {
+    eventType?: string;
+    severity?: string;
+    userId?: string;
+    tenantId?: string;
+    resolved?: boolean;
+    limit?: number;
+  }): Promise<SecurityEvent[]>;
+  createSecurityEvent(event: InsertSecurityEvent): Promise<SecurityEvent>;
+  updateSecurityEvent(id: string, updates: Partial<SecurityEvent>): Promise<SecurityEvent>;
+  getSecurityStats(): Promise<{
+    totalEvents: number;
+    criticalEvents: number;
+    unresolved: number;
+    last24Hours: number;
+  }>;
+
+  // OPA policies
+  getOpaPolicies(filters?: {
+    tenantId?: string;
+    category?: string;
+    active?: boolean;
+  }): Promise<OpaPolicy[]>;
+  getOpaPolicy(id: string): Promise<OpaPolicy | undefined>;
+  createOpaPolicy(policy: InsertOpaPolicy): Promise<OpaPolicy>;
+  updateOpaPolicy(id: string, updates: Partial<OpaPolicy>): Promise<OpaPolicy>;
+  deleteOpaPolicy(id: string): Promise<void>;
+
+  // Feature flags
+  getGlobalFlags(filters?: {
+    tenantId?: string;
+    platform?: string;
+    isKillSwitch?: boolean;
+  }): Promise<GlobalFlag[]>;
+  getGlobalFlag(flagKey: string, tenantId?: string, platform?: string): Promise<GlobalFlag | undefined>;
+  createGlobalFlag(flag: InsertGlobalFlag): Promise<GlobalFlag>;
+  updateGlobalFlag(id: string, updates: Partial<GlobalFlag>): Promise<GlobalFlag>;
+  deleteGlobalFlag(id: string): Promise<void>;
+
+  // Webhooks
+  getWebhooks(tenantId?: string): Promise<Webhook[]>;
+  getWebhook(id: string): Promise<Webhook | undefined>;
+  createWebhook(webhook: InsertWebhook): Promise<Webhook>;
+  updateWebhook(id: string, updates: Partial<Webhook>): Promise<Webhook>;
+  deleteWebhook(id: string): Promise<void>;
+
+  // API keys
+  getApiKeys(filters?: {
+    tenantId?: string;
+    userId?: string;
+    active?: boolean;
+  }): Promise<ApiKey[]>;
+  getApiKey(keyId: string): Promise<ApiKey | undefined>;
+  createApiKey(apiKey: InsertApiKey): Promise<ApiKey>;
+  updateApiKey(id: string, updates: Partial<ApiKey>): Promise<ApiKey>;
+  deleteApiKey(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
