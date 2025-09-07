@@ -1,0 +1,351 @@
+say less — here’s the one-command, end-to-end Replit setup for FANZDash (the super-admin control center for the whole FUN empire: compliance, moderation, payouts, ads, security, feature flags, kill-switches, org + tenancy, and cross-platform controls). It auto-verifies there are no missing pages, dead links, schema drift, or API/UI gaps before it prints a neon READY FOR PROD banner.
+
+⸻
+
+🔧 One command to wire everything
+
+Run this in the Replit shell at the repo root:
+
+npm run prep:prod:fanzdash
+
+That command: builds FE+BE, runs migrations + seeds, generates OpenAPI + typed client, checks API↔UI parity, validates schema drift, verifies all webhooks (KYC, payouts, ads), runs unit + E2E tests, crawls pages for 404s, and prints READY FOR PROD if green.
+
+⸻
+
+1) Root package.json (scripts)
+
+Add/merge:
+
+{
+  "name": "fanzdash-monorepo",
+  "private": true,
+  "workspaces": ["app/frontend", "app/backend", "packages/*", "scripts"],
+  "scripts": {
+    "postinstall": "npm run -w app/frontend install && npm run -w app/backend install",
+    "build": "npm run -w app/backend build && npm run -w app/frontend build",
+    "migrate": "npm run -w app/backend migrate",
+    "seed": "npm run -w app/backend seed",
+    "test": "npm -w app/backend run test && npm -w app/frontend run test",
+    "openapi": "npm -w app/backend run openapi && npm -w app/frontend run types:pull",
+    "verify:contracts": "npm -w app/backend run verify:contracts",
+    "verify:drift": "npm -w app/backend run verify:drift",
+    "verify:webhooks": "npm -w app/backend run verify:webhooks",
+    "verify:health": "npm -w app/backend run verify:health",
+    "e2e": "npm -w app/backend run e2e",
+    "crawl": "npm -w app/frontend run crawl",
+    "verify:all": "npm run build && npm run migrate && npm run seed && npm run test && npm run openapi && npm run verify:contracts && npm run verify:drift && npm run verify:webhooks && npm run verify:health && npm run e2e && npm run crawl",
+    "prep:prod:fanzdash": "node scripts/env-gate.cjs && npm run verify:all && node scripts/print-ready.cjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
+
+
+⸻
+
+2) Backend scripts (app/backend/package.json)
+
+{
+  "name": "fanzdash-backend",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "migrate": "drizzle-kit migrate",
+    "studio": "drizzle-kit studio",
+    "seed": "tsx scripts/seed.ts",
+    "test": "vitest run",
+    "openapi": "tsx scripts/generate-openapi.ts > public/docs/openapi.json",
+    "verify:contracts": "tsx scripts/verify-contracts.ts",
+    "verify:drift": "tsx scripts/verify-drift.ts",
+    "verify:webhooks": "tsx scripts/verify-webhooks.ts",
+    "verify:health": "tsx scripts/verify-health.ts",
+    "e2e": "playwright test"
+  }
+}
+
+Backend helper stubs you must include
+
+Create minimal but working versions of:
+	•	scripts/generate-openapi.ts — emit OpenAPI from shared Zod schemas.
+	•	scripts/verify-contracts.ts — scan Express routes vs OpenAPI; ensure every endpoint has a handler + at least one typed client usage (or @serverOnly).
+	•	scripts/verify-drift.ts — drizzle introspect dry-run vs migrations.
+	•	scripts/verify-webhooks.ts — HMAC/signature checks and handler presence for:
+	•	/webhooks/verifymy (KYC)
+	•	/webhooks/payouts (provider events)
+	•	/webhooks/ads (ad review/serve events)
+	•	scripts/verify-health.ts — DB ping, S3 presign, JWT sign/verify, WS echo, policy engine load test.
+	•	scripts/seed.ts — org + tenancy seed, 1 superadmin, 2 reviewers, 1 finance admin, sample policies/flags, sample ads, sample payout requests, sample compliance docs.
+
+⸻
+
+3) Frontend scripts (app/frontend/package.json)
+
+{
+  "name": "fanzdash-frontend",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/routes-manifest.cjs",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "routes:manifest": "node scripts/routes-manifest.cjs",
+    "crawl": "node scripts/crawlLinks.cjs",
+    "types:pull": "node scripts/pull-openapi-client.cjs"
+  }
+}
+
+Frontend helper stubs (create now):
+	•	scripts/routes-manifest.cjs — emit dist/routeManifest.json with { path, component, requiresAuth, roleGuard }, and import each route component once to catch broken imports.
+	•	scripts/crawlLinks.cjs — start preview, crawl from /, visit all links with Playwright headless, assert no 404/console errors, write dist/link-report.json.
+	•	scripts/pull-openapi-client.cjs — regenerate a typed API client from /docs/openapi.json.
+
+⸻
+
+4) ENV gate + READY banner (root /scripts)
+
+Create /scripts/env-gate.cjs:
+
+const required = [
+  'DATABASE_URL',
+  'S3_ENDPOINT','S3_REGION','S3_BUCKET','S3_ACCESS_KEY_ID','S3_SECRET_ACCESS_KEY',
+  'JWT_ISS','JWT_AUD','JWT_SECRET','JWT_ACCESS_TTL','JWT_REFRESH_TTL',
+  'VERIFYMY_API_URL','VERIFYMY_API_KEY',
+  'WEB_APP_URL','API_URL','NODE_ENV',
+  // Security / Policy
+  'OPA_POLICIES_BUCKET', 'OPA_BOOT_POLICY_PATH',
+  'SIEM_ENDPOINT', 'SIEM_API_KEY',
+  // Payouts / Finance
+  'PAYOUTS_PROVIDER', 'PAYOUTS_WEBHOOK_SECRET',
+  // Ads
+  'ADS_WEBHOOK_SECRET',
+  // Multi-tenant / SSO
+  'TENANCY_MODE',             // single | multi
+  'SSO_ISSUER', 'SSO_JWKS_URL'
+];
+const missing = required.filter(k => !process.env[k]);
+if (missing.length) {
+  console.error('❌ Missing required env vars:\n' + missing.map(k => ` - ${k}`).join('\n'));
+  process.exit(1);
+}
+console.log('✅ ENV check passed');
+
+Create /scripts/print-ready.cjs:
+
+console.log(`
+███████╗ █████╗ ███╗   ██╗███████╗██████╗ ██████╗  ██████╗ ██████╗ ███████╗
+██╔════╝██╔══██╗████╗  ██║██╔════╝██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔════╝
+█████╗  ███████║██╔██╗ ██║█████╗  ██████╔╝██████╔╝██║   ██║██████╔╝█████╗  
+██╔══╝  ██╔══██║██║╚██╗██║██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██╗██╔══╝  
+███████╗██║  ██║██║ ╚████║███████╗██║  ██║██║  ██║╚██████╔╝██║  ██║███████╗
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+FANZDash: ALL CHECKS PASSED — READY FOR PROD ✨
+`);
+
+
+⸻
+
+5) Required ENV (set in Replit → Tools → Secrets)
+
+# Core
+DATABASE_URL=postgres://...
+S3_ENDPOINT=https://s3.us-east-1.wasabisys.com
+S3_REGION=us-east-1
+S3_BUCKET=fun-fanzdash
+S3_ACCESS_KEY_ID=...
+S3_SECRET_ACCESS_KEY=...
+
+# Auth
+JWT_ISS=fun.app
+JWT_AUD=fun.admins
+JWT_SECRET=use-a-64-byte-random-string
+JWT_ACCESS_TTL=900
+JWT_REFRESH_TTL=2592000
+
+# Compliance
+VERIFYMY_API_URL=...
+VERIFYMY_API_KEY=...
+
+# Security / Policy / SIEM
+OPA_POLICIES_BUCKET=s3://fun-policies
+OPA_BOOT_POLICY_PATH=fanzdash.rego
+SIEM_ENDPOINT=https://siem.example.com/ingest
+SIEM_API_KEY=...
+
+# Payouts / Finance
+PAYOUTS_PROVIDER=mock       # mock | ach | crypto | adultprocX
+PAYOUTS_WEBHOOK_SECRET=change-me
+
+# Ads Moderation / Serving
+ADS_WEBHOOK_SECRET=change-me
+
+# Tenancy & SSO
+TENANCY_MODE=multi          # single | multi
+SSO_ISSUER=https://sso.fun
+SSO_JWKS_URL=https://sso.fun/.well-known/jwks.json
+
+# App URLs
+WEB_APP_URL=http://localhost:3000
+API_URL=http://localhost:5173/api
+NODE_ENV=production
+
+
+⸻
+
+6) Route map (super-admin: must exist & render)
+
+Frontend (React 18 + TS + Vite + Tailwind + Radix/shadcn + TanStack Query + Wouter)
+	•	/auth/login /auth/otp /auth/reset
+	•	/ (Global Overview: KPI tiles + alerts)
+	•	/org/tenants (list/create tenants; switch context; SSO domain mapping)
+	•	/users (directory; roles; invite; impersonate with audit trail)
+	•	/moderation/queue (submissions across platforms; approve/reject; notes; evidence)
+	•	/compliance/kyc (VerifyMy status board; drilldown)
+	•	/compliance/2257 (records vault; custodians)
+	•	/payouts (requests; provider status; export CSV)
+	•	/ads/review (creatives, formats, targeting; approval pipeline)
+	•	/ads/inventory (placements across FanzRoulette/FanzTube/etc.; pricing/caps)
+	•	/catalog/global (FanzCommerce global catalog controls; flags, removals)
+	•	/security/events (SIEM feed; filters; IP/UA; device map)
+	•	/security/policies (OPA policies editor + publish; dry-run simulator)
+	•	/feature-flags (toggle per tenant/platform; rollout %; kill-switches)
+	•	/integrations (webhooks, API keys, S3, LiveKit, mail, SMS)
+	•	/settings/billing (fees defaults; tax stubs; invoice export)
+	•	/settings/branding (theme tokens; logos; legal footers)
+	•	/system (diagnostics + manifests + last crawl/report)
+	•	/* 404
+
+API (Express + TS + Zod + ws)
+	•	/api/auth/*, /api/users/*, /api/tenants/*
+	•	/api/moderation/* (queue, decisions, audit)
+	•	/api/compliance/* (kyc, 2257)
+	•	/api/payouts/*
+	•	/api/ads/* (review, inventory, serve policies)
+	•	/api/catalog/* (global controls)
+	•	/api/security/* (events, IP bans, device revocation, session invalidation)
+	•	/api/policies/* (OPA bundles CRUD, publish)
+	•	/api/flags/* (feature flags, rollouts)
+	•	/api/integrations/* (webhooks, api keys, providers)
+	•	/webhooks/verifymy  (signature-verified)
+	•	/webhooks/payouts   (HMAC with PAYOUTS_WEBHOOK_SECRET)
+	•	/webhooks/ads       (HMAC with ADS_WEBHOOK_SECRET)
+	•	/docs + /docs/openapi.json
+	•	/healthz /version /introspect/*
+	•	/ws (admin notifications channel)
+
+⸻
+
+7) Data model (Drizzle + migrations + seeds)
+
+Core tables (with indexes):
+	•	tenants (slug, name, sso_domain, status)
+	•	users (id, email, password_hash, global_role superadmin/admin/reviewer/finance/security, status)
+	•	memberships (user_id, tenant_id, role, scopes_json)
+	•	sessions (user_id, refresh_token_hash, ip, ua, device_id, expires_at)
+	•	audit_logs (actor_id, tenant_id nullable, action, target_type, target_id, diff_json, created_at)
+	•	kyc_verifications (user_id, provider, status, external_id, data_json)
+	•	records_2257 (user_id, doc_type, s3_key, checksum, created_at)
+	•	moderation_queue (platform, target_type, target_id, status, reviewer_id, reason, evidence_json, decided_at)
+	•	payout_requests (user_id, amount_cents, currency, status, provider_ref)
+	•	ads_creatives (id, advertiser_id, type, meta_json, status)
+	•	ads_placements (platform, slot, caps_json, rate_card_json)
+	•	global_flags (flag_key, value_json, tenant_id nullable, platform nullable, rollout_percent)
+	•	opa_policies (id, name, version, rego_s3_key, active, notes)
+	•	security_events (tenant_id nullable, kind, ip, ua, geo_json, severity, meta_json, created_at)
+	•	webhooks (tenant_id nullable, url, secret, events_json, status)
+	•	api_keys (tenant_id nullable, key_hash, scopes, last_used_at)
+	•	notifications (user_id, kind, payload_json, read_at)
+
+Seeds (scripts/seed.ts):
+	•	1 superadmin@fanzdash.app / Super!234
+	•	2 tenants (boyfanz, fanzcommerce)
+	•	2 reviewers (moderation), 1 finance admin, 1 security admin
+	•	sample policies (adult-media-default.rego), sample ads + placements
+	•	sample payout reqs, KYC entries, 2257 docs
+	•	feature flags with some enabled/disabled
+
+⸻
+
+8) Security & control flows (built-ins)
+	•	Impersonation (with audit): superadmin can impersonate any user across tenants; action logged with reason + timebox.
+	•	Kill-switches: feature flags allow immediate disable of modules (e.g., uploads, payouts, ads serve) globally or per tenant.
+	•	Policy engine: OPA-style evaluation: request context → decision (allow/deny/flag). Policies stored in S3; boot policy path from ENV.
+	•	Session invalidation: revoke device/session, force logout everywhere.
+	•	SIEM forwarder: security_events streamed to SIEM_ENDPOINT with API key; retry with backoff.
+	•	Rate limits: sensitive endpoints (moderation decisions, payouts, policies publish, impersonation) rate-limited + require step-up OTP.
+
+⸻
+
+9) Diagnostics & completeness (auto)
+	•	Route Manifest: FE emits routeManifest.json; /system shows counts + last check render.
+	•	Link Crawler: visits all links starting at /; writes link-report.json (no 404/console errors).
+	•	API↔UI Parity: every OpenAPI endpoint has a server handler + typed client usage (or @serverOnly).
+	•	Schema Drift: drizzle introspect vs migrations; fail on drift.
+	•	Webhook Verifier: HMAC tests for /webhooks/verifymy, /webhooks/payouts, /webhooks/ads.
+	•	Health: DB, S3, JWT, WS echo, OPA policy load, SIEM send dry-run.
+
+⸻
+
+10) Tests (must pass for READY banner)
+
+Unit (Vitest)
+	•	policy evaluation (allow/deny/flag)
+	•	moderation decision writes audit_logs + updates target
+	•	payouts webhook signature verify + state transitions
+	•	ads creative approval pipeline + placement caps
+	•	feature flag rollout math (global vs tenant vs platform)
+	•	impersonation guard + audit trail
+
+E2E (Playwright)
+	1.	Superadmin logs in → switches tenant → impersonates a reviewer → processes moderation queue → returns to superadmin.
+	2.	Finance admin reviews payout requests → marks paid (mock) → CSV export.
+	3.	Security admin toggles kill-switch for uploads → verify affected platform shows disabled state via /system probe.
+	4.	Policy admin publishes new OPA policy → dry-run sim passes → policy active.
+	5.	/system shows all checks ✅; link-report.json zero failures.
+
+⸻
+
+11) Minimal /system JSON (backend)
+
+Return something like:
+
+{
+  "db":"ok","s3":"ok","jwt":"ok","wsEcho":"ok",
+  "kycSignatureTest":"ok","payoutsSignatureTest":"ok","adsSignatureTest":"ok",
+  "opaPolicyLoad":"ok","siemDryRun":"ok",
+  "openapiEndpoints": 0, "serverRoutes": 0, "uiRoutes": 0,
+  "lastCrawl": {"urls": 0, "failures": 0}
+}
+
+(Replace zeros with live counts.)
+
+⸻
+
+12) Tech stack (Replit-friendly)
+	•	Frontend: React 18 + TS + Vite, Tailwind, Radix/shadcn/ui, TanStack Query, Wouter
+	•	Backend: Node/Express + TS, Zod, Drizzle ORM + drizzle-kit, ws for realtime
+	•	Storage: S3-compatible (@aws-sdk/client-s3)
+	•	Docs: OpenAPI (Zod → JSON) served at /docs
+	•	Tests: Vitest (unit), Playwright (E2E)
+	•	Lint/Format: ESLint + Prettier
+
+⸻
+
+13) Seed credentials (in scripts/seed.ts)
+	•	Superadmin: superadmin@fanzdash.app / Super!234
+	•	Reviewer: reviewer@fanzdash.app / Reviewer!234
+	•	Finance: finance@fanzdash.app / Finance!234
+	•	Security: security@fanzdash.app / Security!234
+
+⸻
+
+Run it
+	1.	Add these scripts/files.
+	2.	Set the ENV secrets.
+	3.	In Replit shell:
+
+npm run prep:prod:fanzdash
+
+If everything’s wired and passing, you’ll see the neon READY FOR PROD crown. 🟡🍌 Go run the whole empire from one dashboard.
