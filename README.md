@@ -159,25 +159,51 @@ Replit Deployment (Production hosting)
 ### 🚀 **5-Minute Launch**
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/fanz-unlimited/fanzdash-enterprise.git
+# 1. Clone the repository (requires SSH key setup)
+git clone git@github.com:fanz-unlimited/fanzdash-enterprise.git
 cd fanzdash-enterprise
 
-# 2. Install dependencies (use legacy peer deps for Vite compatibility)
-npm install --legacy-peer-deps
+# 2. Set up SSH keys (first-time setup)
+npm run setup:ssh your-email@fanz.foundation
 
-# 3. Set up environment variables
+# 3. Complete development setup
+npm run setup:dev
+
+# 4. Set up environment variables
 cp .env.example .env
 # Edit .env with your configuration
-
-# 4. Initialize the database
-npm run db:push
 
 # 5. Start the development server
 npm run dev
 ```
 
 **🎉 Your FanzDash instance will be running at `http://localhost:5000`**
+
+### 🔑 **Alternative: Manual Setup**
+
+If you prefer step-by-step setup or need SSH key configuration:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/fanz-unlimited/fanzdash-enterprise.git
+cd fanzdash-enterprise
+
+# 2. Set up SSH keys for secure Git access
+node scripts/setup-ssh.js your-email@fanz.foundation
+
+# 3. Install dependencies (use legacy peer deps for Vite compatibility)
+npm install --legacy-peer-deps
+
+# 4. Set up environment variables
+cp .env.example .env
+# Edit .env with your configuration
+
+# 5. Initialize the database
+npm run db:push
+
+# 6. Start the development server
+npm run dev
+```
 
 ### 🔑 **Default Credentials**
 ```
@@ -192,6 +218,15 @@ Password: FanzDash2025!
 ## 📚 Documentation Library
 
 This README is your gateway to our comprehensive documentation ecosystem. Each book is a complete novel-length guide covering specific aspects of the FanzDash platform:
+
+### 🚀 **[Developer Setup Guide](./docs/DEVELOPER_SETUP_GUIDE.md)**
+*Complete Environment Configuration for Enterprise Development*
+- SSH key setup and Git authentication
+- Development environment configuration
+- Database setup and migrations
+- Testing and debugging procedures
+- Code quality and workflow guidelines
+- Troubleshooting common development issues
 
 ### 📗 **[Administrator's Guide](./docs/ADMIN_GUIDE.md)**
 *The Complete Platform Management Encyclopedia*
