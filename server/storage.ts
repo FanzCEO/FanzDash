@@ -2294,6 +2294,513 @@ export class DatabaseStorage implements IStorage {
   async deleteSystemLimit(id: string): Promise<void> {
     await db.delete(systemLimits).where(eq(systemLimits.id, id));
   }
+
+  // ===== ENTERPRISE MULTI-TENANT IMPLEMENTATIONS =====
+
+  // Tenants management
+  async getTenants(): Promise<Tenant[]> {
+    return await db.select().from(tenants).orderBy(desc(tenants.createdAt));
+  }
+
+  async getTenant(id: string): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.id, id));
+    return tenant;
+  }
+
+  async getTenantBySlug(slug: string): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.slug, slug));
+    return tenant;
+  }
+
+  async createTenant(tenant: InsertTenant): Promise<Tenant> {
+    const [result] = await db.insert(tenants).values(tenant).returning();
+    return result;
+  }
+
+  async updateTenant(id: string, updates: Partial<Tenant>): Promise<Tenant> {
+    const [result] = await db
+      .update(tenants)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(tenants.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteTenant(id: string): Promise<void> {
+    await db.delete(tenants).where(eq(tenants.id, id));
+  }
+
+  // Memberships management
+  async getMemberships(tenantId?: string, userId?: string): Promise<Membership[]> {
+    let query = db.select().from(memberships);
+    const conditions = [];
+    if (tenantId) conditions.push(eq(memberships.tenantId, tenantId));
+    if (userId) conditions.push(eq(memberships.userId, userId));
+    if (conditions.length > 0) query = query.where(and(...conditions));
+    return await query.orderBy(desc(memberships.joinedAt));
+  }
+
+  async getMembership(userId: string, tenantId: string): Promise<Membership | undefined> {
+    const [membership] = await db
+      .select()
+      .from(memberships)
+      .where(and(eq(memberships.userId, userId), eq(memberships.tenantId, tenantId)));
+    return membership;
+  }
+
+  async createMembership(membership: InsertMembership): Promise<Membership> {
+    const [result] = await db.insert(memberships).values(membership).returning();
+    return result;
+  }
+
+  async updateMembership(id: string, updates: Partial<Membership>): Promise<Membership> {
+    const [result] = await db
+      .update(memberships)
+      .set({ ...updates, lastActiveAt: new Date() })
+      .where(eq(memberships.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteMembership(id: string): Promise<void> {
+    await db.delete(memberships).where(eq(memberships.id, id));
+  }
+
+  // Enhanced audit logging
+  async createAuditLog(auditLog: InsertAuditLog): Promise<AuditLog> {
+    const [result] = await db.insert(auditLogs).values(auditLog).returning();
+    return result;
+  }
+
+  async getAuditLogs(filters?: {
+    tenantId?: string;
+    actorId?: string;
+    action?: string;
+    targetType?: string;
+    severity?: string;
+    dateRange?: { from: Date; to: Date };
+    limit?: number;
+  }): Promise<AuditLog[]> {
+    let query = db.select().from(auditLogs);
+    const conditions = [];
+
+    if (filters?.tenantId) conditions.push(eq(auditLogs.tenantId, filters.tenantId));
+    if (filters?.actorId) conditions.push(eq(auditLogs.actorId, filters.actorId));
+    if (filters?.action) conditions.push(eq(auditLogs.action, filters.action));
+    if (filters?.targetType) conditions.push(eq(auditLogs.targetType, filters.targetType));
+    if (filters?.severity) conditions.push(eq(auditLogs.severity, filters.severity));
+
+    if (conditions.length > 0) query = query.where(and(...conditions));
+    
+    query = query.orderBy(desc(auditLogs.createdAt));
+    if (filters?.limit) query = query.limit(filters.limit);
+
+    return await query;
+  }
+
+  // KYC verification system
+  async getKycVerifications(userId?: string): Promise<KycVerification[]> {
+    let query = db.select().from(kycVerifications);
+    if (userId) query = query.where(eq(kycVerifications.userId, userId));
+    return await query.orderBy(desc(kycVerifications.createdAt));
+  }
+
+  async getKycVerification(id: string): Promise<KycVerification | undefined> {
+    const [kyc] = await db.select().from(kycVerifications).where(eq(kycVerifications.id, id));
+    return kyc;
+  }
+
+  async createKycVerification(kyc: InsertKycVerification): Promise<KycVerification> {
+    const [result] = await db.insert(kycVerifications).values(kyc).returning();
+    return result;
+  }
+
+  async updateKycVerification(id: string, updates: Partial<KycVerification>): Promise<KycVerification> {
+    const [result] = await db
+      .update(kycVerifications)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(kycVerifications.id, id))
+      .returning();
+    return result;
+  }
+
+  async getKycStats(): Promise<{
+    pending: number;
+    verified: number;
+    failed: number;
+    expired: number;
+  }> {
+    const [pending] = await db
+      .select({ count: count() })
+      .from(kycVerifications)
+      .where(eq(kycVerifications.status, 'pending'));
+    
+    const [verified] = await db
+      .select({ count: count() })
+      .from(kycVerifications)
+      .where(eq(kycVerifications.status, 'verified'));
+    
+    const [failed] = await db
+      .select({ count: count() })
+      .from(kycVerifications)
+      .where(eq(kycVerifications.status, 'failed'));
+    
+    const [expired] = await db
+      .select({ count: count() })
+      .from(kycVerifications)
+      .where(eq(kycVerifications.status, 'expired'));
+
+    return {
+      pending: pending.count,
+      verified: verified.count,
+      failed: failed.count,
+      expired: expired.count,
+    };
+  }
+
+  // Payout management
+  async getPayoutRequests(filters?: {
+    userId?: string;
+    tenantId?: string;
+    status?: string;
+    limit?: number;
+  }): Promise<PayoutRequest[]> {
+    let query = db.select().from(payoutRequests);
+    const conditions = [];
+
+    if (filters?.userId) conditions.push(eq(payoutRequests.userId, filters.userId));
+    if (filters?.tenantId) conditions.push(eq(payoutRequests.tenantId, filters.tenantId));
+    if (filters?.status) conditions.push(eq(payoutRequests.status, filters.status));
+
+    if (conditions.length > 0) query = query.where(and(...conditions));
+    
+    query = query.orderBy(desc(payoutRequests.createdAt));
+    if (filters?.limit) query = query.limit(filters.limit);
+
+    return await query;
+  }
+
+  async getPayoutRequest(id: string): Promise<PayoutRequest | undefined> {
+    const [payout] = await db.select().from(payoutRequests).where(eq(payoutRequests.id, id));
+    return payout;
+  }
+
+  async createPayoutRequest(payout: InsertPayoutRequest): Promise<PayoutRequest> {
+    const [result] = await db.insert(payoutRequests).values(payout).returning();
+    return result;
+  }
+
+  async updatePayoutRequest(id: string, updates: Partial<PayoutRequest>): Promise<PayoutRequest> {
+    const [result] = await db
+      .update(payoutRequests)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(payoutRequests.id, id))
+      .returning();
+    return result;
+  }
+
+  async getPayoutStats(): Promise<{
+    pending: number;
+    approved: number;
+    processing: number;
+    completed: number;
+    failed: number;
+    totalAmount: number;
+  }> {
+    const [pending] = await db
+      .select({ count: count() })
+      .from(payoutRequests)
+      .where(eq(payoutRequests.status, 'pending'));
+    
+    const [approved] = await db
+      .select({ count: count() })
+      .from(payoutRequests)
+      .where(eq(payoutRequests.status, 'approved'));
+    
+    const [processing] = await db
+      .select({ count: count() })
+      .from(payoutRequests)
+      .where(eq(payoutRequests.status, 'processing'));
+    
+    const [completed] = await db
+      .select({ count: count() })
+      .from(payoutRequests)
+      .where(eq(payoutRequests.status, 'completed'));
+    
+    const [failed] = await db
+      .select({ count: count() })
+      .from(payoutRequests)
+      .where(eq(payoutRequests.status, 'failed'));
+    
+    const [totalAmount] = await db
+      .select({ sum: sql<number>`COALESCE(SUM(${payoutRequests.amountCents}), 0)` })
+      .from(payoutRequests)
+      .where(eq(payoutRequests.status, 'completed'));
+
+    return {
+      pending: pending.count,
+      approved: approved.count,
+      processing: processing.count,
+      completed: completed.count,
+      failed: failed.count,
+      totalAmount: totalAmount.sum,
+    };
+  }
+
+  // Ads management - Basic implementation
+  async getAdCreatives(): Promise<AdCreative[]> {
+    return await db.select().from(adCreatives).orderBy(desc(adCreatives.createdAt));
+  }
+
+  async getAdCreative(id: string): Promise<AdCreative | undefined> {
+    const [creative] = await db.select().from(adCreatives).where(eq(adCreatives.id, id));
+    return creative;
+  }
+
+  async createAdCreative(creative: InsertAdCreative): Promise<AdCreative> {
+    const [result] = await db.insert(adCreatives).values(creative).returning();
+    return result;
+  }
+
+  async updateAdCreative(id: string, updates: Partial<AdCreative>): Promise<AdCreative> {
+    const [result] = await db
+      .update(adCreatives)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(adCreatives.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteAdCreative(id: string): Promise<void> {
+    await db.delete(adCreatives).where(eq(adCreatives.id, id));
+  }
+
+  async getAdPlacements(): Promise<AdPlacement[]> {
+    return await db.select().from(adPlacements).orderBy(desc(adPlacements.createdAt));
+  }
+
+  async getAdPlacement(id: string): Promise<AdPlacement | undefined> {
+    const [placement] = await db.select().from(adPlacements).where(eq(adPlacements.id, id));
+    return placement;
+  }
+
+  async createAdPlacement(placement: InsertAdPlacement): Promise<AdPlacement> {
+    const [result] = await db.insert(adPlacements).values(placement).returning();
+    return result;
+  }
+
+  async updateAdPlacement(id: string, updates: Partial<AdPlacement>): Promise<AdPlacement> {
+    const [result] = await db
+      .update(adPlacements)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(adPlacements.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteAdPlacement(id: string): Promise<void> {
+    await db.delete(adPlacements).where(eq(adPlacements.id, id));
+  }
+
+  async getAdsStats(): Promise<{
+    totalCreatives: number;
+    pendingReview: number;
+    activeCreatives: number;
+    totalPlacements: number;
+    totalRevenue: number;
+    totalImpressions: number;
+  }> {
+    const [totalCreatives] = await db.select({ count: count() }).from(adCreatives);
+    const [pendingReview] = await db
+      .select({ count: count() })
+      .from(adCreatives)
+      .where(eq(adCreatives.status, 'pending'));
+    const [activeCreatives] = await db
+      .select({ count: count() })
+      .from(adCreatives)
+      .where(eq(adCreatives.status, 'active'));
+    const [totalPlacements] = await db.select({ count: count() }).from(adPlacements);
+    const [totalRevenue] = await db
+      .select({ sum: sql<number>`COALESCE(SUM(${adPlacements.revenue}), 0)` })
+      .from(adPlacements);
+    const [totalImpressions] = await db
+      .select({ sum: sql<number>`COALESCE(SUM(${adPlacements.impressions}), 0)` })
+      .from(adPlacements);
+
+    return {
+      totalCreatives: totalCreatives.count,
+      pendingReview: pendingReview.count,
+      activeCreatives: activeCreatives.count,
+      totalPlacements: totalPlacements.count,
+      totalRevenue: totalRevenue.sum,
+      totalImpressions: totalImpressions.sum,
+    };
+  }
+
+  // Security events
+  async getSecurityEvents(): Promise<SecurityEvent[]> {
+    return await db.select().from(securityEvents).orderBy(desc(securityEvents.createdAt));
+  }
+
+  async createSecurityEvent(event: InsertSecurityEvent): Promise<SecurityEvent> {
+    const [result] = await db.insert(securityEvents).values(event).returning();
+    return result;
+  }
+
+  async updateSecurityEvent(id: string, updates: Partial<SecurityEvent>): Promise<SecurityEvent> {
+    const [result] = await db
+      .update(securityEvents)
+      .set(updates)
+      .where(eq(securityEvents.id, id))
+      .returning();
+    return result;
+  }
+
+  async getSecurityStats(): Promise<{
+    totalEvents: number;
+    criticalEvents: number;
+    unresolved: number;
+    last24Hours: number;
+  }> {
+    const [totalEvents] = await db.select({ count: count() }).from(securityEvents);
+    const [criticalEvents] = await db
+      .select({ count: count() })
+      .from(securityEvents)
+      .where(eq(securityEvents.severity, 'critical'));
+    const [unresolved] = await db
+      .select({ count: count() })
+      .from(securityEvents)
+      .where(eq(securityEvents.resolved, false));
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const [last24Hours] = await db
+      .select({ count: count() })
+      .from(securityEvents)
+      .where(sql`${securityEvents.createdAt} >= ${yesterday}`);
+
+    return {
+      totalEvents: totalEvents.count,
+      criticalEvents: criticalEvents.count,
+      unresolved: unresolved.count,
+      last24Hours: last24Hours.count,
+    };
+  }
+
+  // OPA policies
+  async getOpaPolicies(): Promise<OpaPolicy[]> {
+    return await db.select().from(opaPolicies).orderBy(desc(opaPolicies.priority), desc(opaPolicies.createdAt));
+  }
+
+  async getOpaPolicy(id: string): Promise<OpaPolicy | undefined> {
+    const [policy] = await db.select().from(opaPolicies).where(eq(opaPolicies.id, id));
+    return policy;
+  }
+
+  async createOpaPolicy(policy: InsertOpaPolicy): Promise<OpaPolicy> {
+    const [result] = await db.insert(opaPolicies).values(policy).returning();
+    return result;
+  }
+
+  async updateOpaPolicy(id: string, updates: Partial<OpaPolicy>): Promise<OpaPolicy> {
+    const [result] = await db
+      .update(opaPolicies)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(opaPolicies.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteOpaPolicy(id: string): Promise<void> {
+    await db.delete(opaPolicies).where(eq(opaPolicies.id, id));
+  }
+
+  // Feature flags
+  async getGlobalFlags(): Promise<GlobalFlag[]> {
+    return await db.select().from(globalFlags).orderBy(desc(globalFlags.createdAt));
+  }
+
+  async getGlobalFlag(flagKey: string, tenantId?: string, platform?: string): Promise<GlobalFlag | undefined> {
+    const conditions = [eq(globalFlags.flagKey, flagKey)];
+
+    if (tenantId) conditions.push(eq(globalFlags.tenantId, tenantId));
+    if (platform) conditions.push(eq(globalFlags.platform, platform));
+
+    const [flag] = await db.select().from(globalFlags).where(and(...conditions));
+    return flag;
+  }
+
+  async createGlobalFlag(flag: InsertGlobalFlag): Promise<GlobalFlag> {
+    const [result] = await db.insert(globalFlags).values(flag).returning();
+    return result;
+  }
+
+  async updateGlobalFlag(id: string, updates: Partial<GlobalFlag>): Promise<GlobalFlag> {
+    const [result] = await db
+      .update(globalFlags)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(globalFlags.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteGlobalFlag(id: string): Promise<void> {
+    await db.delete(globalFlags).where(eq(globalFlags.id, id));
+  }
+
+  // Webhooks
+  async getWebhooks(): Promise<Webhook[]> {
+    return await db.select().from(webhooks).orderBy(desc(webhooks.createdAt));
+  }
+
+  async getWebhook(id: string): Promise<Webhook | undefined> {
+    const [webhook] = await db.select().from(webhooks).where(eq(webhooks.id, id));
+    return webhook;
+  }
+
+  async createWebhook(webhook: InsertWebhook): Promise<Webhook> {
+    const [result] = await db.insert(webhooks).values(webhook).returning();
+    return result;
+  }
+
+  async updateWebhook(id: string, updates: Partial<Webhook>): Promise<Webhook> {
+    const [result] = await db
+      .update(webhooks)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(webhooks.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteWebhook(id: string): Promise<void> {
+    await db.delete(webhooks).where(eq(webhooks.id, id));
+  }
+
+  // API keys
+  async getApiKeys(): Promise<ApiKey[]> {
+    return await db.select().from(apiKeys).orderBy(desc(apiKeys.createdAt));
+  }
+
+  async getApiKey(keyId: string): Promise<ApiKey | undefined> {
+    const [apiKey] = await db.select().from(apiKeys).where(eq(apiKeys.keyId, keyId));
+    return apiKey;
+  }
+
+  async createApiKey(apiKey: InsertApiKey): Promise<ApiKey> {
+    const [result] = await db.insert(apiKeys).values(apiKey).returning();
+    return result;
+  }
+
+  async updateApiKey(id: string, updates: Partial<ApiKey>): Promise<ApiKey> {
+    const [result] = await db
+      .update(apiKeys)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(apiKeys.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteApiKey(id: string): Promise<void> {
+    await db.delete(apiKeys).where(eq(apiKeys.id, id));
+  }
 }
 
 export const storage = new DatabaseStorage();
