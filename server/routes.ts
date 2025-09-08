@@ -23,7 +23,6 @@ import { aiModerationService } from "./openaiService";
 import session from "express-session";
 import passport from "passport";
 import authRoutes from "./auth/authRoutes";
-import lusca from "lusca";
 import ChatService from "./chatService";
 import Compliance2257Service from "./compliance2257Service";
 
@@ -242,9 +241,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.use(passport.initialize());
   app.use(passport.session());
-
-  // Apply CSRF protection middleware
-  app.use(lusca.csrf());
 
   // Mount authentication routes
   app.use(authRoutes);
