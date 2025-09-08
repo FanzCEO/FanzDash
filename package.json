@@ -6,9 +6,17 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "build:warp": "vite build && echo 'Warp build completed'",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "sync": "tsx scripts/platform-sync.ts sync",
+    "sync:health": "tsx scripts/platform-sync.ts health",
+    "sync:backup": "tsx scripts/platform-sync.ts backup",
+    "deploy:replit": "npm run build && npm run sync",
+    "deploy:warp": "npm run build:warp && wrangler deploy --config warp.toml --compatibility-date 2024-01-01",
+    "dev:warp": "wrangler dev --config warp.toml",
+    "preview:warp": "wrangler preview --config warp.toml"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.17.0",
@@ -87,6 +95,7 @@
     "framer-motion": "^11.13.1",
     "google-auth-library": "^10.3.0",
     "helmet": "^8.1.0",
+    "hono": "^4.6.3",
     "input-otp": "^1.4.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.453.0",
@@ -145,7 +154,8 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
-    "vite": "^7.1.4"
+    "vite": "^7.1.4",
+    "wrangler": "^3.78.12"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"

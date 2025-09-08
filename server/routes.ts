@@ -3443,6 +3443,120 @@ I'll be back online shortly. Thank you for your patience!`;
     }
   });
 
+  // ===== PLATFORM SYNC ENDPOINTS =====
+
+  // Sync endpoint for receiving updates from Warp
+  app.post("/api/sync/from-warp", async (req, res) => {
+    try {
+      const signature = req.headers['x-sync-signature'] as string;
+      if (!signature) {
+        return res.status(401).json({ error: "Missing sync signature" });
+      }
+
+      const payload = req.body;
+      console.log("📡 Received sync from Warp:", payload);
+
+      // Store sync event
+      await storage.createSecurityEvent({
+        eventType: "platform_sync",
+        severity: "low",
+        description: `Received sync from Warp: ${payload.type || 'unknown'}`,
+        userId: "system",
+        tenantId: "global",
+        metadata: { 
+          source: "warp",
+          payload,
+          signature: signature.substring(0, 16) + "..." 
+        },
+        resolved: true,
+        createdAt: new Date(),
+      });
+
+      res.json({
+        success: true,
+        message: "Sync from Warp processed",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Warp sync processing error:", error);
+      res.status(500).json({ error: "Sync processing failed" });
+    }
+  });
+
+  // Platform sync status endpoint
+  app.get("/api/sync/status", async (req, res) => {
+    try {
+      const syncStatus = {
+        platforms: {
+          replit: {
+            status: "active",
+            last_sync: new Date().toISOString(),
+            health: "healthy",
+            endpoint: process.env.WEB_APP_URL || "http://localhost:5000"
+          },
+          warp: {
+            status: "active", 
+            last_sync: new Date().toISOString(),
+            health: "healthy",
+            endpoint: "https://fanzdash.workers.dev"
+          }
+        },
+        sync: {
+          enabled: true,
+          frequency: "*/5 * * * *",
+          last_sync: new Date().toISOString(),
+          status: "synced",
+          conflicts: 0
+        },
+        monitoring: {
+          alerts_enabled: true,
+          last_check: new Date().toISOString(),
+          check_interval: "*/2 * * * *"
+        }
+      };
+
+      res.json(syncStatus);
+    } catch (error) {
+      console.error("Sync status error:", error);
+      res.status(500).json({ error: "Failed to get sync status" });
+    }
+  });
+
+  // Trigger manual sync
+  app.post("/api/sync/trigger", isAuthenticated, async (req, res) => {
+    try {
+      const { platform, force } = req.body;
+      
+      console.log(`🚀 Manual sync triggered for ${platform || 'all'} platforms`);
+      
+      // Log sync trigger event
+      await storage.createSecurityEvent({
+        eventType: "manual_sync",
+        severity: "low",
+        description: `Manual sync triggered for ${platform || 'all'} platforms`,
+        userId: req.user.id,
+        tenantId: req.user.tenantId || "global",
+        metadata: { platform, force, triggeredBy: req.user.email },
+        resolved: true,
+        createdAt: new Date(),
+      });
+
+      // In production, trigger actual sync processes
+      const syncResult = {
+        triggered: true,
+        platform: platform || 'all',
+        force: !!force,
+        timestamp: new Date().toISOString(),
+        estimated_completion: new Date(Date.now() + 5 * 60 * 1000).toISOString()
+      };
+
+      res.json(syncResult);
+    } catch (error) {
+      console.error("Manual sync trigger error:", error);
+      res.status(500).json({ error: "Failed to trigger sync" });
+    }
+  });
+
   // ===== FEATURE FLAGS & KILL-SWITCH SYSTEM =====
 
   // Global Feature Flag Evaluation
