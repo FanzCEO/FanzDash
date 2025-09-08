@@ -3368,13 +3368,13 @@ I'll be back online shortly. Thank you for your patience!`;
       // Route to appropriate handlers based on event type
       switch (eventType) {
         case "user_verification":
-          console.log(`📋 User verification event for tenant ${tenantId}:`, data);
+          console.log("📋 User verification event for tenant %s:", tenantId, data);
           break;
         case "payment_update":
-          console.log(`💰 Payment update event for tenant ${tenantId}:`, data);
+          console.log("💰 Payment update event for tenant %s:", tenantId, data);
           break;
         case "content_moderation":
-          console.log(`🛡️ Content moderation event for tenant ${tenantId}:`, data);
+          console.log("🛡️ Content moderation event for tenant %s:", tenantId, data);
           break;
         case "security_alert":
           await storage.createSecurityEvent({
@@ -3389,7 +3389,7 @@ I'll be back online shortly. Thank you for your patience!`;
           });
           break;
         default:
-          console.log(`📡 Generic webhook event ${eventType} for tenant ${tenantId}:`, data);
+          console.log("📡 Generic webhook event %s for tenant %s:", eventType, tenantId, data);
       }
 
       res.json({ 
