@@ -5,7 +5,9 @@ import { randomUUID } from "crypto";
 import { spawn } from "child_process";
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Development-safe OpenAI initialization
+const isDevMode = !process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.includes("placeholder") || process.env.OPENAI_API_KEY.includes("development");
+const openai = isDevMode ? null : new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export interface ContentItem {
   id: string;
@@ -392,12 +394,30 @@ export class ContentProcessor extends EventEmitter {
   }
 
   private async analyzeImage(content: ContentItem) {
+    if (isDevMode) {
+      console.log("🔧 Development mode: Using mock image analysis");
+      // Mock analysis response
+      content.analysis = {
+        aiScore: Math.random() * 30, // Low risk for dev
+        confidence: 85,
+        categories: [{ name: "image", confidence: 0.9 }],
+        objects: [{ name: "person", confidence: 0.8 }],
+        faces: [],
+        adult: { score: Math.random() * 20, category: "safe" },
+        violence: { score: Math.random() * 10, category: "none" },
+        medical: { score: Math.random() * 15, category: "none" },
+        racy: { score: Math.random() * 25, category: "none" },
+        technical: { sharpness: 75, brightness: 60, contrast: 65, noise: 15 },
+      };
+      return;
+    }
+
     // Read image file as base64
     const imageBuffer = await fs.readFile(content.originalPath);
     const base64Image = imageBuffer.toString("base64");
 
     // Analyze with OpenAI Vision
-    const response = await openai.chat.completions.create({
+    const response = await openai!.chat.completions.create({
       model: "gpt-4o", // Vision model
       messages: [
         {
@@ -494,30 +514,49 @@ export class ContentProcessor extends EventEmitter {
       const frameBuffer = await fs.readFile(framePath);
       const base64Frame = frameBuffer.toString("base64");
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Analyze this video frame for adult content, violence, and other moderation concerns. Return JSON with scores 0-100.",
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${base64Frame}`,
+      if (isDevMode) {
+        console.log(`🔧 Development mode: Using mock frame analysis ${i + 1}/${intervals.length}`);
+        frameAnalyses.push({
+          overall_score: Math.random() * 25,
+          adult_score: Math.random() * 15,
+          violence_score: Math.random() * 10,
+          medical_score: Math.random() * 12,
+          racy_score: Math.random() * 20,
+          adult_category: "safe",
+          violence_category: "none",
+          medical_category: "none",
+          racy_category: "none",
+          sharpness: 70 + Math.random() * 20,
+          brightness: 50 + Math.random() * 30,
+          contrast: 60 + Math.random() * 25,
+          noise: 10 + Math.random() * 20
+        });
+      } else {
+        const response = await openai!.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Analyze this video frame for adult content, violence, and other moderation concerns. Return JSON with scores 0-100.",
                 },
-              },
-            ],
-          },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 500,
-      });
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:image/jpeg;base64,${base64Frame}`,
+                  },
+                },
+              ],
+            },
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 500,
+        });
 
-      frameAnalyses.push(JSON.parse(response.choices[0].message.content!));
+        frameAnalyses.push(JSON.parse(response.choices[0].message.content!));
+      }
 
       // Clean up frame
       await fs.unlink(framePath);
@@ -531,10 +570,20 @@ export class ContentProcessor extends EventEmitter {
   }
 
   private async analyzeAudio(content: ContentItem) {
+    if (isDevMode) {
+      console.log("🔧 Development mode: Using mock audio analysis");
+      const mockText = "This is a sample transcription for development testing purposes.";
+      content.analysis.text = mockText;
+      content.analysis.adult = { score: Math.random() * 10, category: "safe" };
+      content.analysis.violence = { score: Math.random() * 8, category: "none" };
+      content.analysis.aiScore = Math.random() * 20;
+      return;
+    }
+
     // Transcribe audio using Whisper
     const audioBuffer = await fs.readFile(content.originalPath);
 
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await openai!.audio.transcriptions.create({
       file: new File([audioBuffer], content.metadata.filename),
       model: "whisper-1",
       response_format: "json",
@@ -544,7 +593,7 @@ export class ContentProcessor extends EventEmitter {
 
     // Analyze transcribed text for content
     if (transcription.text) {
-      const textAnalysis = await openai.chat.completions.create({
+      const textAnalysis = await openai!.chat.completions.create({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {
@@ -573,7 +622,20 @@ export class ContentProcessor extends EventEmitter {
   private async analyzeText(content: ContentItem) {
     const textContent = await fs.readFile(content.originalPath, "utf-8");
 
-    const response = await openai.chat.completions.create({
+    if (isDevMode) {
+      console.log("🔧 Development mode: Using mock text analysis");
+      content.analysis.text = textContent;
+      content.analysis.language = "en";
+      content.analysis.sentiment = { score: 0.2, magnitude: 0.3 };
+      content.analysis.categories = [{ name: "text", confidence: 0.95 }];
+      content.analysis.adult = { score: Math.random() * 15, category: "safe" };
+      content.analysis.violence = { score: Math.random() * 12, category: "none" };
+      content.analysis.aiScore = Math.random() * 25;
+      content.analysis.confidence = 90;
+      return;
+    }
+
+    const response = await openai!.chat.completions.create({
       model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
       messages: [
         {

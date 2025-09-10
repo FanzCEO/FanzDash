@@ -56,6 +56,7 @@ import {
   ViolationType,
   RiskLevel,
 } from "./complianceMonitor";
+import quantumExecutiveRoutes from "./routes/quantumExecutive";
 
 // Store connected WebSocket clients
 let connectedModerators: Set<WebSocket> = new Set();
@@ -191,6 +192,11 @@ const validateInput = (validations: any[]) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Basic health check - before all middleware to ensure it always works
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "healthy", timestamp: new Date(), version: "1.0.0" });
+  });
+
   // Apply security headers
   app.use(helmet({
     contentSecurityPolicy: {
@@ -221,10 +227,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/webhooks/*', strictLimiter);
   app.use('/api/system/*', adminLimiter);
   app.use('/api/security/*', adminLimiter);
-  // Basic health check
-  app.get("/api/health", (req, res) => {
-    res.json({ status: "healthy", timestamp: new Date(), version: "1.0.0" });
-  });
 
   // Initialize session middleware and passport
   app.use(
@@ -248,6 +250,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount authentication routes
   app.use(authRoutes);
+
+  // Mount Quantum Neural Executive Command Center routes
+  app.use('/api/qnecc', quantumExecutiveRoutes);
 
   // Legacy auth routes (keeping for backward compatibility)
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {

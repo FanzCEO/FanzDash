@@ -1,0 +1,148 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+⚠️  Using mock database for development. Set a real DATABASE_URL for production.
+FutureTechManager: Automated analysis disabled due to OpenAI quota limits
+OPENAI_API_KEY not found. Starz Studio will operate in local mode.
+🎬 Starz Studio Service started successfully
+Ecosystem monitoring started
+Streaming HTTP server listening on port 8080
+⚠️  FFmpeg not found - RTMP streaming disabled for development
+RTMP server listening on port 1935 (mock mode)
+2:02:27 PM [express] serving on port 3000
+2:03:52 PM [express] GET /api/health 200 in 13ms :: {"status":"healthy","timestamp":"2025-09-09T18:0…
+Error fetching dashboard stats: TypeError: db.select(...).from is not a function
+    at DatabaseStorage.getDashboardStats (/Users/joshuastone/Development/FanzDash/server/storage.ts:846:8)
+    at <anonymous> (/Users/joshuastone/Development/FanzDash/server/routes.ts:849:35)
+    at Layer.handle [as handle_request] (/Users/joshuastone/Development/FanzDash/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/joshuastone/Development/FanzDash/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/joshuastone/Development/FanzDash/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/joshuastone/Development/FanzDash/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/joshuastone/Development/FanzDash/node_modules/express/lib/router/index.js:284:15
+    at router.process_params (/Users/joshuastone/Development/FanzDash/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/joshuastone/Development/FanzDash/node_modules/express/lib/router/index.js:280:10)
+    at /Users/joshuastone/Development/FanzDash/node_modules/express/lib/router/index.js:646:15
+2:04:22 PM [express] GET /api/dashboard/stats 500 in 17ms :: {"message":"Failed to fetch dashboard s…
+Executing scaling action: scale_down for web_server
+2:05:26 PM [express] GET /api/platforms/status 200 in 3ms :: {"status":{"mediaHub":{"activeConnector…
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+2:05:55 PM [express] GET /api/platforms/status 200 in 2ms :: {"status":{"mediaHub":{"activeConnector…
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for api_gateway
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for web_server
+Executing scaling action: scale_down for streaming_service
+Executing scaling action: scale_down for streaming_service
+3:40:01 PM [express] GET /api/health 200 in 21ms :: {"status":"healthy","timestamp":"2025-09-09T19:4…
+3:40:08 PM [express] GET /api/categories 404 in 68ms
