@@ -3090,7 +3090,7 @@ export const tenants = pgTable("tenants", {
     .default(sql`gen_random_uuid()`),
   slug: varchar("slug").notNull().unique(), // e.g., 'boyfanz', 'fanzcommerce'
   name: varchar("name").notNull(), // e.g., 'BoyFanz', 'FanzCommerce'
-  ssoDomain: varchar("sso_domain"), // e.g., 'boyfanz.com'
+  ssoDomain: varchar("sso_domain"), // e.g., 'boyfanz.myfanz.network'
   status: varchar("status").notNull().default("active"), // 'active', 'suspended', 'archived'
   brandingConfig: jsonb("branding_config").default("{}"), // logos, colors, etc.
   billingConfig: jsonb("billing_config").default("{}"),
