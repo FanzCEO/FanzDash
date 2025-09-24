@@ -1,0 +1,98 @@
+# FANZ Advanced Secret Detection Rules
+# Comprehensive rules for adult content platform security
+
+[extend]
+useDefault = true
+
+# Adult Content Platform Specific Secrets
+[[rules]]
+id = "ccbill-api-key"
+description = "CCBill API Key (Adult Payment Processor)"
+regex = '''ccbill[_-]?(api[_-]?key|token|secret)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{32,64})['"]?'''
+tags = ["payment", "adult", "ccbill", "api-key"]
+
+[[rules]]
+id = "paxum-credentials"
+description = "Paxum API Credentials (Adult Payment Processor)"
+regex = '''paxum[_-]?(api[_-]?key|token|secret|username|password)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{16,64})['"]?'''
+tags = ["payment", "adult", "paxum", "credentials"]
+
+[[rules]]
+id = "segpay-token"
+description = "Segpay Token (Adult Payment Processor)"
+regex = '''segpay[_-]?(token|api[_-]?key|secret)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{24,64})['"]?'''
+tags = ["payment", "adult", "segpay", "token"]
+
+[[rules]]
+id = "epoch-credentials"
+description = "Epoch Payment Credentials"
+regex = '''epoch[_-]?(api[_-]?key|token|secret)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{20,64})['"]?'''
+tags = ["payment", "adult", "epoch", "credentials"]
+
+# FANZ Platform Specific Keys
+[[rules]]
+id = "fanz-api-key"
+description = "FANZ Platform API Key"
+regex = '''fanz[_-]?(api[_-]?key|token|secret)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{32,128})['"]?'''
+tags = ["fanz", "api-key", "platform"]
+
+[[rules]]
+id = "fanz-dash-token"
+description = "FanzDash Security Token"
+regex = '''fanz[_-]?dash[_-]?(token|key|secret)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{32,128})['"]?'''
+tags = ["fanz", "dashboard", "security", "token"]
+
+[[rules]]
+id = "fanz-jwt-secret"
+description = "FANZ JWT Secret Key"
+regex = '''fanz[_-]?jwt[_-]?(secret|key)[\s]*[:=]\s*['"]?([a-zA-Z0-9+/]{32,128}={0,2})['"]?'''
+tags = ["fanz", "jwt", "authentication", "secret"]
+
+# Adult Content CDN & Storage
+[[rules]]
+id = "adult-cdn-key"
+description = "Adult Content CDN API Key"
+regex = '''(adult[_-]?cdn|content[_-]?delivery)[_-]?(api[_-]?key|token)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{32,64})['"]?'''
+tags = ["cdn", "adult", "content", "storage"]
+
+[[rules]]
+id = "keycdn-adult"
+description = "KeyCDN for Adult Content"
+regex = '''keycdn[_-]?(api[_-]?key|token)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{32,64})['"]?'''
+tags = ["keycdn", "adult", "cdn"]
+
+# Age Verification Services
+[[rules]]
+id = "age-verification-key"
+description = "Age Verification Service API Key"
+regex = '''(age[_-]?verify|verification|agecheck)[_-]?(api[_-]?key|token)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{20,64})['"]?'''
+tags = ["age-verification", "compliance", "adult"]
+
+# Enhanced Standard Rules for Adult Platforms
+[[rules]]
+id = "database-url-adult"
+description = "Database URL with Adult Content Indicators"
+regex = '''(adult|fanz|xxx)[_-]?(db|database)[_-]?url[\s]*[:=]\s*['"]?([^\s'"]+)['"]?'''
+tags = ["database", "adult", "connection"]
+
+# Webhook & API Endpoints
+[[rules]]
+id = "webhook-adult"
+description = "Adult Platform Webhook URLs"
+regex = '''webhook[_-]?url[\s]*[:=]\s*['"]?(https?://[^\s'"]*(?:adult|xxx|fanz|sex)[^\s'"]*)['"]?'''
+tags = ["webhook", "adult", "endpoint"]
+
+# Content Moderation Keys  
+[[rules]]
+id = "moderation-api"
+description = "Content Moderation API Keys"
+regex = '''(moderation|content[_-]?filter|nsfw[_-]?detect)[_-]?(api[_-]?key|token)[\s]*[:=]\s*['"]?([a-zA-Z0-9]{20,64})['"]?'''
+tags = ["moderation", "content", "nsfw", "api"]
+
+# Enhanced Security for High-Value Secrets
+[[rules]]
+id = "high-entropy-secret"
+description = "High Entropy Secret (Potential Crypto/Auth Key)"
+regex = '''[a-zA-Z0-9+/]{32,}={0,2}'''
+entropy = 4.5
+tags = ["high-entropy", "crypto", "secret"]

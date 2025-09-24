@@ -1,0 +1,44 @@
+{
+  "name": "FanzDash",
+  "version": "1.0.0",
+  "description": "FanzDash - Part of FANZ Ecosystem",
+  "owner": "platform",
+  "type": "react",
+  "routes": [
+    "/healthz",
+    "/system", 
+    "/docs",
+    "/version"
+  ],
+  "endpoints": {
+    "health": "/healthz",
+    "system": "/system",
+    "docs": "/docs", 
+    "version": "/version"
+  },
+  "openapi": "/docs/openapi.json",
+  "auth": "oidc-jwt",
+  "events": [
+    "service.started",
+    "service.stopped",
+    "health.check"
+  ],
+  "integrations": {
+    "fanzdash": {
+      "enabled": true,
+      "registerUrl": "{{FANZDASH_URL}}/introspect/register",
+      "heartbeatInterval": 30000
+    }
+  },
+  "compliance": {
+    "adultContent": true,
+    "gdpr": true,
+    "ccpa": true,
+    "coppa": false
+  },
+  "deployment": {
+    "environment": "{{NODE_ENV}}",
+    "port": "{{PORT}}",
+    "healthCheck": "/healthz"
+  }
+}
