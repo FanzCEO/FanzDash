@@ -4,8 +4,8 @@ set -euo pipefail
 # FANZ Branding Enforcement Script
 # Enforces consistent branding across all FANZ repositories
 # - Migrates FUN* modules to Fanz* equivalents
-# - Renames FusionGenius to FanzSocial
-# - Replaces ebonyfanz.com with TabooFanz.com
+# - Renames FanzSocial to FanzSocial
+# - Replaces TabooFanz.com with TabooFanz.com
 
 echo "🏷️  Starting FANZ branding enforcement..."
 
@@ -21,16 +21,16 @@ fi
 # FUN to Fanz module mappings (only target known FUN modules to avoid generic 'fun' words)
 declare -a FUN_TO_FANZ=(
     "FanzStream:FanzStream"
-    "FUNClips:FanzClips"
-    "FUNRequest:FanzRequest"
-    "FUNShop:FanzShop"
-    "FUNNFT:FanzNFT"
-    "FUNCard:FanzCard"
-    "FUNStage:FanzStage"
-    "FUNForum:FanzForum"
-    "FUNRank:FanzRank"
-    "FUNReach:FanzReach"
-    "FUNGames:FanzGames"
+    "FanzClips:FanzClips"
+    "FanzRequest:FanzRequest"
+    "FanzShop:FanzShop"
+    "FanzNFT:FanzNFT"
+    "FanzCard:FanzCard"
+    "FanzStage:FanzStage"
+    "FanzForum:FanzForum"
+    "FanzRank:FanzRank"
+    "FanzReach:FanzReach"
+    "FanzGames:FanzGames"
 )
 
 # Function to perform safe replacements
@@ -82,18 +82,18 @@ else
     echo "✅ No FUN modules found to update"
 fi
 
-# 2. FusionGenius → FanzSocial
-echo "📱 Processing FusionGenius → FanzSocial rename..."
-safe_replace "FusionGenius" "FanzSocial"
+# 2. FanzSocial → FanzSocial
+echo "📱 Processing FanzSocial → FanzSocial rename..."
+safe_replace "FanzSocial" "FanzSocial"
 fusion_changes=$?
 
 if [ $fusion_changes -gt 0 ]; then
-    echo "✅ Updated $fusion_changes FusionGenius references to FanzSocial"
+    echo "✅ Updated $fusion_changes FanzSocial references to FanzSocial"
 else
-    echo "✅ No FusionGenius references found"
+    echo "✅ No FanzSocial references found"
 fi
 
-# 3. Domain Updates: ebonyfanz.com → TabooFanz.com
+# 3. Domain Updates: TabooFanz.com → TabooFanz.com
 echo "🌐 Processing domain updates..."
 safe_replace "ebonyfanz\.com" "TabooFanz.com"
 domain_changes=$?
@@ -133,10 +133,10 @@ if [ "$USE_GREP" = false ]; then
         validation_errors=$((validation_errors + 1))
     fi
     
-    # Check for remaining FusionGenius references
-    if rg -i "FusionGenius" . -g '!node_modules' -g '!*lock*' -g '!.git' >/dev/null 2>&1; then
-        echo "⚠️  Warning: Found remaining FusionGenius references:"
-        rg -i "FusionGenius" . -g '!node_modules' -g '!*lock*' -g '!.git' || true
+    # Check for remaining FanzSocial references
+    if rg -i "FanzSocial" . -g '!node_modules' -g '!*lock*' -g '!.git' >/dev/null 2>&1; then
+        echo "⚠️  Warning: Found remaining FanzSocial references:"
+        rg -i "FanzSocial" . -g '!node_modules' -g '!*lock*' -g '!.git' || true
         validation_errors=$((validation_errors + 1))
     fi
     
@@ -155,7 +155,7 @@ echo ""
 echo "🏆 FANZ Branding Enforcement Complete!"
 echo "📊 Summary:"
 echo "  • FUN → Fanz modules: $total_fun_changes changes"
-echo "  • FusionGenius → FanzSocial: $fusion_changes changes"
+echo "  • FanzSocial → FanzSocial: $fusion_changes changes"
 echo "  • Domain updates: $domain_changes changes"
 echo "  • Total changes: $total_changes"
 

@@ -142,4 +142,5 @@ temp/
 .vscode/tasks.json
 
 # Keep workspace file
-!.vscode/extensions.json
+!.vscode/extensions.jsonpackage-lock.json
+yarn.lock
