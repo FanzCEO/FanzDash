@@ -1811,7 +1811,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Start all monitoring systems
   systemMonitoring.startMonitoring();
-  ecosystemMaintenance.startMonitoring();
+  
+  // Only start ecosystem maintenance in production to prevent auto-scaling issues in development
+  if (process.env.NODE_ENV === "production") {
+    ecosystemMaintenance.startMonitoring();
+  } else {
+    console.log("🔧 Ecosystem maintenance disabled in development mode");
+  }
 
   // Setup WebSocket for streaming
   const httpServer = createServer(app);
