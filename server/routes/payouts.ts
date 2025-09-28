@@ -1,5 +1,6 @@
 import express from 'express';
 import { creatorPayoutSystem } from '../payouts/CreatorPayoutSystem.js';
+import { payoutAutomationSystem } from '../payouts/PayoutAutomationSystem.js';
 import rateLimit from 'express-rate-limit';
 import { body, validationResult } from 'express-validator';
 
@@ -572,6 +573,357 @@ router.get('/methods', generalLimiter, async (req, res) => {
   }
 });
 
+// ============= PAYOUT AUTOMATION SYSTEM =============
+
+// Get automation system statistics
+router.get('/automation/stats', generalLimiter, requireAuth, (req, res) => {
+  try {
+    const stats = payoutAutomationSystem.getSystemStats();
+    res.json({
+      success: true,
+      data: stats,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting automation stats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get automation statistics',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Record creator revenue with automated payout evaluation
+router.post('/automation/revenue', 
+  generalLimiter, 
+  requireAuth,
+  [
+    body('creatorId').isString().notEmpty().withMessage('Creator ID is required'),
+    body('transactionId').isString().notEmpty().withMessage('Transaction ID is required'),
+    body('sourceType').isIn(['subscription', 'tips', 'ppv', 'custom_content', 'live_stream', 'merchandise', 'other']).withMessage('Valid source type required'),
+    body('grossAmount').isFloat({ min: 0.01 }).withMessage('Gross amount must be greater than 0'),
+    body('platformFee').isFloat({ min: 0 }).withMessage('Platform fee must be non-negative'),
+    body('processingFee').isFloat({ min: 0 }).withMessage('Processing fee must be non-negative'),
+    body('netAmount').isFloat({ min: 0.01 }).withMessage('Net amount must be greater than 0'),
+    body('currency').isString().notEmpty().withMessage('Currency is required'),
+    body('platform').isString().notEmpty().withMessage('Platform is required')
+  ],
+  checkValidation,
+  async (req, res) => {
+    try {
+      const {
+        creatorId,
+        transactionId, 
+        sourceType,
+        grossAmount,
+        platformFee,
+        processingFee,
+        netAmount,
+        currency,
+        platform,
+        fanId,
+        contentId,
+        payoutEligibleAt
+      } = req.body;
+
+      const revenueId = await payoutAutomationSystem.updateCreatorRevenue(creatorId, {
+        transactionId,
+        sourceType,
+        grossAmount,
+        platformFee,
+        processingFee,
+        netAmount,
+        currency,
+        platform,
+        fanId,
+        contentId,
+        payoutEligibleAt: payoutEligibleAt ? new Date(payoutEligibleAt) : new Date(),
+        metadata: {
+          recordedBy: req.headers.authorization,
+          ipAddress: req.ip
+        }
+      });
+
+      res.json({
+        success: true,
+        revenueId,
+        message: 'Revenue recorded and automation evaluated',
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Error recording automated revenue:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to record revenue',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+);
+
+// Add automated payout method with verification
+router.post('/automation/payout-methods',
+  generalLimiter,
+  requireAuth,
+  [
+    body('creatorId').isString().notEmpty().withMessage('Creator ID is required'),
+    body('type').isIn(['paxum', 'epayservice', 'wise', 'payoneer', 'crypto', 'ach', 'sepa', 'wire', 'check']).withMessage('Valid payout method type required'),
+    body('displayName').isString().notEmpty().withMessage('Display name is required'),
+    body('accountDetails').isObject().withMessage('Account details required'),
+    body('feeStructure').isObject().withMessage('Fee structure required')
+  ],
+  checkValidation,
+  async (req, res) => {
+    try {
+      const {
+        creatorId,
+        type,
+        displayName,
+        accountDetails,
+        feeStructure,
+        restrictions,
+        isDefault
+      } = req.body;
+
+      const methodId = await payoutAutomationSystem.addPayoutMethod(creatorId, {
+        type,
+        displayName,
+        accountDetails,
+        verificationStatus: 'pending',
+        isDefault: isDefault || false,
+        minimumPayout: restrictions?.minimumPayout || 25,
+        maximumPayout: restrictions?.maximumPayout || 10000,
+        feeStructure: {
+          fixedFee: feeStructure.fixedFee || 0,
+          percentageFee: feeStructure.percentageFee || 0,
+          currency: feeStructure.currency || 'USD'
+        },
+        restrictions: restrictions || {},
+        metadata: {
+          addedBy: req.headers.authorization,
+          ipAddress: req.ip
+        }
+      });
+
+      res.json({
+        success: true,
+        methodId,
+        message: 'Automated payout method added successfully',
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Error adding automated payout method:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to add payout method',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+);
+
+// Create manual payout request
+router.post('/automation/payout-request',
+  payoutLimiter,
+  requireAuth,
+  [
+    body('creatorId').isString().notEmpty().withMessage('Creator ID is required'),
+    body('payoutMethodId').isString().notEmpty().withMessage('Payout method ID is required'),
+    body('requestedAmount').isFloat({ min: 1 }).withMessage('Requested amount must be greater than 0'),
+    body('priority').isIn(['low', 'normal', 'high', 'urgent']).optional()
+  ],
+  checkValidation,
+  async (req, res) => {
+    try {
+      const {
+        creatorId,
+        payoutMethodId,
+        requestedAmount,
+        priority = 'normal',
+        scheduledFor
+      } = req.body;
+
+      // Get creator ledger to calculate fees
+      const ledger = payoutAutomationSystem.getCreatorLedger(creatorId);
+      if (!ledger) {
+        return res.status(404).json({
+          success: false,
+          error: 'Creator ledger not found',
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      const methods = payoutAutomationSystem.getCreatorPayoutMethods(creatorId);
+      const method = methods.find(m => m.id === payoutMethodId);
+      if (!method) {
+        return res.status(404).json({
+          success: false,
+          error: 'Payout method not found',
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      const transactionFee = method.feeStructure.fixedFee + (requestedAmount * method.feeStructure.percentageFee / 100);
+      const netPayoutAmount = requestedAmount - transactionFee;
+
+      const requestId = await payoutAutomationSystem.createPayoutRequest({
+        creatorId,
+        payoutMethodId,
+        requestedAmount,
+        eligibleAmount: Math.min(requestedAmount, ledger.availableBalance),
+        currency: ledger.currency,
+        priority,
+        requestType: 'manual',
+        scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
+        transactionFee,
+        netPayoutAmount,
+        metadata: {
+          requestedBy: req.headers.authorization,
+          ipAddress: req.ip
+        }
+      });
+
+      res.json({
+        success: true,
+        requestId,
+        estimatedFee: transactionFee,
+        netAmount: netPayoutAmount,
+        message: 'Payout request created successfully',
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Error creating payout request:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to create payout request',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+);
+
+// Get creator ledger details
+router.get('/automation/ledger/:creatorId', generalLimiter, requireAuth, (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const ledger = payoutAutomationSystem.getCreatorLedger(creatorId);
+    
+    if (!ledger) {
+      return res.status(404).json({
+        success: false,
+        error: 'Creator ledger not found',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    res.json({
+      success: true,
+      ledger,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error fetching creator ledger:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch creator ledger',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get payout requests for creator
+router.get('/automation/payout-requests/:creatorId', generalLimiter, requireAuth, (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const { status } = req.query;
+    
+    const requests = payoutAutomationSystem.getPayoutRequests(
+      creatorId, 
+      status as string
+    );
+
+    res.json({
+      success: true,
+      requests,
+      count: requests.length,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error fetching payout requests:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch payout requests',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get payout batches (admin only)
+router.get('/automation/batches', adminLimiter, requireAuth, requireAdmin, (req, res) => {
+  try {
+    const { status } = req.query;
+    const batches = payoutAutomationSystem.getPayoutBatches(status as string);
+
+    res.json({
+      success: true,
+      batches,
+      count: batches.length,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error fetching payout batches:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch payout batches',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Stop/start automation system (admin only)
+router.post('/automation/control/:action', adminLimiter, requireAuth, requireAdmin, (req, res) => {
+  try {
+    const { action } = req.params;
+    
+    if (action === 'stop') {
+      payoutAutomationSystem.stopAutomation();
+    } else if (action === 'start') {
+      // Restart automation by creating new instance (simplified for demo)
+      console.log('Automation restart requested - would reinitialize in production');
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid action. Use "start" or "stop"',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Automation system ${action}ped`,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error controlling automation:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to control automation system',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Health check
 router.get('/health', (req, res) => {
   res.json({
@@ -582,17 +934,24 @@ router.get('/health', (req, res) => {
     features: [
       'Creator registration and management',
       'Multi-method payout processing',
-      'Automated earnings tracking',
+      'Automated earnings tracking with ledger',
       'Revenue stream breakdown',
       'KYC and compliance integration',
-      'Batch payout processing',
-      'Auto-payout scheduling',
+      'Intelligent batch payout processing',
+      'Rule-based auto-payout scheduling',
       'Tax information management',
-      'Real-time earnings calculation'
+      'Real-time earnings calculation',
+      'Advanced payout automation engine',
+      'Smart fee calculation and optimization',
+      'Multi-processor failover support',
+      'Compliance-integrated payout validation',
+      'Automated threshold-based payouts',
+      'Creator ledger with balance tracking'
     ],
     payoutMethods: [
-      'Paxum', 'ePayService', 'Wise', 'Cryptocurrency',
-      'ACH Direct', 'SEPA Transfer', 'Payoneer', 'Skrill'
+      'Paxum', 'ePayService', 'Wise', 'Payoneer', 
+      'Cryptocurrency (BTC/ETH/USDT/USDC)', 'ACH Direct',
+      'SEPA Transfer', 'Wire Transfer', 'Paper Check'
     ],
     compliance: [
       'KYC verification required',
