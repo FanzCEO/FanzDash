@@ -62,6 +62,9 @@ import ssoRoutes from "./routes/sso";
 import vaultRoutes from "./routes/vault";
 import mediaRoutes from "./routes/media";
 import payoutRoutes from "./routes/payouts";
+import routingRoutes from "./routes/routing";
+import { domainRouter } from "./routing/DomainRouter";
+import complianceRoutes from "./routes/compliance";
 
 // Store connected WebSocket clients
 let connectedModerators: Set<WebSocket> = new Set();
@@ -253,6 +256,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Apply CSRF protection middleware
   app.use(lusca.csrf());
 
+  // Apply domain routing middleware (before all other routes)
+  app.use(domainRouter.routeRequest);
+
   // Mount authentication routes
   app.use(authRoutes);
 
@@ -273,6 +279,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount Creator Payout System routes
   app.use('/api/payouts', payoutRoutes);
+
+  // Mount Domain Routing System routes
+  app.use('/api/routing', routingRoutes);
+
+  // Mount Compliance Monitoring System routes
+  app.use('/api/compliance', complianceRoutes);
 
   // Legacy auth routes (keeping for backward compatibility)
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
