@@ -118,12 +118,14 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   html,
   body {
-    @apply font-sans antialiased text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    color: hsl(var(--foreground));
     background: hsl(0 0% 0%) !important;
   }
 
