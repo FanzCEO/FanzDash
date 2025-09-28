@@ -302,26 +302,7 @@ export class PaymentProcessor extends EventEmitter {
           supportLevel: "basic",
         },
       },
-      {
-        id: "digital_wallet_paypal",
-        type: "digital_wallet",
-        provider: "PayPal",
-        displayName: "PayPal",
-        currency: "USD",
-        isActive: true,
-        processingFee: 3.49,
-        fixedFee: 0.49,
-        minAmount: 1.0,
-        maxAmount: 10000.0,
-        supportedCountries: ["US", "CA", "GB", "EU", "AU"],
-        supportedCurrencies: ["USD", "CAD", "GBP", "EUR", "AUD"],
-        processingTime: "instant",
-        metadata: {
-          description: "Pay with PayPal balance or linked account",
-          requiresKYC: false,
-          supportLevel: "basic",
-        },
-      },
+      // PayPal removed as per company rules - adult content restrictions
     ];
 
     for (const method of methods) {
@@ -612,7 +593,7 @@ export class PaymentProcessor extends EventEmitter {
   }
 
   private async processDigitalWallet(payment: Payment): Promise<boolean> {
-    // Simulate digital wallet processing (PayPal, etc.)
+    // Simulate digital wallet processing (adult-friendly providers)
     payment.externalTransactionId = `wallet_${randomUUID()}`;
 
     return new Promise((resolve) => {

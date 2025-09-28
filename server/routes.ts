@@ -4549,18 +4549,10 @@ I'll be back online shortly. Thank you for your patience!`;
             healthScore: process.env.PERSPECTIVE_API_KEY ? 90 : 70,
             features: ["toxicity_detection", "harassment_detection", "threat_detection"]
           },
-          stripe: {
-            name: "Stripe Payment Processing",
-            status: process.env.STRIPE_SECRET_KEY ? "operational" : "not_configured",
-            type: "payment",
-            endpoint: "https://api.stripe.com/v1",
-            lastCheck: new Date(),
-            healthScore: process.env.STRIPE_SECRET_KEY ? 95 : 0,
-            features: ["payment_processing", "subscription_management", "payout_automation"]
-          }
+          // Stripe removed - adult content restrictions per company policy
         },
         summary: {
-          total: 6,
+          total: 5,
           operational: 0,
           degraded: 0,
           not_configured: 0,
@@ -4695,13 +4687,7 @@ I'll be back online shortly. Thank you for your patience!`;
           integrations: {
             description: "External service integrations",
             variables: {
-              STRIPE_SECRET_KEY: {
-                required: false,
-                description: "Stripe secret key for payment processing",
-                example: "sk_test_...",
-                current: process.env.STRIPE_SECRET_KEY ? "configured" : "not_set",
-                security: "critical"
-              },
+              // Stripe removed - adult content restrictions per company policy
               SENDGRID_API_KEY: {
                 required: false,
                 description: "SendGrid API key for email notifications",
@@ -4903,17 +4889,7 @@ I'll be back online shortly. Thank you for your patience!`;
           }
           break;
 
-        case "stripe":
-          testResults.testStatus = process.env.STRIPE_SECRET_KEY ? "success" : "not_configured";
-          testResults.results = {
-            secretKey: process.env.STRIPE_SECRET_KEY ? "configured" : "missing",
-            webhookEndpoint: "/api/webhooks/stripe",
-            supportedMethods: ["card", "bank_transfer", "digital_wallet"]
-          };
-          if (!process.env.STRIPE_SECRET_KEY) {
-            testResults.recommendations.push("Configure STRIPE_SECRET_KEY for payment processing");
-          }
-          break;
+        // Stripe removed - adult content restrictions per company policy
 
         case "database":
           testResults.testStatus = process.env.DATABASE_URL ? "success" : "failed";
