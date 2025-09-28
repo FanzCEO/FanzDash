@@ -57,6 +57,11 @@ import {
   RiskLevel,
 } from "./complianceMonitor";
 import quantumExecutiveRoutes from "./routes/quantumExecutive";
+import paymentRoutes from "./routes/payments";
+import ssoRoutes from "./routes/sso";
+import vaultRoutes from "./routes/vault";
+import mediaRoutes from "./routes/media";
+import payoutRoutes from "./routes/payouts";
 
 // Store connected WebSocket clients
 let connectedModerators: Set<WebSocket> = new Set();
@@ -221,12 +226,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Apply specific rate limiting to sensitive endpoints
   app.use('/api/login', authLimiter);
   app.use('/api/register', authLimiter);
-  app.use('/api/auth/*', authLimiter);
-  app.use('/api/admin/*', adminLimiter);
-  app.use('/api/upload/*', uploadLimiter);
-  app.use('/api/webhooks/*', strictLimiter);
-  app.use('/api/system/*', adminLimiter);
-  app.use('/api/security/*', adminLimiter);
+  app.use('/api/auth/', authLimiter);
+  app.use('/api/admin/', adminLimiter);
+  app.use('/api/upload/', uploadLimiter);
+  app.use('/api/webhooks/', strictLimiter);
+  app.use('/api/system/', adminLimiter);
+  app.use('/api/security/', adminLimiter);
 
   // Initialize session middleware and passport
   app.use(
@@ -253,6 +258,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount Quantum Neural Executive Command Center routes
   app.use('/api/qnecc', quantumExecutiveRoutes);
+
+  // Mount unified payment processing routes
+  app.use('/api/payments', paymentRoutes);
+
+  // Mount FanzSSO identity management routes
+  app.use('/api/sso', ssoRoutes);
+
+  // Mount FanzHubVault secure storage routes
+  app.use('/api/vault', vaultRoutes);
+
+  // Mount Enhanced MediaHub routes
+  app.use('/api/media', mediaRoutes);
+
+  // Mount Creator Payout System routes
+  app.use('/api/payouts', payoutRoutes);
 
   // Legacy auth routes (keeping for backward compatibility)
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
