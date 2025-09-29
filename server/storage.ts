@@ -2137,15 +2137,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Content Moderation Settings implementation
-  async getModerationSettings(): Promise<ModerationSettings | undefined> {
+  async getCurrentModerationSettings(): Promise<ModerationSettings | undefined> {
     const [result] = await db.select().from(moderationSettings).limit(1);
     return result;
   }
 
-  async updateModerationSettings(
+  async updateCurrentModerationSettings(
     data: Partial<ModerationSettings>,
   ): Promise<void> {
-    const existing = await this.getModerationSettings();
+    const existing = await this.getCurrentModerationSettings();
     if (existing) {
       await db
         .update(moderationSettings)

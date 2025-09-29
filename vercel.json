@@ -5,8 +5,12 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist/public"
       }
+    },
+    {
+      "src": "dist/index.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -23,11 +27,17 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "PNPM_FLAGS": "--no-frozen-lockfile"
   },
   "installCommand": "pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm run build",
   "devCommand": "pnpm run dev",
   "framework": null,
-  "outputDirectory": "dist"
+  "outputDirectory": "dist/public",
+  "functions": {
+    "dist/index.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
 }
