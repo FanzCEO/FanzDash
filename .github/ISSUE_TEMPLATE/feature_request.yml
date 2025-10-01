@@ -1,0 +1,234 @@
+name: 💡 Feature Request
+description: Suggest a new feature or enhancement for FANZ platforms
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+projects: ["FanzCEO/1"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! We prioritize features that help creators earn more, stay safer, and have more control over their content and business.
+
+        **Creator-First Principle**: All features should primarily benefit creators, with fan and business benefits as secondary considerations.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Pre-submission Checklist
+      description: Please verify these items before submitting
+      options:
+        - label: I have searched existing issues and feature requests to avoid duplicates
+          required: true
+        - label: This feature aligns with FANZ's creator-first mission
+          required: true
+        - label: I have considered how this will benefit creators specifically
+          required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Which FANZ platform(s) would this feature benefit?
+      options:
+        - BoyFanz
+        - GirlFanz  
+        - PupFanz
+        - TabooFanz
+        - TransFanz
+        - FanzDash (Admin)
+        - FanzTube
+        - FanzSocial
+        - FanzFinance OS
+        - Cross-Platform (All Platforms)
+        - New Platform/Service
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature Category
+      description: What type of feature is this?
+      options:
+        - 💰 Creator Monetization
+        - 🛡️ Creator Safety & Security  
+        - 📊 Analytics & Insights
+        - 🎨 Content Creation Tools
+        - 👥 Fan Engagement
+        - 📱 Mobile Experience
+        - 🔧 Creator Tools & Workflow
+        - 💳 Payment & Billing
+        - 🎯 Marketing & Growth
+        - ♿ Accessibility
+        - 🌐 Localization
+        - 🔐 Privacy Controls
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Feature Title
+      description: A concise title for the feature
+      placeholder: e.g., "AI-powered content scheduling for optimal engagement"
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature Summary
+      description: A brief summary of what this feature would do
+      placeholder: One or two sentences describing the core functionality
+    validations:
+      required: true
+
+  - type: textarea
+    id: creator-benefit
+    attributes:
+      label: Creator Benefit
+      description: How will this feature specifically help creators?
+      placeholder: |
+        Explain how this feature will:
+        - Increase creator earnings
+        - Improve creator safety
+        - Give creators more control
+        - Save creators time
+        - Expand creator opportunities
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: Describe the feature as a user story
+      placeholder: |
+        As a [creator/fan/admin], 
+        I want [goal/desire] 
+        so that [benefit/value].
+        
+        Example:
+        As a creator,
+        I want to schedule content posts in advance
+        so that I can maintain consistent engagement even when I'm not online.
+    validations:
+      required: true
+
+  - type: textarea
+    id: detailed-description
+    attributes:
+      label: Detailed Description
+      description: Provide a detailed description of how this feature would work
+      placeholder: |
+        - What would the user interface look like?
+        - How would users interact with this feature?
+        - What are the key components or screens?
+        - Any specific workflows or processes?
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Provide specific examples of how this feature would be used
+      placeholder: |
+        Example scenarios:
+        1. Scenario 1: [description]
+        2. Scenario 2: [description]
+        3. Scenario 3: [description]
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What needs to be true for this feature to be considered complete?
+      placeholder: |
+        - [ ] Feature works on mobile and desktop
+        - [ ] Meets WCAG 2.2 AA accessibility standards
+        - [ ] Includes proper error handling and validation
+        - [ ] Has comprehensive test coverage
+        - [ ] Performance impact is minimal
+        - [ ] Includes user documentation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature?
+      options:
+        - 🔴 Critical - Essential for creator success
+        - 🟠 High - Significant impact on creator experience
+        - 🟡 Medium - Nice to have, moderate impact
+        - 🔵 Low - Minor improvement
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative approaches?
+      placeholder: |
+        - What other solutions have you considered?
+        - Why is this approach preferred?
+        - Are there existing workarounds?
+
+  - type: textarea
+    id: technical-considerations
+    attributes:
+      label: Technical Considerations
+      description: Any technical aspects to consider?
+      placeholder: |
+        - API changes needed?
+        - Database implications?
+        - Third-party integrations?
+        - Performance considerations?
+        - Security implications?
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Examples
+      description: Any mockups, wireframes, or examples to illustrate the feature?
+      placeholder: |
+        - Drag and drop images here
+        - Links to mockups or designs
+        - References to similar features on other platforms
+        - Screenshots of inspiration
+
+  - type: input
+    id: related-issues
+    attributes:
+      label: Related Issues
+      description: Link to any related issues or feature requests
+      placeholder: "#123, #456"
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other information that would help understand this request?
+      placeholder: |
+        - Research or data supporting this feature
+        - Creator feedback or requests
+        - Market trends or competitor features
+        - Business impact or revenue potential
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Implementation Readiness
+      description: Are you willing to contribute to the implementation?
+      options:
+        - label: I'm willing to help with research and requirements gathering
+          required: false
+        - label: I'm interested in contributing code to this feature
+          required: false
+        - label: I can help with testing and feedback
+          required: false
+        - label: I have design skills and can help with UI/UX
+          required: false
