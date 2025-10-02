@@ -198,7 +198,7 @@ export class RevolutionarySecurityHub extends EventEmitter {
     });
 
     // Zero-day exploit detection
-    const zeroDay Analysis = await this.detectZeroDayExploits({
+    const zeroDayAnalysis = await this.detectZeroDayExploits({
       systemBehavior: monitoringData.systemBehavior,
       memoryPatterns: monitoringData.memoryAnalysis,
       networkAnomalies: anomalies.network,

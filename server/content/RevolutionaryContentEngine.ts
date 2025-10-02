@@ -273,7 +273,7 @@ export class RevolutionaryContentEngine extends EventEmitter {
   }
 
   // Revolutionary Real-time Transcoding Engine
-  async transcodeCo entOnDemand(content: ContentItem, transcodingRequest: TranscodingRequest): Promise<TranscodedContent> {
+  async transcodeContentOnDemand(content: ContentItem, transcodingRequest: TranscodingRequest): Promise<TranscodedContent> {
     // Analyze source content
     const sourceAnalysis = await this.analyzeSourceContent({
       content: content.data,
@@ -336,7 +336,7 @@ export class RevolutionaryContentEngine extends EventEmitter {
       manifests,
       deliveryOptions: await this.setupDeliveryOptions(transcodedVariants),
       analytics: await this.setupTranscodingAnalytics(content.id),
-      cdn: await this.distributeToCD transcodedVariants)
+      cdn: await this.distributeToCDN(transcodedVariants)
     };
   }
 
@@ -398,7 +398,7 @@ export class RevolutionaryContentEngine extends EventEmitter {
       marketplace: marketplaceIntegration,
       utility: await this.setupNFTUtility(mintedNFT, nftConfig.utility),
       analytics: await this.setupNFTAnalytics(mintedNFT.tokenId),
-      provenance: await this.setupProvenance racking(mintedNFT)
+      provenance: await this.setupProvenanceTracking(mintedNFT)
     };
   }
 
