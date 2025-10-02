@@ -44,6 +44,7 @@
     "@radix-ui/react-tooltip": "^1.2.0",
     "@react-three/drei": "^9.112.0",
     "@react-three/fiber": "^8.17.10",
+    "@react-three/xr": "^6.6.26",
     "@sendgrid/mail": "^8.1.5",
     "@simplewebauthn/browser": "^13.1.2",
     "@simplewebauthn/server": "^13.1.2",
