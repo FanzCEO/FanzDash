@@ -173,7 +173,7 @@ export class RevolutionarySpatialComputing extends EventEmitter {
     // Real-time collaboration features
     const collaboration = await this.createCollaborationFeatures({
       sharedWhiteboarding: true,
-      objectManipulation3D: true,
+      3dObjectManipulation: true,
       documentSharing: true,
       screenSharing: true,
       spatialAnnotations: true,
