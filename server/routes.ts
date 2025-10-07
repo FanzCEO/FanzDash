@@ -23,6 +23,7 @@ import { aiModerationService } from "./openaiService";
 import session from "express-session";
 import passport from "passport";
 import authRoutes from "./auth/authRoutes";
+import lusca from "lusca";
 import ChatService from "./chatService";
 import Compliance2257Service from "./compliance2257Service";
 
@@ -55,6 +56,15 @@ import {
   ViolationType,
   RiskLevel,
 } from "./complianceMonitor";
+import quantumExecutiveRoutes from "./routes/quantumExecutive";
+import paymentRoutes from "./routes/payments";
+import ssoRoutes from "./routes/sso";
+import vaultRoutes from "./routes/vault";
+import mediaRoutes from "./routes/media";
+import payoutRoutes from "./routes/payouts";
+import routingRoutes from "./routes/routing";
+import { domainRouter } from "./routing/DomainRouter";
+import complianceRoutes from "./routes/compliance";
 
 // Store connected WebSocket clients
 let connectedModerators: Set<WebSocket> = new Set();
@@ -190,6 +200,11 @@ const validateInput = (validations: any[]) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Basic health check - before all middleware to ensure it always works
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "healthy", timestamp: new Date(), version: "1.0.0" });
+  });
+
   // Apply security headers
   app.use(helmet({
     contentSecurityPolicy: {
@@ -214,16 +229,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Apply specific rate limiting to sensitive endpoints
   app.use('/api/login', authLimiter);
   app.use('/api/register', authLimiter);
-  app.use('/api/auth/*', authLimiter);
-  app.use('/api/admin/*', adminLimiter);
-  app.use('/api/upload/*', uploadLimiter);
-  app.use('/api/webhooks/*', strictLimiter);
-  app.use('/api/system/*', adminLimiter);
-  app.use('/api/security/*', adminLimiter);
-  // Basic health check
-  app.get("/api/health", (req, res) => {
-    res.json({ status: "healthy", timestamp: new Date(), version: "1.0.0" });
-  });
+  app.use('/api/auth/', authLimiter);
+  app.use('/api/admin/', adminLimiter);
+  app.use('/api/upload/', uploadLimiter);
+  app.use('/api/webhooks/', strictLimiter);
+  app.use('/api/system/', adminLimiter);
+  app.use('/api/security/', adminLimiter);
 
   // Initialize session middleware and passport
   app.use(
@@ -242,8 +253,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Apply CSRF protection middleware
+  app.use(lusca.csrf());
+
+  // Apply domain routing middleware (before all other routes)
+  app.use(domainRouter.routeRequest);
+
   // Mount authentication routes
   app.use(authRoutes);
+
+  // Mount Quantum Neural Executive Command Center routes
+  app.use('/api/qnecc', quantumExecutiveRoutes);
+
+  // Mount unified payment processing routes
+  app.use('/api/payments', paymentRoutes);
+
+  // Mount FanzSSO identity management routes
+  app.use('/api/sso', ssoRoutes);
+
+  // Mount FanzHubVault secure storage routes
+  app.use('/api/vault', vaultRoutes);
+
+  // Mount Enhanced MediaHub routes
+  app.use('/api/media', mediaRoutes);
+
+  // Mount Creator Payout System routes
+  app.use('/api/payouts', payoutRoutes);
+
+  // Mount Domain Routing System routes
+  app.use('/api/routing', routingRoutes);
+
+  // Mount Compliance Monitoring System routes
+  app.use('/api/compliance', complianceRoutes);
 
   // Legacy auth routes (keeping for backward compatibility)
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
@@ -891,6 +932,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching pending content:", error);
       res.status(500).json({ message: "Failed to fetch pending content" });
+    }
+  });
+
+  // Live streams endpoint
+  app.get("/api/live-streams", async (req, res) => {
+    try {
+      // Return empty array for now - streaming infrastructure not yet implemented
+      res.json([]);
+    } catch (error) {
+      console.error("Error fetching live streams:", error);
+      res.status(500).json({ message: "Failed to fetch live streams" });
     }
   });
 
@@ -1802,7 +1854,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Start all monitoring systems
   systemMonitoring.startMonitoring();
-  ecosystemMaintenance.startMonitoring();
+  
+  // Only start ecosystem maintenance in production to prevent auto-scaling issues in development
+  if (process.env.NODE_ENV === "production") {
+    ecosystemMaintenance.startMonitoring();
+  } else {
+    console.log("🔧 Ecosystem maintenance disabled in development mode");
+  }
 
   // Setup WebSocket for streaming
   const httpServer = createServer(app);
@@ -3368,13 +3426,13 @@ I'll be back online shortly. Thank you for your patience!`;
       // Route to appropriate handlers based on event type
       switch (eventType) {
         case "user_verification":
-          console.log(`📋 User verification event for tenant ${tenantId}:`, data);
+          console.log("📋 User verification event for tenant %s:", tenantId, data);
           break;
         case "payment_update":
-          console.log(`💰 Payment update event for tenant ${tenantId}:`, data);
+          console.log("💰 Payment update event for tenant %s:", tenantId, data);
           break;
         case "content_moderation":
-          console.log(`🛡️ Content moderation event for tenant ${tenantId}:`, data);
+          console.log("🛡️ Content moderation event for tenant %s:", tenantId, data);
           break;
         case "security_alert":
           await storage.createSecurityEvent({
@@ -3389,7 +3447,7 @@ I'll be back online shortly. Thank you for your patience!`;
           });
           break;
         default:
-          console.log(`📡 Generic webhook event ${eventType} for tenant ${tenantId}:`, data);
+          console.log("📡 Generic webhook event %s for tenant %s:", eventType, tenantId, data);
       }
 
       res.json({ 
@@ -4502,18 +4560,10 @@ I'll be back online shortly. Thank you for your patience!`;
             healthScore: process.env.PERSPECTIVE_API_KEY ? 90 : 70,
             features: ["toxicity_detection", "harassment_detection", "threat_detection"]
           },
-          stripe: {
-            name: "Stripe Payment Processing",
-            status: process.env.STRIPE_SECRET_KEY ? "operational" : "not_configured",
-            type: "payment",
-            endpoint: "https://api.stripe.com/v1",
-            lastCheck: new Date(),
-            healthScore: process.env.STRIPE_SECRET_KEY ? 95 : 0,
-            features: ["payment_processing", "subscription_management", "payout_automation"]
-          }
+          // Stripe removed - adult content restrictions per company policy
         },
         summary: {
-          total: 6,
+          total: 5,
           operational: 0,
           degraded: 0,
           not_configured: 0,
@@ -4648,13 +4698,7 @@ I'll be back online shortly. Thank you for your patience!`;
           integrations: {
             description: "External service integrations",
             variables: {
-              STRIPE_SECRET_KEY: {
-                required: false,
-                description: "Stripe secret key for payment processing",
-                example: "sk_test_...",
-                current: process.env.STRIPE_SECRET_KEY ? "configured" : "not_set",
-                security: "critical"
-              },
+              // Stripe removed - adult content restrictions per company policy
               SENDGRID_API_KEY: {
                 required: false,
                 description: "SendGrid API key for email notifications",
@@ -4856,17 +4900,7 @@ I'll be back online shortly. Thank you for your patience!`;
           }
           break;
 
-        case "stripe":
-          testResults.testStatus = process.env.STRIPE_SECRET_KEY ? "success" : "not_configured";
-          testResults.results = {
-            secretKey: process.env.STRIPE_SECRET_KEY ? "configured" : "missing",
-            webhookEndpoint: "/api/webhooks/stripe",
-            supportedMethods: ["card", "bank_transfer", "digital_wallet"]
-          };
-          if (!process.env.STRIPE_SECRET_KEY) {
-            testResults.recommendations.push("Configure STRIPE_SECRET_KEY for payment processing");
-          }
-          break;
+        // Stripe removed - adult content restrictions per company policy
 
         case "database":
           testResults.testStatus = process.env.DATABASE_URL ? "success" : "failed";

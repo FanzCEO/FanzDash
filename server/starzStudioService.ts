@@ -2,13 +2,15 @@ import { EventEmitter } from "events";
 import { randomUUID } from "crypto";
 import OpenAI from "openai";
 
-if (!process.env.OPENAI_API_KEY) {
+const isDevMode = !process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.includes("placeholder") || process.env.OPENAI_API_KEY.includes("development");
+
+if (isDevMode) {
   console.warn(
     "OPENAI_API_KEY not found. Starz Studio will operate in local mode.",
   );
 }
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = isDevMode ? null : new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Platform cluster definitions
 export interface PlatformCluster {

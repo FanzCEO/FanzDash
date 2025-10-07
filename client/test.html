@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FanzDash Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .status {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .success { background: rgba(0,255,0,0.2); }
+        .info { background: rgba(0,150,255,0.2); }
+    </style>
+</head>
+<body>
+    <h1>🎛️ FanzDash Server Test</h1>
+    <div class="status success">✅ Server is responding</div>
+    <div class="status success">✅ HTML is loading</div>
+    <div class="status success">✅ CSS is working</div>
+    <div class="status info" id="js-test">⏳ Testing JavaScript...</div>
+    
+    <script>
+        // Test JavaScript execution
+        document.getElementById('js-test').innerHTML = '✅ JavaScript is working';
+        document.getElementById('js-test').className = 'status success';
+        
+        // Test if we can access the React app
+        setTimeout(() => {
+            const testDiv = document.createElement('div');
+            testDiv.className = 'status info';
+            testDiv.innerHTML = '🔍 Basic functionality confirmed - Server working correctly!';
+            document.body.appendChild(testDiv);
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+name: 🐛 Bug Report
+description: Report a bug or issue with FANZ platforms
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+projects: ["FanzCEO/1"]
+assignees:
+  - FanzCEO
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please provide detailed information to help us resolve the issue quickly.
+
+        **Creator Impact Priority**: We prioritize bugs based on their impact on creator earnings, safety, and autonomy.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Pre-submission Checklist
+      description: Please verify these items before submitting
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I have tested this on the latest version
+          required: true
+        - label: This bug affects creator earnings, safety, or platform functionality
+          required: false
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Which FANZ platform is affected?
+      options:
+        - BoyFanz
+        - GirlFanz  
+        - PupFanz
+        - TabooFanz
+        - TransFanz
+        - FanzDash (Admin)
+        - FanzTube
+        - FanzSocial
+        - FanzFinance OS
+        - Other/Multiple Platforms
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this bug?
+      options:
+        - 🔴 Critical - Platform down, security breach, payment failure
+        - 🟠 High - Major feature broken, creator income affected
+        - 🟡 Medium - Feature partially working, workaround available
+        - 🔵 Low - Minor issue, cosmetic problem
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: Describe what's happening vs what should happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: creator-impact
+    attributes:
+      label: Creator Impact
+      description: How does this bug affect creators?
+      placeholder: |
+        Examples:
+        - Creators cannot receive payments
+        - Content uploads are failing
+        - Dashboard shows incorrect earnings
+        - Fans cannot access premium content
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should happen instead?
+      placeholder: A clear description of what you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: A clear description of what actually happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots/Videos
+      description: If applicable, add screenshots or videos to help explain the problem
+      placeholder: Drag and drop images/videos here, or paste URLs
+
+  - type: dropdown
+    id: device-type
+    attributes:
+      label: Device Type
+      description: What type of device are you using?
+      options:
+        - Desktop
+        - Mobile Phone
+        - Tablet
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: Which browser are you using?
+      placeholder: e.g., Chrome 120, Safari 17, Firefox 121
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: Which operating system?
+      placeholder: e.g., Windows 11, macOS 14, iOS 17, Android 14
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem
+      placeholder: |
+        - Does this happen consistently or intermittently?
+        - Any error messages in browser console?
+        - When did this issue start?
+        - Any recent changes to account/settings?
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs
+      description: If available, paste any error logs or console output
+      render: text
+      placeholder: Paste error logs here (remove any personal information)
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy Confirmation
+      description: Please confirm you have not included sensitive information
+      options:
+        - label: I have removed any sensitive information (passwords, API keys, personal data) from this report
+          required: true

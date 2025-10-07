@@ -1,127 +1,125 @@
-# Overview
+# FanzDash - FANZ Ecosystem
 
-FanzDash is a comprehensive enterprise-grade multi-platform management system designed to handle 20+ million users across all Fanz™ Unlimited Network LLC platforms through one unified control panel. The system features advanced AI-powered analysis using ChatGPT-4o/GPT-5, manual approval workflows, enterprise-grade compliance, risk management, crisis management, advanced analytics, predictive modeling, automated appeals, integrated communication systems, 2257 form verification, and a premium cyberpunk UI that processes content at social media speed while maintaining robust audit trails.
+## Overview
 
-The platform serves as the main brain for people data, media management, and platform coordination - connecting seamlessly with FanzUnlimited.com email systems and handling creator verification workflows with military-grade security and compliance for Fanz™ Unlimited Network LLC.
+FanzDash serves as the central command center for the FANZ Unlimited Network LLC creator economy ecosystem. It's a comprehensive adult content platform management system that orchestrates multiple specialized platforms (BoyFanz, GirlFanz, PupFanz, TransFanz, TabooFanz, FanzTube, FanzCock) under a unified technical infrastructure.
 
-The platform implements a hybrid multi-signal moderation stack providing real-time monitoring and moderation of images, videos, text content, and live streams using a combination of machine learning models and human review workflows. Enhanced with comprehensive risk assessment, crisis response capabilities, predictive analytics, cross-platform risk correlation, automated threat detection, and user management systems for enterprise-grade operations.
+The application is built as a modern full-stack TypeScript/React application with Express backend, designed to handle enterprise-scale operations including payment processing, content management, creator payouts, compliance monitoring, and cross-platform user management. The system emphasizes creator autonomy, maximum earnings potential, and robust security/compliance measures specifically tailored for the adult content industry.
 
-## Recent Enhancements (September 2025)
+## Recent Changes
 
-- **Real ChatGPT-4o/GPT-5 Integration**: Replaced all mock data with authentic OpenAI API analysis using GPT-5 for text and GPT-4o for vision tasks
-- **OpenAI Quota Management**: Implemented intelligent circuit breaker pattern with 24-hour cooldown and mock data fallback to prevent API quota exceeded errors
-- **Perspective API Integration**: Enhanced text moderation with Google's Perspective API for toxicity, harassment, and threat detection
-- **LAION Safety CLIP**: Advanced image classification using LAION Safety models for improved visual content analysis
-- **Audio Moderation with Whisper**: Real-time audio transcription and analysis using OpenAI's Whisper API
-- **Video Intelligence**: Google Cloud Video Intelligence and AWS Rekognition integration for comprehensive video analysis
-- **Automated Appeals Processing**: AI-powered appeals system with confidence scoring and human review escalation
-- **Predictive Risk Modeling**: Machine learning-based content risk prediction using user behavior and historical data
-- **Cross-Platform Risk Correlation**: Advanced analytics engine detecting coordinated threats across multiple platforms
-- **Automated Threat Detection**: Real-time alerting system for coordinated attacks and unusual activity patterns
-- **Comprehensive Compliance Reporting**: Enterprise-grade compliance dashboards with audit trails and legal reporting
-- **Complete Platform Deployment**: All 15+ pages fully implemented with enterprise-grade features and ready for production deployment
-- **Enterprise Documentation Suite**: Created comprehensive book-style manuals including Legal & Compliance Operations Manual (2,400+ lines) and Problem-Solving & Troubleshooting Encyclopedia (2,000+ lines)
+### October 7, 2025 - Build Fixes for Deployment
+- Fixed missing `contentModerationService` dependency in `mlInferencePipeline.ts` by using the existing `aiContentModerationService` from `server/aiContentModeration.ts`
+- Replaced unsafe `eval()` usage in `vrRenderingEngine.ts` with safe frame rate parsing (handles formats like "30/1" and "24000/1001")
+- Replaced unsafe `eval()` usage in `contentProcessor.ts` with safe frame rate parsing
+- Set Express `trust proxy` setting to `1` for proper rate limiting in production behind reverse proxy
+- Commented out `QuantumWarRoom` 3D visualization feature (temporarily disabled due to React Three.js compatibility with React 18)
 
-## Database Optimization (September 2025)
-
-- **Schema Error Resolution**: Fixed critical duplicate type definitions and missing schema references in shared/schema.ts
-- **Performance Indexing**: Added 20+ strategic performance indexes for large-scale operations covering:
-  - User authentication and role-based queries (email, username, role, clearance_level)
-  - Content moderation workflows (user_id, status, type, risk_score)
-  - AI analysis operations (content_id, analysis_type, model_type)
-  - Platform connectivity and audit trails (platform_id, admin_id, created_at)
-- **Database Structure Analysis**: Comprehensive analysis of 77-table schema with proper foreign key relationships
-- **Production Readiness**: Database now optimized for 20+ million users with 151 total indexes
-- **Data Integrity**: Validated all foreign key constraints and referential integrity across the platform
-
-# User Preferences
+## User Preferences
 
 Preferred communication style: Simple, everyday language.
 
-# System Architecture
+## System Architecture
 
-## Frontend Architecture
+### Frontend Architecture
+- **Framework**: React 18.3.1 with TypeScript 5.6.3
+- **Build Tool**: Vite 7.1.4 for fast development and optimized production builds
+- **UI Components**: Radix UI component library with custom Tailwind CSS theming
+- **State Management**: TanStack React Query for server state management
+- **Styling**: Tailwind CSS with custom design tokens supporting multiple platform themes (neon color schemes for different creator communities)
+- **Routing**: React Router for client-side navigation
 
-The client is built with React and TypeScript using Vite as the build tool. The UI leverages Radix UI components with shadcn/ui styling and Tailwind CSS for a premium cyberpunk aesthetic. The frontend uses wouter for client-side routing and TanStack Query for server state management. Real-time updates are handled through WebSocket connections for live moderation alerts.
+### Backend Architecture
+- **Runtime**: Node.js 20+ with Express framework
+- **Language**: TypeScript with ES modules
+- **API Design**: RESTful endpoints with health check and system monitoring routes
+- **Authentication**: JWT-based auth with multi-factor authentication support (SMS, Email, TOTP, biometric)
+- **Session Management**: Secure session handling with automatic token refresh
 
-The platform features a comprehensive navigation system with 15+ fully functional pages including:
+### Database Layer
+- **ORM**: Drizzle ORM for type-safe database operations
+- **Database**: PostgreSQL via Neon serverless (configured but may not be actively used yet)
+- **Schema Management**: Drizzle Kit for migrations and schema changes
+- **Data Security**: AES-256-GCM encryption for sensitive data, DoD 5220.22-M secure deletion standards
 
-- Neural Dashboard with real-time threat monitoring
-- Platform Manager for multi-site connectivity
-- AI Analysis Engine with ChatGPT-4o/GPT-5 integration
-- Content Review workflows with manual approval
-- Live Stream monitoring and surveillance
-- Risk Management with threat assessment
-- Crisis Management with emergency response protocols
-- Advanced Analytics with predictive intelligence
-- Predictive Analytics with AI-powered threat forecasting
-- Compliance Reporting with regulatory audit trails
-- Security Vault for encrypted content storage
-- Audit Logs with complete action history
-- Threat Center with real-time security monitoring
-- Data Management for database operations
-- User Management for admin/moderator accounts
-- System Settings and configuration
+### Core Architectural Patterns
+- **Microservices-Ready**: Designed to support future service decomposition (user service, payment service, media service, moderation service, etc.)
+- **Event-Driven**: Prepared for event-based communication between services
+- **Service Mesh**: Includes service manifest for registration and health monitoring
+- **Health Monitoring**: Comprehensive health check endpoints (`/healthz`, `/system`) for observability
 
-## Backend Architecture
+### Payment Processing Architecture
+- **Multi-Gateway Support**: Adult-friendly payment processors (CCBill, Segpay, Epoch, Verotel, RocketGate, etc.)
+- **Smart Routing**: Intelligent transaction routing based on region, risk, and performance
+- **Alternative Methods**: Cryptocurrency (BitPay, NOWPayments), ACH, SEPA, wire transfers, digital wallets
+- **Compliance**: Built-in regulatory compliance monitoring and fraud detection
+- **Creator Payouts**: Multi-method automated payouts (Paxum, ePayService, Wise, crypto options)
 
-The server is an Express.js application with TypeScript, providing RESTful APIs for content management and moderation operations. The architecture follows a storage abstraction pattern with dedicated modules for database operations, routing, and WebSocket handling. The server implements middleware for request logging and error handling.
+### Security & Compliance
+- **Zero-Trust Framework**: No default trust, every request authenticated/authorized
+- **Encryption**: TLS 1.3 in transit, AES-256 at rest, end-to-end for sensitive content
+- **Adult Industry Compliance**: 18 USC 2257 record-keeping, age verification, KYC/identity verification
+- **Regulatory Coverage**: GDPR, CCPA, COPPA, DMCA, ADA compliance monitoring
+- **Access Control**: Role-based access control (RBAC) with granular permissions
 
-## Database Design
+### Content Management
+- **Media Processing**: Support for images, videos, audio with forensic watermarking
+- **CDN Integration**: Global content delivery with adult-friendly providers
+- **AI Moderation**: Automated content scanning and flagging (NudeNet, CLIP NSFW models referenced)
+- **Live Streaming**: WebRTC/RTMP support for live content with real-time moderation
 
-The system uses PostgreSQL with Drizzle ORM for type-safe database operations. The schema includes tables for users, content items, moderation results, live streams, moderation settings, and appeal requests. Content items support multiple types (image, video, text, live_stream) with associated risk scores and moderation status tracking.
+### Platform Integration
+- **Cross-Platform SSO**: Unified authentication across all FANZ platforms
+- **Profile Synchronization**: Seamless user data sync across platform clusters
+- **Centralized Vault**: Secure compliance document storage (FanzHubVault)
+- **Domain Routing**: Smart routing based on domain for multi-platform support
 
-## Content Moderation Pipeline
+## External Dependencies
 
-The moderation system implements a multi-layered approach:
+### Payment Processors & Financial Services
+- **Adult-Friendly Gateways**: CCBill, Segpay, Epoch, Vendo, Verotel, NetBilling, CommerceGate, RocketGate, CentroBill
+- **Cryptocurrency**: BitPay, NOWPayments, CoinGate, Coinbase Commerce, CoinPayments
+- **Payout Services**: Paxum, Cosmo Payment, ePayService, Wise, Payoneer, Skrill, Neteller
+- **Alternative Payments**: Instamojo, MercadoPago, Mollie, OpenPix, Payku, Paystack, Flutterwave (regional coverage)
 
-- **AI Analysis Engine**: ChatGPT-4o as primary analysis model with social media processing speed
-- **Image/Video Analysis**: Uses NudeNet for object detection and region identification, with automatic blurring capabilities
-- **Text Moderation**: Integrates Detoxify for toxicity detection and Perspective API as a secondary check
-- **Live Stream Monitoring**: Real-time frame sampling with automated risk assessment and blur functionality
-- **PDQ Hashing**: Perceptual hashing for duplicate content detection and blocking
-- **Risk Scoring**: Weighted confidence scoring from multiple ML models with configurable thresholds
-- **Crisis Management**: Emergency response protocols with automatic escalation and notifications
-- **Predictive Analytics**: AI-powered risk forecasting and trend detection for proactive threat mitigation
+### Cloud Services & Infrastructure
+- **Database**: Neon PostgreSQL serverless (@neondatabase/serverless)
+- **Storage**: Google Cloud Storage (@google-cloud/storage) with references to S3, Backblaze B2, Wasabi, Pushr
+- **Email**: SendGrid (@sendgrid/mail)
+- **Media Processing**: References to Coconut.co for video encoding/transcoding
 
-## Real-time Processing
+### AI & Machine Learning
+- **AI Provider**: Anthropic SDK (@anthropic-ai/sdk) for AI-powered features
+- **Content Moderation**: References to NudeNet, CLIP NSFW, OpenNSFW2, Detoxify for automated content review
+- **Recommendation Systems**: Predictive analytics and content recommendation engines
 
-WebSocket connections enable real-time communication between the moderation system and dashboard, broadcasting new content alerts and status updates to connected moderators. Live streams are monitored through frame sampling and audio transcription for continuous risk assessment.
+### Authentication & Security
+- **WebAuthn**: SimpleWebAuthn browser and server packages for biometric authentication
+- **Payment UI**: Stripe React components (though Stripe/PayPal explicitly avoided per requirements)
+- **Session Management**: JWT tokens, OAuth integration (Google, Facebook, Twitter, Apple)
 
-## Moderation Workflow
+### Communication & Streaming
+- **Real-time**: WebSocket support for live features
+- **Streaming**: References to getstream.io for activity feeds, chat, and real-time collaboration
+- **Live Video**: WebRTC infrastructure (Janus/Mediasoup/LiveKit referenced)
+- **Transcription**: Whisper (OpenAI) for audio transcription in streams
 
-Content flows through automated analysis first, with machine learning models providing initial risk scores. Items exceeding auto-block thresholds are immediately restricted, while borderline content enters a human review queue. The system supports appeal processes and maintains audit trails for all moderation decisions.
+### Developer Tools & Monitoring
+- **Build Tools**: esbuild, Vite, TypeScript compiler
+- **Testing**: Vitest for unit and integration testing
+- **Code Quality**: ESLint, Prettier for code formatting
+- **Version Control**: Git with GPG signing recommended
+- **Container**: Docker 24+ for local development and deployment
 
-# External Dependencies
+### Third-Party Integrations
+- **Social Login**: OAuth providers (Google, Facebook, Twitter, Apple)
+- **Analytics**: Custom analytics system with predictive modeling
+- **CMS**: Content management for blogs, pages, and SEO
+- **Giphy**: GIF integration for chat/comments
+- **reCAPTCHA**: Anti-bot protection
 
-## Database Services
-
-- **Neon Database**: PostgreSQL hosting using @neondatabase/serverless for connection pooling
-- **Drizzle ORM**: Type-safe database operations with automatic migrations
-
-## Content Analysis APIs
-
-- **Google Cloud Storage**: File storage and management for uploaded content
-- **NudeNet**: Open-source nudity detection model for image/video analysis
-- **Detoxify**: Toxicity classification for text content moderation
-- **Perspective API**: Google's toxicity detection as secondary validation
-- **Whisper**: OpenAI's speech recognition for live stream audio analysis
-
-## File Upload & Processing
-
-- **Uppy**: File upload interface with support for drag-drop and AWS S3 integration
-- **AWS S3**: Cloud storage backend for content files via @uppy/aws-s3
-
-## UI Framework & Styling
-
-- **Radix UI**: Headless component library for accessible interface elements
-- **Tailwind CSS**: Utility-first CSS framework for responsive design
-- **shadcn/ui**: Pre-built component system built on Radix UI
-- **Lucide React**: Icon library for consistent iconography
-
-## Development Tools
-
-- **Vite**: Fast build tool with HMR for development
-- **TypeScript**: Type safety across frontend and backend
-- **TanStack Query**: Server state management and caching
-- **WebSocket (ws)**: Real-time bidirectional communication
+### Deployment & DevOps
+- **Hosting**: Vercel configuration present
+- **Package Manager**: pnpm 9+ (strictly enforced, no npm/yarn)
+- **Environment**: Docker Compose for local development
+- **Service Discovery**: Service manifest system for microservice registration

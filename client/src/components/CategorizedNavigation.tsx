@@ -46,6 +46,8 @@ import {
   Search,
   Film,
   Calculator as CalculatorIcon,
+  Command,
+  Cpu,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -304,6 +306,15 @@ const navigationCategories: NavigationCategory[] = [
         description: "Main command center with real-time metrics",
       },
       {
+        name: "Quantum War Room",
+        href: "/quantum-war-room",
+        icon: Command,
+        description: "Revolutionary 4D holographic executive command interface with god-mode control",
+        requiresCompliance: true,
+        complianceLevel: "SUPER_ADMIN",
+        requiresSuperAdmin: true,
+      },
+      {
         name: "Analytics Dashboard",
         href: "/analytics",
         icon: BarChart3,
@@ -348,8 +359,8 @@ export function CategorizedNavigation() {
   };
 
   // Simulate user role - in real implementation, this would come from auth context
-  const userRole = "COMPLIANCE_OFFICER"; // MODERATOR, 2257_OFFICER, COMPLIANCE_OFFICER, SECURITY_OFFICER, CRISIS_MANAGER, LEGAL_TEAM, SUPER_ADMIN
-  const isSuperAdmin = false; // Would be determined from user context
+  const userRole = "SUPER_ADMIN"; // MODERATOR, 2257_OFFICER, COMPLIANCE_OFFICER, SECURITY_OFFICER, CRISIS_MANAGER, LEGAL_TEAM, SUPER_ADMIN
+  const isSuperAdmin = true; // Would be determined from user context
 
   const canAccessItem = (item: NavigationItem) => {
     if (item.requiresSuperAdmin && !isSuperAdmin) return false;

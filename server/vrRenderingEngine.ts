@@ -738,7 +738,11 @@ export class VRRenderingEngine extends EventEmitter {
             if (videoStream) {
               metadata.resolution = `${videoStream.width}x${videoStream.height}`;
               metadata.bitrate = parseInt(videoStream.bit_rate) || 0;
-              metadata.framerate = eval(videoStream.r_frame_rate) || 30;
+              // Parse frame rate safely (format: "30/1" or "24000/1001")
+              const frameRateParts = videoStream.r_frame_rate?.split('/');
+              metadata.framerate = frameRateParts?.length === 2 
+                ? parseFloat(frameRateParts[0]) / parseFloat(frameRateParts[1]) 
+                : 30;
               metadata.format = videoStream.codec_name;
             }
 
