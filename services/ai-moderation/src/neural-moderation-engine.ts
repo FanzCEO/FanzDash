@@ -489,8 +489,12 @@ Format as JSON: { "categories": [], "severity": "low|medium|high", "explanation"
 
   private async transcribeAudio(audioUrl: string): Promise<string | null> {
     try {
+      // Fetch the audio file and convert to Buffer
+      const response = await fetch(audioUrl);
+      if (!response.ok) throw new Error(`Failed to fetch audio: ${response.statusText}`);
+      const audioBuffer = Buffer.from(await response.arrayBuffer());
       const transcription = await this.openai.audio.transcriptions.create({
-        file: await fetch(audioUrl),
+        file: audioBuffer,
         model: "whisper-1",
         language: "en"
       });
