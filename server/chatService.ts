@@ -20,8 +20,6 @@ import OpenAI from "openai";
 // Initialize OpenAI for content moderation
 const isDevMode = !process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.includes("placeholder") || process.env.OPENAI_API_KEY.includes("development");
 const openai = isDevMode ? null : new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export interface ChatClient {
   id: string;
