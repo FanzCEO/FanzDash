@@ -1,4 +1,7 @@
 name: FANZ CI/CD Pipeline
+permissions:
+  contents: read
+  security-events: write
 
 on:
   push:
