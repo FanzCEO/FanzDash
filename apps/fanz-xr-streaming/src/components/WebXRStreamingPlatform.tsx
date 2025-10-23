@@ -168,7 +168,18 @@ class HapticController {
   }
 
   private checkSupport(): void {
-    this.isSupported = 'getGamepads' in navigator && 'vibrationActuator' in GamepadHapticActuator.prototype;
+    this.isSupported = false;
+    if ('getGamepads' in navigator) {
+      const gamepads = navigator.getGamepads();
+      if (gamepads && Array.isArray(gamepads)) {
+        for (const gamepad of gamepads) {
+          if (gamepad && 'vibrationActuator' in gamepad && gamepad.vibrationActuator) {
+            this.isSupported = true;
+            break;
+          }
+        }
+      }
+    }
   }
 
   async initializeControllers(): Promise<void> {
