@@ -839,15 +839,21 @@ export class DecentralizedIdentitySystem {
   }
 
   private generateRecoveryPhrase(): string[] {
-    // Generate 12-word recovery phrase (simplified)
+    // Generate 12-word recovery phrase (cryptographically secure)
     const wordList = [
       'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract',
       'absurd', 'abuse', 'access', 'accident', 'account', 'accuse', 'achieve', 'acid'
     ];
     
     const phrase = [];
-    for (let i = 0; i < 12; i++) {
-      phrase.push(wordList[Math.floor(Math.random() * wordList.length)]);
+    const numWords = 12;
+    const numChoices = wordList.length;
+    // Generate enough random bytes to select 12 words
+    const randomBuffer = randomBytes(numWords);
+    for (let i = 0; i < numWords; i++) {
+      // Use random byte modulo wordList length to select word
+      const idx = randomBuffer[i] % numChoices;
+      phrase.push(wordList[idx]);
     }
     
     return phrase;
