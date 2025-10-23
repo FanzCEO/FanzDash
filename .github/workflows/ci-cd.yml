@@ -1,4 +1,6 @@
 name: FANZ CI/CD Pipeline
+permissions:
+  contents: read
 
 on:
   push:
