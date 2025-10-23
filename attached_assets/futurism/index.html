@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Title  -->
+  <title>Futurism | Tailwind Dashboard Futuristic Sci-Fi</title>
+  <meta name="description" content="Minimalist Tailwind Dashboard Template">
+
+  <!-- local icons -->
+  <link rel="stylesheet" id="icons" href="vendors/bootstrap-icons/font/bootstrap-icons.min.css">
+  <!-- cdn icons -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> -->
+
+  <!-- Development css (used in all pages) -->
+  <link rel="stylesheet" href="src/css/style.css">
+  <!-- customizer css -->
+  <link rel="stylesheet" href="src/css/customizer.css">
+
+  <!-- Glightbox CSS -->
+  <link rel="stylesheet" href="src/css/vendor/glightbox.css" />
+
+  <!-- google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+  <!-- Favicon  -->
+  <link rel="icon" href="src/img/favicon.png">
+</head>
+
+<body class="bg-black text-primary-600 font-sans overflow-x-hidden pt-16 lg:pt-20">
+  <!-- Header Navbar -->
+  <header x-data="{ navtoggle: false }" class="bg-black border-b border-primary-600 fixed top-0 inset-x-0 z-20">
+    <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12 flex items-center justify-between">
+      <!-- logo & Toggle-->
+      <div class="max-lg:w-full mx-auto flex items-center gap-3 justify-between">
+        <!-- logo -->
+        <a href="index.html" class="py-4 flex items-center gap-3">
+          <div class="flex justify-center items-center min-h-10 min-w-10">
+            <!-- circle sm -->
+            <svg width="100" height="100" viewBox="0 0 100 100" class="absolute spin-clockwise">
+              <circle cx="50" cy="50" r="20" class="stroke-primary-300" stroke-width="5" fill="none" stroke-dasharray="31.4" stroke-dashoffset="31.4" />
+            </svg>
+            <!-- circle xs -->
+            <svg width="100" height="100" viewBox="0 0 100 100" class="absolute spin-counterclockwise">
+              <circle cx="50" cy="50" r="10" class="stroke-primary-300" stroke-width="3" fill="none" stroke-dasharray="10.6" stroke-dashoffset="10.6" />
+            </svg>
+            <div class="size-2 bg-primary-300 rounded-full absolute animate-pulse"></div>
+          </div>
+          <h3 class="text-3xl font-medium text-primary-300">Futurism</h3>
+        </a>
+
+        <button @click="navtoggle = !navtoggle" class="size-12 text-3xl lg:hidden">
+          <i :class="{ 'block': navtoggle, 'hidden': !(navtoggle) }" class="bi bi-x-lg"></i>
+          <i :class="{ 'hidden': navtoggle, 'block': !(navtoggle) }" class="bi bi-list"></i>
+        </button>
+      </div>
+
+      <!-- menu -->
+      <nav id="target-nav" :class="{ 'show': navtoggle, '': !(navtoggle) }" class="nav-sticky max-lg:fixed max-lg:w-72 max-lg:inset-y-0 max-lg:left-0 max-lg:[&.show]:translate-x-0 max-lg:bg-black max-lg:border-e max-lg:border-primary-600 lg:grow z-50 max-lg:-translate-x-full transition-transform duration-300">
+        <div class="lg:hidden py-2 text-center text-gray-400 text-sm uppercase border-b border-primary-600 mb-1.5">Menu</div>
+
+        <!-- menu -->
+        <ul class="relative flex lg:items-center lg:justify-end max-lg:flex-col max-lg:h-full max-lg:overflow-auto text-base lg:text-lg font-medium uppercase">
+          <li class="relative">
+            <a href="#features" data-type="smooth" class="py-2 lg:py-4 px-4 flex max-lg:justify-between gap-2 [&.active]:text-primary-300 hover:text-primary-300">Features</a>
+          </li>
+          <li class="relative">
+            <a href="#demos" data-type="smooth" class="py-2 lg:py-4 px-4 flex max-lg:justify-between gap-2 [&.active]:text-primary-300 hover:text-primary-300">Demos</a>
+          </li>
+          <li class="relative">
+            <a href="#benefit" data-type="smooth" class="py-2 lg:py-4 px-4 flex max-lg:justify-between gap-2 [&.active]:text-primary-300 hover:text-primary-300">Benefit</a>
+          </li>
+          <li class="relative">
+            <a href="#pricing" data-type="smooth" class="py-2 lg:py-4 px-4 flex max-lg:justify-between gap-2 [&.active]:text-primary-300 hover:text-primary-300">Pricing</a>
+          </li>
+          <li class="relative">
+            <a href="docs/get-started.html" class="py-2 lg:py-4 px-4 flex max-lg:justify-between gap-2 [&.active]:text-primary-300 hover:text-primary-300">Documentation</a>
+          </li>
+        </ul>
+
+        <!-- credit -->
+        <div class="absolute bottom-0 inset-x-0 lg:hidden py-2 text-center text-gray-400 text-xs mb-2">Copyright <script>document.write(new Date().getFullYear())</script></div>
+      </nav>
+
+      <!-- bg mobile sidebar -->
+      <button @click="navtoggle = !navtoggle" :class="{ 'show': navtoggle, '': !(navtoggle) }" class="max-lg:fixed max-lg:bg-black max-lg:[&.show]:inset-0 max-lg:opacity-0 max-lg:[&.show]:opacity-50 max-lg:[&.show]:z-30 transform duration-300 lg:hidden"></button>
+    </div>
+  </header>
+  
+  <!-- main -->
+  <main>
+    <!-- hero -->
+    <section class="relative bg-black py-16 lg:py-20 xxl:py-24 bg-cover bg-fixed bg-[url('../img/bg/hero.jpg')]">
+      <div class="absolute inset-0 bg-black/80"></div>
+      <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12 relative">
+        <div class="flex flex-col lg:flex-row items-center">
+          <!-- Text Content -->
+          <div class="lg:w-1/2 w-full text-center lg:text-start mb-12 lg:mb-0 xl:pe-16">
+            <h6 class="font-semibold mb-2">Introducing</h6>
+            <h1 class="text-5xl md:text-[3.6rem] font-medium leading-none text-primary-300 mb-4">
+              The Futuristic Sci-fi Dashboard Template
+            </h1>
+            <p class="text-lg text-gray-400 mb-6">
+              Experience the future of dashboard design with Futurism. Tailwind CSS Dashboard Template that combines cutting-edge aesthetics with robust functionality. Designed exclusively for visionary web developers, freelancers, and agencies.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-8">
+              <a href="https://aribudin.gumroad.com/l/futurism" class="btn-fill frame-corner inline-flex items-center gap-2 justify-center px-6 py-2 uppercase font-medium bg-primary-400 border border-primary-400 text-black hover:bg-primary-300 focus:bg-primary-300 focus:outline-hidden focus:ring-0">
+                <i class="bi bi-cart"></i>
+                Get License
+              </a>
+
+              <a href="#demos" data-type="smooth" class="frame-corner inline-flex items-center gap-2 justify-center px-6 py-2 uppercase font-medium border border-primary-600 text-primary-600 hover:border-primary-300 hover:text-black focus:text-black focus:border-primary-300 hover:bg-primary-300 focus:bg-primary-300 focus:outline-hidden focus:ring-0">
+                <i class="bi bi-link"></i>
+                Live Demo
+              </a>
+            </div>
+          </div>
+          
+          <!-- Image Placeholder -->
+          <div class="lg:w-1/2 w-full flex justify-center lg:justify-end">
+            <div class="w-3/4 h-64 lg:h-80 overflow-hidden">
+              <a id="preview-video2" href="https://www.youtube.com/watch?v=1RROITQuaQY">
+                <div class="relative flex justify-center items-center border border-primary-600 overflow-hidden">
+                  <img src="src/img/video.jpg" alt="Futurism Dashboard" class="w-full">
+                  <button class="absolute size-16 rounded-full bg-primary-950 hover:bg-black border border-primary-600 text-primary-300 flex justify-center items-center">
+                    <i class="bi bi-play-fill text-4xl"></i>
+                  </button>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- features -->
+    <section id="features" class="bg-primary-950 py-16">
+      <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12">
+        <!-- Title and Short Description -->
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-[2rem] font-semibold text-primary-300 mb-4">Professional Features</h2>
+          <p class="text-lg text-gray-400 max-w-2xl mx-auto">Discover the cutting-edge features that make Futurism the ultimate dashboard template for your needs.</p>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Feature Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-laptop text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Responsive</h3>
+                <p class="text-gray-400">Ensure your dashboard looks great on all devices, from desktops to mobile phones.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-arrow-left-right text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">RTL Support</h3>
+                <p class="text-gray-400">Full support for end-to-Left languages, making it versatile for global use.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-code text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Reusable Components</h3>
+                <p class="text-gray-400">Use pre-built components to speed up development and maintain consistency.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-bar-chart text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Chart.js Integration</h3>
+                <p class="text-gray-400">Visualize your data with powerful and customizable charts using Chart.js.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-plugin text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Third-Party Plugins</h3>
+                <p class="text-gray-400">Extend functionality with support for various third-party plugins.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-check-circle text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Quality Code</h3>
+                <p class="text-gray-400">Built with clean, high-quality code to ensure reliability and maintainability.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-file-earmark-text text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Well Documented</h3>
+                <p class="text-gray-400">Comprehensive documentation to help you get the most out of your template quickly.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sci-Fi Custom Tailwind Color -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-palette text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Sci-Fi Custom Tailwind Colors</h3>
+                <p class="text-gray-400">Enhance your design with futuristic, sci-fi inspired custom Tailwind color palettes.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gulp Build System -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-box-seam text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Gulp Build System</h3>
+                <p class="text-gray-400">Streamline your workflow with automated tasks using the Gulp build system.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Latest Tailwind CSS Version -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-arrow-repeat text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Latest Tailwind CSS Version</h3>
+                <p class="text-gray-400">Get access to all the newest features and updates with the latest Tailwind CSS version.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alpine.js Modern JavaScript -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-tools text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">Alpine.js Modern JavaScript</h3>
+                <p class="text-gray-400">Lightweight, modern JavaScript framework for building dynamic user interfaces.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative p-6 flex gap-4">
+              <div class="flex-none size-16 bg-primary-950 border border-primary-600 rounded-full flex items-center justify-center">
+                <i class="bi bi-lightning-charge text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-primary-300 mb-2">High Performance</h3>
+                <p class="text-gray-400">Optimized for fast load times and smooth interactions, ensuring a top-notch user experience.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- demos -->
+    <section id="demos" class="bg-black py-16">
+      <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12">
+        <!-- Title and Short Description -->
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-[2rem] font-semibold text-primary-300 mb-4">Explore Demo Dashboard</h2>
+          <p class="text-lg text-gray-400 max-w-2xl mx-auto">Check out the different pages and features of the Futurism Dashboard Template through these demo previews.</p>
+        </div>
+
+        <!-- Demo Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/cyber-security.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/cyber-security-dashboard.jpg" alt="Cyber Security Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/cyber-security.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">Cyber Security</h3>
+                </a>
+                <p class="text-gray-400">Monitor potential cyber threats with real-time data on security breaches, vulnerabilities, and system health.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/smartcar.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/smartcar-dashboard.jpg" alt="Smart Car Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/smartcar.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">Smart Car</h3>
+                </a>
+                <p class="text-gray-400">Experience the future of transportation with a dashboard tailored to electric smartcars.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/esport-team.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/esport-team-dashboard.jpg" alt="Esport Team Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/esport-team.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">Esport Team</h3>
+                </a>
+                <p class="text-gray-400">Track your team's performance, game statistics, and match history with detailed analytics.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/smarthome.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/smarthome-dashboard.jpg" alt="Smarthome Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/smarthome.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">Smarthome</h3>
+                </a>
+                <p class="text-gray-400">Control and monitor your smart home devices from anywhere easily and in real time.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/research.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/research-dashboard.jpg" alt="Research Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/research.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">Research</h3>
+                </a>
+                <p class="text-gray-400">Analyze critical data on global climate trends, temperature variations, and environmental shifts.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/military.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/military-dashboard.jpg" alt="Military Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/military.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">Military</h3>
+                </a>
+                <p class="text-gray-400">Monitor military assets, readiness and supply logistics with a comprehensive overview of equipment status.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/saas.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/saas-agency-dashboard.jpg" alt="SAAS Agency Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/saas.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">SAAS Agency</h3>
+                </a>
+                <p class="text-gray-400">Manage your SaaS product’s growth with key performance indicators, customer data, and revenue tracking.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/analytics.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/analytics-dashboard.jpg" alt="Analytics Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/analytics.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">Analytics</h3>
+                </a>
+                <p class="text-gray-400">Gain deep insights into your website’s traffic patterns. Analyze visitor behavior and optimize your web presence with dynamic data visualization.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Card -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="bg-black frame-corner overflow-hidden w-full">
+            <div class="frame2 absolute inset-0 border border-primary-600"></div>
+            <div class="relative p-0.5">
+              <a href="dashboard/ai-creation.html">
+                <div class="aspect-video overflow-hidden">
+                  <img src="src/img/demos/ai-creation-dashboard.jpg" alt="AI Creation Dashboard" class="w-full hover:opacity-90">
+                </div>
+              </a>
+              <div class="p-6">
+                <a href="dashboard/ai-creation.html">
+                  <h3 class="text-xl font-semibold text-primary-300 mb-2">AI Creation</h3>
+                </a>
+                <p class="text-gray-400">Monitor the generation process, adjust parameters, and review outputs with a sleek, futuristic interface.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- problem solved -->
+    <section id="benefit" class="bg-black py-16">
+      <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12 flex flex-col lg:flex-row items-center">
+        <!-- Image Section -->
+        <div class="w-full lg:w-1/2 mb-12 lg:mb-0 lg:px-12">
+          <img src="src/img/futuristic-scifi.jpg" alt="Futuristic Scifi" class="w-full h-auto rounded-lg shadow-lg">
+        </div>
+
+        <!-- Problem List Section -->
+        <div class="w-full lg:w-1/2 lg:pl-12">
+          <h2 class="text-2xl lg:text-3xl font-extrabold text-primary-300 mb-6">What Futurism Template Solves</h2>
+          <ul class="flex flex-col gap-6 text-lg text-gray-400">
+            <li x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInRight delay100' : 'opacity-0'" class="flex items-start gap-4">
+              <span class="flex-none bg-primary-950 border border-primary-600 size-16 flex items-center justify-center text-white rounded-full">
+                <i class="bi bi-lightning"></i>
+              </span>
+              <div class="flex flex-col">
+                <h3 class="text-lg font-semibold text-primary-300 mb-1">Speed of Development</h3>
+                <span>Jumpstart your project with ready-to-use components, reducing development time drastically.</span>
+              </div>
+            </li>
+            <li x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInRight delay200' : 'opacity-0'" class="flex items-start gap-4">
+              <span class="flex-none bg-primary-950 border border-primary-600 size-16 flex items-center justify-center text-white rounded-full">
+                <i class="bi bi-palette"></i>
+              </span>
+              <div class="flex flex-col">
+                <h3 class="text-lg font-semibold text-primary-300 mb-1">Design Consistency</h3>
+                <span>Achieve a cohesive and modern look with our meticulously designed components.</span>
+              </div>
+            </li>
+            <li x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInRight delay300' : 'opacity-0'" class="flex items-start gap-4">
+              <span class="flex-none bg-primary-950 border border-primary-600 size-16 flex items-center justify-center text-white rounded-full">
+                <i class="bi bi-graph-up"></i>
+              </span>
+              <div class="flex flex-col">
+                <h3 class="text-lg font-semibold text-primary-300 mb-1">Interactive Data Visualization</h3>
+                <span>Utilize pre-built chart integrations for seamless data representation.</span>
+              </div>
+            </li>
+            <li x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInRight delay400' : 'opacity-0'" class="flex items-start gap-4">
+              <span class="flex-none bg-primary-950 border border-primary-600 size-16 flex items-center justify-center text-white rounded-full">
+                <i class="bi bi-puzzle-fill"></i>
+              </span>
+              <div class="flex flex-col">
+                <h3 class="text-lg font-semibold text-primary-300 mb-1">Component Reusability</h3>
+                <span>Easily reuse and customize components across different parts of your application.</span>
+              </div>
+            </li>
+            <li x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInRight delay500' : 'opacity-0'" class="flex items-start gap-4">
+              <span class="flex-none bg-primary-950 border border-primary-600 size-16 flex items-center justify-center text-white rounded-full">
+                <i class="bi bi-box-seam"></i>
+              </span>
+              <div class="flex flex-col">
+                <h3 class="text-lg font-semibold text-primary-300 mb-1">Scalability</h3>
+                <span>Build dashboards that can grow with your data and user base without performance loss.</span>
+              </div>
+            </li>
+            <li x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInRight delay600' : 'opacity-0'" class="flex items-start gap-4">
+              <span class="flex-none bg-primary-950 border border-primary-600 size-16 flex items-center justify-center text-white rounded-full">
+                <i class="bi bi-gear-wide"></i>
+              </span>
+              <div class="flex flex-col">
+                <h3 class="text-lg font-semibold text-primary-300 mb-1">Customization</h3>
+                <span>Tailor the dashboard to meet specific project requirements effortlessly.</span>
+              </div>
+            </li>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </section>
+    
+    <!-- pricing -->
+    <section id="pricing" class="bg-primary-950 py-16">
+      <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12 mb-16">
+        <!-- Title and Short Description -->
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-[2rem] font-semibold text-primary-300 mb-4">Pricing Plans</h2>
+          <p class="text-lg text-gray-400 max-w-2xl mx-auto">Start now by choosing a plan that suits your project needs.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <!-- Card 1 -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="max-xl:order-2 bg-black frame-corner overflow-hidden w-full xl:mt-6">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+              <h2 class="font-medium text-primary-300">Multiple License</h2>
+            </div>
+            <div class="relative p-6">
+              <div class="mb-6 text-center">
+                <p x-data="counter(89, 3)" x-intersect="startCounting" class="text-3xl font-semibold text-primary-300 mb-1">$<span x-text="current"></span></p>
+                <p class="mb-4">Best for Web Service agency</p>
+
+                <a href="https://aribudin.gumroad.com/l/futurism?wanted=true&variant=Multiple%20License" class="frame-corner w-full inline-flex items-center gap-2 justify-center px-4 py-2 uppercase font-medium border border-primary-600 text-primary-600 hover:border-primary-300 hover:text-black focus:text-black focus:border-primary-300 hover:bg-primary-300 focus:bg-primary-300 focus:outline-hidden focus:ring-0">Get License</a>
+              </div>
+              <ul class="flex flex-col gap-3 text-lg">
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Unlimited Project/Install/Client</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Commercial Purpose</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Web design services</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Update &amp; Support</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Build Saas</li>
+                <li class="flex items-center gap-2 text-gray-400"><i class="bi bi-x-circle"></i>Theme/APP generator</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="md:col-span-2 xl:col-span-1 max-xl:order-1 bg-primary-950 text-primary-400 frame-corner overflow-hidden w-full">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+              <h2 class="font-medium text-primary-300">Single License</h2>
+            </div>
+            <div class="relative p-6">
+              <div class="mb-6 text-center">
+                <p x-data="counter(29, 3)" x-intersect="startCounting" class="text-3xl font-semibold text-primary-300 mb-1">$<span x-text="current"></span></p>
+                <p class="mb-4">Best for Freelancer/Personal</p>
+
+                <a href="https://aribudin.gumroad.com/l/futurism?wanted=true&variant=Single%20License" class="btn-fill frame-corner w-full inline-flex items-center gap-2 justify-center px-6 py-2 uppercase font-medium bg-primary-400 border border-primary-400 text-black hover:bg-primary-300 focus:bg-primary-300 focus:outline-hidden focus:ring-0">Get License</a>
+              </div>
+              <ul class="flex flex-col gap-3 text-lg">
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>2 Project/Install/Client</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Commercial Purpose</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Web design services</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Update &amp; Support</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Build Saas</li>
+                <li class="flex items-center gap-2 text-gray-400"><i class="bi bi-x-circle"></i>Theme/APP generator</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="max-xl:order-3 bg-black frame-corner overflow-hidden w-full xl:mt-6">
+            <div class="frame-second absolute inset-0 border border-primary-600 before:bg-primary-950 after:bg-primary-950"></div>
+            <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+              <h2 class="font-medium text-primary-300">Extended License</h2>
+            </div>
+            <div class="relative p-6">
+              <div class="mb-6 text-center">
+                <p x-data="counter(699, 3)" x-intersect="startCounting" class="text-3xl font-semibold text-primary-300 mb-1">$<span x-text="current"></span></p>
+                <p class="mb-4">Best for Big company</p>
+
+                <a href="https://aribudin.gumroad.com/l/futurism?wanted=true&variant=Extended%20License" class="frame-corner w-full inline-flex items-center gap-2 justify-center px-4 py-2 uppercase font-medium border border-primary-600 text-primary-600 hover:border-primary-300 hover:text-black focus:text-black focus:border-primary-300 hover:bg-primary-300 focus:bg-primary-300 focus:outline-hidden focus:ring-0">Get License</a>
+              </div>
+              <ul class="flex flex-col gap-3 text-lg">
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>2 Project/Install/Client</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Commercial Purpose</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Web design services</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Update &amp; Support</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Build Saas</li>
+                <li class="flex items-center gap-2"><i class="bi bi-check-circle"></i>Theme/APP generator</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12">
+        <h2 class="text-2xl font-semibold text-primary-300 text-center mb-8">Frequently Asked Questions</h2>
+        
+        <div class="flex flex-col gap-4 max-w-6xl mx-auto" x-data="{ open: null }">
+          <!-- Question 1 -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay100' : 'opacity-0'" class="bg-black border border-primary-600 frame-corner overflow-hidden">
+            <h3 @click="open = (open === 1 ? null : 1)" :class="{'!pb-3': open === 1}" class="cursor-pointer py-6 px-6 flex items-center justify-between bg-black">
+              <span class="font-medium text-primary-300">What is the Futurism Tailwind Dashboard Template?</span>
+              <span :class="{'transform rotate-180': open === 1}" class="transform transition-transform">
+                <i class="bi bi-chevron-down text-primary-300"></i>
+              </span>
+            </h3>
+            <div x-show="open === 1">
+              <div class="px-6 pb-6 text-gray-400">
+                The Futurism Tailwind Dashboard Template is a modern and fully responsive HTML &amp; Alpinejs template designed for creating futuristic web applications and dashboards. It includes a wide range of prebuilt components, charts, and plugins, all styled with Tailwind CSS for easy customization.
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay200' : 'opacity-0'" class="bg-black border border-primary-600 frame-corner overflow-hidden">
+            <h3 @click="open = (open === 2 ? null : 2)" :class="{'!pb-3': open === 2}" class="cursor-pointer py-6 px-6 flex items-center justify-between bg-black">
+              <span class="font-medium text-primary-300">What is the difference between single, multiple and extended license?</span>
+              <span :class="{'transform rotate-180': open === 2}" class="transform transition-transform">
+                <i class="bi bi-chevron-down text-primary-300"></i>
+              </span>
+            </h3>
+            <div x-show="open === 2">
+              <div class="px-6 pb-6 text-gray-400">
+                The simple difference is that Single license is for 2 commercial projects, multiple is for unlimited projects and Extended can be used for Theme generator/creating new products/template/app/website to be resold.
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 3 -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay300' : 'opacity-0'" class="bg-black border border-primary-600 frame-corner overflow-hidden">
+            <h3 @click="open = (open === 3 ? null : 3)" :class="{'!pb-3': open === 3}" class="cursor-pointer py-6 px-6 flex items-center justify-between bg-black">
+              <span class="font-medium text-primary-300">Can I use the template for commercial projects?</span>
+              <span :class="{'transform rotate-180': open === 3}" class="transform transition-transform">
+                <i class="bi bi-chevron-down text-primary-300"></i>
+              </span>
+            </h3>
+            <div x-show="open === 3">
+              <div class="px-6 pb-6 text-gray-400">
+                Of course! Tailwind Futurism Dashboard Template is licensed for commercial use. This template is perfect for freelancers, agencies, and web service providers.
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 4 -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay400' : 'opacity-0'" class="bg-black border border-primary-600 frame-corner overflow-hidden">
+            <h3 @click="open = (open === 4 ? null : 4)" :class="{'!pb-3': open === 4}" class="cursor-pointer py-6 px-6 flex items-center justify-between bg-black">
+              <span class="font-medium text-primary-300">What support is available with the template?</span>
+              <span :class="{'transform rotate-180': open === 4}" class="transform transition-transform">
+                <i class="bi bi-chevron-down text-primary-300"></i>
+              </span>
+            </h3>
+            <div x-show="open === 4">
+              <div class="px-6 pb-6 text-gray-400">
+                The template comes with 24/7 support and lifetime updates, ensuring that you always have access to the latest features and help when you need it. This makes it a reliable choice for long-term projects.
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 5 -->
+          <div x-data="{ visible: false }" x-intersect.once="visible = true" x-bind:class="visible ? 'animated fadeInUp delay500' : 'opacity-0'" class="bg-black border border-primary-600 frame-corner overflow-hidden">
+            <h3 @click="open = (open === 5 ? null : 5)" :class="{'!pb-3': open === 5}" class="cursor-pointer py-6 px-6 flex items-center justify-between bg-black">
+              <span class="font-medium text-primary-300">Is the template fully responsive?</span>
+              <span :class="{'transform rotate-180': open === 5}" class="transform transition-transform">
+                <i class="bi bi-chevron-down text-primary-300"></i>
+              </span>
+            </h3>
+            <div x-show="open === 5">
+              <div class="px-6 pb-6 text-gray-400">
+                Yes, the Futurism Tailwind Dashboard Template is fully responsive, ensuring that your dashboards and web applications look great on all devices, from desktops to mobile phones.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- cta -->
+    <section class="relative bg-primary-800 text-white py-16 bg-cover bg-fixed bg-[url('../img/bg/hero.jpg')]">
+      <div class="absolute inset-0 bg-black/80"></div>
+      <div class="relative xl:container mx-auto px-4 lg:px-6 xl:px-12 text-center">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-5xl md:text-[3.6rem] font-medium leading-none text-primary-300 mb-6">Start Projects with Futurism</h2>
+          <p class="text-lg lg:text-xl text-gray-400 mb-8">Take your dashboard to the next level with our cutting-edge Tailwind dashboard template. Perfect for developers, agencies, and SAAS products.</p>
+          <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+            <a href="https://aribudin.gumroad.com/l/futurism" class="btn-fill frame-corner inline-flex items-center gap-2 justify-center px-6 py-2 uppercase font-medium bg-primary-400 border border-primary-400 text-black hover:bg-primary-300 focus:bg-primary-300 focus:outline-hidden focus:ring-0">
+              <i class="bi bi-cart"></i>
+              Get License
+            </a>
+
+            <a href="dashboard/cyber-security.html" class="frame-corner inline-flex items-center gap-2 justify-center px-6 py-2 uppercase font-medium border border-primary-600 text-primary-600 hover:border-primary-300 hover:text-black focus:text-black focus:border-primary-300 hover:bg-primary-300 focus:bg-primary-300 focus:outline-hidden focus:ring-0">
+              <i class="bi bi-link"></i>
+              Live Demo
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- footer -->
+  <footer class="bg-black text-gray-400 border-t border-primary-600 pt-16">
+    <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12">
+      <!-- Top Section: 4 Columns -->
+      <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8 pb-14">
+        <!-- Column 1: Company Info -->
+        <div class="col-span-2 lg:col-span-3 xl:grid-cols-2 md:pe-12">
+          <h3 class="text-lg font-semibold text-primary-300 mb-4">About Futurism</h3>
+          <p class="text-gray-400">Futurism is the ultimate Tailwind CSS template designed to bring a sleek, modern aesthetic to your dashboard projects. Inspired by cutting-edge sci-fi visuals, this template merges striking futuristic design with robust functionality.</p>
+        </div>
+
+        <!-- Column 2: Services -->
+        <div>
+          <h3 class="text-lg font-semibold text-primary-300 mb-4">Documentation</h3>
+          <ul class="flex flex-col gap-3">
+            <li><a href="docs/get-started.html" class="hover:text-primary-300">Get Started</a></li>
+            <li><a href="docs/customize.html" class="hover:text-primary-300">Customize</a></li>
+            <li><a href="docs/plugins.html" class="hover:text-primary-300">Plugins</a></li>
+            <li><a href="docs/changelog.html" class="hover:text-primary-300">Changelogs</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Resources -->
+        <div>
+          <h3 class="text-lg font-semibold text-primary-300 mb-4">Demos</h3>
+          <ul class="flex flex-col gap-3">
+            <li><a href="dashboard/cyber-security.html" class="hover:text-primary-300">Dashboard</a></li>
+            <li><a href="components/button.html" class="hover:text-primary-300">Components</a></li>
+            <li><a href="apps/widgets.html" class="hover:text-primary-300">Widgets</a></li>
+            <li><a href="forms/input-textarea.html" class="hover:text-primary-300">Forms</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Contact Info -->
+        <div class="col-span-2 lg:col-span-1">
+          <h3 class="text-lg font-semibold text-primary-300 mb-4">Contact Us</h3>
+          <ul class="flex flex-col gap-3">
+            <li><span class="font-semibold">Email :</span> support@ctailwinddashboard.com</li>
+            <li><span class="font-semibold">Email 2 :</span> techdasmin@gmail.com</li>
+            <li><span class="font-semibold">Gumroad :</span> https://aribudin.gumroad.com</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Section: Social Media & Copyright -->
+    <div class="border-t border-primary-600">
+      <div class="xl:container mx-auto px-4 lg:px-6 xl:px-12 py-6 flex flex-col md:flex-row justify-between items-center">
+        <!-- Social Media Links -->
+        <div class="flex gap-4">
+          <a href="#" class="text-gray-400 hover:text-primary-300">
+            <i class="bi bi-facebook text-2xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary-300">
+            <i class="bi bi-twitter-x text-2xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary-300">
+            <i class="bi bi-linkedin text-2xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary-300">
+            <i class="bi bi-instagram text-2xl"></i>
+          </a>
+        </div>
+        <!-- Copyright -->
+        <p>&copy; 2024 CyberSecure Agency. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- back to top -->
+  <a  href="#" id="back-top" class="fixed z-30 size-10 bg-black border border-primary-600 end-4 bottom-4 text-center py-2 hidden" aria-label="Scroll To Top">
+    <i class="bi bi-arrow-up"></i>
+  </a>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const backToTopButton = document.querySelector('#back-top');
+      // Tampilkan tombol ketika scroll lebih dari 100px
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+          backToTopButton.classList.remove('hidden');
+        } else {
+          backToTopButton.classList.add('hidden');
+        }
+      });
+
+      // Smooth scroll saat tombol diklik
+      backToTopButton.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+
+      const links = document.querySelectorAll('a[data-type="smooth"]');
+      // Function to determine the correct offset based on screen width
+      function getOffset() {
+        return window.innerWidth < 1024 ? 65 : 80;
+      }
+
+      links.forEach(link => {
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+
+          const targetId = this.getAttribute('href').substring(1);
+          const targetElement = document.getElementById(targetId);
+          const offset = getOffset();
+
+          if (targetElement) {
+            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - offset;
+
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    });
+  </script>
+
+  <!--start::Vendor javascript (only on this page)-->
+  <script src="vendors/glightbox/dist/js/glightbox.min.js"></script>
+  <script>
+    // Lightbox video 
+    const myVideo = function () {
+      const gvd = document.querySelector("#preview-video2");
+      if (gvd != null) {
+        var lightbox = GLightbox();
+        var lightboxDescription = GLightbox({
+          selector: '#preview-video2'
+        });
+      }
+    }
+    myVideo();
+  </script>
+
+  <!-- theme -->
+  <script src="src/js/script.js"></script>
+
+  <!-- intersect -->
+  <script defer src="vendors/@alpinejs/intersect/dist/cdn.min.js"></script>
+  <!--start::Global javascript (used in all pages)-->
+  <script defer src="vendors/alpinejs/dist/cdn.min.js"></script><!-- core js -->
+
+</body>
+</html>

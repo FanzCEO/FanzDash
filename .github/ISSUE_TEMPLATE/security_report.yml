@@ -1,0 +1,182 @@
+name: 🔒 Security Issue
+description: Report a security vulnerability (for non-critical issues only)
+title: "[SECURITY] "
+labels: ["security", "needs-triage"]
+projects: ["FanzCEO/1"]
+assignees:
+  - FanzCEO
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **IMPORTANT SECURITY NOTICE**
+        
+        **For critical security vulnerabilities (data breach, payment system, remote code execution):**
+        - DO NOT use this public form
+        - Email security@fanz.network immediately
+        - Use our PGP key: https://fanz.network/.well-known/pgp-key.asc
+        
+        **This form is for non-critical security issues only** (rate limiting, headers, etc.)
+        
+        For our full security policy, see [SECURITY.md](../SECURITY.md)
+
+  - type: checkboxes
+    id: security-confirmation
+    attributes:
+      label: Security Issue Confirmation
+      description: Please confirm this is appropriate for public reporting
+      options:
+        - label: This is NOT a critical vulnerability requiring immediate private disclosure
+          required: true
+        - label: I have read the security policy and determined this is appropriate for public reporting
+          required: true
+        - label: I understand that critical vulnerabilities should be reported privately to security@fanz.network
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity Level
+      description: What severity level is this security issue?
+      options:
+        - 🟡 Medium - Limited impact security issue
+        - 🔵 Low - Minor security improvement
+        - 🟢 Info - Security configuration or best practice
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Security Category
+      description: What type of security issue is this?
+      options:
+        - Rate Limiting
+        - Security Headers
+        - Input Validation (non-critical)
+        - Access Control (minor)
+        - Configuration Issue
+        - Dependency Vulnerability (low/medium)
+        - Security Best Practice
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Affected Platform
+      description: Which platform is affected?
+      options:
+        - BoyFanz
+        - GirlFanz  
+        - PupFanz
+        - TabooFanz
+        - TransFanz
+        - FanzDash
+        - FanzTube
+        - FanzSocial
+        - FanzFinance OS
+        - Multiple Platforms
+        - Infrastructure
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: Describe the security issue clearly
+      placeholder: |
+        What is the security issue? 
+        What are the potential risks?
+        Why is this a concern?
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential Impact
+      description: What could happen if this issue isn't addressed?
+      placeholder: |
+        - What data could be affected?
+        - What functionality could be compromised?
+        - Who could be impacted (creators, fans, admins)?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce/Verify
+      description: How can this issue be reproduced or verified?
+      placeholder: |
+        1. Go to...
+        2. Check...
+        3. Observe...
+        
+        Or describe how to verify the security configuration
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Any supporting evidence (screenshots, logs, etc.)
+      placeholder: |
+        - Screenshots of security headers
+        - Network request/response examples
+        - Tool output or scan results
+        - Configuration examples
+        
+        NOTE: Remove any sensitive information!
+
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommended Fix
+      description: What do you recommend to fix this issue?
+      placeholder: |
+        - Configuration changes needed
+        - Code changes suggested
+        - Security headers to add
+        - Best practices to implement
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to relevant security resources or documentation
+      placeholder: |
+        - OWASP guidelines
+        - Security best practice documentation  
+        - CVE references (if applicable)
+        - Tool documentation
+
+  - type: checkboxes
+    id: responsible-disclosure
+    attributes:
+      label: Responsible Disclosure
+      description: Responsible disclosure commitment
+      options:
+        - label: I commit to not publicly disclose details until this issue is resolved
+          required: true
+        - label: I will not attempt to access or modify user data beyond what's necessary for demonstration
+          required: true
+        - label: I have not and will not share this information with others until resolution
+          required: true
+
+  - type: textarea
+    id: timeline
+    attributes:
+      label: Discovery Timeline
+      description: When and how did you discover this issue?
+      placeholder: |
+        - When did you first notice this?
+        - How did you discover it?
+        - Have you seen this reported elsewhere?

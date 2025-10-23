@@ -393,7 +393,7 @@ export class VideoEncoder extends EventEmitter {
             width: videoStream.width,
             height: videoStream.height,
             bitrate: parseInt(format.bit_rate) || 0,
-            fps: eval(videoStream.r_frame_rate), // Safe eval of fraction
+            fps: this.parseFraction(videoStream.r_frame_rate), // Parse fraction safely
             codec: videoStream.codec_name,
             format: format.format_name,
             size: parseInt(format.size),
@@ -492,6 +492,29 @@ export class VideoEncoder extends EventEmitter {
       activeProcesses: this.activeProcesses.size,
       concurrentJobs: this.concurrentJobs,
     };
+  }
+
+  private parseFraction(fractionStr: string): number {
+    if (!fractionStr || typeof fractionStr !== 'string') {
+      return 30; // Default fallback FPS
+    }
+    
+    const parts = fractionStr.split('/');
+    if (parts.length === 2) {
+      const numerator = parseFloat(parts[0]);
+      const denominator = parseFloat(parts[1]);
+      if (denominator !== 0 && !isNaN(numerator) && !isNaN(denominator)) {
+        return numerator / denominator;
+      }
+    }
+    
+    // Try to parse as direct number
+    const directNum = parseFloat(fractionStr);
+    if (!isNaN(directNum)) {
+      return directNum;
+    }
+    
+    return 30; // Default fallback FPS
   }
 
   setConcurrentJobs(count: number) {

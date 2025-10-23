@@ -379,7 +379,11 @@ export class ContentProcessor extends EventEmitter {
                 width: videoStream.width,
                 height: videoStream.height,
               };
-              content.metadata.fps = eval(videoStream.r_frame_rate);
+              // Parse frame rate safely (format: "30/1" or "24000/1001")
+              const frameRateParts = videoStream.r_frame_rate?.split('/');
+              content.metadata.fps = frameRateParts?.length === 2 
+                ? parseFloat(frameRateParts[0]) / parseFloat(frameRateParts[1]) 
+                : undefined;
               content.metadata.codec = videoStream.codec_name;
               content.metadata.colorSpace = videoStream.color_space;
             }

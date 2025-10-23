@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Main FanzDash Application - Test Mode
+  fanzdash-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fanzdash-test
+    ports:
+      - "3030:3030"
+    environment:
+      - NODE_ENV=production
+      - PORT=3030
+      - DATABASE_URL=postgresql://postgres:testpassword123@postgres-test:5432/fanzdash
+      - REDIS_URL=redis://redis-test:6379
+    depends_on:
+      - postgres-test
+      - redis-test
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - fanz-test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3030/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # PostgreSQL Database - Test
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: fanz-postgres-test
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=fanzdash
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=testpassword123
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - fanz-test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache - Test
+  redis-test:
+    image: redis:7-alpine
+    container_name: fanz-redis-test
+    ports:
+      - "6380:6379"
+    command: redis-server --requirepass testpassword123 --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_test_data:/data
+    networks:
+      - fanz-test-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_test_data:
+  redis_test_data:
+
+networks:
+  fanz-test-network:
+    driver: bridge

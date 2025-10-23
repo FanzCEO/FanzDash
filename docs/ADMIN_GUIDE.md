@@ -97,7 +97,7 @@ Understanding the architecture is crucial for effective administration. FanzDash
 #### **Layer 4: External Integrations**
 - OpenAI GPT-4o/GPT-5 for content analysis
 - Google Cloud Storage for file management
-- Stripe for payment processing
+- CCBill/SegPay for adult-compliant payment processing
 - Multiple OAuth providers for authentication
 
 ### Administrator Dashboard Overview
@@ -783,7 +783,7 @@ Understanding FanzDash's architecture is crucial for effective administration. T
 ├─────────────────────────────────────────┤
 │ • OpenAI GPT-4o/GPT-5 for Analysis    │
 │ • Google Cloud Storage for Files      │
-│ • Stripe for Payment Processing       │
+│ • CCBill/SegPay for Payments (Adult)  │
 │ • SendGrid for Email Communications   │
 │ • Multiple OAuth Providers            │
 │ • Perspective API for Text Analysis   │
