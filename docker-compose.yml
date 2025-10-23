@@ -1,0 +1,173 @@
+version: '3.8'
+
+services:
+  # Main FANZ Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fanz-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://fanz_user:fanz_password@postgres:5432/fanz_production
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    networks:
+      - fanz-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: fanz-postgres
+    environment:
+      POSTGRES_DB: fanz_production
+      POSTGRES_USER: fanz_user
+      POSTGRES_PASSWORD: fanz_password
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - fanz-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fanz_user -d fanz_production"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  # Redis Cache & Session Store
+  redis:
+    image: redis:7-alpine
+    container_name: fanz-redis
+    command: redis-server --requirepass fanz_redis_password --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - fanz-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "6379:6379"
+
+  # NGINX Reverse Proxy & Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: fanz-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./public:/var/www/html/public:ro
+    depends_on:
+      - app
+    networks:
+      - fanz-network
+    restart: unless-stopped
+
+  # AI Services (Optional - for advanced features)
+  ai-service:
+    image: tensorflow/tensorflow:latest-gpu
+    container_name: fanz-ai
+    ports:
+      - "8501:8501"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+    volumes:
+      - ./ai-models:/models
+    networks:
+      - fanz-network
+    restart: unless-stopped
+    profiles:
+      - ai-enabled
+
+  # Monitoring with Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: fanz-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - fanz-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: fanz-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=fanz_grafana_password
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - fanz-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # WebRTC Signaling Server
+  webrtc-signaling:
+    build:
+      context: ./webrtc-server
+      dockerfile: Dockerfile
+    container_name: fanz-webrtc
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    networks:
+      - fanz-network
+    restart: unless-stopped
+    profiles:
+      - webrtc
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  fanz-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
