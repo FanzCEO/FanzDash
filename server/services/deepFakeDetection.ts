@@ -458,8 +458,35 @@ export class DeepFakeDetectionEngine {
     };
   }
 
+  // Helper to validate that media URLs are external and safe
+  private static isSafeMediaUrl(urlString: string): boolean {
+    try {
+      const url = new URL(urlString);
+      // Only allow https
+      if (url.protocol !== 'https:') return false;
+      // Block localhost and loopback addresses
+      const forbiddenHosts = ['localhost', '127.0.0.1', '0.0.0.0', '::1'];
+      if (forbiddenHosts.includes(url.hostname)) return false;
+      // Block private IP ranges (IPv4)
+      const privateIpRanges = [
+        /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/,         // 10.0.0.0 – 10.255.255.255
+        /^172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}$/, // 172.16.0.0 – 172.31.255.255
+        /^192\.168\.\d{1,3}\.\d{1,3}$/             // 192.168.0.0 – 192.168.255.255
+      ];
+      if (privateIpRanges.some(rx => rx.test(url.hostname))) return false;
+      // Optionally: check against a domain allowlist here
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   private static async transcribeAudio(audioUrl: string): Promise<string> {
     try {
+      // Validate mediaUrl to prevent SSRF
+      if (!this.isSafeMediaUrl(audioUrl)) {
+        throw new Error("Unsafe or unsupported media URL");
+      }
       // Use OpenAI Whisper for transcription
       const response = await fetch(audioUrl);
       const audioBuffer = Buffer.from(await response.arrayBuffer());
