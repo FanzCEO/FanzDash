@@ -21,7 +21,10 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "setup:ssh": "node scripts/setup-ssh.js",
+    "verify:ssh": "node scripts/verify-ssh.js",
+    "setup:dev": "npm run setup:ssh && npm install --legacy-peer-deps && npm run db:push"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",
