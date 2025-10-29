@@ -33,7 +33,7 @@ router.get("/auth/:provider", authRateLimit, (req, res, next) => {
   })(req, res, next);
 });
 
-router.get("/auth/:provider/callback", (req, res, next) => {
+router.get("/auth/:provider/callback", authRateLimit, (req, res, next) => {
   const { provider } = req.params;
 
   passport.authenticate(

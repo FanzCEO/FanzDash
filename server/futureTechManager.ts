@@ -2,7 +2,43 @@ import { EventEmitter } from "events";
 import { randomUUID } from "crypto";
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Development-safe OpenAI initialization
+const isDevMode = !process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.includes("placeholder") || process.env.OPENAI_API_KEY.includes("development");
+const openai = isDevMode ? null : new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// Mock OpenAI response for development
+const mockOpenAIResponse = {
+  choices: [{
+    message: {
+      content: JSON.stringify({
+        trends: [],
+        insights: {
+          hottestTechnologies: ["AI", "VR", "Blockchain"],
+          decliningTechnologies: [],
+          breakthroughPredictions: [],
+          investmentOpportunities: []
+        },
+        marketAnalysis: {
+          totalMarketSize: 1000000000,
+          growthProjections: [{ year: 2025, projectedSize: 1200000000, growthRate: 20 }],
+          keyDrivers: ["Innovation", "Market demand"],
+          barriers: ["Regulation"]
+        },
+        recommendations: []
+      })
+    }
+  }]
+};
+
+// Helper function to handle OpenAI calls with development fallback
+async function callOpenAI(config: any): Promise<any> {
+  if (isDevMode) {
+    console.log("🔧 Development mode: Using mock OpenAI response for future tech analysis");
+    await new Promise(resolve => setTimeout(resolve, 200)); // Simulate API delay
+    return mockOpenAIResponse;
+  }
+  return openai!.chat.completions.create(config);
+}
 
 export interface TechAdvancement {
   id: string;
@@ -553,7 +589,7 @@ export class FutureTechManager extends EventEmitter {
       }
 
       // Use AI to analyze technology trends
-      const response = await openai.chat.completions.create({
+      const response = await callOpenAI({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {
@@ -705,7 +741,7 @@ export class FutureTechManager extends EventEmitter {
         }
 
         // Use AI to assess technology readiness progression
-        const response = await openai.chat.completions.create({
+        const response = await callOpenAI({
           model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
           messages: [
             {
@@ -754,7 +790,7 @@ export class FutureTechManager extends EventEmitter {
         throw new Error('OpenAI temporarily disabled');
       }
 
-      const response = await openai.chat.completions.create({
+      const response = await callOpenAI({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {
@@ -974,7 +1010,7 @@ export class FutureTechManager extends EventEmitter {
         throw new Error('OpenAI temporarily disabled');
       }
 
-      const response = await openai.chat.completions.create({
+      const response = await callOpenAI({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {

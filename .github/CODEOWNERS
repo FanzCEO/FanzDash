@@ -1,0 +1,35 @@
+# 🛡️ FANZ Code Owners Configuration
+# Generated: 2025-09-16T17:15:24Z
+
+# Global ownership (fallback)
+* @joshuastone/core-team
+
+# Security-critical files
+/security/ @joshuastone/security-team
+/.github/ @joshuastone/security-team @joshuastone/devops-team
+/scripts/security/ @joshuastone/security-team
+
+# Payment processing (adult-friendly)
+/payments/ @joshuastone/fintech-team @joshuastone/security-team
+/fanzfinance-os/ @joshuastone/fintech-team @joshuastone/security-team
+
+# Authentication & authorization
+/auth-service/ @joshuastone/security-team @joshuastone/backend-team
+/services/fanz-permissions/ @joshuastone/security-team
+
+# Infrastructure & deployment
+/k8s/ @joshuastone/devops-team @joshuastone/security-team
+/docker/ @joshuastone/devops-team
+/database/ @joshuastone/database-team @joshuastone/backend-team
+
+# Frontend applications
+/frontend/ @joshuastone/frontend-team
+/mobile/ @joshuastone/mobile-team
+
+# API and backend services  
+/backend/ @joshuastone/backend-team
+/api-gateway/ @joshuastone/backend-team @joshuastone/security-team
+
+# Documentation
+/docs/ @joshuastone/tech-writers @joshuastone/core-team
+README.md @joshuastone/core-team

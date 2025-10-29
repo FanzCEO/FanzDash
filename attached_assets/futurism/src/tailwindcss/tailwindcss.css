@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@theme {
+    --font-sans: "Rajdhani", "sans-serif"; 
+    --font-serif: "Merriweather", "sans-serif";
+
+    /* Primary Colors */
+    --color-primary-50: oklch(98.48% 0.0209 189.59);
+    --color-primary-100: oklch(96.39% 0.0518 190.41);
+    --color-primary-200: oklch(93.92% 0.0913 191.47);
+    --color-primary-300: oklch(89.27% 0.152 195.81);
+    --color-primary-400: oklch(81.47% 0.1385 198.28);
+    --color-primary-500: oklch(69.37% 0.1184 204.81);
+    --color-primary-600: oklch(58.89% 0.0991 193.92);
+    --color-primary-700: oklch(50.01% 0.0828 208.26);
+    --color-primary-800: oklch(43.79% 0.0713 212.45);
+    --color-primary-900: oklch(33.21% 0.0566 215.01);
+    --color-primary-950: oklch(19.34% 0.0256 199.77);
+    
+    --color-slate-*: initial;
+    --color-neutral-*: initial;
+    --color-stone-*: initial;
+    --color-zinc-*: initial;
+    --color-amber-*: initial;
+    --color-emerald-*: initial;
+    --color-cyan-*: initial;
+    --color-violet-*: initial;
+    --color-fuchsia-*: initial;
+    --color-rose-*: initial;
+    
+    --blur-*: initial;
+    --perspective-*: initial;
+    --drop-shadow-*: initial; 
+}
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: theme(--color-gray-400);
+  }
+  button, [role="button"] {
+    cursor: pointer;
+  }
+}
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* plugins */
+@import "./vendors/datatable.css";
+@import "./vendors/dropzone.css";
+@import "./vendors/jsvectormap.css";
+@import "./vendors/theme.css";

@@ -1,0 +1,431 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fanzdash-app
+  labels:
+    app: fanzdash
+    component: main
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  selector:
+    matchLabels:
+      app: fanzdash
+      component: main
+  template:
+    metadata:
+      labels:
+        app: fanzdash
+        component: main
+    spec:
+      containers:
+      - name: fanzdash
+        image: fanzdash:latest
+        ports:
+        - containerPort: 3030
+          name: http
+        - containerPort: 3031
+          name: websocket
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3030"
+        - name: WEBSOCKET_PORT
+          value: "3031"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: redis-url
+        - name: AI_SERVICE_URL
+          value: "http://ai-engine-service:8080"
+        - name: FINANCE_SERVICE_URL
+          value: "http://finance-os-service:8081"
+        - name: MEDIA_SERVICE_URL
+          value: "http://media-hub-service:8082"
+        - name: SECURITY_VAULT_URL
+          value: "http://security-vault-service:8083"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3030
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3030
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: app-data
+          mountPath: /app/data
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: app-data
+        persistentVolumeClaim:
+          claimName: fanzdash-data-pvc
+      - name: logs
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-engine
+  labels:
+    app: fanzdash
+    component: ai-engine
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fanzdash
+      component: ai-engine
+  template:
+    metadata:
+      labels:
+        app: fanzdash
+        component: ai-engine
+    spec:
+      containers:
+      - name: ai-engine
+        image: fanzdash-ai-engine:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8080"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: redis-url
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: openai-api-key
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: anthropic-api-key
+        - name: HUGGINGFACE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: huggingface-api-key
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 90
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        volumeMounts:
+        - name: ai-models
+          mountPath: /models
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: ai-models
+        persistentVolumeClaim:
+          claimName: ai-models-pvc
+      - name: logs
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finance-os
+  labels:
+    app: fanzdash
+    component: finance-os
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fanzdash
+      component: finance-os
+  template:
+    metadata:
+      labels:
+        app: fanzdash
+        component: finance-os
+    spec:
+      containers:
+      - name: finance-os
+        image: fanzdash-finance-os:latest
+        ports:
+        - containerPort: 8081
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8081"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: redis-url
+        - name: FINANCE_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: finance-encryption-key
+        # Payment Gateway Environment Variables
+        - name: CCBILL_CLIENT_ACCNUM
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: ccbill-client-accnum
+        - name: SEGPAY_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: segpay-access-key
+        - name: PAXUM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: payout-secrets
+              key: paxum-api-key
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: finance-data
+          mountPath: /app/data
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: finance-data
+        persistentVolumeClaim:
+          claimName: finance-data-pvc
+      - name: logs
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-hub
+  labels:
+    app: fanzdash
+    component: media-hub
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fanzdash
+      component: media-hub
+  template:
+    metadata:
+      labels:
+        app: fanzdash
+        component: media-hub
+    spec:
+      containers:
+      - name: media-hub
+        image: fanzdash-media-hub:latest
+        ports:
+        - containerPort: 8082
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8082"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: redis-url
+        - name: GCP_PROJECT_ID
+          valueFrom:
+            secretKeyRef:
+              name: storage-secrets
+              key: gcp-project-id
+        - name: GCP_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: storage-secrets
+              key: gcp-bucket-name
+        - name: GCP_SERVICE_ACCOUNT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: storage-secrets
+              key: gcp-service-account-key
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2000m"
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+          initialDelaySeconds: 90
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        volumeMounts:
+        - name: media-storage
+          mountPath: /app/media
+        - name: media-temp
+          mountPath: /tmp/media
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: media-storage
+        persistentVolumeClaim:
+          claimName: media-storage-pvc
+      - name: media-temp
+        emptyDir:
+          sizeLimit: "50Gi"
+      - name: logs
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-vault
+  labels:
+    app: fanzdash
+    component: security-vault
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fanzdash
+      component: security-vault
+  template:
+    metadata:
+      labels:
+        app: fanzdash
+        component: security-vault
+    spec:
+      containers:
+      - name: security-vault
+        image: fanzdash-security-vault:latest
+        ports:
+        - containerPort: 8083
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8083"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: database-url
+        - name: VAULT_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fanzdash-secrets
+              key: vault-encryption-key
+        - name: COMPLIANCE_MODE
+          value: "adult_entertainment"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8083
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8083
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: security-data
+          mountPath: /app/data
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: security-data
+        persistentVolumeClaim:
+          claimName: security-data-pvc
+      - name: logs
+        emptyDir: {}

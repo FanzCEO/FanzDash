@@ -9,6 +9,18 @@ import { eq, and, gt } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import nodemailer from "nodemailer";
 
+// HTML escaping function to prevent XSS attacks
+function escapeHtml(unsafe: string | undefined | null): string {
+  if (!unsafe) return "";
+  return String(unsafe)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/\//g, "&#x2F;");
+}
+
 export interface DeviceInfo {
   fingerprint: string;
   name?: string;
@@ -256,7 +268,7 @@ export class DeviceSecurityService {
           </div>
           
           <div style="padding: 30px; background: #f8f9fa;">
-            <h2 style="color: #333; margin-bottom: 20px;">Hello ${userName},</h2>
+            <h2 style="color: #333; margin-bottom: 20px;">Hello ${escapeHtml(userName)},</h2>
             
             <p style="font-size: 16px; line-height: 1.6; color: #555;">
               We detected a login attempt from a new device or location. To ensure your account security, 
@@ -265,10 +277,10 @@ export class DeviceSecurityService {
 
             <div style="background: white; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #667eea;">
               <h3 style="margin: 0 0 10px 0; color: #333;">Device Information:</h3>
-              <p style="margin: 5px 0; color: #666;"><strong>Browser:</strong> ${deviceInfo.browser}</p>
-              <p style="margin: 5px 0; color: #666;"><strong>Operating System:</strong> ${deviceInfo.os}</p>
-              <p style="margin: 5px 0; color: #666;"><strong>IP Address:</strong> ${deviceInfo.ipAddress}</p>
-              <p style="margin: 5px 0; color: #666;"><strong>Location:</strong> ${deviceInfo.location?.city || "Unknown"}, ${deviceInfo.location?.country || "Unknown"}</p>
+              <p style="margin: 5px 0; color: #666;"><strong>Browser:</strong> ${escapeHtml(deviceInfo.browser)}</p>
+              <p style="margin: 5px 0; color: #666;"><strong>Operating System:</strong> ${escapeHtml(deviceInfo.os)}</p>
+              <p style="margin: 5px 0; color: #666;"><strong>IP Address:</strong> ${escapeHtml(deviceInfo.ipAddress)}</p>
+              <p style="margin: 5px 0; color: #666;"><strong>Location:</strong> ${escapeHtml(deviceInfo.location?.city || "Unknown")}, ${escapeHtml(deviceInfo.location?.country || "Unknown")}</p>
             </div>
 
             <div style="text-align: center; margin: 30px 0;">

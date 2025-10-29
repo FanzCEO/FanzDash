@@ -81,15 +81,22 @@ export function AIAnalysisEngine() {
 
   const analysisMutation = useMutation({
     mutationFn: async (request: ContentAnalysisRequest) => {
-      return apiRequest("/api/ai/analyze", {
+      const response = await fetch("/api/ai/analyze", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(request),
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast({
         title: "Analysis Started",
-        description: `Content analysis initiated with ID: ${data.analysisId}`,
+        description: `Content analysis initiated with ID: ${data.analysisId || 'unknown'}`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/ai/analysis/recent"] });
       setSelectedContent("");
