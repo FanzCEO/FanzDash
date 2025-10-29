@@ -68,24 +68,6 @@ This service follows FANZ ecosystem standards:
 ### Available Scripts
 
 ```bash
-<<<<<<< HEAD
-# 1. Clone the repository (requires SSH key setup)
-git clone git@github.com:fanz-unlimited/fanzdash-enterprise.git
-cd fanzdash-enterprise
-
-# 2. Set up SSH keys (first-time setup)
-npm run setup:ssh your-email@fanz.foundation
-
-# 3. Complete development setup
-npm run setup:dev
-
-# 4. Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-
-# 5. Start the development server
-npm run dev
-=======
 # Development
 pnpm dev                    # Start development server
 pnpm build                  # Build for production
@@ -93,61 +75,26 @@ pnpm start                  # Start production server
 
 # Quality Assurance
 pnpm lint                   # Lint code
-pnpm typecheck             # TypeScript checking
-pnpm test                  # Run tests
-pnpm test:coverage         # Test with coverage
+pnpm typecheck              # TypeScript checking
+pnpm test                   # Run tests
+pnpm test:coverage          # Test with coverage
 
 # Database
-pnpm db:migrate            # Run migrations
-pnpm db:seed               # Seed development data
+pnpm db:migrate             # Run migrations
+pnpm db:seed                # Seed development data
 
 # Security
-pnpm audit:security        # Security audit
-pnpm audit:dependencies    # Dependency audit
->>>>>>> origin/main
+pnpm audit:security         # Security audit
+pnpm audit:dependencies     # Dependency audit
 ```
 
 ### Code Quality Standards
 
-<<<<<<< HEAD
-### 🔑 **Alternative: Manual Setup**
-
-If you prefer step-by-step setup or need SSH key configuration:
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/fanz-unlimited/fanzdash-enterprise.git
-cd fanzdash-enterprise
-
-# 2. Set up SSH keys for secure Git access
-node scripts/setup-ssh.js your-email@fanz.foundation
-
-# 3. Install dependencies (use legacy peer deps for Vite compatibility)
-npm install --legacy-peer-deps
-
-# 4. Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-
-# 5. Initialize the database
-npm run db:push
-
-# 6. Start the development server
-npm run dev
-```
-
-### 🔑 **Default Credentials**
-```
-Username: admin@fanz.foundation
-Password: FanzDash2025!
-```
-=======
 - **TypeScript** - All new code must be TypeScript
 - **85%+ Test Coverage** - Comprehensive test coverage required
 - **WCAG 2.2 AA** - Full accessibility compliance
 - **Zero Secrets** - No hardcoded secrets or credentials
 - **Creator-First** - All changes must benefit creators
->>>>>>> origin/main
 
 ## 🔐 Security
 
@@ -564,9 +511,7 @@ npm run security:update
 5. **Emergency Response** - Use emergency contacts for critical issues
 
 ---
-=======
 See [SECURITY.md](SECURITY.md) for detailed security information.
->>>>>>> origin/main
 
 ## 🤝 Contributing
 
