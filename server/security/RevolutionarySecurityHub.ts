@@ -128,7 +128,7 @@ export class RevolutionarySecurityHub extends EventEmitter {
     });
 
     // Step 4: Behavioral analysis
-    const behaviorTrust = await this.behaviorAnalyzer.analyzeRealTimeBehhavior({
+    const behaviorTrust = await this.behaviorAnalyzer.analyzeRealTimeBehavior({
       userId: authRequest.userId,
       currentBehavior: authRequest.behaviorData,
       historicalBaseline: await this.getBehaviorBaseline(authRequest.userId),
@@ -198,7 +198,7 @@ export class RevolutionarySecurityHub extends EventEmitter {
     });
 
     // Zero-day exploit detection
-    const zeroDay Analysis = await this.detectZeroDayExploits({
+    const zeroDayAnalysis = await this.detectZeroDayExploits({
       systemBehavior: monitoringData.systemBehavior,
       memoryPatterns: monitoringData.memoryAnalysis,
       networkAnomalies: anomalies.network,

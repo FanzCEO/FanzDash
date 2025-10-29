@@ -59,7 +59,7 @@ export class RevolutionaryMarketingHub extends EventEmitter {
       brandGuidelines: brandAnalysis.brandGuidelines,
       contentTypes: campaignConfig.contentTypes,
       personalization: await this.generatePersonalizationRules(creatorId),
-      abn testing: campaignConfig.enableABTesting
+      abTesting: campaignConfig.enableABTesting
     });
 
     // Advanced audience segmentation
