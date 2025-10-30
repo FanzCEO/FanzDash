@@ -1,35 +1,105 @@
 services:
-  # Main Web Service (Full-Stack)
+  # Main Web Service (Full-Stack App)
   - type: web
     name: fanzdash
     env: node
-    region: oregon
-    plan: free
+    region: oregon  # Options: oregon, frankfurt, singapore, ohio
+    plan: starter   # Options: free, starter ($7/mo), standard ($25/mo)
+
+    # Build Configuration
     buildCommand: npm install && npm run build
     startCommand: npm start
+
+    # Auto-deploy on git push
+    autoDeploy: true
+
+    # Health Check
+    healthCheckPath: /healthz
+
+    # Environment Variables
+    # Add actual values in Render Dashboard (Settings > Environment)
     envVars:
+      # Node Configuration
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-      # Supabase Configuration (Add these in Render Dashboard)
+
+      # Supabase Configuration (REQUIRED - Add in Dashboard)
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_ANON_KEY
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
+
+      # Database (REQUIRED - Add in Dashboard)
       - key: DATABASE_URL
         sync: false
+
+      # Authentication (REQUIRED - Add in Dashboard)
       - key: JWT_SECRET
         sync: false
-    healthCheckPath: /healthz
-    autoDeploy: true
 
-# Additional services (optional, add later if needed)
-# - type: cron
-#   name: fanzdash-analytics-job
+      # Optional: Payment Integration
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+
+      # Optional: Email Service
+      - key: SENDGRID_API_KEY
+        sync: false
+
+      # Optional: Storage (if using additional S3)
+      - key: AWS_S3_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
+      - key: AWS_S3_REGION
+        value: us-east-1
+
+# Optional: Background Workers (Uncomment to enable)
+# - type: worker
+#   name: fanzdash-analytics-worker
 #   env: node
-#   schedule: "0 0 * * *"
+#   region: oregon
+#   plan: starter
 #   buildCommand: npm install
-#   startCommand: node scripts/analytics-job.js
+#   startCommand: node dist/workers/analytics.js
+#   envVars:
+#     - key: NODE_ENV
+#       value: production
+#     - key: DATABASE_URL
+#       sync: false
+
+# Optional: Scheduled Jobs (Uncomment to enable)
+# - type: cron
+#   name: fanzdash-daily-cleanup
+#   env: node
+#   region: oregon
+#   schedule: "0 0 * * *"  # Daily at midnight UTC
+#   buildCommand: npm install
+#   startCommand: node dist/jobs/cleanup.js
+#   envVars:
+#     - key: NODE_ENV
+#       value: production
+#     - key: DATABASE_URL
+#       sync: false
+
+# - type: cron
+#   name: fanzdash-hourly-analytics
+#   env: node
+#   region: oregon
+#   schedule: "0 * * * *"  # Every hour
+#   buildCommand: npm install
+#   startCommand: node dist/jobs/analytics.js
+#   envVars:
+#     - key: NODE_ENV
+#       value: production
+#     - key: DATABASE_URL
+#       sync: false
