@@ -1,43 +1,23 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist/public"
-      }
-    },
-    {
-      "src": "dist/index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/dist/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/api/(.*)",
+      "destination": "/api"
     }
   ],
   "env": {
-    "NODE_ENV": "production",
-    "PNPM_FLAGS": "--no-frozen-lockfile"
+    "NODE_ENV": "production"
   },
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm run build",
-  "devCommand": "pnpm run dev",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
   "framework": null,
   "outputDirectory": "dist/public",
   "functions": {
-    "dist/index.js": {
-      "runtime": "nodejs20.x"
+    "api/index.js": {
+      "runtime": "nodejs20.x",
+      "includeFiles": "dist/**"
     }
   }
 }
