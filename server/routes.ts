@@ -26,6 +26,15 @@ import authRoutes from "./auth/authRoutes";
 import lusca from "lusca";
 import ChatService from "./chatService";
 import Compliance2257Service from "./compliance2257Service";
+import {
+  isAuthenticated,
+  requireRole,
+  requireAdmin,
+  requireModerator,
+  requireCreator,
+  optionalAuth
+} from './middleware/auth';
+import logger from './utils/logger';
 
 // Import all our internal systems
 import { videoEncoder } from "./videoEncoder";
@@ -79,19 +88,6 @@ function broadcastToModerators(message: any) {
       ws.send(JSON.stringify(message));
     }
   });
-}
-
-// Simple auth middleware for our in-house system
-function isAuthenticated(req: any, res: any, next: any) {
-  // For demo purposes - in production this would verify JWT tokens
-  // Allow all requests for now to test the system
-  req.user = {
-    claims: {
-      sub: "demo_user_12345",
-      email: "admin@fanzunlimited.com",
-    },
-  };
-  next();
 }
 
 // Service Helper Functions
