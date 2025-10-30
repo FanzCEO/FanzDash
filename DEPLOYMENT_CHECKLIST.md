@@ -130,47 +130,48 @@ npm run dev
 
 #### Step 3.1: Choose Hosting Platform
 
-**Recommended Options**:
+**✅ RECOMMENDED: Render + Supabase** (Best for FanzDash)
 
-1. **Vercel** (Best for this stack)
-   - Free tier available
-   - Automatic deployments
-   - Edge functions
-   - Built-in analytics
+For detailed step-by-step instructions, see: **[RENDER_DEPLOYMENT_GUIDE.md](./RENDER_DEPLOYMENT_GUIDE.md)**
 
-2. **Railway**
-   - PostgreSQL included
-   - Simple deployment
-   - $5/month starter
+**Why Render?**
+- ✅ Full-stack support (frontend + backend in one place)
+- ✅ No serverless complexity (Express runs as persistent service)
+- ✅ Free tier to start
+- ✅ Auto-deploy from GitHub
+- ✅ Perfect for this stack
 
-3. **Render**
-   - Free tier
-   - Auto-deploy from GitHub
-   - Background workers
+**Alternative Options**:
 
-#### Step 3.2: Deploy to Vercel (Recommended)
+1. **Railway** - Great alternative, similar features, $5/month starter
+2. **Fly.io** - Good for full-stack apps, more complex setup
+3. **Vercel** - Frontend only (not recommended for full-stack Express apps)
 
-```bash
-# Install Vercel CLI
-npm install -g vercel
+#### Step 3.2: Deploy to Render (Recommended)
 
-# Login
-vercel login
+**Quick Setup** (5 minutes):
 
-# Deploy
-vercel
+1. Go to [render.com](https://render.com) and sign up with GitHub
+2. Click **"New +"** → **"Web Service"**
+3. Connect your **FanzDash** repository
+4. Configure:
+   ```
+   Name: fanzdash
+   Build Command: npm install && npm run build
+   Start Command: npm start
+   ```
+5. Add environment variables (from Supabase setup):
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `DATABASE_URL`
+   - `JWT_SECRET`
+   - `NODE_ENV=production`
+6. Click **"Create Web Service"**
 
-# Set environment variables in Vercel dashboard
-# Settings > Environment Variables
-# Add all variables from .env
-```
+✅ **That's it!** Render will build and deploy automatically.
 
-**Or use Vercel Dashboard**:
-1. Go to [vercel.com](https://vercel.com)
-2. Click "Import Project"
-3. Select your GitHub repository
-4. Add environment variables
-5. Deploy!
+📖 **For detailed instructions**: See [RENDER_DEPLOYMENT_GUIDE.md](./RENDER_DEPLOYMENT_GUIDE.md)
 
 #### Step 3.3: Configure Production Environment
 

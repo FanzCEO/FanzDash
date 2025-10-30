@@ -1,0 +1,35 @@
+services:
+  # Main Web Service (Full-Stack)
+  - type: web
+    name: fanzdash
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Supabase Configuration (Add these in Render Dashboard)
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+    healthCheckPath: /healthz
+    autoDeploy: true
+
+# Additional services (optional, add later if needed)
+# - type: cron
+#   name: fanzdash-analytics-job
+#   env: node
+#   schedule: "0 0 * * *"
+#   buildCommand: npm install
+#   startCommand: node scripts/analytics-job.js
