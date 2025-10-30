@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(git push:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm outdated:*)",
+      "Bash(npm ls:*)",
+      "Read(//Users/joshuastone/Library/Mobile Documents/com~apple~CloudDocs/GitHub/FANZ GROUP HOLDINGS DEVELOPMENT/**)",
+      "Bash(timeout 5 ls:*)",
+      "Bash([ -d \"/Users/joshuastone/Desktop/FANZ-Master\" ])",
+      "Read(//Users/joshuastone/Desktop/FANZ-Master/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
