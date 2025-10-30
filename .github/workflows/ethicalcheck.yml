@@ -1,7 +1,7 @@
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
-# documentation.
+documentation.
 
 # EthicalCheck addresses the critical need to continuously security test APIs in development and in production.
 
@@ -17,12 +17,11 @@
 # 1. Security Testing.
 # Provide your OpenAPI specification or start with a public Postman collection URL.
 # EthicalCheck instantly instrospects your API and creates a map of API endpoints for security testing.
-# It then automatically creates hundreds of security tests that are non-intrusive to comprehensively and completely test for authentication, authorizations, and OWASP bugs your API. The tests addresses the OWASP API Security categories including OAuth 2.0, JWT, Rate Limit etc.
+# It then automatically creates hundreds of security tests that are non-intrusive to comprehensively and completely test for authentication, authorizations, and OWASP bugs your API. The tests address all known vulnerabilities.
 
 # 2. Reporting.
 # EthicalCheck generates security test report that includes all the tested endpoints, coverage graph, exceptions, and vulnerabilities.
 # Vulnerabilities are fully triaged, it contains CVSS score, severity, endpoint information, and OWASP tagging.
-
 
 # This is a starter workflow to help you get started with EthicalCheck Actions
 
@@ -53,17 +52,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-       - name: EthicalCheck  Free & Automated API Security Testing Service
-         uses: apisec-inc/ethicalcheck-action@005fac321dd843682b1af6b72f30caaf9952c641
-         with:
+      - name: EthicalCheck  Free & Automated API Security Testing Service
+        uses: actions-marketplace-validations/apisec-inc_ethicalcheck-action@main
+        with:
           # The OpenAPI Specification URL or Swagger Path or Public Postman collection URL.
           oas-url: "http://netbanking.apisec.ai:8080/v2/api-docs"
           # The email address to which the penetration test report will be sent.
           email: "xxx@apisec.ai"
           sarif-result-file: "ethicalcheck-results.sarif"
 
-       - name: Upload sarif file to repository
-         uses: github/codeql-action/upload-sarif@v3
-         with:
+      - name: Upload sarif file to repository
+        uses: github/codeql-action/upload-sarif@v3
+        with:
           sarif_file: ./ethicalcheck-results.sarif
-

@@ -1,7 +1,8 @@
 import OpenAI from "openai";
 
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const isDevMode = !process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.includes("placeholder") || process.env.OPENAI_API_KEY.includes("development");
+const openai = isDevMode ? null : new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export interface PredictiveModel {
   id: string;
@@ -295,8 +296,13 @@ export class AIPredictiveAnalytics {
     timeframe: "7_days" | "30_days" | "90_days" | "1_year",
     data?: any,
   ): Promise<RevenueForecast> {
+    if (isDevMode) {
+      console.log("🔧 Development mode: Using mock revenue forecast");
+      return this.generateMockRevenueForecast(timeframe);
+    }
+    
     try {
-      const response = await openai.chat.completions.create({
+      const response = await openai!.chat.completions.create({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {
@@ -327,8 +333,13 @@ export class AIPredictiveAnalytics {
 
   // Content Performance Prediction
   async predictContentPerformance(content: any): Promise<ContentPrediction> {
+    if (isDevMode) {
+      console.log("🔧 Development mode: Using mock content prediction");
+      return this.generateMockContentPrediction(content);
+    }
+    
     try {
-      const response = await openai.chat.completions.create({
+      const response = await openai!.chat.completions.create({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {
@@ -360,7 +371,7 @@ export class AIPredictiveAnalytics {
   // Fan Churn Prediction
   async predictFanChurn(fanData: any): Promise<ChurnPrediction> {
     try {
-      const response = await openai.chat.completions.create({
+      const response = await (isDevMode ? null : openai!.chat.completions.create)({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {
@@ -390,7 +401,7 @@ export class AIPredictiveAnalytics {
   // Market Intelligence Analysis
   async analyzeMarketIntelligence(): Promise<MarketIntelligence> {
     try {
-      const response = await openai.chat.completions.create({
+      const response = await (isDevMode ? null : openai!.chat.completions.create)({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {
@@ -425,7 +436,7 @@ export class AIPredictiveAnalytics {
     currentPricing: Record<string, number>,
   ): Promise<PricingOptimization> {
     try {
-      const response = await openai.chat.completions.create({
+      const response = await (isDevMode ? null : openai!.chat.completions.create)({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {

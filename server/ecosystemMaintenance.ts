@@ -240,6 +240,7 @@ export class EcosystemMaintenanceSystem {
 
   private isMonitoring: boolean = false;
   private monitoringInterval: NodeJS.Timeout | null = null;
+  private isDevelopmentMode: boolean = process.env.NODE_ENV !== "production";
 
   constructor() {
     this.initializeAutoScaling();
@@ -658,6 +659,11 @@ export class EcosystemMaintenanceSystem {
   private async executeAutoScaling(): Promise<void> {
     const latestMetrics = this.systemHealth.get("latest");
     if (!latestMetrics) return;
+
+    // Skip auto-scaling in development mode to prevent service shutdowns
+    if (this.isDevelopmentMode) {
+      return;
+    }
 
     for (const [serviceName, config] of this.autoScalingConfigs.entries()) {
       if (!config.enabled) continue;

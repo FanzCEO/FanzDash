@@ -1,0 +1,135 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # FANZ Application Metrics
+  - job_name: 'fanz-app'
+    static_configs:
+      - targets: ['app:3000']
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # PostgreSQL Metrics
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # FanzDash main application
+  - job_name: 'fanzdash'
+    static_configs:
+      - targets: ['fanzdash:3030']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # AI Engine service
+  - job_name: 'ai-engine'
+    static_configs:
+      - targets: ['ai-engine:8080']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # Finance OS service
+  - job_name: 'finance-os'
+    static_configs:
+      - targets: ['finance-os:8081']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # Media Hub service
+  - job_name: 'media-hub'
+    static_configs:
+      - targets: ['media-hub:8082']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # Security Vault service
+  - job_name: 'security-vault'
+    static_configs:
+      - targets: ['security-vault:8083']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # PostgreSQL database
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # Redis Metrics  
+    scrape_interval: 60s
+
+  # Redis cache
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # NGINX Metrics
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:80']
+    metrics_path: /nginx_status
+    scrape_interval: 15s
+
+  # Node Exporter (System Metrics)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # AI Service Metrics
+  - job_name: 'ai-service'
+    static_configs:
+      - targets: ['ai-service:8501']
+    metrics_path: /monitoring/prometheus/metrics
+    scrape_interval: 30s
+
+  # WebRTC Signaling Server
+  - job_name: 'webrtc-signaling'
+    static_configs:
+      - targets: ['webrtc-signaling:8080']
+    metrics_path: /metrics
+    scrape_interval: 30s
+    scrape_interval: 60s
+
+  # NGINX reverse proxy
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:8888']
+    metrics_path: /nginx_status
+    scrape_interval: 30s
+
+  # Node Exporter for system metrics (if running)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+    scrape_interval: 30s
+
+# Alerting rules for critical services
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Custom alerting rules for FANZ ecosystem
+rule_files:
+  - "/etc/prometheus/fanz_rules.yml"

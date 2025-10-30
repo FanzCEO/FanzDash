@@ -3,6 +3,7 @@ import { mlInference } from "@shared/schema";
 import { eq, desc, gte } from "drizzle-orm";
 import crypto from "crypto";
 import EventEmitter from "events";
+import { aiContentModerationService } from "../aiContentModeration";
 
 // 🧪 REAL-TIME ML INFERENCE PIPELINE - High-Performance AI Processing
 
@@ -397,17 +398,19 @@ export class MLInferencePipeline extends EventEmitter {
 
   // Model-specific inference implementations
   private async executeContentModeration(inputData: any): Promise<{ prediction: any; confidence: number }> {
-    // Import and use existing moderation services
-    const { analyzeContent } = await import('./contentModerationService');
-    
-    const result = await analyzeContent(inputData);
+    // Use existing AI content moderation service
+    const result = await aiContentModerationService.scanContent(
+      inputData.contentId || 'unknown',
+      inputData.contentType || 'text',
+      inputData.contentUrl || ''
+    );
     return {
       prediction: {
-        action: result.action,
-        categories: result.violationCategories,
-        severity: result.severity,
+        action: result.automatedAction,
+        categories: result.safetyClassification.categories,
+        severity: result.safetyClassification.overall,
       },
-      confidence: result.confidence,
+      confidence: result.safetyClassification.confidence,
     };
   }
 

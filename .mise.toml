@@ -1,0 +1,39 @@
+[tools]
+# Node.js pinned to specific version for consistency
+node = "20.18.0"
+# pnpm for package management
+pnpm = "9.12.0"
+# Python for AI services and scripts
+python = "3.12"
+# Go for high-performance services
+go = "1.21"
+# Docker for containerization
+docker = "latest"
+
+[env]
+# Development environment
+_.local.source = "env/.env.local"
+
+[tasks.dev]
+run = "pnpm dev"
+description = "Start development servers"
+
+[tasks.build]
+run = "pnpm run build"
+description = "Build all packages"
+
+[tasks.test]
+run = "pnpm run test"
+description = "Run all tests"
+
+[tasks.lint]
+run = "pnpm run lint"
+description = "Lint all packages"
+
+[tasks.typecheck]
+run = "pnpm run typecheck"
+description = "Type check all packages"
+
+[settings]
+experimental = true
+paranoid = false

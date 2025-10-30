@@ -999,11 +999,11 @@ export class DatabaseStorage implements IStorage {
       {
         id: "platform-1",
         name: "FanzMain Adult",
-        domain: "main.fanz.com",
+        domain: "main.myfanz.network",
         niche: "adult_content",
         status: "active",
-        apiEndpoint: "https://api.main.fanz.com/v1",
-        webhookUrl: "https://webhooks.main.fanz.com/moderation",
+        apiEndpoint: "https://api.main.myfanz.network/v1",
+        webhookUrl: "https://webhooks.main.myfanz.network/moderation",
         moderationRules: {
           autoBlock: true,
           riskThreshold: 0.7,
@@ -1025,11 +1025,11 @@ export class DatabaseStorage implements IStorage {
       {
         id: "platform-2",
         name: "FanzLive Streaming",
-        domain: "live.fanz.com",
+        domain: "live.myfanz.network",
         niche: "live_streaming",
         status: "active",
-        apiEndpoint: "https://api.live.fanz.com/v1",
-        webhookUrl: "https://webhooks.live.fanz.com/moderation",
+        apiEndpoint: "https://api.live.myfanz.network/v1",
+        webhookUrl: "https://webhooks.live.myfanz.network/moderation",
         moderationRules: {
           autoBlock: false,
           riskThreshold: 0.8,
@@ -1051,11 +1051,11 @@ export class DatabaseStorage implements IStorage {
       {
         id: "platform-3",
         name: "FanzSocial Community",
-        domain: "social.fanz.com",
+        domain: "social.myfanz.network",
         niche: "social_media",
         status: "active",
-        apiEndpoint: "https://api.social.fanz.com/v1",
-        webhookUrl: "https://webhooks.social.fanz.com/moderation",
+        apiEndpoint: "https://api.social.myfanz.network/v1",
+        webhookUrl: "https://webhooks.social.myfanz.network/moderation",
         moderationRules: {
           autoBlock: true,
           riskThreshold: 0.6,
@@ -2137,15 +2137,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Content Moderation Settings implementation
-  async getModerationSettings(): Promise<ModerationSettings | undefined> {
+  async getCurrentModerationSettings(): Promise<ModerationSettings | undefined> {
     const [result] = await db.select().from(moderationSettings).limit(1);
     return result;
   }
 
-  async updateModerationSettings(
+  async updateCurrentModerationSettings(
     data: Partial<ModerationSettings>,
   ): Promise<void> {
-    const existing = await this.getModerationSettings();
+    const existing = await this.getCurrentModerationSettings();
     if (existing) {
       await db
         .update(moderationSettings)
