@@ -185,7 +185,7 @@ sync_repo() {
             echo
 
             if [[ $push_answer =~ ^[Yy]$ ]]; then
-                if ! (git push origin main 2>/dev/null || git push origin master 2>/dev/null); then
+                if ! git push origin main 2>/dev/null && ! git push origin master 2>/dev/null; then
                     echo -e "${RED}✗ Failed to push to remote${NC}\n"
                     exit 1
                 fi
