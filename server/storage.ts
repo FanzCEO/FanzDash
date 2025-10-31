@@ -840,6 +840,7 @@ export class DatabaseStorage implements IStorage {
   }> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const todayISO = today.toISOString();
 
     const [reviewedToday] = await db
       .select({ count: count() })
@@ -850,7 +851,7 @@ export class DatabaseStorage implements IStorage {
             eq(contentItems.status, "approved"),
             eq(contentItems.status, "rejected"),
           ),
-          sql`${contentItems.updatedAt} >= ${today}`,
+          sql`${contentItems.updatedAt} >= ${todayISO}`,
         ),
       );
 
@@ -860,7 +861,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(contentItems.status, "auto_blocked"),
-          sql`${contentItems.createdAt} >= ${today}`,
+          sql`${contentItems.createdAt} >= ${todayISO}`,
         ),
       );
 
@@ -898,7 +899,7 @@ export class DatabaseStorage implements IStorage {
     const [newUsersToday] = await db
       .select({ count: count() })
       .from(users)
-      .where(sql`${users.createdAt} >= ${today}`);
+      .where(sql`${users.createdAt} >= ${today.toISOString()}`);
 
     const [verifiedUsers] = await db
       .select({ count: count() })
