@@ -1,9 +1,5 @@
 # FANZ Unified Platform - Supabase Configuration
 
-[project]
-name = "FanzDash"
-org_id = "fanz-unified"
-
 [api]
 enabled = true
 port = 54321

@@ -2,8 +2,10 @@
 
 import { execSync } from 'child_process';
 import fs from 'fs/promises';
+import { realpathSync } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { fileURLToPath } from 'url';
 
 interface SyncConfig {
   platforms: {
@@ -372,9 +374,44 @@ async function main() {
 }
 
 // Only run if this is the main module
-const isMainModule = import.meta.url === `file://${process.argv[1]}`;
-if (isMainModule) {
-  main();
+// Reliably detect if this script is being run directly (not imported)
+// Uses normalized absolute paths to handle symlinks, different separators, and path format differences
+if (import.meta.url.startsWith('file:') && process.argv[1]) {
+  try {
+    // Convert import.meta.url to absolute file path
+    const currentFile = fileURLToPath(import.meta.url);
+    const currentFileAbsolute = path.resolve(currentFile);
+    
+    // Resolve process.argv[1] to absolute path
+    const mainFileAbsolute = path.resolve(process.argv[1]);
+    
+    // Normalize both paths to handle directory separators and trailing slashes
+    const normalizedCurrent = path.normalize(currentFileAbsolute);
+    const normalizedMain = path.normalize(mainFileAbsolute);
+    
+    // Compare normalized paths (case-sensitive comparison)
+    // Both paths are now absolute and normalized, so direct comparison works reliably
+    if (normalizedCurrent === normalizedMain) {
+      main();
+    } else {
+      // Fallback: Try comparing using realpath to handle symlinks
+      // Only use this if the initial comparison fails, as realpathSync can throw
+      try {
+        const currentRealPath = realpathSync(normalizedCurrent);
+        const mainRealPath = realpathSync(normalizedMain);
+        
+        if (currentRealPath === mainRealPath) {
+          main();
+        }
+      } catch {
+        // If realpathSync fails, we've already tried the normalized comparison
+        // If that didn't match, this script is likely being imported, so don't run
+      }
+    }
+  } catch {
+    // If path resolution fails entirely, err on the side of not running
+    // This prevents accidental execution when imported as a module
+  }
 }
 
 export default PlatformSyncManager;
