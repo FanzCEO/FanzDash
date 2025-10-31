@@ -93,7 +93,7 @@ sync_repo() {
     for file in "${FILES[@]}"; do
         local source_file="$SOURCE_DIR/$file"
         local target_file="$repo_path/$file"
-        local target_dir=$(dirname "$target_file")
+        local target_dir="$(dirname "$target_file")"
 
         # Check if source file exists
         if [ ! -f "$source_file" ]; then
