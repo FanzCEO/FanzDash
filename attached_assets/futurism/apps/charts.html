@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Title  -->
+  <title>Futurism | Tailwind Dashboard Futuristic Sci-Fi</title>
+  <meta name="description" content="Tailwind Dashboard Template with Futuristic style">
+
+  <!-- local icons -->
+  <link rel="stylesheet" id="icons" href="../vendors/bootstrap-icons/font/bootstrap-icons.min.css">
+  <!-- cdn icons -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> -->
+
+  <!-- Development css (used in all pages) -->
+  <link rel="stylesheet" href="../src/css/style.css">
+  <!-- customizer css -->
+  <link rel="stylesheet" href="../src/css/customizer.css">
+
+  <!-- google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+  <!-- Favicon  -->
+  <link rel="icon" href="../src/img/favicon.png">
+</head>
+
+<body class="bg-black text-primary-600 font-sans pt-14 lg:pt-0" x-data="{ sidebar: false }">
+  <div class="wrapper">
+    <!-- header -->
+    <header class="z-20 fixed lg:hidden top-0 inset-x-0 flex items-center justify-between gap-2 bg-black border-b border-primary-600 px-6 py-3">
+      <!-- logo -->
+      <div class="flex items-center gap-2">
+        <div class="flex justify-center items-center min-h-10 min-w-10">
+          <!-- circle sm -->
+          <svg width="100" height="100" viewBox="0 0 100 100" class="absolute spin-clockwise">
+            <circle cx="50" cy="50" r="20" class="stroke-primary-300" stroke-width="5" fill="none" stroke-dasharray="31.4" stroke-dashoffset="31.4" />
+          </svg>
+          <!-- circle xs -->
+          <svg width="100" height="100" viewBox="0 0 100 100" class="absolute spin-counterclockwise">
+            <circle cx="50" cy="50" r="10" class="stroke-primary-300" stroke-width="3" fill="none" stroke-dasharray="10.6" stroke-dashoffset="10.6" />
+          </svg>
+          <div class="size-2 bg-primary-300 rounded-full absolute animate-pulse"></div>
+        </div>
+        <h3 class="text-3xl font-medium text-primary-300">Futurism</h3>
+      </div>
+
+      <!-- navigation -->
+      <button @click="sidebar = ! sidebar" class="flex items-center justify-center size-10">
+        <i class="bi bi-list text-2xl text-primary-300"></i>
+      </button>
+    </header>
+
+    <!-- sidebar -->
+    <aside id="sidebar" :class="! sidebar ? '' : 'show'"
+    class="fixed inset-y-0 start-0 sidebar flex flex-col gap-6 w-72 lg:min-w-72 lg:[&.show]:min-w-[0px] h-screen overflow-auto scrollbars bg-black border-e border-primary-600 transition-all duration-500 ease-in-out -translate-x-full lg:translate-x-0 [&.show]:translate-x-0 max-lg:z-50 rtl:translate-x-full lg:rtl:translate-x-0 px-4">
+      <!-- logo -->
+      <a href="../dashboard/cyber-security.html" class="pt-4 flex items-center gap-3">
+        <div class="flex justify-center items-center min-h-10 min-w-10">
+          <!-- circle sm -->
+          <svg width="100" height="100" viewBox="0 0 100 100" class="absolute spin-clockwise">
+            <circle cx="50" cy="50" r="20" class="stroke-primary-300" stroke-width="5" fill="none" stroke-dasharray="31.4" stroke-dashoffset="31.4" />
+          </svg>
+          <!-- circle xs -->
+          <svg width="100" height="100" viewBox="0 0 100 100" class="absolute spin-counterclockwise">
+            <circle cx="50" cy="50" r="10" class="stroke-primary-300" stroke-width="3" fill="none" stroke-dasharray="10.6" stroke-dashoffset="10.6" />
+          </svg>
+          <div class="size-2 bg-primary-300 rounded-full absolute animate-pulse"></div>
+        </div>
+        <h3 class="text-3xl font-medium text-primary-300">Futurism</h3>
+      </a>
+
+      <!-- sidebar menu -->
+      <ul x-data="{ activePage: 11, submenu: null }" class="mb-6">
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 1 }" href="../dashboard/cyber-security.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-shield-lock text-lg"></i>
+            Cyber Security
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 2 }" href="../dashboard/esport-team.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-controller text-lg"></i>
+            Esports
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 3 }" href="../dashboard/smartcar.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-car-front text-lg"></i>
+            Smartcar
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 4 }" href="../dashboard/research.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-journal-text text-lg"></i>
+            Research
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 5 }" href="../dashboard/military.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-bookmark-star text-lg"></i>
+            Military
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 6 }" href="../dashboard/smarthome.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-house text-lg"></i>
+            Smarthome
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 7 }" href="../dashboard/ai-creation.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-cpu text-lg"></i>
+            AI Creation
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 8 }" href="../dashboard/analytics.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-graph-up text-lg"></i>
+            Analytics
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 9 }" href="../dashboard/saas.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-cloud text-lg"></i>
+            SAAS
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 99 }" href="../index.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-rocket text-lg"></i>
+            Landingpage
+          </a>
+        </li>
+        <li class="relative">
+          <a @click="submenu !== 1 ? submenu = 1 : submenu = null" :class="{ 'active text-black bg-primary-300': submenu === 1 }" href="javascript:void(0)" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-layers text-lg"></i>
+            Components
+            <i :class="{ 'rotate-180': submenu === 1 }" class="bi bi-chevron-down ms-auto transition-transform duration-200"></i>
+          </a>
+          <ul x-show="submenu === 1" class="ps-3 flex flex-col">
+            <li>
+              <a href="../components/accordion.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Accordion</a>
+            </li>
+            <li>
+              <a href="../components/alert.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Alerts</a>
+            </li>
+            <li>
+              <a href="../components/avatar.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Avatar</a>
+            </li>
+            <li>
+              <a href="../components/badge.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Badge</a>
+            </li>
+            <li>
+              <a href="../components/breadcrumb.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Breadcrumb</a>
+            </li>
+            <li>
+              <a href="../components/button.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Button</a>
+            </li>
+            <li>
+              <a href="../components/card.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Card</a>
+            </li>
+            <li>
+              <a href="../components/carousel.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Carousel</a>
+            </li>
+            <li>
+              <a href="../components/dropdown.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Dropdown</a>
+            </li>
+            <li>
+              <a href="../components/grids.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Grids</a>
+            </li>
+            <li>
+              <a href="../components/list-item.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">List item</a>
+            </li>
+            <li>
+              <a href="../components/modal.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Modal</a>
+            </li>
+            <li>
+              <a href="../components/navbar.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Navbar</a>
+            </li>
+            <li>
+              <a href="../components/offcanvas.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Offcanvas</a>
+            </li>
+            <li>
+              <a href="../components/pagination.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Pagination</a>
+            </li>
+            <li>
+              <a href="../components/progress.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Progress</a>
+            </li>
+            <li>
+              <a href="../components/snackbar.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Snackbar</a>
+            </li>
+            <li>
+              <a href="../components/tabs.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Tabs</a>
+            </li>
+            <li>
+              <a href="../components/tooltip.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Tooltips</a>
+            </li>
+          </ul>
+        </li>
+        <li class="relative">
+          <a @click="submenu !== 2 ? submenu = 2 : submenu = null" :class="{ 'active text-black bg-primary-300': submenu === 2 }" href="javascript:void(0)" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-file-earmark-text text-lg"></i>
+            Pages
+            <i :class="{ 'rotate-180': submenu === 2 }" class="bi bi-chevron-down ms-auto transition-transform duration-200"></i>
+          </a>
+          <ul x-show="submenu === 2" class="ps-3 flex flex-col">
+            <li>
+              <a href="../pages/starter.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Starter</a>
+            </li>
+            <li>
+              <a href="../pages/about.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">About</a>
+            </li>
+            <li>
+              <a href="../pages/pricing.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Pricing</a>
+            </li>
+            <li>
+              <a href="../pages/blogs.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Blogs</a>
+            </li>
+            <li>
+              <a href="../pages/blog-detail.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Blog Detail</a>
+            </li>
+            <li>
+              <a href="../pages/customers.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Customers</a>
+            </li>
+            <li>
+              <a href="../pages/contact-us.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Contact Us</a>
+            </li>
+            <li>
+              <a href="../pages/setting.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Setting</a>
+            </li>
+            <li>
+              <a href="../pages/services.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Services</a>
+            </li>
+            <li>
+              <a href="../pages/tos.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">TOS</a>
+            </li>
+            <li>
+              <a href="../pages/privacy.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Privacy</a>
+            </li>
+            <li>
+              <a href="../pages/404.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">404</a>
+            </li>
+          </ul>
+        </li>
+        <li class="relative">
+          <a @click="submenu !== 3 ? submenu = 3 : submenu = null" :class="{ 'active text-black bg-primary-300': submenu === 3 }" href="javascript:void(0)" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-text-paragraph text-lg"></i>
+            Content
+            <i :class="{ 'rotate-180': submenu === 3 }" class="bi bi-chevron-down ms-auto transition-transform duration-200"></i>
+          </a>
+          <ul x-show="submenu === 3" class="ps-3 flex flex-col">
+            <li>
+              <a href="../content/typography.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Typography</a>
+            </li>
+            <li>
+              <a href="../content/colors.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Colors</a>
+            </li>
+            <li>
+              <a href="../content/icons.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Icons</a>
+            </li>
+            <li>
+              <a href="../content/tables.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Tables</a>
+            </li>
+          </ul>
+        </li>
+        <li class="relative">
+          <a @click="submenu !== 4 ? submenu = 4 : submenu = null" :class="{ 'active text-black bg-primary-300': submenu === 4 }" href="javascript:void(0)" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-ui-checks text-lg"></i>
+            Forms
+            <i :class="{ 'rotate-180': submenu === 4 }" class="bi bi-chevron-down ms-auto transition-transform duration-200"></i>
+          </a>
+          <ul x-show="submenu === 4" class="ps-3 flex flex-col">
+            <li>
+              <a href="../forms/input-textarea.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Input &amp; Textarea</a>
+            </li>
+            <li>
+              <a href="../forms/select.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Select</a>
+            </li>
+            <li>
+              <a href="../forms/checkbox-radio.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Checkbox &amp; Radio</a>
+            </li>
+            <li>
+              <a href="../forms/date-picker.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Date Picker</a>
+            </li>
+            <li>
+              <a href="../forms/range.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Range</a>
+            </li>
+            <li>
+              <a href="../forms/advanced.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Advance Form</a>
+            </li>
+          </ul>
+        </li>
+        <li class="relative">
+          <a @click="submenu !== 5 ? submenu = 5 : submenu = null" :class="{ 'active text-black bg-primary-300': submenu === 5 }" href="javascript:void(0)" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-people text-lg"></i>
+            Users
+            <i :class="{ 'rotate-180': submenu === 5 }" class="bi bi-chevron-down ms-auto transition-transform duration-200"></i>
+          </a>
+          <ul x-show="submenu === 5" class="ps-3 flex flex-col">
+            <li>
+              <a href="../users/feed.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Feed</a>
+            </li>
+            <li>
+              <a href="../users/profile.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Profile</a>
+            </li>
+            <li>
+              <a href="../users/groups.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Groups</a>
+            </li>
+            <li>
+              <a href="../users/messages.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Messages</a>
+            </li>
+            <li>
+              <a href="../users/user-setting.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">User Setting</a>
+            </li>
+          </ul>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 10 }" href="../apps/widgets.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-grid text-lg"></i>
+            Widgets
+          </a>
+        </li>
+        <li class="relative">
+          <a :class="{ 'active text-black bg-primary-300': activePage === 11 }" href="../apps/charts.html" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-bar-chart text-lg"></i>
+            Charts
+          </a>
+        </li>
+        <li class="relative">
+          <a @click="submenu !== 7 ? submenu = 7 : submenu = null" :class="{ 'active text-black bg-primary-300': submenu === 7 }" href="javascript:void(0)" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-key text-lg"></i>
+            Auth
+            <i :class="{ 'rotate-180': submenu === 7 }" class="bi bi-chevron-down ms-auto transition-transform duration-200"></i>
+          </a>
+          <ul x-show="submenu === 7" class="ps-3 flex flex-col">
+            <li>
+              <a href="../auth/login.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Login</a>
+            </li>
+            <li>
+              <a href="../auth/register.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Register</a>
+            </li>
+            <li>
+              <a href="../auth/forgot.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Forgot Password</a>
+            </li>
+            <li>
+              <a href="../auth/welcome.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">User Welcome</a>
+            </li>
+            <li>
+              <a href="../auth/logout.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Logout</a>
+            </li>
+          </ul>
+        </li>
+        <li class="relative">
+          <a @click="submenu !== 6 ? submenu = 6 : submenu = null" :class="{ 'active text-black bg-primary-300': submenu === 6 }" href="javascript:void(0)" class="flex items-center gap-2 py-2 px-4 font-medium hover:bg-primary-300 hover:text-black item-corner">
+            <i class="bi bi-journal-bookmark text-lg"></i>
+            Docs
+            <i :class="{ 'rotate-180': submenu === 6 }" class="bi bi-chevron-down ms-auto transition-transform duration-200"></i>
+          </a>
+          <ul x-show="submenu === 6" class="ps-3 flex flex-col">
+            <li>
+              <a href="../docs/get-started.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Get Started</a>
+            </li>
+            <li>
+              <a href="../docs/customize.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Customize</a>
+            </li>
+            <li>
+              <a href="../docs/plugins.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Plugins</a>
+            </li>
+            <li>
+              <a href="../docs/changelog.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Changelog</a>
+            </li>
+            <li>
+              <a href="../docs/supports.html" class="flex py-2 ps-8 pe-4 font-medium hover:bg-primary-300 hover:text-black item-corner">Supports</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- banner -->
+      <div class="bg-black frame-corner p-6 w-full">
+        <div class="frame-second absolute inset-0 border border-primary-600"></div>
+        <div class="relative flex flex-col items-center justify-between">
+          <i class="bi bi-ev-front text-4xl text-primary-300 mb-3"></i>
+          <p class="mb-4">Manage Your Widget Easily</p>
+          <button class="frame-corner w-full inline-flex items-center gap-2 justify-center px-4 py-2 uppercase font-medium border border-primary-600 text-primary-600 hover:border-primary-300 hover:text-black focus:text-black focus:border-primary-300 hover:bg-primary-300 focus:bg-primary-300 focus:outline-hidden focus:ring-0">
+            <i class="bi bi-plus-lg"></i>
+            Add Widget
+          </button>
+        </div>
+      </div>
+    </aside>
+    <!-- bg sidebar -->
+    <div @click="sidebar = ! sidebar" :class="! sidebar ? '' : 'show'" class="backDialog z-30 overflow-auto fixed bg-black/80 max-lg:[&.show]:inset-0"></div>
+
+    <!-- main -->
+    <main class="lg:ms-72 px-6 py-4 flex flex-col gap-6">
+      <!-- heading -->
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-2xl font-medium text-primary-300">Chart JS</h2>
+         
+        <div class="flex items-center gap-4">
+          <!-- customizer -->
+          <div x-data="{ open: false }">
+            <!-- trigger Offcanvas -->
+            <button @click="open = true" class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-950 border border-primary-600 hover:bg-primary-300 hover:text-black focus:bg-primary-300 focus:text-black">
+              <i class="bi bi-gear-fill"></i>
+            </button>
+          
+            <!-- Offcanvas dialogs -->
+            <div x-show="open" :class="! open ? '' : 'show'" class="[&.show_.bgDialog]:opacity-80 [&.show_.bgDialog]:inset-0">
+          
+              <!-- background Offcanvas dialogs -->
+              <div @click="open = false" class="bgDialog fixed z-[60] opacity-0 -top-full bg-black"></div>
+          
+              <!-- side Offcanvas dialogs -->
+              <div x-show="open" style="display:none"
+                  x-transition:enter="transition-transform duration-[400ms]"
+                  x-transition:enter-start="ltr:translate-x-full rtl:-translate-x-full"
+                  x-transition:enter-end="translate-x-0"
+                  x-transition:leave="transition-transform duration-[400ms]"
+                  x-transition:leave-start="translate-x-0"
+                  x-transition:leave-end="ltr:translate-x-full rtl:-translate-x-full"
+                  @click.away="open = false" class="fixed top-0 bottom-0 end-0 w-5/6 sm:w-72 z-[70] bg-black border-y border-s border-primary-600 flex flex-col gap-2">
+                <div class="h-screen frame-corner">
+                  <div class="frame2"></div>
+                  <!-- header -->
+                  <div class="min-h-[56px] flex flex-row items-center gap-3 px-6 pt-6 pb-4 border-b border-primary-600">
+                    <h3 class="flex grow text-lg text-primary-300">Theme Customizer</h3>
+                    <button @click="open = false" class="flex items-center justify-center">
+                      <span class="pointer-events-none bi bi-x-lg"></span>
+                    </button>
+                  </div>
+            
+                  <!-- body -->
+                  <div class="relative flex flex-col gap-6 px-6 py-2 min-h-[86vh] overflow-hidden">
+                    <div class="flex flex-col gap-1.5">
+                      <h3>Theme Color</h3>
+                      <div class="relative flex flex-wrap items-center gap-2">
+                        <button data-color="default" title="default" class="inline-block p-3 bg-[#02fafc] [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="lime" title="lime" class="inline-block p-3 bg-[#84cc16] [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="red" title="red" class="inline-block p-3 bg-red-500 [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="yellow" title="yellow" class="inline-block p-3 bg-yellow-500 [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="green" title="green" class="inline-block p-3 bg-green-500 [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="blue" title="blue" class="inline-block p-3 bg-blue-500 [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="purple" title="purple" class="inline-block p-3 bg-purple-500 [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="indigo" title="indigo" class="inline-block p-3 bg-indigo-500 [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="pink" title="pink" class="inline-block p-3 bg-pink-500 [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                        <button data-color="sky" title="sky" class="inline-block p-3 bg-sky-500 [&.active]:border [&.active]:border-black hover:opacity-90 rounded-full cursor-pointer"></button>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                      <h3>Switch RTL</h3>
+                      <!-- switch -->
+                      <label class="relative w-12 h-[26px]">
+                        <input data-type="rtl" id="switch-rtl" type="checkbox" class="switch-checkbox relative inline-block w-12 h-[26px] transition-all duration-200 ease-in-out cursor-pointer appearance-none rounded-full border border-primary-600 bg-primary-900" checked>
+                        <div class="toggle-default absolute top-[3px] start-1 w-5 h-5 transition-all duration-200 ease-in-out transform bg-black rounded-full shadow-md"></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- user -->
+          <div x-data="{ dropdown: false }" class="relative">
+            <button @click="dropdown = ! dropdown"
+            class="w-10 h-10 flex items-center gap-2 justify-center rounded-full border border-primary-600">
+              <img src="../src/img/avatar/avatar1.jpg" alt="ari budin"
+              class="w-10 h-10 flex-none rounded-full bg-primary-950 pointer-events-none">
+            </button>
+
+            <!-- menus -->
+            <ul id="dropUser" x-show="dropdown" x-transition.duration.500ms :class="! dropdown ? '' : 'show'"
+            @click.outside="dropdown = false" class="[&.show]:!opacity-100 [&.show]:!visible opacity-0 invisible absolute top-[3.1rem] z-30 transition duration-400 ease-in-out start-auto end-0 min-w-[180px] inline-flex flex-col rounded-lg bg-primary-950 border border-primary-600 py-2">
+              <li class="relative">
+                <a href="../users/profile.html"
+                class="flex flex-row items-center gap-3 py-2 px-6 hover:text-primary-300 hover:bg-primary-900">
+                  <i class="bi bi-person-fill"></i>
+                  Profile
+                </a>
+              </li>
+              <li class="relative">
+                <a href="../users/setting.html"
+                class="flex flex-row items-center gap-3 py-2 px-6 hover:text-primary-300 hover:bg-primary-900">
+                  <i class="bi bi-gear-fill"></i>
+                  Settings
+                </a>
+              </li>
+              <li class="relative">
+                <a href="../docs/supports.html"
+                class="flex flex-row items-center gap-3 py-2 px-6 hover:text-primary-300 hover:bg-primary-900">
+                  <i class="bi bi-question-square-fill"></i>
+                  Help
+                </a>
+              </li>
+              <li class="relative">
+                <a href="../auth/logout.html"
+                class="flex flex-row items-center gap-3 py-2 px-6 hover:text-primary-300 hover:bg-primary-900">
+                  <i class="bi bi-box-arrow-right"></i>
+                  Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- main content -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Card -->
+        <div class="bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Chart Bar</h2>
+          </div>
+          <div class="relative p-6">
+            <canvas id="electricConsumptionChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Chart Line</h2>
+          </div>
+          <div class="relative p-6">
+            <canvas id="distanceTraveledChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Card -->
+        <div class="bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Horizontal Chart Bar</h2>
+          </div>
+          <div class="relative p-6">
+            <canvas id="threatsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Line Chart Area</h2>
+          </div>
+          <div class="relative p-6">
+            <canvas id="trainingHoursChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Card -->
+        <div class="bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Chart Bar Compare</h2>
+          </div>
+          <div class="relative p-6">
+            <canvas id="comparisonChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Chart Line Compare</h2>
+          </div>
+          <div class="relative p-6">
+            <canvas id="imagesVideosChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <!-- Card -->
+        <div class="md:grid-cols-2 xl:grid-cols-1 bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Radar Chart</h2>
+          </div>
+          <div class="relative p-6">
+            <canvas id="teamComparisonChart" class="mx-auto"></canvas>
+          </div>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Doughnut Chart</h2>
+          </div>
+          <div class="relative p-6">
+             <canvas id="revenueDoughnut"></canvas>
+          </div>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-black frame-corner overflow-hidden w-full">
+          <div class="frame-second absolute inset-0 border border-primary-600"></div>
+          <div class="relative flex items-center justify-between gap-2 py-3 px-6 border-b border-primary-600">
+            <h2 class="font-medium text-primary-300">Pie Chart</h2>
+          </div>
+          <div class="relative p-6">
+            <canvas id="roomUsageChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- footer -->
+    <footer class="lg:ms-72 px-6 pt-4 pb-6 text-center">
+      <p>Copyright <script>document.write(new Date().getFullYear())</script> | Conpany Name</p>
+    </footer>
+  </div>
+  
+  <!-- charts js -->
+  <script src="../vendors/chart.js/dist/chart.umd.js"></script>
+  <script>
+    const ctxc = document.getElementById('threatsChart').getContext('2d');
+    Chart.defaults.color  =   '#0a8f8e';
+    const threatsChart = new Chart(ctxc, {
+      type: 'bar',
+      data: {
+        labels: ['Malware', 'Phishing', 'Ransomware', 'SQL Injection', 'DDoS'],
+        datasets: [{
+          label: 'Number of Threats',
+          data: [300, 250, 200, 150, 100],
+          backgroundColor: [
+            'rgba(255, 0, 0, 0.2)',     // Malware (Red, 70% opacity)
+            'rgba(60, 179, 113, 0.2)',     // Phishing (green, 70% opacity)
+            'rgba(255, 255, 0, 0.2)',   // Ransomware (Yellow, 70% opacity)
+            'rgba(0, 128, 128, 0.2)',   // SQL Injection (Teal, 70% opacity)
+            'rgba(238, 130, 238, 0.2)'    // DDoS (Purple, 70% opacity)
+          ],
+          borderColor: [
+            'rgba(255, 0, 0, 1)',     // Malware (Red, 100% opacity)
+            'rgba(60, 179, 113, 1)',     // Phishing (green, 100% opacity)
+            'rgba(255, 255, 0, 1)',   // Ransomware (Yellow, 100% opacity)
+            'rgba(0, 128, 128, 1)',   // SQL Injection (Teal, 100% opacity)
+            'rgba(238, 130, 238, 1)'    // DDoS (Purple, 100% opacity)
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',  // Horizontal bar chart
+        plugins: {
+          legend: {
+            display: false  // Hide the legend
+          }
+        }
+      }
+    });
+
+    var ctx = document.getElementById('teamComparisonChart').getContext('2d');
+    var teamComparisonChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Offense', 'Defense', 'Strategy', 'Teamwork', 'Adaptability'],
+            datasets: [{
+                label: 'Main Team',
+                data: [90, 81, 56, 55, 40],
+                fill: true,
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                pointBackgroundColor: 'rgba(255, 159, 64, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(255, 159, 64, 1)'
+            }, {
+                label: 'Secondary Team',
+                data: [40, 19, 96, 27, 100],
+                fill: true,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(75, 192, 192, 1)'
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    angleLines: {
+                        color: '#0a8f8e' // Lines radiating from the center
+                    },
+                    grid: {
+                        color: '#0a8f8e', // Circular lines around each level
+                        lineWidth: 2 // Increase line width for better visibility
+                    },
+                    pointLabels: {
+                        fontSize: 14,
+                        color: '#0a8f8e' // Labels around the edge
+                    },
+                    ticks: {
+                        beginAtZero: false,
+                        backdropColor: 'rgba(0, 0, 0, 0)', // Make the background of the ticks transparent
+                        color: '#0a8f8e'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#0a8f8e'
+                    }
+                }
+            }
+        }
+    });
+
+    const ctxs = document.getElementById('revenueDoughnut').getContext('2d');
+    const data = {
+        labels: ['Sponsorship', 'Merchandise', 'Tournament'],
+        datasets: [{
+            data: [30000, 15000, 5000], // Data for each segment
+            backgroundColor: ['#4caf50', '#ff9800', '#f44336'], // Colors for each segment
+            hoverBackgroundColor: ['#66bb6a', '#ffa726', '#ef5350'], // Hover colors
+            borderColor: '#000', // Border color
+            borderWidth: 2
+        }]
+    };
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: { display:false },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        const value = tooltipItem.raw; // Get the value for the tooltip
+                        return 'Revenue' + ': $' + value.toLocaleString(); // Add dollar symbol and format number
+                    }
+                }
+            }
+        }
+    };
+    const doughnutChart = new Chart(ctxs, {
+        type: 'doughnut',
+        data: data,
+        options: options
+    });
+
+    const ctc = document.getElementById('trainingHoursChart').getContext('2d');
+    const trainingHoursChart = new Chart(ctc, {
+      type: 'line',
+      data: {
+        labels: [
+          'Jun 1', 'Jun 2', 'Jun 3', 'Jun 4', 'Jun 5', 'Jun 6', 'Jun 7',
+          'Jun 8', 'Jun 9', 'Jun 10', 'Jun 11', 'Jun 12', 'Jun 13', 'Jun 14'
+        ],
+        datasets: [{
+          label: 'Training Hours',
+          data: [2, 3, 4, 1.5, 3.5, 2, 4, 5, 6, 3, 4.5, 2, 3, 4],  // Sample data for 14 days
+          borderColor: 'rgba(75, 192, 192, 1)',  // Line color
+          backgroundColor: 'rgba(75, 192, 192, 0.08)',  // Fill color under the line
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4  // Smooth curve
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Hours of Training'
+            },
+            ticks: {
+              stepSize: 1  // Increment in hours
+            }
+          }
+        }
+      }
+    });
+
+    const ctxq = document.getElementById('distanceTraveledChart').getContext('2d');
+    const distanceTraveledChart = new Chart(ctxq, {
+      type: 'line',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+        datasets: [{
+          label: 'Distance Traveled (km)',
+          data: [500, 750, 800, 600, 850, 900],
+          fill: false,
+          borderColor: '#02fafc',
+          tension: 0.1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return value + ' Km';  // Add 'km' after the number
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false,
+          }
+        }
+      }
+    });
+
+    const cty = document.getElementById('electricConsumptionChart').getContext('2d');
+    const electricConsumptionChart = new Chart(cty, {
+      type: 'bar',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+        datasets: [{
+          label: 'Electric Consumption (kWh)',
+          data: [120, 150, 130, 170, 160, 180],
+          backgroundColor: [
+            '#02fafc'
+            ],
+          borderColor: [
+            '#0a8f8e'
+            ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return value + ' kWh';  // Add 'kWh' after the number
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false,
+          }
+        }
+      }
+    });
+
+    var ctxd = document.getElementById('roomUsageChart').getContext('2d');
+    new Chart(ctxd, {
+      type: 'pie',
+      data: {
+        labels: ['Living Room', 'Bedroom', 'Kitchen', 'Bathroom', 'Garage'],
+        datasets: [{
+          data: [35, 25, 20, 10, 10],
+          backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#46e8b5'],
+          borderColor: '#000000',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(tooltipItem) {
+                return tooltipItem.label + ': ' + tooltipItem.raw + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    var ctxas = document.getElementById('comparisonChart').getContext('2d');
+    var comparisonChart = new Chart(ctxas, {
+      type: 'bar',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [
+          {
+            label: 'New Users',
+            data: [300, 400, 250, 250], // Example data for New Users
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Churn Rate',
+            data: [10, 20, 15, 30], // Example data for Churn Rate in percentage
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        scales: {
+          x: {
+            stacked: true
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    const ctxv = document.getElementById('imagesVideosChart').getContext('2d');
+    const imagesVideosChart = new Chart(ctxv, {
+      type: 'line',
+      data: {
+        labels: ['Jun 1', 'Jun 2', 'Jun 3', 'Jun 4', 'Jun 5', 'Jun 6', 'Jun 7', 'Jun 8', 'Jun 9', 'Jun 10', 'Jun 11', 'Jun 12', 'Jun 13', 'Jun 14'],
+        datasets: [
+          {
+            label: 'Images Generated',
+            data: [150, 200, 300, 250, 400, 350, 450, 300, 500, 550, 600, 700, 800, 850],
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            fill: true,
+            tension: 0.1,
+          },
+          {
+            label: 'Videos Generated',
+            data: [50, 80, 120, 100, 150, 130, 170, 140, 180, 210, 250, 270, 300, 350],
+            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            fill: true,
+            tension: 0.1,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  </script>
+
+  <!-- theme -->
+  <script src="../src/js/script.js"></script>
+  <script src="../src/js/customizer.js"></script>
+
+  <!-- intersect -->
+  <script src="../vendors/@alpinejs/intersect/dist/cdn.min.js"></script>
+  <!--start::Global javascript (used in all pages)-->
+  <script src="../vendors/alpinejs/dist/cdn.min.js"></script><!-- core js -->
+</body>
+</html>

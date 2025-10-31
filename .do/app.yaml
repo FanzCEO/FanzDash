@@ -1,0 +1,122 @@
+name: fanzdash
+region: nyc
+
+services:
+  # Main Web Service (Full-Stack Node.js App)
+  - name: web
+    github:
+      repo: FanzCEO/FanzDash
+      branch: main
+      deploy_on_push: true
+
+    # Build configuration
+    build_command: npm install && npm run build
+    run_command: npm start
+
+    # Environment
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs  # $5/month
+
+    # HTTP configuration
+    http_port: 3000
+
+    # Health check
+    health_check:
+      http_path: /healthz
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+    # Environment Variables
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: RUN_TIME
+
+      - key: PORT
+        value: "3000"
+        scope: RUN_TIME
+
+      # Supabase Configuration (Set these in DO dashboard)
+      - key: SUPABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: SUPABASE_ANON_KEY
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        type: SECRET
+
+      # Optional: Payment integrations
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: STRIPE_WEBHOOK_SECRET
+        scope: RUN_TIME
+        type: SECRET
+
+      # Optional: Email service
+      - key: SENDGRID_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+
+    # Routes
+    routes:
+      - path: /
+
+    # Source directory
+    source_dir: /
+
+# Optional: Static site component (if you want to serve frontend separately)
+# static_sites:
+#   - name: frontend
+#     github:
+#       repo: FanzCEO/FanzDash
+#       branch: main
+#       deploy_on_push: true
+#     build_command: npm run build
+#     output_dir: /dist/public
+#     routes:
+#       - path: /
+
+# Optional: Background workers
+# workers:
+#   - name: analytics-worker
+#     github:
+#       repo: FanzCEO/FanzDash
+#       branch: main
+#     build_command: npm install
+#     run_command: node dist/workers/analytics.js
+#     instance_count: 1
+#     instance_size_slug: basic-xxs
+#     envs:
+#       - key: NODE_ENV
+#         value: production
+
+# Optional: Scheduled jobs
+# jobs:
+#   - name: daily-analytics
+#     github:
+#       repo: FanzCEO/FanzDash
+#       branch: main
+#     build_command: npm install
+#     run_command: node dist/jobs/analytics.js
+#     schedule: "0 0 * * *"  # Daily at midnight
+#     envs:
+#       - key: NODE_ENV
+#         value: production

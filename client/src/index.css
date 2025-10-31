@@ -127,11 +127,35 @@
     background: hsl(0 0% 0%) !important;
   }
 
-  /* Ensure all page containers have black background */
+  /* Text wrapping and overflow prevention */
+  * {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Specific handling for common text containers */
+  p, span, div, h1, h2, h3, h4, h5, h6, li, td, th {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  /* Prevent text overflow in flex and grid containers */
+  .flex, .grid {
+    min-width: 0;
+  }
+
+  /* Apply dark background to main containers only */
+  body,
   .min-h-screen,
-  .cyber-bg,
-  [class*="bg-"] {
-    background: hsl(0 0% 0%) !important;
+  .cyber-bg {
+    background: hsl(var(--background)) !important;
+  }
+  
+  /* Ensure root elements use dark theme */
+  #root {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 
   /* Cyberpunk gradient backgrounds */

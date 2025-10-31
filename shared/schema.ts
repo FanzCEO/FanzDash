@@ -3090,7 +3090,7 @@ export const tenants = pgTable("tenants", {
     .default(sql`gen_random_uuid()`),
   slug: varchar("slug").notNull().unique(), // e.g., 'boyfanz', 'fanzcommerce'
   name: varchar("name").notNull(), // e.g., 'BoyFanz', 'FanzCommerce'
-  ssoDomain: varchar("sso_domain"), // e.g., 'boyfanz.com'
+  ssoDomain: varchar("sso_domain"), // e.g., 'boyfanz.myfanz.network'
   status: varchar("status").notNull().default("active"), // 'active', 'suspended', 'archived'
   brandingConfig: jsonb("branding_config").default("{}"), // logos, colors, etc.
   billingConfig: jsonb("billing_config").default("{}"),
@@ -3425,6 +3425,268 @@ export type Webhook = typeof webhooks.$inferSelect;
 export type InsertWebhook = typeof webhooks.$inferInsert;
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type InsertApiKey = typeof apiKeys.$inferInsert;
+
+// ===== ADVANCED AI/ML & SECURITY FEATURES =====
+
+// 🧠 BEHAVIORAL BIOMETRICS ENGINE
+export const biometricProfiles = pgTable("biometric_profiles", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  keystrokePattern: jsonb("keystroke_pattern").$type<number[]>(),
+  mouseMovementSignature: text("mouse_movement_signature"),
+  scrollBehavior: jsonb("scroll_behavior"),
+  sessionFingerprint: varchar("session_fingerprint"),
+  deviceDNA: jsonb("device_dna"),
+  biometricHash: varchar("biometric_hash"),
+  confidence: decimal("confidence", { precision: 3, scale: 2 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const behavioralSessions = pgTable("behavioral_sessions", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  sessionId: varchar("session_id").notNull(),
+  biometricScore: decimal("biometric_score", { precision: 3, scale: 2 }),
+  anomalyFlags: jsonb("anomaly_flags").$type<string[]>(),
+  riskAssessment: varchar("risk_assessment").default("low"), // low, medium, high, critical
+  deviceFingerprint: varchar("device_fingerprint"),
+  ipAddress: varchar("ip_address"),
+  geolocation: jsonb("geolocation"),
+  userAgent: text("user_agent"),
+  startedAt: timestamp("started_at").defaultNow(),
+  endedAt: timestamp("ended_at"),
+});
+
+// 🔍 ADVANCED DEEP FAKE DETECTION
+export const deepFakeAnalysis = pgTable("deepfake_analysis", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id")
+    .references(() => contentItems.id)
+    .notNull(),
+  isDeepFake: boolean("is_deepfake").notNull(),
+  confidence: decimal("confidence", { precision: 4, scale: 3 }),
+  manipulationAreas: jsonb("manipulation_areas"),
+  detectedTechniques: jsonb("detected_techniques").$type<string[]>(),
+  modelVersion: varchar("model_version"),
+  processingTime: integer("processing_time"), // milliseconds
+  faceSwapDetected: boolean("face_swap_detected").default(false),
+  voiceSynthDetected: boolean("voice_synth_detected").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// 🛡️ ZERO TRUST ARCHITECTURE
+export const trustScores = pgTable("trust_scores", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  deviceId: varchar("device_id").notNull(),
+  trustLevel: decimal("trust_level", { precision: 4, scale: 3 }),
+  riskFactors: jsonb("risk_factors").$type<string[]>(),
+  lastVerification: timestamp("last_verification"),
+  continuousMonitoring: boolean("continuous_monitoring").default(true),
+  microSegmentId: varchar("micro_segment_id"),
+  policyViolations: integer("policy_violations").default(0),
+  adaptiveControls: jsonb("adaptive_controls"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const zeroTrustPolicies = pgTable("zero_trust_policies", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  conditions: jsonb("conditions").notNull(),
+  actions: jsonb("actions").notNull(),
+  priority: integer("priority").default(0),
+  isActive: boolean("is_active").default(true),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// 📊 GRAPH DATABASE INTELLIGENCE
+export const userRelationships = pgTable("user_relationships", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  sourceUserId: varchar("source_user_id")
+    .references(() => users.id)
+    .notNull(),
+  targetUserId: varchar("target_user_id")
+    .references(() => users.id)
+    .notNull(),
+  relationshipType: varchar("relationship_type").notNull(), // follower, friend, blocked, suspicious
+  strength: decimal("strength", { precision: 3, scale: 2 }),
+  interactionCount: integer("interaction_count").default(0),
+  riskFlags: jsonb("risk_flags").$type<string[]>(),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastInteraction: timestamp("last_interaction"),
+});
+
+export const networkAnalysis = pgTable("network_analysis", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  analysisType: varchar("analysis_type").notNull(), // coordinated_behavior, influence_campaign, viral_prediction
+  networkId: varchar("network_id"),
+  participants: jsonb("participants").$type<string[]>(),
+  centralityScores: jsonb("centrality_scores"),
+  communityDetection: jsonb("community_detection"),
+  anomalyScore: decimal("anomaly_score", { precision: 4, scale: 3 }),
+  findings: jsonb("findings"),
+  actionRequired: boolean("action_required").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// 🎤 VOICE-CONTROLLED INTERFACE
+export const voiceCommands = pgTable("voice_commands", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  command: text("command").notNull(),
+  intent: varchar("intent"),
+  entities: jsonb("entities"),
+  confidence: decimal("confidence", { precision: 3, scale: 2 }),
+  executed: boolean("executed").default(false),
+  result: jsonb("result"),
+  processingTime: integer("processing_time"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// 🔗 ADVANCED WEBHOOK INTELLIGENCE
+export const webhookAnalytics = pgTable("webhook_analytics", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  webhookId: varchar("webhook_id")
+    .references(() => webhooks.id)
+    .notNull(),
+  deliveryAttempts: integer("delivery_attempts").default(0),
+  successfulDeliveries: integer("successful_deliveries").default(0),
+  averageResponseTime: integer("average_response_time"),
+  circuitBreakerState: varchar("circuit_breaker_state").default("closed"), // closed, open, half-open
+  adaptiveRateLimit: integer("adaptive_rate_limit").default(100),
+  lastFailure: timestamp("last_failure"),
+  errorPatterns: jsonb("error_patterns"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// 🔐 QUANTUM-RESISTANT CRYPTOGRAPHY
+export const quantumSecrets = pgTable("quantum_secrets", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  keyId: varchar("key_id").notNull().unique(),
+  algorithm: varchar("algorithm").notNull(), // kyber, dilithium, sphincs
+  publicKey: text("public_key"),
+  encryptedPrivateKey: text("encrypted_private_key"),
+  keyUsage: varchar("key_usage").notNull(), // encryption, signing, key_exchange
+  rotationSchedule: timestamp("rotation_schedule"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});
+
+// 🌐 DIGITAL TWIN PLATFORM
+export const digitalTwins = pgTable("digital_twins", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  entityType: varchar("entity_type").notNull(), // user, content, platform, system
+  entityId: varchar("entity_id").notNull(),
+  twinData: jsonb("twin_data").notNull(),
+  behaviorModel: jsonb("behavior_model"),
+  predictionAccuracy: decimal("prediction_accuracy", { precision: 4, scale: 3 }),
+  lastSimulation: timestamp("last_simulation"),
+  simulationResults: jsonb("simulation_results"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// 🔎 ADVANCED THREAT HUNTING
+export const threatHunting = pgTable("threat_hunting", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  huntName: varchar("hunt_name").notNull(),
+  hypothesis: text("hypothesis"),
+  query: text("query").notNull(),
+  dataSource: varchar("data_source").notNull(),
+  findings: jsonb("findings"),
+  threatLevel: varchar("threat_level").default("low"), // low, medium, high, critical
+  iocFound: boolean("ioc_found").default(false),
+  actionTaken: text("action_taken"),
+  hunterId: varchar("hunter_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+// 🧪 ML INFERENCE PIPELINE
+export const mlInference = pgTable("ml_inference", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  modelId: varchar("model_id").notNull(),
+  modelVersion: varchar("model_version").notNull(),
+  inputData: jsonb("input_data").notNull(),
+  prediction: jsonb("prediction"),
+  confidence: decimal("confidence", { precision: 4, scale: 3 }),
+  latency: integer("latency"), // microseconds
+  batchId: varchar("batch_id"),
+  nodeId: varchar("node_id"),
+  resourceUsage: jsonb("resource_usage"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Advanced Types
+export type BiometricProfile = typeof biometricProfiles.$inferSelect;
+export type InsertBiometricProfile = typeof biometricProfiles.$inferInsert;
+export type BehavioralSession = typeof behavioralSessions.$inferSelect;
+export type InsertBehavioralSession = typeof behavioralSessions.$inferInsert;
+export type DeepFakeAnalysis = typeof deepFakeAnalysis.$inferSelect;
+export type InsertDeepFakeAnalysis = typeof deepFakeAnalysis.$inferInsert;
+export type TrustScore = typeof trustScores.$inferSelect;
+export type InsertTrustScore = typeof trustScores.$inferInsert;
+export type ZeroTrustPolicy = typeof zeroTrustPolicies.$inferSelect;
+export type InsertZeroTrustPolicy = typeof zeroTrustPolicies.$inferInsert;
+export type UserRelationship = typeof userRelationships.$inferSelect;
+export type InsertUserRelationship = typeof userRelationships.$inferInsert;
+export type NetworkAnalysis = typeof networkAnalysis.$inferSelect;
+export type InsertNetworkAnalysis = typeof networkAnalysis.$inferInsert;
+export type VoiceCommand = typeof voiceCommands.$inferSelect;
+export type InsertVoiceCommand = typeof voiceCommands.$inferInsert;
+export type WebhookAnalytics = typeof webhookAnalytics.$inferSelect;
+export type InsertWebhookAnalytics = typeof webhookAnalytics.$inferInsert;
+export type QuantumSecret = typeof quantumSecrets.$inferSelect;
+export type InsertQuantumSecret = typeof quantumSecrets.$inferInsert;
+export type DigitalTwin = typeof digitalTwins.$inferSelect;
+export type InsertDigitalTwin = typeof digitalTwins.$inferInsert;
+export type ThreatHunting = typeof threatHunting.$inferSelect;
+export type InsertThreatHunting = typeof threatHunting.$inferInsert;
+export type MlInference = typeof mlInference.$inferSelect;
+export type InsertMlInference = typeof mlInference.$inferInsert;
 
 // ===== EXISTING 2257 COMPLIANCE TYPES =====
 

@@ -18,7 +18,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
-  Broadcast,
+  Radio,
   Zap,
   Eye,
   DollarSign,
@@ -156,7 +156,7 @@ export function LiveStreamModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
-            <Broadcast className="h-5 w-5 text-red-500" />
+            <Radio className="h-5 w-5 text-red-500" />
             <span>Create Live Stream</span>
           </DialogTitle>
         </DialogHeader>
@@ -333,7 +333,7 @@ export function LiveStreamModal({
                 </>
               ) : (
                 <>
-                  <Broadcast className="h-4 w-4 mr-2" />
+                  <Radio className="h-4 w-4 mr-2" />
                   Go Live
                 </>
               )}

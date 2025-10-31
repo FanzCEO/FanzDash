@@ -1,197 +1,121 @@
-# 🚀 FanzDash Enterprise Platform
-## The Complete Multi-Platform Management System for Fanz™ Unlimited Network LLC
+# FanzDash - FANZ Ecosystem
 
-> **Version:** 2.0.0 Enterprise Edition  
-> **Build Status:** Production Ready ✅  
-> **Security Level:** Military-Grade 🔒  
-> **Scale:** 20+ Million Users Optimized 📈
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Security](https://img.shields.io/badge/Security-Audited-green.svg)](https://github.com/FanzCEO/FanzDash/security)
+[![WCAG 2.2 AA](https://img.shields.io/badge/Accessibility-WCAG%202.2%20AA-green.svg)](https://www.w3.org/WAI/WCAG22/quickref/)
 
----
+> **Creator-First. Privacy-First. Innovation-First.**  
+> Part of the FANZ creator economy ecosystem.
 
-## 📖 Table of Contents
+## 🌟 About
 
-- [🌟 Platform Overview](#-platform-overview)
-- [🎯 Key Features](#-key-features)
-- [🏗️ Architecture](#️-architecture)
-- [⚡ Quick Start](#-quick-start)
-- [📚 Documentation Library](#-documentation-library)
-- [🔧 Installation](#-installation)
-- [🚀 Deployment](#-deployment)
-- [🛡️ Security & Compliance](#️-security--compliance)
-- [🔗 Platform Ecosystem](#-platform-ecosystem)
-- [📊 Performance Specifications](#-performance-specifications)
-- [🆘 Support & Troubleshooting](#-support--troubleshooting)
-- [🤝 Contributing](#-contributing)
-- [📄 Legal & Licensing](#-legal--licensing)
+FanzDash is a core component of the FANZ ecosystem, built with our creator-first principles:
 
----
+- **🎯 Creator Autonomy** - Full control over content and earnings
+- **💰 Maximum Earnings** - Industry-leading creator payouts  
+- **🛡️ Privacy & Safety** - Enterprise-grade security and protection
+- **⚡ State-of-Art Tech** - Modern, accessible, and performant
 
-## 🌟 Platform Overview
+## 🚀 Quick Start
 
-**FanzDash** is a comprehensive enterprise-grade multi-platform management system designed to handle 20+ million users across all Fanz™ Unlimited Network LLC platforms through one unified control panel. Born from the need to manage a complex ecosystem of adult content platforms with military-grade security and compliance, FanzDash has evolved into the most sophisticated content management and moderation system in the industry.
+### Prerequisites
+- **Node.js** 20+ (LTS recommended)
+- **pnpm** 9+ (package manager)
+- **Docker** 24+ (containerization)
 
-### 🎭 The Fanz™ Unlimited Network Universe
+### Installation
 
-FanzDash serves as the **Central Nervous System** for the entire Fanz™ ecosystem, including:
+```bash
+# Clone repository
+git clone https://github.com/FanzCEO/FanzDash.git
+cd FanzDash
 
-#### 📱 **Primary Content Platforms**
-- **BoyFanz.com** - Premium male content creators
-- **GirlFanz.com** - Female content creators 
-- **DaddiesFanz.com** - Mature male content
-- **TransFanz.com** - Transgender content creators
-- **EbonyFanz.com** - African-American content
-- **PupFanz.com** - Pet play and kink content
-- **DLBroz.com** - Down-low masculine content
-- **SouthernFanz.com** - Southern US content creators
-- **KinkFanz.com** - BDSM and fetish content
-- **FanzUnlimited.com** - Premium unlimited access
-- **AllMyFanz.com** - Multi-platform aggregator
-- **BoysRebellion.com** - Young adult male content
-- **DaddiesToyBoy.com** - Age-gap content
-- **DLRedneck.com** - Rural masculine content
-- **RecoveryFanz.com** - Sobriety-focused content
-- **WildRedneckRebel.com** - Rebellious rural content
+# Install dependencies
+pnpm install
 
-#### 🌐 **Auxiliary Services**
-- **Fanz.Ceo** - Executive platform
-- **Fanz.Community** - Social networking
-- **Fanz.Fans** - Fan interaction hub
-- **Fanz.Fan** - Individual fan profiles
-- **Fanz.Foundation** - Legal and compliance center
-- **Fanz.Solutions** - Technical solutions
-- **Fanz.ing** - Dynamic content system
-- **Fanz.University** - Education platform
-- **Fanz.Follow** - Social following system
-- **Fanz.Toys** - Adult toy marketplace
-- **FMD.Solutions** - Technical infrastructure
+# Set up environment
+cp env/.env.example env/.env.local
 
----
+# Start development
+pnpm dev
+```
 
-## 🎯 Key Features
+### Docker Development
 
-### 🧠 **AI-Powered Intelligence Engine**
-- **Real ChatGPT-4o/GPT-5 Integration** - Authentic OpenAI API analysis
-- **Advanced Computer Vision** - LAION Safety CLIP models
-- **Audio Intelligence** - Whisper API transcription and analysis
-- **Predictive Analytics** - Machine learning risk forecasting
-- **Multi-Signal Moderation** - Hybrid AI + human workflows
+```bash
+# Start services
+docker-compose up -d
 
-### 🛡️ **Enterprise Security & Compliance**
-- **Legal Library Integration** - Complete Fanz Foundation framework
-- **2257 Compliance** - Automated record-keeping
-- **GDPR/CCPA Compliance** - European and California privacy laws
-- **DMCA Enforcement** - Automated copyright protection
-- **Military-Grade Encryption** - End-to-end data protection
+# View logs
+docker-compose logs -f
 
-### 📊 **Real-Time Monitoring & Analytics**
-- **Live Stream Surveillance** - Real-time content monitoring
-- **Risk Assessment Engine** - Predictive threat detection
-- **Crisis Management** - Emergency response protocols
-- **Cross-Platform Analytics** - Unified insights across all platforms
-- **Performance Dashboards** - Real-time operational metrics
-
-### 🎨 **Premium Cyberpunk UI**
-- **Dark Mode Excellence** - Optimized for long operational hours
-- **Responsive Design** - Mobile, tablet, and desktop optimized
-- **Accessibility Compliant** - WCAG 2.1 AA standards
-- **Real-Time Updates** - WebSocket-powered live data
-- **Role-Based Interface** - Customized views per user level
-
----
+# Stop services  
+docker-compose down
+```
 
 ## 🏗️ Architecture
 
-### 🎯 **Technology Stack**
+This service follows FANZ ecosystem standards:
 
-#### **Frontend**
-```typescript
-React 18.3.1 + TypeScript 5.6.3
-Vite 7.1.4 (Lightning-fast build system)
-Tailwind CSS 3.4.17 (Utility-first styling)
-Radix UI (Accessible component primitives)
-TanStack Query 5.60.5 (Server state management)
-Wouter 3.3.5 (Lightweight routing)
-Framer Motion 11.13.1 (Smooth animations)
-```
+- **Microservices Architecture** - Scalable, independent services
+- **API-First Design** - RESTful APIs with OpenAPI documentation
+- **Event-Driven Communication** - Real-time updates via event streams
+- **Zero-Trust Security** - Every request authenticated and authorized
+- **Creator-First Features** - All functionality serves creator needs
 
-#### **Backend**
-```typescript
-Node.js + Express 4.21.2
-TypeScript 5.6.3 (Type safety)
-Drizzle ORM 0.39.1 (Type-safe database)
-PostgreSQL (Neon serverless)
-JWT Authentication (Secure tokens)
-Argon2 (Password hashing)
-WebSockets (Real-time communication)
-```
+## 💻 Development
 
-#### **AI & Machine Learning**
-```typescript
-OpenAI GPT-4o/GPT-5 (Content analysis)
-OpenAI Whisper (Audio transcription)
-Google Perspective API (Toxicity detection)
-LAION Safety CLIP (Image classification)
-Custom ML Models (Risk scoring)
-```
-
-#### **Infrastructure**
-```typescript
-PostgreSQL (Primary database)
-Google Cloud Storage (File storage)
-AWS S3 (Backup storage)
-Neon Database (Serverless PostgreSQL)
-Replit Deployment (Production hosting)
-```
-
-### 🗄️ **Database Architecture**
-
-**Optimized for 20+ Million Users**
-- **151 Strategic Performance Indexes** - Optimized for enterprise scale
-- **77 Interconnected Tables** - Complete data relationship mapping
-- **Foreign Key Integrity** - Bulletproof data consistency
-- **Real-Time Replication** - High availability architecture
-- **Automated Backup Systems** - Disaster recovery ready
-
----
-
-## ⚡ Quick Start
-
-### 🚀 **5-Minute Launch**
+### Available Scripts
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/fanz-unlimited/fanzdash-enterprise.git
-cd fanzdash-enterprise
+# Development
+pnpm dev                    # Start development server
+pnpm build                  # Build for production
+pnpm start                  # Start production server
 
-# 2. Install dependencies (use legacy peer deps for Vite compatibility)
-npm install --legacy-peer-deps
+# Quality Assurance
+pnpm lint                   # Lint code
+pnpm typecheck              # TypeScript checking
+pnpm test                   # Run tests
+pnpm test:coverage          # Test with coverage
 
-# 3. Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
+# Database
+pnpm db:migrate             # Run migrations
+pnpm db:seed                # Seed development data
 
-# 4. Initialize the database
-npm run db:push
-
-# 5. Start the development server
-npm run dev
+# Security
+pnpm audit:security         # Security audit
+pnpm audit:dependencies     # Dependency audit
 ```
 
-**🎉 Your FanzDash instance will be running at `http://localhost:5000`**
+### Code Quality Standards
 
-### 🔑 **Default Credentials**
-```
-Username: admin@fanz.foundation
-Password: FanzDash2025!
-```
+- **TypeScript** - All new code must be TypeScript
+- **85%+ Test Coverage** - Comprehensive test coverage required
+- **WCAG 2.2 AA** - Full accessibility compliance
+- **Zero Secrets** - No hardcoded secrets or credentials
+- **Creator-First** - All changes must benefit creators
 
-**⚠️ CRITICAL: Change default credentials immediately in production!**
+## 🔐 Security
 
----
+Security is paramount in the FANZ ecosystem:
 
-## 📚 Documentation Library
+- **TLS 1.3 Encryption** - All data encrypted in transit
+- **AES-256 Encryption** - Data encrypted at rest
+- **Zero-Trust Architecture** - No default network trust
+- **Regular Security Audits** - Continuous vulnerability assessment
 
+<<<<<<< HEAD
 This README is your gateway to our comprehensive documentation ecosystem. Each book is a complete novel-length guide covering specific aspects of the FanzDash platform:
+
+### 🚀 **[Developer Setup Guide](./docs/DEVELOPER_SETUP_GUIDE.md)**
+*Complete Environment Configuration for Enterprise Development*
+- SSH key setup and Git authentication
+- Development environment configuration
+- Database setup and migrations
+- Testing and debugging procedures
+- Code quality and workflow guidelines
+- Troubleshooting common development issues
 
 ### 📗 **[Administrator's Guide](./docs/ADMIN_GUIDE.md)**
 *The Complete Platform Management Encyclopedia*
@@ -587,112 +511,42 @@ npm run security:update
 5. **Emergency Response** - Use emergency contacts for critical issues
 
 ---
+See [SECURITY.md](SECURITY.md) for detailed security information.
 
 ## 🤝 Contributing
 
-### 👥 **Development Team**
+We welcome contributions that align with our creator-first mission!
 
-FanzDash is developed and maintained by the Fanz™ Unlimited Network LLC engineering team with contributions from security experts, legal advisors, and industry professionals.
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-creator-tool`
+3. **Commit** your changes: `git commit -m 'feat: add creator dashboard'`
+4. **Push** to the branch: `git push origin feature/amazing-creator-tool`
+5. **Submit** a pull request
 
-#### **Core Team**
-- **Platform Architecture** - Senior full-stack engineers
-- **AI/ML Engineering** - Machine learning specialists
-- **Security Engineering** - Cybersecurity experts
-- **Legal Compliance** - Legal technology specialists
-- **DevOps Engineering** - Infrastructure and deployment experts
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
 
-#### **Contributing Guidelines**
+## 📜 License
 
-We welcome contributions from qualified developers. Please review our contributing guidelines:
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
 
-1. **Security Clearance** - Background check required for core contributors
-2. **Legal Agreement** - Sign contributor license agreement
-3. **Code Standards** - Follow our TypeScript and React standards
-4. **Testing Requirements** - 90%+ test coverage required
-5. **Security Review** - All code undergoes security audit
+## 🔗 FANZ Ecosystem
 
-### 🔐 **Security Considerations**
+This repository is part of the larger FANZ ecosystem:
 
-Due to the sensitive nature of our platform and legal requirements:
+- **[FANZ Unified Ecosystem](https://github.com/FanzCEO/FANZ-Unified-Ecosystem)** - Main ecosystem repository
+- **[BoyFanz](https://boyfanz.com)** - Male creator platform
+- **[GirlFanz](https://girlfanz.com)** - Female creator platform  
+- **[PupFanz](https://pupfanz.com)** - Pet/furry creator community
+- **[TabooFanz](https://taboofanz.com)** - Adult content platform
+- **[FanzDash](https://github.com/FanzCEO/FanzDash)** - Unified admin dashboard
 
-- **Limited Open Source** - Core security components remain proprietary
-- **Vetted Contributors** - Background checks for sensitive areas
-- **Legal Compliance** - All contributions must meet legal standards
-- **Security Audits** - Regular third-party security assessments
+## 📞 Support
 
----
-
-## 📄 Legal & Licensing
-
-### ⚖️ **License Information**
-
-**FanzDash Enterprise Platform**
-Copyright © 2025 Fanz™ Unlimited Network LLC
-
-This software is licensed under a proprietary enterprise license. Commercial use requires explicit permission from Fanz™ Unlimited Network LLC.
-
-#### **Open Source Components**
-FanzDash incorporates several open-source libraries and frameworks. See `LICENSES.md` for complete attribution.
-
-#### **Legal Compliance**
-This platform complies with:
-- United States Federal Law
-- Wyoming State Law (Primary jurisdiction)
-- European Union GDPR
-- California Consumer Privacy Act (CCPA)
-- International copyright treaties
-
-### 🛡️ **Warranty & Liability**
-
-**Enterprise Support:** This software includes enterprise-grade support and warranty coverage for licensed users.
-
-**Security Guarantee:** We guarantee 99.99% uptime and provide security incident response for enterprise customers.
-
-**Legal Protection:** Licensed users receive legal protection and compliance assistance from our legal team.
+- 💬 **Discord**: [FANZ Creator Community](https://discord.gg/fanz-creators)
+- 📧 **Email**: support@fanz.network
+- 📖 **Docs**: [docs.fanz.network](https://docs.fanz.network)
+- 🔒 **Security**: security@fanz.network
 
 ---
 
-## 📈 **Roadmap & Future Development**
-
-### 🚀 **Version 2.1 (Q2 2025)**
-- Enhanced AI capabilities with GPT-5 integration
-- Advanced blockchain compliance features
-- Real-time global compliance monitoring
-- Enhanced mobile applications
-
-### 🌟 **Version 3.0 (Q4 2025)**
-- Quantum-resistant cryptography
-- Advanced biometric authentication
-- AI-powered predictive compliance
-- Global expansion framework
-
----
-
-## 📧 **Contact Information**
-
-**Fanz™ Unlimited Network LLC**
-📍 **Headquarters:** Sheridan, Wyoming, USA
-🌐 **Website:** https://fanz.foundation
-📧 **General Inquiries:** info@fanz.foundation
-📧 **Technical Support:** support@fanz.foundation
-📧 **Legal & Compliance:** legal@fanz.foundation
-📧 **Business Development:** business@fanz.foundation
-
-**Professional Services:**
-- Enterprise Implementation
-- Custom Development
-- Legal Compliance Consulting
-- Security Auditing
-- Training and Certification
-
----
-
-*This README serves as your gateway to the FanzDash ecosystem. For detailed technical documentation, please refer to the specialized guides in our documentation library.*
-
-**Last Updated:** September 4, 2025  
-**Document Version:** 2.0.0  
-**Review Date:** Every 30 days  
-
----
-
-© 2025 Fanz™ Unlimited Network LLC. All rights reserved. No part of this documentation may be reproduced, distributed, or transmitted without prior written permission.
+**Built with ❤️ by the FANZ team for creators worldwide** 🌍

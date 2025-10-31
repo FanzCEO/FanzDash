@@ -1,0 +1,430 @@
+# FANZ Unified Ecosystem - Production Deployment Configuration
+# Multi-region adult-friendly hosting with CDN integration
+
+version: "3.8"
+
+# Global Configuration
+global:
+  project_name: "fanz-unified-ecosystem"
+  environment: "production"
+  version: "1.0.0"
+  domains:
+    primary: "fanzunlimited.com"
+    dashboard: "dash.fanzunlimited.com"
+    api: "api.fanzunlimited.com"
+    cdn: "cdn.fanzunlimited.com"
+
+# Infrastructure Providers (Adult-Content-Friendly)
+infrastructure:
+  primary_regions:
+    - name: "us-east"
+      provider: "digitalocean"
+      datacenter: "nyc3"
+      adult_content: true
+      
+    - name: "eu-west" 
+      provider: "ovhcloud"
+      datacenter: "gra"
+      adult_content: true
+      
+    - name: "asia-pacific"
+      provider: "vultr" 
+      datacenter: "sgp"
+      adult_content: true
+
+  backup_regions:
+    - name: "us-west"
+      provider: "linode"
+      datacenter: "fremont"
+      adult_content: true
+      
+    - name: "eu-central"
+      provider: "scaleway"
+      datacenter: "par1" 
+      adult_content: true
+
+# CDN Configuration (Adult-Friendly)
+cdn:
+  primary:
+    provider: "bunnycdn"
+    zones:
+      - name: "fanz-media"
+        type: "media"
+        adult_content: true
+        edge_locations: ["global"]
+      - name: "fanz-static"
+        type: "static"
+        adult_content: true
+        edge_locations: ["us", "eu", "asia"]
+        
+  secondary:
+    provider: "cloudflare" 
+    plan: "pro"
+    adult_content_policy: "allowed"
+    edge_locations: ["global"]
+    
+  storage:
+    provider: "bunny_storage"
+    regions: ["ny", "la", "sg", "syd"]
+    replication: true
+    adult_content: true
+
+# Application Services
+services:
+  # FanzDash - Main Dashboard
+  fanz_dash:
+    image: "fanz/dashboard:latest"
+    replicas: 3
+    resources:
+      cpu: "2"
+      memory: "4Gi"
+      storage: "50Gi"
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: "production"
+      DATABASE_URL: "${DATABASE_URL}"
+      REDIS_URL: "${REDIS_URL}"
+      
+  # Payment Processing Service
+  payment_processor:
+    image: "fanz/payments:latest"
+    replicas: 5
+    resources:
+      cpu: "4" 
+      memory: "8Gi"
+    environment:
+      HMS_API_KEY: "${HMS_API_KEY}"
+      CCBILL_API_KEY: "${CCBILL_API_KEY}"
+      SEGPAY_API_KEY: "${SEGPAY_API_KEY}"
+      EPOCH_API_KEY: "${EPOCH_API_KEY}"
+      
+  # SSO Identity Service
+  sso_service:
+    image: "fanz/sso:latest"
+    replicas: 3
+    resources:
+      cpu: "2"
+      memory: "4Gi"
+    environment:
+      JWT_SECRET: "${JWT_SECRET}"
+      OAUTH_PROVIDERS: "google,facebook,twitter,apple"
+      
+  # Secure Vault Service
+  vault_service:
+    image: "fanz/vault:latest"
+    replicas: 2
+    resources:
+      cpu: "1"
+      memory: "2Gi"
+    environment:
+      ENCRYPTION_KEY: "${VAULT_ENCRYPTION_KEY}"
+      KYC_PROVIDER: "${KYC_PROVIDER_KEY}"
+      
+  # Media Hub Service
+  media_service:
+    image: "fanz/media:latest"
+    replicas: 4
+    resources:
+      cpu: "8"
+      memory: "16Gi"
+      gpu: "1" # For video processing
+    environment:
+      FFMPEG_THREADS: "16"
+      AI_MODERATION_KEY: "${AI_MODERATION_KEY}"
+      
+  # Payout Automation Service
+  payout_service:
+    image: "fanz/payouts:latest"
+    replicas: 3
+    resources:
+      cpu: "2"
+      memory: "4Gi"
+    environment:
+      PAXUM_API_KEY: "${PAXUM_API_KEY}"
+      EPAYSERVICE_API_KEY: "${EPAYSERVICE_API_KEY}"
+      WISE_API_KEY: "${WISE_API_KEY}"
+      CRYPTO_WALLET_KEYS: "${CRYPTO_WALLET_KEYS}"
+      
+  # Compliance Monitoring Service
+  compliance_service:
+    image: "fanz/compliance:latest"
+    replicas: 2
+    resources:
+      cpu: "2"
+      memory: "4Gi"
+    environment:
+      GDPR_ENABLED: "true"
+      ADA_COMPLIANCE: "true"
+      USC2257_RECORDS: "true"
+
+# Platform Clusters
+platform_clusters:
+  # BoyFanz Cluster
+  boyfanz:
+    domain: "boyfanz.com"
+    subdomains: ["www", "api", "cdn", "chat", "live"]
+    regions: ["us-east", "eu-west", "asia-pacific"]
+    adult_content: true
+    age_verification: "strict"
+    compliance: ["USC2257", "GDPR", "ADA"]
+    
+  # GirlFanz Cluster  
+  girlfanz:
+    domain: "girlfanz.com"
+    subdomains: ["www", "api", "cdn", "chat", "live"]
+    regions: ["us-east", "eu-west", "asia-pacific"] 
+    adult_content: true
+    age_verification: "strict"
+    compliance: ["USC2257", "GDPR", "ADA"]
+    
+  # PupFanz Cluster
+  pupfanz:
+    domain: "pupfanz.com"
+    subdomains: ["www", "api", "cdn"]
+    regions: ["us-east", "eu-west"]
+    adult_content: true
+    age_verification: "strict"
+    compliance: ["USC2257", "GDPR", "ADA"]
+    
+  # TransFanz Cluster
+  transfanz:
+    domain: "transfanz.com"
+    subdomains: ["www", "api", "cdn", "chat", "live"]
+    regions: ["us-east", "eu-west", "asia-pacific"]
+    adult_content: true
+    age_verification: "strict"
+    compliance: ["USC2257", "GDPR", "ADA"]
+    
+  # TabooFanz Cluster
+  taboofanz:
+    domain: "taboofanz.com"
+    subdomains: ["www", "api", "cdn"]
+    regions: ["us-east", "eu-west"]
+    adult_content: true
+    age_verification: "strict"
+    compliance: ["USC2257", "GDPR", "ADA"]
+
+# Database Configuration
+databases:
+  primary:
+    type: "postgresql"
+    provider: "digitalocean_managed"
+    version: "15"
+    cluster_size: 3
+    resources:
+      cpu: "8"
+      memory: "32Gi"
+      storage: "1Ti"
+    backup:
+      frequency: "hourly"
+      retention: "90days"
+      encryption: true
+      
+  redis_cache:
+    type: "redis"
+    provider: "digitalocean_managed"
+    version: "7"
+    cluster_size: 3
+    resources:
+      memory: "16Gi"
+    persistence: true
+    
+  analytics:
+    type: "clickhouse"
+    provider: "self_managed"
+    cluster_size: 3
+    resources:
+      cpu: "16"
+      memory: "64Gi"
+      storage: "2Ti"
+
+# Security Configuration
+security:
+  ssl:
+    provider: "letsencrypt"
+    auto_renewal: true
+    ciphers: "strong"
+    protocols: ["TLSv1.2", "TLSv1.3"]
+    
+  waf:
+    provider: "cloudflare"
+    adult_content_rules: true
+    ddos_protection: true
+    rate_limiting: true
+    geo_blocking: []
+    
+  auth:
+    mfa_required: true
+    session_timeout: "24h"
+    password_policy: "strong"
+    oauth_providers: ["google", "facebook", "twitter", "apple"]
+    
+  compliance:
+    gdpr_enabled: true
+    ada_compliance: true
+    age_verification: "strict"
+    content_moderation: "ai_enhanced"
+    record_keeping: "usc2257"
+
+# Monitoring & Logging
+monitoring:
+  metrics:
+    provider: "prometheus"
+    retention: "90d"
+    alerting: true
+    
+  logging:
+    provider: "elasticsearch"
+    retention: "30d"
+    log_level: "info"
+    
+  apm:
+    provider: "newrelic"
+    sampling: "100%"
+    
+  uptime:
+    provider: "pingdom"
+    locations: ["us", "eu", "asia"]
+    frequency: "1min"
+
+# Backup & Disaster Recovery
+backup:
+  database:
+    frequency: "6hours"
+    retention: "90days"
+    cross_region: true
+    encryption: true
+    
+  media:
+    frequency: "daily"
+    retention: "1year"
+    cross_region: true
+    incremental: true
+    
+  configurations:
+    frequency: "daily"
+    retention: "30days"
+    version_control: true
+
+# Load Balancing
+load_balancer:
+  provider: "digitalocean"
+  algorithm: "round_robin"
+  health_checks: true
+  ssl_termination: true
+  sticky_sessions: false
+  
+  rules:
+    - path: "/api/payments/*"
+      backend: "payment_processor"
+      weight: 100
+      
+    - path: "/api/sso/*"
+      backend: "sso_service"
+      weight: 100
+      
+    - path: "/api/vault/*"
+      backend: "vault_service"
+      weight: 100
+      
+    - path: "/api/media/*"
+      backend: "media_service"
+      weight: 100
+      
+    - path: "/api/payouts/*"
+      backend: "payout_service"
+      weight: 100
+
+# Auto-scaling Configuration
+autoscaling:
+  enabled: true
+  metrics: ["cpu", "memory", "requests"]
+  
+  rules:
+    - service: "payment_processor"
+      min_replicas: 3
+      max_replicas: 20
+      cpu_threshold: 70
+      
+    - service: "media_service" 
+      min_replicas: 2
+      max_replicas: 10
+      cpu_threshold: 80
+      
+    - service: "fanz_dash"
+      min_replicas: 2
+      max_replicas: 10
+      requests_threshold: 1000
+
+# Cost Optimization
+cost_optimization:
+  reserved_instances:
+    percentage: 70
+    term: "1year"
+    
+  spot_instances:
+    enabled: true
+    max_percentage: 30
+    instance_types: ["cpu_intensive"]
+    
+  storage_tiering:
+    enabled: true
+    cold_storage_days: 90
+    archive_days: 365
+
+# Deployment Strategy
+deployment:
+  strategy: "blue_green"
+  health_check_grace_period: "300s"
+  rollback_enabled: true
+  
+  stages:
+    - name: "staging"
+      replicas_percentage: 10
+      duration: "1h"
+      
+    - name: "canary"
+      replicas_percentage: 25
+      duration: "2h"
+      
+    - name: "production"
+      replicas_percentage: 100
+      duration: "continuous"
+
+# Environment Variables (Production)
+environment:
+  NODE_ENV: "production"
+  PORT: "3001"
+  LOG_LEVEL: "info"
+  RATE_LIMIT_ENABLED: "true"
+  CORS_ORIGIN: "https://fanzunlimited.com,https://dash.fanzunlimited.com"
+  SESSION_SECURE: "true"
+  COOKIE_SECURE: "true"
+  HSTS_ENABLED: "true"
+  CSP_ENABLED: "true"
+  ADULT_CONTENT_WARNING: "true"
+  AGE_VERIFICATION_REQUIRED: "true"
+  GDPR_COMPLIANCE: "true"
+  ADA_COMPLIANCE: "true"
+
+# Resource Quotas
+resource_quotas:
+  cpu: "200"
+  memory: "500Gi"
+  storage: "10Ti"
+  bandwidth: "100TB/month"
+  
+# SLA Targets
+sla:
+  uptime: "99.9%"
+  response_time: "200ms"
+  error_rate: "<0.1%"
+  
+# Compliance Certifications
+certifications:
+  - "SOC 2 Type II"
+  - "PCI DSS Level 1"  
+  - "GDPR Compliant"
+  - "ADA Compliant"
+  - "18 USC 2257 Compliant"
