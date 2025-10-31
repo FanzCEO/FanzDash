@@ -7,6 +7,13 @@
 
 import * as schema from "@shared/schema";
 
+// Import both drivers - let esbuild tree-shake
+import { Pool as NeonPool, neonConfig } from "@neondatabase/serverless";
+import { Pool as PgPool } from "pg";
+import { drizzle as neonDrizzle } from "drizzle-orm/neon-serverless";
+import { drizzle as pgDrizzle } from "drizzle-orm/node-postgres";
+import ws from "ws";
+
 // Environment configuration
 const databaseUrl = process.env.DATABASE_URL;
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -39,50 +46,36 @@ if (!isValidUrl) {
   // Supabase connection - use node-postgres (pg)
   console.log("🔗 Connecting to Supabase database using node-postgres");
   
-  try {
-    const { Pool } = require('pg');
-    const { drizzle } = require('drizzle-orm/node-postgres');
-    
-    pool = new Pool({
-      connectionString: databaseUrl,
-      max: 20, // Max connections in pool
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
-    });
-    
-    db = drizzle(pool, { schema });
-    
-    // Test connection
-    pool.query('SELECT 1')
-      .then(() => console.log('✅ Supabase database connected successfully'))
-      .catch((error: Error) => console.error('❌ Supabase database connection failed:', error));
-  } catch (error) {
-    console.error('❌ Failed to load node-postgres:', error);
-    throw error;
-  }
+  pool = new PgPool({
+    connectionString: databaseUrl,
+    max: 20, // Max connections in pool
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+  });
+  
+  db = pgDrizzle(pool, { schema });
+  
+  // Test connection
+  pool.query('SELECT 1')
+    .then(() => console.log('✅ Supabase database connected successfully'))
+    .catch((error: Error) => console.error('❌ Supabase database connection failed:', error));
   
 } else {
   // Neon Serverless connection - use neon serverless driver
   console.log("🔗 Connecting to Neon Serverless database");
   
-  try {
-    const { Pool, neonConfig } = require("@neondatabase/serverless");
-    const { drizzle } = require("drizzle-orm/neon-serverless");
-    const ws = require("ws");
-    
-    neonConfig.webSocketConstructor = ws;
-    
-    pool = new Pool({ connectionString: databaseUrl });
-    db = drizzle(pool, { schema });
-    
-    // Test connection
-    pool.query('SELECT 1')
-      .then(() => console.log('✅ Neon database connected successfully'))
-      .catch((error: Error) => console.error('❌ Neon database connection failed:', error));
-  } catch (error) {
-    console.error('❌ Failed to load neon serverless:', error);
-    throw error;
-  }
+  neonConfig.webSocketConstructor = ws;
+  
+  pool = new NeonPool({
+    connectionString: databaseUrl,
+  });
+  
+  db = neonDrizzle(pool, { schema });
+  
+  // Test connection
+  pool.query('SELECT 1')
+    .then(() => console.log('✅ Neon database connected successfully'))
+    .catch((error: Error) => console.error('❌ Neon database connection failed:', error));
 }
 
 export { pool, db };
