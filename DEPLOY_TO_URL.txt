@@ -43,6 +43,7 @@ COPY ALL OF THESE:
 
 NODE_ENV=production
 PORT=10000
+NODE_OPTIONS=--dns-result-order=ipv4first
 
 SUPABASE_URL=https://eglawbjqtbsofofdqfzr.supabase.co
 
