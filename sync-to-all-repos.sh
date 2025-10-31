@@ -104,7 +104,7 @@ sync_repo() {
 
         # Create target directory if it doesn't exist
         if [ ! -d "$target_dir" ]; then
-            echo -e "  ${BLUE}→ Creating directory: $(basename $target_dir)/${NC}"
+            echo -e "  ${BLUE}→ Creating directory: $(basename \"$target_dir\")/${NC}"
             mkdir -p "$target_dir"
             ((created_dirs++))
         fi
