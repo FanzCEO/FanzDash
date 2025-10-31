@@ -1,0 +1,105 @@
+{
+  "platforms": {
+    "replit": {
+      "enabled": true,
+      "config_file": ".replit",
+      "deployment": {
+        "build_command": "npm run build",
+        "start_command": "npm run start",
+        "dev_command": "npm run dev"
+      },
+      "environment": {
+        "sync_vars": [
+          "DATABASE_URL",
+          "JWT_SECRET",
+          "S3_ENDPOINT",
+          "S3_REGION",
+          "S3_BUCKET",
+          "VERIFYMY_API_KEY",
+          "PAYOUTS_WEBHOOK_SECRET",
+          "ADS_WEBHOOK_SECRET"
+        ]
+      },
+      "health_check": "http://localhost:5000/api/health",
+      "sync_frequency": "*/5 * * * *"
+    },
+    "warp": {
+      "enabled": true,
+      "config_file": "warp.toml",
+      "deployment": {
+        "build_command": "npm run build:warp",
+        "deploy_command": "wrangler deploy",
+        "preview_command": "wrangler dev"
+      },
+      "environment": {
+        "sync_vars": [
+          "DATABASE_URL",
+          "JWT_SECRET",
+          "VERIFYMY_API_KEY",
+          "PAYOUTS_WEBHOOK_SECRET",
+          "ADS_WEBHOOK_SECRET"
+        ],
+        "kv_namespaces": [
+          "CACHE",
+          "SESSIONS"
+        ],
+        "r2_buckets": [
+          "MEDIA_BUCKET",
+          "LOGS_BUCKET"
+        ]
+      },
+      "health_check": "https://fanzdash.workers.dev/api/health",
+      "sync_frequency": "*/5 * * * *"
+    }
+  },
+  "sync": {
+    "enabled": true,
+    "bidirectional": true,
+    "conflict_resolution": "latest_wins",
+    "exclude_patterns": [
+      "node_modules/**",
+      "dist/**",
+      ".git/**",
+      "*.log",
+      ".env*"
+    ],
+    "include_patterns": [
+      "client/**",
+      "server/**",
+      "shared/**",
+      "scripts/**",
+      "package.json",
+      "tsconfig.json",
+      "vite.config.ts",
+      "drizzle.config.ts"
+    ],
+    "webhooks": {
+      "replit_to_warp": "https://fanzdash.workers.dev/api/sync/from-replit",
+      "warp_to_replit": "http://localhost:5000/api/sync/from-warp"
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "check_interval": "*/2 * * * *",
+    "alerts": {
+      "discord_webhook": null,
+      "email": null,
+      "slack_webhook": null
+    },
+    "metrics": {
+      "sync_success_rate": true,
+      "deployment_frequency": true,
+      "error_rates": true,
+      "response_times": true
+    }
+  },
+  "backup": {
+    "enabled": true,
+    "frequency": "0 2 * * *",
+    "retention_days": 30,
+    "storage": {
+      "type": "r2",
+      "bucket": "fanzdash-backups"
+    }
+  }
+}

@@ -8,9 +8,17 @@
     "dev:backend": "NODE_ENV=development tsx server/index.ts",
     "dev:frontend": "vite",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "build:warp": "vite build && echo 'Warp build completed'",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push",
+    "sync": "tsx scripts/platform-sync.ts sync",
+    "sync:health": "tsx scripts/platform-sync.ts health",
+    "sync:backup": "tsx scripts/platform-sync.ts backup",
+    "deploy:replit": "npm run build && npm run sync",
+    "deploy:warp": "npm run build:warp && wrangler deploy --config warp.toml --compatibility-date 2024-01-01",
+    "dev:warp": "wrangler dev --config warp.toml",
+    "preview:warp": "wrangler preview --config warp.toml"
     "health-check": "curl -f http://localhost:${PORT:-3000}/healthz || exit 1",
     "system-check": "curl -s http://localhost:${PORT:-3000}/system | jq .",
     "type-check": "tsc --noEmit",
@@ -107,6 +115,7 @@
     "framer-motion": "^11.13.1",
     "google-auth-library": "^10.3.0",
     "helmet": "^8.1.0",
+    "hono": "^4.6.3",
     "input-otp": "^1.4.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.453.0",
@@ -170,6 +179,8 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
+    "vite": "^7.1.4",
+    "wrangler": "^3.78.12"
     "vite": "^7.1.11"
   },
   "optionalDependencies": {

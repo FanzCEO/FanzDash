@@ -101,6 +101,11 @@ public
 
 # OS generated files
 .DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+.env
+.sync-state.json
 .DS_Store?
 ._*
 .Spotlight-V100
