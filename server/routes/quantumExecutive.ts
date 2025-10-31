@@ -9,7 +9,7 @@ import { CrisisControlSystem } from '../modules/crisis/crisisControl';
 import { FederalIntelligenceSystem } from '../modules/intelligence/FederalIntelligenceSystem';
 import { db } from '../db';
 import { auditTrail, executiveSessions } from '../../shared/schema';
-import { isAuthenticated, requiresClearanceLevel } from '../auth';
+import { isAuthenticated, requireClearance } from '../middleware/auth';
 
 /**
  * QUANTUM NEURAL EXECUTIVE COMMAND CENTER API ROUTES
@@ -93,7 +93,7 @@ router.use(async (req, res, next) => {
 // Create Executive Session with Biometric Authentication
 router.post('/session/create',
   isAuthenticated,
-  requiresClearanceLevel(5), // Only Level 5 can access QNECC
+  requireClearance(5), // Only Level 5 can access QNECC
   [
     body('biometricHash').notEmpty().withMessage('Biometric authentication required'),
     body('sessionType').isIn(['mind_palace', 'war_room', 'crisis_mode', 'god_mode']),
@@ -174,7 +174,7 @@ router.post('/session/create',
 // Generate Mind Palace in 3D Space
 router.post('/mind-palace/generate',
   isAuthenticated,
-  requiresClearanceLevel(5),
+  requireClearance(5),
   [
     body('sessionId').notEmpty(),
     body('palaceType').isIn(['memory_bank', 'strategic_center', 'crisis_command', 'temporal_observatory']),
@@ -239,7 +239,7 @@ router.post('/mind-palace/generate',
 // Process Natural Language Executive Command
 router.post('/command/execute',
   isAuthenticated,
-  requiresClearanceLevel(5),
+  requireClearance(5),
   [
     body('sessionId').notEmpty(),
     body('naturalLanguageCommand').notEmpty().isString(),
@@ -374,7 +374,7 @@ router.post('/command/execute',
 // Get Real-time War Room Data
 router.get('/war-room/realtime/:sessionId',
   isAuthenticated,
-  requiresClearanceLevel(5),
+  requireClearance(5),
   async (req, res) => {
     try {
       const { sessionId } = req.params;
@@ -450,7 +450,7 @@ router.get('/war-room/realtime/:sessionId',
 // Manipulate Temporal Controls
 router.post('/war-room/temporal/control',
   isAuthenticated,
-  requiresClearanceLevel(5),
+  requireClearance(5),
   [
     body('sessionId').notEmpty(),
     body('action').isIn(['play', 'pause', 'scrub', 'predict', 'rewind']),
@@ -498,7 +498,7 @@ router.post('/war-room/temporal/control',
 // Activate Crisis Protocol
 router.post('/crisis/protocol/activate',
   isAuthenticated,
-  requiresClearanceLevel(5),
+  requireClearance(5),
   [
     body('sessionId').notEmpty(),
     body('crisisLevel').isIn(['DEFCON_1', 'DEFCON_2', 'DEFCON_3', 'DEFCON_4', 'DEFCON_5']),
@@ -579,7 +579,7 @@ router.post('/crisis/protocol/activate',
 // Get Kill Switch Matrix
 router.get('/crisis/kill-switches/:sessionId',
   isAuthenticated,
-  requiresClearanceLevel(5),
+  requireClearance(5),
   async (req, res) => {
     try {
       const { sessionId } = req.params;
@@ -627,7 +627,7 @@ router.get('/crisis/kill-switches/:sessionId',
 // Get Intelligence Dashboard
 router.get('/intelligence/dashboard/:sessionId',
   isAuthenticated,
-  requiresClearanceLevel(5),
+  requireClearance(5),
   async (req, res) => {
     try {
       const { sessionId } = req.params;
