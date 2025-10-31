@@ -25,10 +25,15 @@ ORIGINAL_DIR=$(pwd)
 SOURCE_DIR="$ORIGINAL_DIR"
 
 # Target repositories
-declare -a REPOS=(
-    "/Users/joshuastone/FANZ-Unified-Ecosystem"
-    "/Users/joshuastone/Library/Mobile Documents/com~apple~CloudDocs/GitHub/FANZ GROUP HOLDINGS DEVELOPMENT"
-)
+# Specify repository paths via environment variable FANZ_REPOS (colon-separated), or via repos.txt file (one path per line)
+if [ -n "$FANZ_REPOS" ]; then
+    IFS=':' read -r -a REPOS <<< "$FANZ_REPOS"
+elif [ -f "repos.txt" ]; then
+    mapfile -t REPOS < "repos.txt"
+else
+    echo -e "${RED}✗ No repository paths specified. Set FANZ_REPOS or create repos.txt.${NC}"
+    exit 1
+fi
 
 # Files to sync
 declare -a FILES=(
