@@ -117,8 +117,16 @@ sync_repo() {
 
     # Remove vercel.json if it exists
     if [ -f "$repo_path/vercel.json" ]; then
-        echo -e "\n  ${RED}✗ Removing vercel.json (not suitable for full-stack)${NC}"
-        rm "$repo_path/vercel.json"
+        echo -e "\n  ${RED}✗ vercel.json found (not suitable for full-stack)${NC}"
+        echo -ne "  ${YELLOW}⚠ Do you want to back up and remove vercel.json? [y/N]: ${NC}"
+        read -r confirm_vercel
+        if [[ "$confirm_vercel" =~ ^[Yy]$ ]]; then
+            cp "$repo_path/vercel.json" "$repo_path/vercel.json.bak"
+            rm "$repo_path/vercel.json"
+            echo -e "  ${GREEN}✓ vercel.json backed up as vercel.json.bak and removed.${NC}"
+        else
+            echo -e "  ${YELLOW}⚠ Skipped removing vercel.json.${NC}"
+        fi
     fi
 
     # Summary
