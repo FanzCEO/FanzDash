@@ -1,8 +1,10 @@
 # FANZ Unified Platform - Supabase Configuration
 
-[project]
-name = "FanzDash"
-org_id = "fanz-unified"
+# Note: When linking to a remote Supabase project, the [project] section
+# is managed automatically by the CLI after running 'supabase link'
+# 
+# For local development: Run 'supabase start' to generate project config
+# For remote linking: Run 'supabase link --project-ref your-project-ref'
 
 [api]
 enabled = true
@@ -13,7 +15,7 @@ max_rows = 1000
 
 [db]
 port = 54322
-major_version = 15
+major_version = 17
 
 [db.pooler]
 enabled = false

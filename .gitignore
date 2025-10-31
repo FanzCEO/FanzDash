@@ -149,3 +149,4 @@ temp/
 # Keep workspace file
 !.vscode/extensions.jsonpackage-lock.json
 yarn.lock
+supabase/.temp/
