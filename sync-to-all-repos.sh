@@ -29,7 +29,14 @@ SOURCE_DIR="$ORIGINAL_DIR"
 if [ -n "$FANZ_REPOS" ]; then
     IFS=':' read -r -a REPOS <<< "$FANZ_REPOS"
 elif [ -f "repos.txt" ]; then
-    mapfile -t REPOS < "repos.txt"
+    # Check if repos.txt is gitignored
+    if git check-ignore -q "repos.txt"; then
+        mapfile -t REPOS < "repos.txt"
+    else
+        echo -e "${YELLOW}⚠️  Warning: repos.txt is not gitignored. It may expose personal file system structure if committed.${NC}"
+        echo -e "${YELLOW}   Please add 'repos.txt' to your .gitignore file.${NC}"
+        mapfile -t REPOS < "repos.txt"
+    fi
 else
     echo -e "${RED}✗ No repository paths specified. Set FANZ_REPOS or create repos.txt.${NC}"
     exit 1
