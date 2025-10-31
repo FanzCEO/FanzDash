@@ -2,18 +2,13 @@
  * Database Connection for FanzDash
  *
  * Supports:
- * - Supabase (preferred)
- * - Neon Serverless
+ * - Supabase (preferred) - uses node-postgres (pg)
+ * - Neon Serverless - uses neon serverless driver
  * - Mock database for development
  */
 
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
 import * as schema from "@shared/schema";
 import { dbLogger } from '../utils/logger';
-
-neonConfig.webSocketConstructor = ws;
 
 // Environment configuration
 const databaseUrl = process.env.DATABASE_URL;
@@ -44,8 +39,12 @@ if (!isValidUrl) {
   }) as any;
 
 } else if (isSupabase) {
-  // Supabase connection (uses PostgreSQL compatible pool)
-  dbLogger.info("Connecting to Supabase database");
+  // Supabase connection - use node-postgres (pg)
+  dbLogger.info("Connecting to Supabase database using node-postgres");
+
+  // Dynamic import to avoid loading issues
+  const { Pool } = require('pg');
+  const { drizzle } = require('drizzle-orm/node-postgres');
 
   pool = new Pool({
     connectionString: databaseUrl,
@@ -54,7 +53,7 @@ if (!isValidUrl) {
     connectionTimeoutMillis: 10000,
   });
 
-  db = drizzle({ client: pool, schema });
+  db = drizzle(pool, { schema });
 
   // Test connection
   pool.query('SELECT 1')
@@ -65,11 +64,18 @@ if (!isValidUrl) {
   // Neon Serverless connection
   dbLogger.info("Connecting to Neon Serverless database");
 
+  // Dynamic import to avoid loading issues
+  const { Pool, neonConfig } = require("@neondatabase/serverless");
+  const { drizzle } = require("drizzle-orm/neon-serverless");
+  const ws = require("ws");
+
+  neonConfig.webSocketConstructor = ws;
+
   pool = new Pool({
     connectionString: databaseUrl,
   });
 
-  db = drizzle({ client: pool, schema });
+  db = drizzle(pool, { schema });
 
   // Test connection
   pool.query('SELECT 1')
