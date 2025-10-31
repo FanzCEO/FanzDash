@@ -1,17 +1,16 @@
 # Multi-stage Dockerfile for FANZ Production Deployment
 
 # Stage 1: Build stage
-FROM node:18-alpine AS builder
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Add package files
-COPY package*.json ./
+# Copy package files (explicitly include lockfile for npm ci)
+COPY package.json package-lock.json ./
 
-# Install dependencies with legacy peer deps for compatibility
-RUN npm ci --legacy-peer-deps --only=production && npm cache clean --force
+# Install all dependencies (including dev for build)
+RUN npm ci --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -20,7 +19,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production stage
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
@@ -31,8 +30,10 @@ RUN addgroup -g 1001 -S nodejs && \
 
 WORKDIR /app
 
-# Copy package files and install production dependencies
-COPY package*.json ./
+# Copy package files (explicitly include lockfile for npm ci)
+COPY package.json package-lock.json ./
+
+# Install production dependencies only
 RUN npm ci --legacy-peer-deps --only=production && \
     npm cache clean --force && \
     rm -rf ~/.npm
@@ -75,25 +76,3 @@ LABEL org.opencontainers.image.title="FANZ Dashboard" \
       org.opencontainers.image.authors="FANZ Development Team" \
       org.opencontainers.image.source="https://github.com/FanzCEO/FanzDash" \
       org.opencontainers.image.documentation="https://docs.fanz.network"
-# Copy package files
-COPY package*.json ./
-
-# Install all dependencies (including dev for build)
-RUN npm ci --legacy-peer-deps
-
-# Copy application code
-COPY . .
-
-# Fix permissions and build the application
-RUN chmod +x node_modules/.bin/* || true
-RUN npm run build || npx vite build
-
-# Expose the port
-EXPOSE 3030
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD npm run health-check
-
-# Start the application
-CMD ["npm", "start"]
