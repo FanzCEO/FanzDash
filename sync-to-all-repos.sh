@@ -17,8 +17,12 @@ echo -e "${BLUE}   FANZ Repository Sync Tool${NC}"
 echo -e "${BLUE}   Syncing deployment configurations to all repositories${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}\n"
 
-# Source directory (current FANZDash-V1)
-SOURCE_DIR="/Users/joshuastone/Downloads/FANZDash-V1"
+# Save original directory (this is the source repository)
+ORIGINAL_DIR=$(pwd)
+
+# Source directory (use current directory - script should be run from FANZDash-V1)
+# This makes the script portable and works regardless of where the repo is located
+SOURCE_DIR="$ORIGINAL_DIR"
 
 # Target repositories
 declare -a REPOS=(
@@ -128,9 +132,15 @@ sync_repo() {
     echo
 
     if [[ $commit_answer =~ ^[Yy]$ ]]; then
-        cd "$repo_path"
-        git add -A
-        git commit -m "Sync deployment configurations from FANZDash-V1
+        # Use subshell to avoid changing the working directory of the parent script
+        # Capture exit status to propagate failures properly
+        local git_status=0
+        # Temporarily disable set -e for status capture to work correctly
+        set +e
+        (
+            cd "$repo_path" || exit 1
+            git add -A || exit 1
+            git commit -m "Sync deployment configurations from FANZDash-V1
 
 ✅ Added/Updated:
 - Render deployment configuration (render.yaml)
@@ -146,19 +156,30 @@ sync_repo() {
 
 🚀 Ready for deployment to Render or DigitalOcean with Supabase
 
-🤖 Synced from FANZDash-V1" --no-gpg-sign
+🤖 Synced from FANZDash-V1" --no-gpg-sign || exit 1
 
-        echo -e "${GREEN}✓ Changes committed!${NC}\n"
+            echo -e "${GREEN}✓ Changes committed!${NC}\n"
 
-        echo -e "${YELLOW}Do you want to push to remote? (y/n)${NC}"
-        read -t 10 -n 1 -r push_answer || push_answer="n"
-        echo
+            echo -e "${YELLOW}Do you want to push to remote? (y/n)${NC}"
+            read -t 10 -n 1 -r push_answer || push_answer="n"
+            echo
 
-        if [[ $push_answer =~ ^[Yy]$ ]]; then
-            git push origin main || git push origin master
-            echo -e "${GREEN}✓ Pushed to remote!${NC}\n"
-        else
-            echo -e "${YELLOW}⚠ Skipped push (you can push manually later)${NC}\n"
+            if [[ $push_answer =~ ^[Yy]$ ]]; then
+                if ! git push origin main 2>/dev/null && ! git push origin master 2>/dev/null; then
+                    echo -e "${RED}✗ Failed to push to remote${NC}\n"
+                    exit 1
+                fi
+                echo -e "${GREEN}✓ Pushed to remote!${NC}\n"
+            else
+                echo -e "${YELLOW}⚠ Skipped push (you can push manually later)${NC}\n"
+            fi
+        )
+        git_status=$?
+        set -e
+
+        if [ $git_status -ne 0 ]; then
+            echo -e "${RED}✗ Git operations failed for $(basename "$repo_path")${NC}\n"
+            return 1
         fi
     else
         echo -e "${YELLOW}⚠ Skipped commit (you can commit manually later)${NC}\n"
@@ -202,3 +223,6 @@ echo -e "${BLUE}Next steps:${NC}"
 echo -e "  1. Review changes in each repository"
 echo -e "  2. Test deployments"
 echo -e "  3. Follow guides: RENDER_DEPLOYMENT_GUIDE.md or DIGITALOCEAN_DEPLOYMENT_GUIDE.md\n"
+
+# Restore original directory (safety measure)
+cd "$ORIGINAL_DIR" || true
