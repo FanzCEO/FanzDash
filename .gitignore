@@ -147,7 +147,10 @@ temp/
 .vscode/tasks.json
 
 # Keep workspace file
-!.vscode/extensions.jsonpackage-lock.json
+!.vscode/extensions.json
+
+# Lock files
+package-lock.json
 yarn.lock
 supabase/.temp/
 mcp.json

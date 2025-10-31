@@ -7,7 +7,7 @@ services:
     plan: starter   # Options: free, starter ($7/mo), standard ($25/mo)
 
     # Build Configuration  
-    buildCommand: npm install --include=dev && npm run build
+    buildCommand: bash render-build.sh
     startCommand: npm start
 
     # Auto-deploy on git push
