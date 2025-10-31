@@ -128,7 +128,7 @@ sync_repo() {
 
     # Ask about git commit
     echo -e "${YELLOW}Do you want to commit these changes? (y/n)${NC}"
-    read -t 10 -n 1 -r commit_answer || commit_answer="n"
+    read -t 30 -n 1 -r commit_answer || commit_answer="n"
     echo
 
     if [[ $commit_answer =~ ^[Yy]$ ]]; then
