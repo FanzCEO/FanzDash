@@ -30,7 +30,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { apiRequest } from "@/lib/queryClient";
 
 interface LoginForm {
-  usernameEmail: string;
+  identifier: string;
   password: string;
   remember: boolean;
 }
@@ -38,7 +38,7 @@ interface LoginForm {
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<LoginForm>({
-    usernameEmail: "",
+    identifier: "",
     password: "",
     remember: false,
   });
@@ -100,7 +100,7 @@ export default function Login() {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => (window.location.href = "/oauth/facebook")}
+                onClick={() => (window.location.href = "/auth/facebook")}
                 data-testid="button-facebook-login"
               >
                 <FaFacebook className="mr-2 h-4 w-4 text-blue-600" />
@@ -110,7 +110,7 @@ export default function Login() {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => (window.location.href = "/oauth/twitter")}
+                onClick={() => (window.location.href = "/auth/twitter")}
                 data-testid="button-twitter-login"
               >
                 <FaXTwitter className="mr-2 h-4 w-4" />
@@ -120,7 +120,7 @@ export default function Login() {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => (window.location.href = "/oauth/google")}
+                onClick={() => (window.location.href = "/auth/google")}
                 data-testid="button-google-login"
               >
                 <FaGoogle className="mr-2 h-4 w-4 text-red-500" />
@@ -140,24 +140,24 @@ export default function Login() {
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="usernameEmail">Username or Email</Label>
+                <Label htmlFor="identifier">Username or Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="usernameEmail"
+                    id="identifier"
                     type="text"
                     placeholder="Enter username or email"
-                    value={formData.usernameEmail}
+                    value={formData.identifier}
                     onChange={(e) =>
-                      handleInputChange("usernameEmail", e.target.value)
+                      handleInputChange("identifier", e.target.value)
                     }
-                    className={`pl-10 ${errors.usernameEmail ? "border-red-500" : ""}`}
+                    className={`pl-10 ${errors.identifier ? "border-red-500" : ""}`}
                     required
-                    data-testid="input-username-email"
+                    data-testid="input-identifier"
                   />
                 </div>
-                {errors.usernameEmail && (
-                  <p className="text-sm text-red-500">{errors.usernameEmail}</p>
+                {errors.identifier && (
+                  <p className="text-sm text-red-500">{errors.identifier}</p>
                 )}
               </div>
 

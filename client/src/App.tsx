@@ -63,6 +63,8 @@ import PodcastManagementPage from "@/pages/podcast-management";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import PasswordReset from "@/pages/auth/password-reset";
+import AuthCallback from "@/pages/auth/callback";
+import DeviceVerification from "@/pages/auth/device-verification";
 import NotFound404 from "@/pages/error/404";
 import ServerError500 from "@/pages/error/500";
 import Maintenance503 from "@/pages/error/503";
@@ -195,6 +197,8 @@ function Router() {
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/password/reset" component={PasswordReset} />
+          <Route path="/auth/callback" component={AuthCallback} />
+          <Route path="/auth/device-verification" component={DeviceVerification} />
           <Route path="/error/404" component={NotFound404} />
           <Route path="/error/500" component={ServerError500} />
           <Route path="/error/503" component={Maintenance503} />
