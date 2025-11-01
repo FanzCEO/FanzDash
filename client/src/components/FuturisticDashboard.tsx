@@ -103,7 +103,19 @@ export function FuturisticDashboard() {
     refetchInterval: 2000,
   });
 
-  // Mock revenue data for demonstration
+  // Real revenue data from API
+  const { data: revenueData = [] } = useQuery<RevenueData[]>({
+    queryKey: ["/api/dashboard/revenue"],
+    refetchInterval: 30000, // Update every 30 seconds
+  });
+
+  // Real payment methods data from API
+  const { data: paymentMethodsData = [] } = useQuery<PaymentMethodData[]>({
+    queryKey: ["/api/dashboard/payment-methods"],
+    refetchInterval: 30000,
+  });
+
+  // Fallback mock revenue data if API returns empty
   const mockRevenueData: RevenueData[] = [
     {
       date: "Jan",
@@ -710,7 +722,7 @@ export function FuturisticDashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={mockRevenueData}>
+                    <AreaChart data={revenueData.length > 0 ? revenueData : mockRevenueData}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                       <XAxis dataKey="date" />
                       <YAxis />
@@ -765,7 +777,7 @@ export function FuturisticDashboard() {
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie
-                        data={mockPaymentMethods}
+                        data={paymentMethodsData.length > 0 ? paymentMethodsData : mockPaymentMethods}
                         cx="50%"
                         cy="50%"
                         outerRadius={80}

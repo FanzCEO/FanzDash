@@ -2,6 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
+import { db } from "./db";
+import { paymentTransactions, paymentProcessors, users } from "@shared/schema";
+import { sql, eq } from "drizzle-orm";
 import {
   insertContentItemSchema,
   insertModerationResultSchema,
@@ -917,6 +920,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Moderation stats error:", error);
       res.status(500).json({ error: "Failed to fetch moderation stats" });
+    }
+  });
+
+  // Helper function for payment processor colors
+  const getProcessorColor = (name: string | null): string => {
+    const colors: Record<string, string> = {
+      'CCBill': '#8b5cf6',
+      'Segpay': '#06b6d4',
+      'Epoch': '#10b981',
+      'Crypto': '#f59e0b',
+      'Bank Transfer': '#ef4444',
+      'PayPal': '#0070ba',
+      'Stripe': '#635bff',
+    };
+    return colors[name || ''] || '#6b7280';
+  };
+
+  // Revenue data endpoint
+  app.get("/api/dashboard/revenue", async (req, res) => {
+    try {
+      // Query payment transactions for revenue data
+      const result = await db
+        .select({
+          month: sql`TO_CHAR(${paymentTransactions.createdAt}, 'Mon')`,
+          revenue: sql`COALESCE(SUM(CASE WHEN ${paymentTransactions.status} = 'completed' THEN ${paymentTransactions.amount} END), 0)`,
+          deposits: sql`COALESCE(SUM(CASE WHEN ${paymentTransactions.transactionType} = 'deposit' AND ${paymentTransactions.status} = 'completed' THEN ${paymentTransactions.amount} END), 0)`,
+          payouts: sql`COALESCE(SUM(CASE WHEN ${paymentTransactions.transactionType} = 'payout' AND ${paymentTransactions.status} = 'completed' THEN ${paymentTransactions.amount} END), 0)`,
+        })
+        .from(paymentTransactions)
+        .where(sql`${paymentTransactions.createdAt} >= NOW() - INTERVAL '6 months'`)
+        .groupBy(sql`TO_CHAR(${paymentTransactions.createdAt}, 'Mon'), DATE_TRUNC('month', ${paymentTransactions.createdAt})`)
+        .orderBy(sql`DATE_TRUNC('month', ${paymentTransactions.createdAt})`);
+
+      const revenueData = result.map((row: any) => ({
+        date: row.month,
+        revenue: parseFloat(row.revenue) || 0,
+        deposits: parseFloat(row.deposits) || 0,
+        payouts: parseFloat(row.payouts) || 0,
+        profit: parseFloat(row.revenue) - parseFloat(row.payouts) || 0,
+      }));
+
+      res.json(revenueData);
+    } catch (error) {
+      console.error("Revenue stats error:", error);
+      // Return empty array if no data yet
+      res.json([]);
+    }
+  });
+
+  // Payment methods distribution endpoint
+  app.get("/api/dashboard/payment-methods", async (req, res) => {
+    try {
+      const result = await db
+        .select({
+          name: paymentProcessors.name,
+          count: sql`COUNT(${paymentTransactions.id})`,
+          total: sql`SUM(${paymentTransactions.amount})`,
+        })
+        .from(paymentTransactions)
+        .leftJoin(paymentProcessors, eq(paymentTransactions.processorId, paymentProcessors.id))
+        .where(sql`${paymentTransactions.status} = 'completed'`)
+        .groupBy(paymentProcessors.name);
+
+      const total = result.reduce((sum: number, row: any) => sum + parseFloat(row.total || 0), 0);
+      
+      const paymentMethods = result.map((row: any) => ({
+        name: row.name || 'Unknown',
+        value: parseFloat(row.total) || 0,
+        percentage: total > 0 ? Math.round((parseFloat(row.total) / total) * 100) : 0,
+        color: getProcessorColor(row.name),
+      }));
+
+      res.json(paymentMethods);
+    } catch (error) {
+      console.error("Payment methods error:", error);
+      res.json([]);
     }
   });
 
