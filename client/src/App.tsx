@@ -83,6 +83,7 @@ import AICFODashboard from "@/pages/AICFODashboard";
 import ComplianceCenter from "@/pages/ComplianceCenter";
 import LegalLibrary from "@/pages/legal-library";
 import QuantumWarRoom from "@/pages/QuantumWarRoom";
+import QuantumWarRoomSimple from "@/pages/QuantumWarRoomSimple";
 
 function Router() {
   return (
@@ -150,7 +151,8 @@ function Router() {
           <Route path="/starz-studio" component={StarzStudioAdmin} />
           <Route path="/compliance-center" component={ComplianceCenter} />
           <Route path="/legal-library" component={LegalLibrary} />
-          <Route path="/quantum-war-room" component={QuantumWarRoom} />
+          <Route path="/quantum-war-room" component={QuantumWarRoomSimple} />
+          <Route path="/quantum-war-room-full" component={QuantumWarRoom} />
           <Route path="/blog" component={BlogManagement} />
           <Route path="/blog/create" component={BlogCreate} />
           <Route path="/blog/edit/:id" component={BlogEdit} />
