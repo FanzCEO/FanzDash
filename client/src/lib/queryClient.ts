@@ -7,14 +7,52 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+// Get CSRF token from cookies
+export function getCsrfToken(): string | null {
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === '_csrf' || name === 'XSRF-TOKEN') {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+}
+
+// Add CSRF token to request headers
+export function addCsrfHeaders(headers: Record<string, string> = {}): Record<string, string> {
+  const csrfToken = getCsrfToken();
+  if (csrfToken) {
+    return {
+      ...headers,
+      'CSRF-Token': csrfToken,
+      'X-CSRF-Token': csrfToken,
+    };
+  }
+  return headers;
+}
+
 export async function apiRequest(
-  method: string,
   url: string,
+  method: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  const headers: Record<string, string> = {
+    ...(data ? { "Content-Type": "application/json" } : {}),
+  };
+
+  // Add CSRF token for mutating requests
+  if (method !== 'GET' && method !== 'HEAD') {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      headers['CSRF-Token'] = csrfToken;
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+  }
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
