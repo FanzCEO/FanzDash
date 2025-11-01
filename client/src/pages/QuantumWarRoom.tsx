@@ -623,26 +623,41 @@ export default function QuantumWarRoom() {
   };
 
   return (
-    <div className="h-screen w-full relative bg-black overflow-hidden">
+    <div className="h-screen w-full relative bg-gradient-to-br from-gray-900 via-black to-purple-900 overflow-hidden">
+      {/* Loading Indicator */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="text-cyan-400 text-2xl font-bold animate-pulse">
+          Initializing Quantum War Room...
+        </div>
+      </div>
+
       {/* XR Canvas */}
       <Canvas camera={{ position: [10, 5, 10], fov: 60 }}>
         <Suspense fallback={null}>
           {/* Lighting */}
-          <ambientLight intensity={0.3} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} intensity={1.5} color="#ffffff" />
+          <pointLight position={[-10, -10, -10]} intensity={0.5} color="#4444ff" />
           <spotLight
             position={[0, 20, 0]}
             angle={0.3}
             penumbra={1}
             intensity={2}
             castShadow
+            color="#ffffff"
           />
 
-          {/* Environment */}
-          <Environment preset="city" />
+          {/* Environment - Simplified */}
+          <color attach="background" args={['#000000']} />
 
           {/* Grid floor */}
-          <gridHelper args={[50, 50, '#333333', '#111111']} />
+          <gridHelper args={[50, 50, '#00ffff', '#004444']} />
+          
+          {/* Test sphere to verify rendering */}
+          <mesh position={[0, 2, 0]}>
+            <sphereGeometry args={[1, 32, 32]} />
+            <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={0.5} />
+          </mesh>
 
           {/* Platform nodes */}
           {platforms.map(platform => (
@@ -709,8 +724,13 @@ export default function QuantumWarRoom() {
         onPlaybackChange={setPlayback}
       />
 
+      {/* Debug Info */}
+      <div className="absolute top-2 right-2 bg-cyan-500/20 border border-cyan-500 rounded px-3 py-1 text-cyan-400 text-xs">
+        3D Scene Active • WebGL Enabled
+      </div>
+
       {/* System Status Header */}
-      <div className="absolute top-4 left-4 bg-black/80 rounded-lg p-4 text-white">
+      <div className="absolute top-4 left-4 bg-black/80 border border-cyan-500/30 rounded-lg p-4 text-white shadow-lg shadow-cyan-500/20">
         <div className="flex items-center gap-4">
           <Shield className="w-6 h-6 text-blue-400" />
           <div>
