@@ -48,6 +48,7 @@ import {
   Eye,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface SystemConfig {
   // General Settings
@@ -269,13 +270,15 @@ export default function SystemConfiguration() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // API call to save configuration
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock delay
+      // Save system configuration to database
+      await apiRequest("/api/system/configuration", "POST", config);
+      
       toast({
         title: "Configuration Saved",
-        description: "System configuration has been updated successfully.",
+        description: "System configuration has been saved to database successfully.",
       });
     } catch (error) {
+      console.error("System config save error:", error);
       toast({
         title: "Save Failed",
         description: "Failed to save system configuration. Please try again.",

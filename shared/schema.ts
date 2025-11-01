@@ -3688,6 +3688,82 @@ export type InsertThreatHunting = typeof threatHunting.$inferInsert;
 export type MlInference = typeof mlInference.$inferSelect;
 export type InsertMlInference = typeof mlInference.$inferInsert;
 
+// ===== SEO/AEO/GTM SETTINGS =====
+
+export const seoSettings = pgTable("seo_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  pageUrl: text("page_url").unique().notNull(),
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
+  metaKeywords: text("meta_keywords").array(),
+  ogTitle: text("og_title"),
+  ogDescription: text("og_description"),
+  ogImage: text("og_image"),
+  ogType: text("og_type").default("website"),
+  twitterCard: text("twitter_card").default("summary_large_image"),
+  twitterTitle: text("twitter_title"),
+  twitterDescription: text("twitter_description"),
+  twitterImage: text("twitter_image"),
+  canonicalUrl: text("canonical_url"),
+  robotsMeta: text("robots_meta").default("index, follow"),
+  structuredData: jsonb("structured_data"),
+  customHeadTags: text("custom_head_tags"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const aeoSettings = pgTable("aeo_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  pageUrl: text("page_url").unique().notNull(),
+  featuredSnippetText: text("featured_snippet_text"),
+  faqItems: jsonb("faq_items").default("[]"),
+  howToSteps: jsonb("how_to_steps").default("[]"),
+  keyFacts: jsonb("key_facts").default("[]"),
+  entitySchema: jsonb("entity_schema"),
+  voiceSearchPhrases: text("voice_search_phrases").array(),
+  questionAnswers: jsonb("question_answers").default("[]"),
+  localBusinessSchema: jsonb("local_business_schema"),
+  reviewSchema: jsonb("review_schema"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const gtmSettings = pgTable("gtm_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  containerId: text("container_id").unique().notNull(),
+  environment: text("environment").default("production"),
+  enabled: boolean("enabled").default(true),
+  tags: jsonb("tags").default("[]"),
+  triggers: jsonb("triggers").default("[]"),
+  variables: jsonb("variables").default("[]"),
+  customHtml: text("custom_html"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type SeoSettings = typeof seoSettings.$inferSelect;
+export type InsertSeoSettings = typeof seoSettings.$inferInsert;
+export type AeoSettings = typeof aeoSettings.$inferSelect;
+export type InsertAeoSettings = typeof aeoSettings.$inferInsert;
+export type GtmSettings = typeof gtmSettings.$inferSelect;
+export type InsertGtmSettings = typeof gtmSettings.$inferInsert;
+
+export const insertSeoSettingsSchema = createInsertSchema(seoSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertAeoSettingsSchema = createInsertSchema(aeoSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertGtmSettingsSchema = createInsertSchema(gtmSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // ===== EXISTING 2257 COMPLIANCE TYPES =====
 
 export type Form2257Record = typeof form2257Records.$inferSelect;

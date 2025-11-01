@@ -51,6 +51,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface SEOSettings {
   // General SEO
@@ -295,14 +297,46 @@ export default function SEOConfiguration() {
   const saveSettings = async () => {
     setIsSaving(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Save SEO settings to database
+      await apiRequest("/api/seo/settings", "POST", {
+        pageUrl: "/", // Default homepage
+        metaTitle: seoSettings.defaultTitle,
+        metaDescription: seoSettings.siteDescription,
+        metaKeywords: seoSettings.siteKeywords,
+        ogTitle: seoSettings.ogTitle,
+        ogDescription: seoSettings.ogDescription,
+        ogImage: seoSettings.ogImage,
+        ogType: seoSettings.ogType,
+        twitterCard: seoSettings.twitterCard,
+        canonicalUrl: seoSettings.canonicalUrl,
+        robotsMeta: seoSettings.robotsTxtContent,
+      });
+
+      // Save GTM settings
+      if (seoSettings.googleTagManagerId) {
+        const gtmData: any = {
+          containerId: seoSettings.googleTagManagerId,
+          environment: "production",
+          enabled: true,
+        };
+        
+        // Only include Google Analytics if it's set
+        if (seoSettings.googleAnalyticsId) {
+          gtmData.tags = [{
+            type: "google_analytics",
+            trackingId: seoSettings.googleAnalyticsId
+          }];
+        }
+        
+        await apiRequest("/api/gtm/settings", "POST", gtmData);
+      }
 
       toast({
         title: "SEO Settings Saved",
-        description: "Your SEO configuration has been updated successfully",
+        description: "Your SEO configuration has been saved to the database successfully",
       });
     } catch (error) {
+      console.error("Save error:", error);
       toast({
         title: "Save Failed",
         description: "Failed to save SEO settings. Please try again.",

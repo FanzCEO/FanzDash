@@ -38,6 +38,7 @@ import {
   Hash,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface AEOSettings {
   // AI Optimization
@@ -320,14 +321,24 @@ ${new Date().toISOString()}`;
   const saveSettings = async () => {
     setIsSaving(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Save AEO settings to database
+      await apiRequest("/api/aeo/settings", "POST", {
+        pageUrl: "/",
+        featuredSnippetText: aeoSettings.featuredSnippet,
+        faqItems: aeoSettings.faqSchema || [],
+        howToSteps: aeoSettings.howToSchema || [],
+        keyFacts: [],
+        entitySchema: aeoSettings.entitySchema,
+        voiceSearchPhrases: aeoSettings.conversationalKeywords || [],
+        questionAnswers: [],
+      });
 
       toast({
         title: "AEO Settings Saved",
-        description:
-          "Your Answer Engine Optimization configuration has been updated successfully",
+        description: "Your Answer Engine Optimization configuration has been saved to the database successfully",
       });
     } catch (error) {
+      console.error("AEO save error:", error);
       toast({
         title: "Save Failed",
         description: "Failed to save AEO settings. Please try again.",

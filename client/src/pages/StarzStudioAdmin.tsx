@@ -180,7 +180,7 @@ export default function StarzStudioAdmin() {
 
   // Sync clusters mutation
   const syncClustersMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/starz-studio/clusters/sync"),
+    mutationFn: () => apiRequest("/api/starz-studio/clusters/sync", "POST"),
     onSuccess: () => {
       toast({
         title: "Platform Sync",

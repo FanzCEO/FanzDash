@@ -1,0 +1,26 @@
+---
+deployment:
+  tasks:
+    # Install dependencies
+    - export DEPLOYPATH=/home/fanzunlimited/public_html
+    - /bin/cp -R * $DEPLOYPATH
+    
+    # Install Node.js dependencies
+    - cd $DEPLOYPATH
+    - npm install --production
+    
+    # Build the application
+    - npm run build
+    
+    # Copy built files to public directory
+    - /bin/cp -R dist/public/* $DEPLOYPATH/
+    
+    # Set up environment
+    - echo "NODE_ENV=production" > $DEPLOYPATH/.env
+    
+    # Set permissions
+    - chmod -R 755 $DEPLOYPATH
+    
+    # Restart Node.js application
+    - /usr/local/bin/ea-nodejs restart
+

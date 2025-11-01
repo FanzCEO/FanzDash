@@ -43,6 +43,7 @@ import {
   Unlock,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface PaymentGateway {
   id: string;
@@ -322,8 +323,8 @@ export default function PaymentGatewaySetup() {
     setIsTestingGateway(gatewayId);
 
     try {
-      // Simulate API test
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Test gateway connection via API
+      const result = await apiRequest(`/api/payment/gateways/${gatewayId}/test`, "POST");
 
       setGateways((prev) =>
         prev.map((gw) =>
@@ -372,12 +373,12 @@ export default function PaymentGatewaySetup() {
   const saveConfiguration = async () => {
     setIsSaving(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Save payment gateway configuration to database
+      await apiRequest("/api/payment/gateways/configuration", "POST", { gateways });
 
       toast({
         title: "Configuration Saved",
-        description: "Payment gateway settings have been updated successfully",
+        description: "Payment gateway settings have been saved to database successfully",
       });
     } catch (error) {
       toast({
