@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useLocation } from 'wouter';
 import { Shield, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,13 +10,14 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 
 export default function DeviceVerification() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [token, setToken] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState('');
 
+  // Parse URL search params
+  const searchParams = new URLSearchParams(window.location.search);
   const isPending = searchParams.get('pending') === 'true';
 
   const handleVerify = async (e: React.FormEvent) => {
@@ -38,7 +39,7 @@ export default function DeviceVerification() {
           description: 'Your device has been successfully verified',
         });
         
-        setTimeout(() => navigate('/'), 1000);
+        setTimeout(() => setLocation('/'), 1000);
       } else {
         setError(response.error || 'Verification failed');
       }
@@ -114,7 +115,7 @@ export default function DeviceVerification() {
           <div className="text-center">
             <Button
               variant="link"
-              onClick={() => navigate('/login')}
+              onClick={() => setLocation('/login')}
               className="text-sm"
             >
               Back to Login

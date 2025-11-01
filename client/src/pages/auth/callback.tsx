@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation } from 'wouter';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AuthCallback() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
+  
+  // Parse URL search params
+  const searchParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -18,7 +20,7 @@ export default function AuthCallback() {
         description: getErrorMessage(error),
         variant: 'destructive',
       });
-      setTimeout(() => navigate('/login'), 2000);
+      setTimeout(() => setLocation('/login'), 2000);
       return;
     }
 
@@ -32,16 +34,16 @@ export default function AuthCallback() {
       });
       
       // Redirect to dashboard
-      setTimeout(() => navigate('/'), 1000);
+      setTimeout(() => setLocation('/'), 1000);
     } else {
       toast({
         title: 'Authentication Error',
         description: 'No authentication token received',
         variant: 'destructive',
       });
-      setTimeout(() => navigate('/login'), 2000);
+      setTimeout(() => setLocation('/login'), 2000);
     }
-  }, [searchParams, navigate, toast]);
+  }, [setLocation, toast]);
 
   const getErrorMessage = (error: string): string => {
     const errorMessages: Record<string, string> = {
