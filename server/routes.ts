@@ -875,8 +875,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Original dashboard and system routes
-  app.get("/api/dashboard/stats", async (req, res) => {
+  // Original dashboard and system routes (protected)
+  app.get("/api/dashboard/stats", isAuthenticated, async (req, res) => {
     try {
       const stats = await storage.getDashboardStats();
       res.json(stats);
@@ -886,8 +886,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add missing users stats endpoint
-  app.get("/api/users/stats", async (req, res) => {
+  // Add missing users stats endpoint (protected)
+  app.get("/api/users/stats", isAuthenticated, async (req, res) => {
     try {
       const stats = await storage.getUserStats();
       res.json(stats);

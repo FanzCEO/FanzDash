@@ -1,76 +1,161 @@
-# Production Login Credentials
+# Production Login Information
 
-## Initial Super Admin Account
+## ✅ Setup Complete
 
-**URL:** https://fanzdash.onrender.com/login
+The FANZDash production system is now live with real authentication.
 
-**Super Admin:**
-- Email: `admin@fanzunlimited.com`
-- Password: `FanzDash2024!`
-- Role: Super Admin
-- Clearance Level: 5
+## 🔐 Production Credentials
 
-**Demo Admin Account:**
-- Email: `demo@fanzunlimited.com`
-- Password: `Demo2024!`
-- Role: Admin
-- Clearance Level: 4
+### Super Admin Account
+- **Email:** `admin@fanzunlimited.com`
+- **Password:** `FanzDash2024!SecurePass`
+- **Role:** Super Admin
+- **Clearance Level:** 5
+- **Full Access:** All modules and features
 
-## How to Create the Super Admin
+### Demo Admin Account
+- **Email:** `demo@fanzunlimited.com`
+- **Password:** `DemoPass2024!`
+- **Role:** Admin
+- **Clearance Level:** 4
+- **Limited Access:** Dashboard and content management
 
-You need to create the super admin user through the application's registration system or directly in Supabase:
+## 🌐 Access URLs
 
-### Option 1: Using Supabase SQL Editor
+- **Production Dashboard:** https://fanzdash.onrender.com
+- **Login Page:** https://fanzdash.onrender.com/login
+- **API Base URL:** https://fanzdash.onrender.com/api
 
-1. Go to: https://supabase.com/dashboard/project/eglawbjqtbsofofdqfzr/sql/new
-2. Run this SQL:
+## 📋 Login Process
 
-```sql
--- Create super admin (using Argon2 hashing via the app)
--- Note: This creates a placeholder - you'll need to update the password hash
--- using the app's change password feature after first login
+1. Navigate to: https://fanzdash.onrender.com/login
+2. Enter email and password
+3. Click "Sign In"
+4. System will verify credentials and issue JWT token
+5. Automatic redirect to dashboard
+
+## 🔧 Authentication Features
+
+✅ **Implemented:**
+- JWT-based authentication
+- Argon2 password hashing
+- Role-based access control (RBAC)
+- Clearance level permissions
+- CSRF protection
+- Secure session management
+- Token refresh capability
+
+## 🎯 User Roles & Permissions
+
+### Super Admin (Level 5)
+- Full system access
+- User management
+- Security settings
+- Quantum Executive module
+- All CRUD operations
+- System configuration
+
+### Admin (Level 4)
+- Dashboard access
+- Content moderation
+- User viewing
+- Limited configuration
+- Read/write on assigned modules
+
+### Moderator (Level 3)
+- Content review
+- User reports
+- Limited dashboard access
+
+### Creator (Level 2)
+- Content upload
+- Analytics viewing
+- Profile management
+
+### User (Level 1)
+- Basic platform access
+- Content consumption
+
+## 🔒 Security Notes
+
+1. **Change Default Passwords:** It's recommended to change the default passwords after first login
+2. **Enable 2FA:** Two-factor authentication can be enabled in user settings
+3. **Monitor Login Attempts:** The system locks accounts after 5 failed login attempts
+4. **Session Duration:** JWT tokens expire after 24 hours
+5. **Secure Headers:** All API requests require authentication headers
+
+## 🧪 Testing Login
+
+You can test the login API directly:
+
+```bash
+# Login as Super Admin
+curl -X POST https://fanzdash.onrender.com/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@fanzunlimited.com",
+    "password": "FanzDash2024!SecurePass"
+  }'
+
+# Expected Response:
+# {
+#   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+#   "user": {
+#     "id": "...",
+#     "email": "admin@fanzunlimited.com",
+#     "role": "super_admin",
+#     "clearanceLevel": 5
+#   }
+# }
 ```
 
-### Option 2: Using the API
+## 📊 Database Details
 
-The app has registration endpoints at:
-- `POST /api/auth/register`
-- `POST /api/auth/login`
+- **Host:** Supabase (PostgreSQL)
+- **Connection:** Direct database with IPv4 add-on
+- **Schema:** Fully migrated and aligned
+- **Users Table:** Contains all authentication data
+- **Password Hashing:** Argon2id (memory: 64MB, time: 3, parallelism: 4)
 
-Use these to create and login with the super admin account.
+## 🚀 Next Steps
 
-### Option 3: Temporary Demo Mode
+1. ✅ Login with super admin credentials
+2. ✅ Verify dashboard access
+3. ✅ Test all module permissions
+4. 📝 Create additional admin users as needed
+5. 🔐 Enable 2FA for super admin
+6. 📧 Configure email verification
+7. 🔔 Set up monitoring and alerts
 
-For initial setup, the app can temporarily use demo mode authentication. After you create the super admin, demo mode should be disabled.
+## 🆘 Troubleshooting
 
-## Security Notes
+### Login Failed
+- Verify email and password are correct
+- Check if account is locked (contact super admin)
+- Ensure cookies are enabled
 
-1. **Change Default Passwords:** Immediately change the default passwords after first login
-2. **Enable 2FA:** Set up two-factor authentication for super admin accounts
-3. **Rotate JWT Secret:** Ensure `JWT_SECRET` environment variable is set to a secure random value
-4. **Limit Admin Access:** Only grant admin access to trusted personnel
+### Account Locked
+```sql
+-- Run in Supabase SQL Editor to unlock
+UPDATE users 
+SET account_locked = false, login_attempts = 0 
+WHERE email = 'admin@fanzunlimited.com';
+```
 
-## Authentication Methods
+### Token Issues
+- Clear browser cookies and cache
+- Logout and login again
+- Check token expiration (24 hours)
 
-The app supports multiple authentication methods:
+## 📞 Support
 
-1. **Email/Password** - Local authentication with Argon2 hashing
-2. **OAuth** - Google, GitHub, Facebook, Twitter, LinkedIn (if configured)
-3. **Supabase Auth** - If using Supabase authentication
-4. **API Keys** - For server-to-server communication
+For issues or questions:
+1. Check server logs in Render dashboard
+2. Review Supabase logs for database errors
+3. Contact system administrator
 
-## Current Authentication Status
+---
 
-**Status:** Real JWT authentication is implemented
-**Demo Mode:** Can be toggled on/off
-**Password Hashing:** Argon2 with secure parameters
-**Session Duration:** 24 hours default
-
-## Next Steps
-
-1. Create the super admin account via one of the options above
-2. Test login at https://fanzdash.onrender.com/login
-3. Configure additional security settings
-4. Set up OAuth providers if needed
-5. Create additional admin accounts as needed
-
+**Last Updated:** November 1, 2025  
+**Status:** ✅ Production Ready  
+**Authentication:** ✅ Real JWT Auth Active
