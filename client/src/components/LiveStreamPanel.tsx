@@ -12,7 +12,7 @@ export function LiveStreamPanel() {
 
   const handleReviewStream = async (streamId: string) => {
     try {
-      await apiRequest("PUT", `/api/live-streams/${streamId}`, {
+      await apiRequest(`/api/live-streams/${streamId}`, "PUT", {
         status: "under_review",
       });
     } catch (error) {

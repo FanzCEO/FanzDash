@@ -334,7 +334,7 @@ export default function CrisisManagement() {
 
   const handleEscalateCrisis = useMutation({
     mutationFn: (crisisId: string) =>
-      apiRequest("POST", `/api/crisis/${crisisId}/escalate`),
+      apiRequest(`/api/crisis/${crisisId}/escalate`, "POST"),
     onSuccess: (_, crisisId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/crisis"] });
       const crisis = crisisEvents.find((c) => c.id === crisisId);
@@ -347,7 +347,7 @@ export default function CrisisManagement() {
 
   const handleResolveCrisis = useMutation({
     mutationFn: (crisisId: string) =>
-      apiRequest("POST", `/api/crisis/${crisisId}/resolve`),
+      apiRequest(`/api/crisis/${crisisId}/resolve`, "POST"),
     onSuccess: (_, crisisId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/crisis"] });
       const crisis = crisisEvents.find((c) => c.id === crisisId);
@@ -360,7 +360,7 @@ export default function CrisisManagement() {
 
   const handleAcknowledgeAlert = useMutation({
     mutationFn: (alertId: string) =>
-      apiRequest("POST", `/api/alerts/${alertId}/acknowledge`),
+      apiRequest(`/api/alerts/${alertId}/acknowledge`, "POST"),
     onSuccess: (_, alertId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/alerts"] });
       toast({

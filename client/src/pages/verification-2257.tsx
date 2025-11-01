@@ -136,7 +136,7 @@ export default function Verification2257() {
       status: string;
       reason?: string;
     }) => {
-      return apiRequest("PATCH", `/api/2257-verifications/${id}`, {
+      return apiRequest(`/api/2257-verifications/${id}`, "PATCH", {
         status,
         actionReason: reason,
       });

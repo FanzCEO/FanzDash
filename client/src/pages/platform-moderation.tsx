@@ -376,7 +376,7 @@ export default function PlatformModeration() {
       platformId: string;
       level: number;
     }) =>
-      apiRequest("POST", `/api/platforms/${platformId}/moderation-level`, {
+      apiRequest(`/api/platforms/${platformId}/moderation-level`, "POST", {
         level,
       }),
     onSuccess: (_, { platformId, level }) => {
@@ -399,7 +399,7 @@ export default function PlatformModeration() {
       platformId: string;
       enabled: boolean;
     }) =>
-      apiRequest("POST", `/api/platforms/${platformId}/auto-moderation`, {
+      apiRequest(`/api/platforms/${platformId}/auto-moderation`, "POST", {
         enabled,
       }),
     onSuccess: (_, { platformId, enabled }) => {

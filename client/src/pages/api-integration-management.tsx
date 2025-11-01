@@ -1258,7 +1258,7 @@ export default function APIIntegrationManagement() {
 
   const handleToggleIntegration = useMutation({
     mutationFn: (integrationId: string) =>
-      apiRequest("POST", `/api/integrations/${integrationId}/toggle`),
+      apiRequest(`/api/integrations/${integrationId}/toggle`, "POST"),
     onSuccess: (_, integrationId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/integrations"] });
       const integration = apiIntegrations.find((i) => i.id === integrationId);
@@ -1271,7 +1271,7 @@ export default function APIIntegrationManagement() {
 
   const handleTestIntegration = useMutation({
     mutationFn: (integrationId: string) =>
-      apiRequest("POST", `/api/integrations/${integrationId}/test`),
+      apiRequest(`/api/integrations/${integrationId}/test`, "POST"),
     onSuccess: (_, integrationId) => {
       const integration = apiIntegrations.find((i) => i.id === integrationId);
       toast({

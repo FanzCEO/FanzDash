@@ -345,7 +345,7 @@ export default function PluginManagement() {
 
   const handleTogglePlugin = useMutation({
     mutationFn: (pluginId: string) =>
-      apiRequest("POST", `/api/plugins/${pluginId}/toggle`),
+      apiRequest(`/api/plugins/${pluginId}/toggle`, "POST"),
     onSuccess: (_, pluginId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/plugins"] });
       const plugin = installedPlugins.find((p) => p.id === pluginId);
@@ -358,7 +358,7 @@ export default function PluginManagement() {
 
   const handleInstallPlugin = useMutation({
     mutationFn: (pluginId: string) =>
-      apiRequest("POST", `/api/plugins/install`, { pluginId }),
+      apiRequest(`/api/plugins/install`, "POST", { pluginId }),
     onSuccess: (_, pluginId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/plugins"] });
       const plugin = storePlugins.find((p) => p.id === pluginId);
@@ -371,7 +371,7 @@ export default function PluginManagement() {
 
   const handleUninstallPlugin = useMutation({
     mutationFn: (pluginId: string) =>
-      apiRequest("DELETE", `/api/plugins/${pluginId}`),
+      apiRequest(`/api/plugins/${pluginId}`, "DELETE"),
     onSuccess: (_, pluginId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/plugins"] });
       const plugin = installedPlugins.find((p) => p.id === pluginId);

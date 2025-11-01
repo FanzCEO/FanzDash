@@ -314,7 +314,7 @@ export default function ComplianceMonitoring() {
 
   const handleUpdateComplianceStatus = useMutation({
     mutationFn: ({ recordId, status }: { recordId: string; status: string }) =>
-      apiRequest("POST", `/api/compliance/${recordId}/status`, { status }),
+      apiRequest(`/api/compliance/${recordId}/status`, "POST", { status }),
     onSuccess: (_, { recordId, status }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/compliance"] });
       const record = complianceRecords.find((r) => r.id === recordId);

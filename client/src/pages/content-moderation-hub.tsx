@@ -256,7 +256,7 @@ export default function ContentModerationHub() {
 
   const handleApproveContent = useMutation({
     mutationFn: (itemId: string) =>
-      apiRequest("POST", `/api/moderation/${itemId}/approve`),
+      apiRequest(`/api/moderation/${itemId}/approve`, "POST"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/moderation/items"] });
       toast({ title: "Content approved successfully" });
@@ -265,7 +265,7 @@ export default function ContentModerationHub() {
 
   const handleRejectContent = useMutation({
     mutationFn: (itemId: string) =>
-      apiRequest("POST", `/api/moderation/${itemId}/reject`),
+      apiRequest(`/api/moderation/${itemId}/reject`, "POST"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/moderation/items"] });
       toast({ title: "Content rejected successfully" });
