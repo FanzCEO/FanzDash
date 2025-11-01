@@ -327,7 +327,7 @@ export default function ComplianceMonitoring() {
 
   const handleGenerateReport = useMutation({
     mutationFn: (platform: string) =>
-      apiRequest("POST", "/api/compliance/report", { platform }),
+      apiRequest("/api/compliance/report", "POST", { platform }),
     onSuccess: () => {
       toast({
         title: "Compliance report generated",

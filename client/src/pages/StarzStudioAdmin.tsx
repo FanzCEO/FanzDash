@@ -200,7 +200,7 @@ export default function StarzStudioAdmin() {
   // Create project mutation
   const createProjectMutation = useMutation({
     mutationFn: (projectData: any) =>
-      apiRequest("POST", "/api/starz-studio/projects", projectData),
+      apiRequest("/api/starz-studio/projects", "POST", projectData),
     onSuccess: () => {
       toast({
         title: "Project Created",

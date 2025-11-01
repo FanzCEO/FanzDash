@@ -222,7 +222,7 @@ export default function RadioBroadcastingPage() {
 
   const createStationMutation = useMutation({
     mutationFn: async (data: { name: string; genre: string }) => {
-      return apiRequest("POST", "/api/radio/stations", data);
+      return apiRequest("/api/radio/stations", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/radio/stations"] });
@@ -249,7 +249,7 @@ export default function RadioBroadcastingPage() {
       targetUser?: string;
       reason: string;
     }) => {
-      return apiRequest("POST", "/api/radio/moderate", data);
+      return apiRequest("/api/radio/moderate", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/radio/moderation"] });

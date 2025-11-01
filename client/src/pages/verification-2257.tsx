@@ -107,7 +107,7 @@ export default function Verification2257() {
 
   const createVerificationMutation = useMutation({
     mutationFn: async (data: Verification2257Form) => {
-      return apiRequest("POST", "/api/2257-verifications", data);
+      return apiRequest("/api/2257-verifications", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/2257-verifications"] });

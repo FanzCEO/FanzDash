@@ -273,7 +273,7 @@ export default function PodcastManagementPage() {
 
   const createPodcastMutation = useMutation({
     mutationFn: async (data: { title: string; category: string }) => {
-      return apiRequest("POST", "/api/podcasts", data);
+      return apiRequest("/api/podcasts", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/podcasts"] });

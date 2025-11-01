@@ -85,7 +85,7 @@ export default function PaymentManagement() {
       processorType: string;
       adultFriendly: boolean;
     }) => {
-      return apiRequest("POST", "/api/payment/processors", data);
+      return apiRequest("/api/payment/processors", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/payment/processors"] });

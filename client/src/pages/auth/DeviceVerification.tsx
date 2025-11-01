@@ -39,7 +39,7 @@ export default function DeviceVerification() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest("POST", "/auth/verify-device", {
+      const response = await apiRequest("/auth/verify-device", "POST", {
         token,
       });
 
@@ -83,7 +83,7 @@ export default function DeviceVerification() {
     setError("");
 
     try {
-      const response = await apiRequest("POST", "/auth/verify-device", {
+      const response = await apiRequest("/auth/verify-device", "POST", {
         token: verificationCode,
       });
 

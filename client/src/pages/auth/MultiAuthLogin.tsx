@@ -60,7 +60,7 @@ export default function MultiAuthLogin() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest("POST", "/auth/login", loginData);
+      const response = await apiRequest("/auth/login", "POST", loginData);
 
       if (response.requiresVerification) {
         setVerificationStep("device");
@@ -113,7 +113,7 @@ export default function MultiAuthLogin() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest("POST", "/auth/register", {
+      const response = await apiRequest("/auth/register", "POST", {
         email: registerData.email,
         password: registerData.password,
         firstName: registerData.firstName,
@@ -152,7 +152,7 @@ export default function MultiAuthLogin() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest("POST", "/auth/verify-device", {
+      const response = await apiRequest("/auth/verify-device", "POST", {
         token: deviceVerificationCode,
       });
 
@@ -187,7 +187,7 @@ export default function MultiAuthLogin() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest("POST", "/auth/verify-mfa", {
+      const response = await apiRequest("/auth/verify-mfa", "POST", {
         token: mfaCode,
         tempToken,
       });

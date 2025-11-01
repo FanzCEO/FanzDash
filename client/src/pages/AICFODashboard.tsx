@@ -114,7 +114,7 @@ export default function AICFODashboard() {
   // Generate CFO Brief Mutation
   const generateBriefMutation = useMutation({
     mutationFn: async (period: string) => {
-      return apiRequest("POST", "/api/ai-cfo/brief", { period });
+      return apiRequest("/api/ai-cfo/brief", "POST", { period });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/ai-cfo/brief/latest"] });

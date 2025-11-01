@@ -274,7 +274,7 @@ export default function ContentModerationHub() {
 
   const handleToggleAutoModeration = useMutation({
     mutationFn: () =>
-      apiRequest("POST", "/api/moderation/auto-toggle", {
+      apiRequest("/api/moderation/auto-toggle", "POST", {
         enabled: !autoModerationEnabled,
       }),
     onSuccess: () => {

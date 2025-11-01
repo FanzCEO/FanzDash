@@ -78,7 +78,7 @@ export default function StreamManagement() {
       userId: string;
       tokenType: string;
     }) => {
-      return apiRequest("POST", "/api/stream/token", { userId, tokenType });
+      return apiRequest("/api/stream/token", "POST", { userId, tokenType });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/stream/tokens"] });
@@ -103,7 +103,7 @@ export default function StreamManagement() {
       reason: string;
       moderatorId: string;
     }) => {
-      return apiRequest("POST", "/api/stream/moderate", data);
+      return apiRequest("/api/stream/moderate", "POST", data);
     },
     onSuccess: () => {
       toast({

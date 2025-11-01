@@ -58,7 +58,7 @@ export function GPTChatbot({ className, isFloating = false }: GPTChatbotProps) {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (message: string) => {
-      return apiRequest("POST", "/api/gpt-chatbot/chat", {
+      return apiRequest("/api/gpt-chatbot/chat", "POST", {
         message,
         conversationHistory: messages.slice(-10), // Send last 10 messages for context
       });

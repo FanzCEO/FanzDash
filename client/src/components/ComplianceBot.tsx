@@ -107,7 +107,7 @@ export function ComplianceBot({
   const sendMessageMutation = useMutation<ComplianceBotResponse, Error, string>(
     {
       mutationFn: async (message: string) => {
-        const response = await apiRequest("POST", "/api/compliance-bot/chat", {
+        const response = await apiRequest("/api/compliance-bot/chat", "POST", {
           message,
           conversationHistory: messages.slice(-10),
         });

@@ -87,7 +87,7 @@ export default function ChatSystem() {
       roomId: string;
       content: string;
     }) => {
-      return apiRequest("POST", "/api/chat/messages", {
+      return apiRequest("/api/chat/messages", "POST", {
         roomId,
         content,
         messageType: "text",
@@ -120,7 +120,7 @@ export default function ChatSystem() {
       type: string;
       participants: string[];
     }) => {
-      return apiRequest("POST", "/api/chat/rooms", {
+      return apiRequest("/api/chat/rooms", "POST", {
         name,
         type,
         participants,

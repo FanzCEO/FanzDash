@@ -42,17 +42,17 @@ export function ModerationSettings() {
     mutationFn: async (settingsData: any) => {
       // Save each type of settings
       await Promise.all([
-        apiRequest("PUT", "/api/settings", {
+        apiRequest("/api/settings", "PUT", {
           type: "image",
           autoBlockThreshold: imageSettings.autoBlockThreshold.toString(),
           reviewThreshold: imageSettings.reviewThreshold.toString(),
         }),
-        apiRequest("PUT", "/api/settings", {
+        apiRequest("/api/settings", "PUT", {
           type: "text",
           autoBlockThreshold: textSettings.autoBlockThreshold.toString(),
           reviewThreshold: textSettings.reviewThreshold.toString(),
         }),
-        apiRequest("PUT", "/api/settings", {
+        apiRequest("/api/settings", "PUT", {
           type: "live_stream",
           frameSampleRate: streamSettings.frameSampleRate,
           autoBlurThreshold: streamSettings.autoBlurThreshold.toString(),

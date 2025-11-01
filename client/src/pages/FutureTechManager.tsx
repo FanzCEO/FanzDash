@@ -171,7 +171,7 @@ export default function FutureTechManager() {
 
   const trendAnalysisMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest("POST", "/api/future-tech/trend-analysis", {});
+      return apiRequest("/api/future-tech/trend-analysis", "POST", {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/future-tech/trends"] });
@@ -180,7 +180,7 @@ export default function FutureTechManager() {
 
   const techScoutingMutation = useMutation({
     mutationFn: async (query: string) => {
-      return apiRequest("POST", "/api/future-tech/scouting", { query });
+      return apiRequest("/api/future-tech/scouting", "POST", { query });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
