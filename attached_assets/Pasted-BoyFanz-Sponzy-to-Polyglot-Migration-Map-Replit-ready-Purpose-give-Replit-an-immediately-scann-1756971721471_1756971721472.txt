@@ -1,0 +1,262 @@
+BoyFanz → Sponzy‑to‑Polyglot Migration Map (Replit‑ready)
+
+Purpose: give Replit an immediately scannable blueprint showing (A) what the current Sponzy/Laravel app typically contains for BoyFanz, and (B) the one‑to‑one carve‑out into polyglot services with stable contracts, events, and admin flows, with integrations for getstream.io, Coconut.co, adult‑friendly GPT/AI, VR/AR, and explicitly excluding Stripe/PayPal.
+
+⸻
+
+0) Notes & assumptions
+	•	I couldn’t open Sponzy.zip in this interface, so below is the canonical Sponzy/Laravel structure and feature map commonly used by BoyFanz, plus the FUN‑specific deltas.
+	•	Where your FUN wishlist adds or changes scope (geo‑collab, tiers/points, AI companions, AR, extra processors, storage, streaming), I mark it with [FUN+].
+	•	Payment processors: No Stripe or PayPal. Only alt‑friendly gateways (BitPay, Authorize.Net, RocketGate, SegPay, Paxum, etc.).
+
+⸻
+
+1) Canonical Laravel / Sponzy folder map
+
+(same as before – see existing structure with Controllers, Models, routes, etc.)
+
+⸻
+
+2) Admin feature matrix (with FUN+ integrations)
+	•	Users & Roles → OK.
+	•	Verifications (KYC/2257) → OK (VerifyMy + HubVault).
+	•	Content → approve/unpublish, scheduling, tags. [FUN+] Stories, blurred previews, forums, leaderboards.
+	•	Commerce → subs, PPV, coupons, refunds/disputes. [FUN+] tiers/points, gift/wishlists, creator ads. Exclude Stripe/PayPal.
+	•	Payouts → alt‑rails only.
+	•	Compliance → DMCA inbox, audit search. [FUN+] Legal Hub.
+	•	Media → S3/B2/Wasabi/Pushr + Coconut.co encoding integration [FUN+].
+	•	Analytics → baseline + churn/cohorts.
+	•	Live → multi‑user + ticketed events.
+	•	Innovation → geo‑collab map; getstream.io for feeds, chat, activity; adult‑safe GPTs for content co‑pilot; VR/AR meetups & try‑ons.
+
+⸻
+
+3) Polyglot carve‑out (services & contracts)
+	•	users‑svc: auth, roles.
+	•	verify‑svc: VerifyMy integration.
+	•	media‑svc: ingestion, Coconut.co encoding, forensic tags.
+	•	stream‑svc [FUN+]: wraps getstream.io APIs for feeds, chat, real‑time collab.
+	•	ai‑svc [FUN+]: hooks to adult‑media‑friendly GPT models for moderation, co‑pilot, and creator tools.
+	•	vr‑svc [FUN+]: VR/AR APIs for meetups, try‑ons, immersive fan events.
+	•	commerce‑svc: orders, PPV, subs, refunds → alt processors only (BitPay, Authorize.Net, SegPay, Paxum, RocketGate).
+	•	payout‑svc: balances, alt‑rails.
+	•	policy‑svc, moderation‑svc, notifier‑svc, audit‑svc: same as before.
+
+⸻
+
+4) Integrations
+	•	getstream.io: activity feeds, timelines, chat, group collabs → API key stored in STREAM_API_KEY.
+	•	Coconut.co: async video encoding, mobile‑ready HLS, watermarking → API key stored in COCONUT_API_KEY.
+	•	Adult GPTs: fine‑tuned/filtered LLM endpoints, hosted behind ai‑svc, for:
+	•	Creator assistants/digital twins.
+	•	Auto‑captioning, tagging, translations.
+	•	Moderation (context‑aware, adult‑friendly).
+	•	VR/AR: wrappers for WebXR/Three.js or partner APIs; VR meetups and AR merch try‑ons.
+
+⸻
+
+5) ENV quicklist (new)
+	•	STREAM_API_KEY, STREAM_API_SECRET
+	•	COCONUT_API_KEY
+	•	AI_PROVIDER_URL, AI_API_KEY (adult‑safe GPT host)
+	•	VR_ENGINE_URL, VR_API_KEY
+	•	ALT_PAY_KEYS_* (BitPay, SegPay, Paxum, etc.)
+
+⸻
+
+6) Migration checklist (extra)
+	•	Connect media‑svc → Coconut pipeline for encoding.
+	•	Provision getstream.io app, map user/creator IDs.
+	•	Connect ai‑svc → adult‑friendly GPT endpoint.
+	•	Add VR/AR feature flags in admin‑ui.
+	•	Remove Stripe/PayPal configs from all services.
+
+⸻
+
+7) FUN+ deltas to bake in (expanded)
+	•	Geo‑collab map + chat + calendar sync.
+	•	Membership tiers + points/credits + blur previews.
+	•	Creator ads & approval workflow.
+	•	Extra payment processors (alt‑friendly only).
+	•	Extra storage + Coconut encoding.
+	•	Leaderboards, forums, stories, gifting/wishlist.
+	•	Private/multi‑user live + ticketing.
+	•	AI companions/digital twins.
+	•	AR meetups & merch try‑ons.
+	•	VR immersive events.
+	•	Adult‑safe GPT integrations.
+	•	getstream.io feeds & chat.
+
+⸻
+
+This revised map positions BoyFanz not just as Sponzy‑migrated, but as a next‑gen creator hub with realtime feeds, streaming/encoding, AI/VR capabilities, and bulletproof adult‑industry‑safe commerce without Stripe/PayPal.
+
+⸻
+
+11) Realtime feeds & chat (GetStream.io)
+
+Goal: Social/news feeds + DMs/groups with scalable moderation.
+
+New service: chat-svc (Node or Go) — wraps Stream Feeds + Chat; signs user tokens; exposes a thin internal API for admin-ui and other svcs.
+
+ENV
+	•	STREAM_API_KEY, STREAM_API_SECRET, STREAM_APP_ID
+	•	STREAM_WEBHOOK_SECRET
+
+Internal API (chat-svc)
+	•	POST /api/v1/chat/token { user_id } → { token }
+	•	POST /api/v1/chat/channel { members, type } → { channel_id }
+	•	POST /api/v1/feed/activity { actor, verb, object, data } → { activity_id }
+	•	POST /api/v1/moderate/ban { user_id, reason }
+	•	POST /api/v1/moderate/flag { message_id|activity_id, reason }
+
+Events
+	•	Emits: chat.message.created, chat.user.banned, feed.activity.created, moderation.flagged
+	•	Consumes: post.published (to push feed activities), verification.approved (to enable messaging), moderation.actioned (to enforce bans/mutes)
+
+Webhooks
+	•	/webhooks/getstream/events — message flagged, attachment blocked, user banned/unbanned, channel events
+
+Admin-UI
+	•	Chat Moderation Panel: live flag queue, ban/mute, rate limits, attachment policy by role (unverified creators cannot attach files)
+	•	Feed Controls: inject/remove activities, shadow-ban authors, system announcements
+
+Policy
+	•	Default: DMs disabled until verification.approved
+	•	Attachment types gated by role & policy-svc (images/video allowed only for verified adults)
+
+Example (Node, token endpoint)
+
+import { StreamChat } from 'stream-chat';
+const client = StreamChat.getInstance(process.env.STREAM_API_KEY, process.env.STREAM_API_SECRET);
+export async function issueToken(userId){
+  await client.upsertUser({ id: userId });
+  return client.createToken(userId);
+}
+
+
+⸻
+
+12) Encoding pipeline (Coconut.co)
+
+Goal: Offload transcoding to Coconut; keep FFmpeg as fallback.
+
+New module: in media-svc add coconut-adapter.ts
+
+ENV
+	•	COCONUT_API_KEY
+	•	COCONUT_REGION (eg us-east-1)
+	•	COCONUT_WEBHOOK_SECRET
+
+Flow
+	1.	media.ingested → create Coconut Job (inputs: S3/B2/Wasabi URL)
+	2.	Outputs: HLS (multi-bitrate), posters, animated GIF; optional AES-128 encryption
+	3.	Coconut posts status to /webhooks/coconut → update EncodingJob + publish media.encoded
+
+Job payload (example)
+
+{
+  "input": "https://cdn.fanz/.../orig.mp4",
+  "storage": { "service": "s3", "bucket": "fanz-encoded", "path": "hls/123/" },
+  "outputs": [
+    { "format": "hls", "resolutions": ["426x240","640x360","1280x720"], "optimize": true },
+    { "format": "jpg", "number": 6, "every": 5 }
+  ],
+  "notifications": { "type": "webhook", "url": "https://api.fanz/webhooks/coconut" }
+}
+
+Tables
+	•	encoding_jobs(id, media_id, provider, status, started_at, finished_at, meta)
+	•	encoding_outputs(id, job_id, kind, url, width, height, bitrate)
+
+Admin-UI
+	•	Encoding Queue: per-job status, retries, switch to FFmpeg fallback, HLS preview
+
+⸻
+
+13) Adult‑media‑friendly AI (digital twins, assistants, moderation)
+
+Goal: Self‑hosted AI that respects adult policy, consent, and safety; powers creator assistants, RAG bios, and automated triage.
+
+New service: ai-svc (Python FastAPI + vLLM)
+
+Models (self‑hosted lanes)
+	•	Chat/Agent: open‑license LLMs via vLLM; per‑creator persona with opt‑in training data
+	•	Safety/Merge: classification heads for age‑safety, illegal themes, doxxing, extremity levels
+	•	Vision: NSFW classifier for image/video frames; blur masks pre‑publish
+
+Capabilities
+	•	Creator Digital Twin: scripted/on‑brand responses; never impersonate real‑time presence without disclosure
+	•	RAG Memory: per‑creator vault of FAQs, boundaries, pricing, upcoming events
+	•	Smart Previews: auto‑generate captions, blurred teasers, highlight reels
+
+Guardrails
+	•	Enforce 18+ verification before AI chat; block illegal/abusive topics; escalate to moderation‑svc with moderation.flagged
+	•	Every AI message carries consent_context + policy_trace
+
+API
+	•	POST /api/v1/ai/chat { creator_id, fan_id, msg }
+	•	POST /api/v1/ai/summarize-media { media_id }
+	•	POST /api/v1/ai/moderate { text|image|video }
+
+Admin-UI
+	•	AI Studio: configure persona, allowed topics, escalation rules, working hours, tone sliders, price/upsell tree
+
+⸻
+
+14) VR / Immersive
+
+Goal: WebXR playback + live VR pipelines with compliance gates.
+
+New service: vr-svc
+
+Features
+	•	On‑Demand VR: Play 180°/360° HLS/DASH; A‑Frame/Three.js scene shells; gaze controls
+	•	Live VR: WebRTC SFU (Janus/mediasoup) with room tokens issued by users-svc
+	•	Spatial Chat: proximity audio in events; opt‑in avatars; safety bubble toggle
+
+Compliance gates
+	•	Only verification.approved users can stream; viewers geo‑restricted per policy
+	•	Co‑star consent + session logs attached to VR rooms
+
+Admin-UI
+	•	VR Library: upload 180/360 masters; render map; headset QA checklist
+	•	Live Console: start/stop, ticketing, moderators, instant-ban, transcript capture
+
+⸻
+
+15) Payments: Explicitly exclude Stripe/PayPal
+
+Rule: Never integrate Stripe or PayPal (denylist checks in CI + runtime).
+
+Allowlist connectors (configure via commerce-svc):
+	•	Card processors: Authorize.Net, CCBill, Segpay, Epoch, Rocketgate
+	•	Alt rails: BitPay (crypto), Razorpay (regional), bank A2A where supported
+
+ENV
+	•	CCBILL_*, SEGPAY_*, EPOCH_*, ROCKETGATE_*, AUTHNET_*, BITPAY_*, RAZORPAY_*
+
+Code guard
+	•	commerce-svc runs a startup assertion: if env contains STRIPE_* or PAYPAL_* → fatal
+	•	ESLint/Revive custom rule bans stripe, paypal imports; CI fails on detection
+
+Admin-UI
+	•	Rails matrix with health checks & test transactions; dispute dashboards per provider
+
+⸻
+
+16) Cross‑service contracts (new events)
+	•	feed.activity.created {activity_id, actor, verb, object, data}
+	•	chat.message.created {message_id, user_id, channel_id}
+	•	encoding.job.updated {job_id, status, outputs[]}
+	•	ai.escalation {ref_id, reason, severity}
+	•	vr.session.started|ended {room_id, participants[]}
+	•	commerce.payment.disputed {provider, case_id, order_id}
+
+⸻
+
+17) Ops & Security add‑ons
+	•	Webhook signature verification for GetStream & Coconut
+	•	KMS‑managed secrets rotation; per‑service IAM
+	•	Content fingerprinting + invisible watermark on HLS segments
+	•	Golden path runbooks: chat outage, encoding backlog, AI false‑positive, VR room abuse

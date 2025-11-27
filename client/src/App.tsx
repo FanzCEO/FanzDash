@@ -1,0 +1,284 @@
+import { Switch, Route } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { CategorizedNavigation } from "@/components/CategorizedNavigation";
+import Dashboard from "@/pages/dashboard";
+import PlatformsPage from "@/pages/platforms";
+import AIAnalysisPage from "@/pages/ai-analysis";
+import ContentReviewPage from "@/pages/content-review";
+import LiveMonitoringPage from "@/pages/live-monitoring";
+import AnalyticsPage from "@/pages/analytics";
+import SettingsPage from "@/pages/settings";
+import UsersPage from "@/pages/users";
+import RiskManagementPage from "@/pages/risk-management";
+import CrisisManagementPage from "@/pages/crisis-management";
+import AdvancedAnalyticsPage from "@/pages/advanced-analytics";
+import PredictiveAnalyticsPage from "@/pages/predictive-analytics";
+import ComplianceReportingPage from "@/pages/compliance-reporting";
+import VaultPage from "@/pages/vault";
+import AuditPage from "@/pages/audit";
+import ThreatsPage from "@/pages/threats";
+import DataPage from "@/pages/data";
+import LandingHub from "@/pages/landing-hub";
+import Verification2257 from "@/pages/verification-2257";
+import ChatSystem from "@/pages/chat-system";
+import StreamManagement from "@/pages/stream-management";
+import PaymentManagement from "@/pages/payment-management";
+import PaymentProcessorManagement from "@/pages/payment-processor-management";
+import TaxManagement from "@/pages/tax-management";
+import AdvertisingManagement from "@/pages/advertising-management";
+import AudioCallSettings from "@/pages/audio-call-settings";
+import BlogManagement from "@/pages/blog-management";
+import BlogCreate from "@/pages/blog-create";
+import BlogEdit from "@/pages/blog-edit";
+import DepositsManagement from "@/pages/deposits-management";
+import DepositView from "@/pages/deposit-view";
+import LocationManagement from "@/pages/location-management";
+import CronManagement from "@/pages/cron-management";
+import ShopManagement from "@/pages/shop-management";
+import StoriesManagement from "@/pages/stories-management";
+import SocialLoginSettings from "@/pages/social-login-settings";
+import StorageSettings from "@/pages/storage-settings";
+import TaxRateManagement from "@/pages/tax-rate-management";
+import ThemeSettings from "@/pages/theme-settings";
+import WithdrawalManagement from "@/pages/withdrawal-management";
+import WithdrawalView from "@/pages/withdrawal-view";
+import EmailManagement from "@/pages/email-management";
+import UserManagement from "@/pages/user-management";
+import SEOConfiguration from "@/pages/seo-configuration";
+import AEOConfiguration from "@/pages/aeo-configuration";
+import ContactManagement from "@/pages/contact-management";
+import VideoEncodingPage from "@/pages/video-encoding";
+import StickersManagementPage from "@/pages/stickers-management";
+import WebSocketSettingsPage from "@/pages/websocket-settings";
+import StarzStudioAdmin from "@/pages/StarzStudioAdmin";
+import TransactionManagementPage from "@/pages/transaction-management";
+import VerificationManagementPage from "@/pages/verification-management";
+import VerificationDashboard from "@/pages/verification-dashboard";
+import CoStarVerificationPage from "@/pages/costar-verification";
+import ContentCreatorVerificationPage from "@/pages/creator-verification";
+import SubscriptionManagementPage from "@/pages/subscription-management";
+import ThemeGeneratorPage from "@/pages/theme-generator";
+import RadioBroadcastingPage from "@/pages/radio-broadcasting";
+import PodcastManagementPage from "@/pages/podcast-management";
+import Login from "@/pages/auth/login";
+import Register from "@/pages/auth/register";
+import PasswordReset from "@/pages/auth/password-reset";
+import AuthCallback from "@/pages/auth/callback";
+import DeviceVerification from "@/pages/auth/device-verification";
+import NotFound404 from "@/pages/error/404";
+import ServerError500 from "@/pages/error/500";
+import Maintenance503 from "@/pages/error/503";
+import ProfileDisabled from "@/pages/error/profile-disabled";
+import DemoUIShowcase from "@/pages/demo-ui-showcase";
+import NotFound from "@/pages/not-found";
+import ContentModerationHub from "@/pages/content-moderation-hub";
+import PluginManagement from "@/pages/plugin-management";
+import APIIntegrationManagement from "@/pages/api-integration-management";
+import PlatformModeration from "@/pages/platform-moderation";
+import ComplianceMonitoring from "@/pages/compliance-monitoring";
+import IntelligentModerationPage from "@/pages/intelligent-moderation";
+import VRRenderingEngine from "@/pages/VRRenderingEngine";
+import FutureTechManager from "@/pages/FutureTechManager";
+import AICFODashboard from "@/pages/AICFODashboard";
+import ComplianceCenter from "@/pages/ComplianceCenter";
+import LegalLibrary from "@/pages/legal-library";
+import WikiPage from "@/pages/wiki";
+import QuantumWarRoom from "@/pages/QuantumWarRoom";
+import QuantumWarRoomSimple from "@/pages/QuantumWarRoomSimple";
+import AnalyticsDashboardPage from "@/pages/analytics-dashboard";
+import AdminConfigPage from "@/pages/admin-config";
+import PlatformManager from "@/pages/platform-manager";
+import MicroservicesDashboard from "@/pages/microservices-dashboard";
+import EcosystemSecurityManagement from "@/pages/ecosystem-security-management";
+import CreatorManagement from "@/pages/creator-management";
+import TubeManagement from "@/pages/tube-management";
+import FanzRouletteManagement from "@/pages/fanzroulette-management";
+import Universal2257System from "@/pages/universal-2257-system";
+import LogoFaviconManagement from "@/pages/logo-favicon-management";
+import LegalHoldManagement from "@/pages/legal-hold-management";
+import ScheduleManagement from "@/pages/schedule-management";
+import HRManagement from "@/pages/hr-management";
+import CRMSystem from "@/pages/crm-system";
+import ERPSystem from "@/pages/erp-system";
+import EmailMarketing from "@/pages/email-marketing";
+import SocialMediaAutomation from "@/pages/social-media-automation";
+import DocumentManagement from "@/pages/document-management";
+import ESignWorkflow from "@/pages/esign-workflow";
+import AuditTrail from "@/pages/audit-trail";
+import DataLossPrevention from "@/pages/data-loss-prevention";
+import FileSecurityDashboard from "@/pages/file-security-dashboard";
+import BlacklistManagement from "@/pages/blacklist-management";
+
+function Router() {
+  return (
+    <div className="flex min-h-screen cyber-bg">
+      <CategorizedNavigation />
+      <main className="flex-1">
+        <Switch>
+          <Route path="/" component={LandingHub} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/platforms" component={PlatformsPage} />
+          <Route path="/ai-analysis" component={AIAnalysisPage} />
+          <Route path="/content-review" component={ContentReviewPage} />
+          <Route path="/live-monitoring" component={LiveMonitoringPage} />
+          <Route path="/analytics" component={AnalyticsPage} />
+          <Route path="/analytics-dashboard" component={AnalyticsDashboardPage} />
+          <Route path="/admin-config" component={AdminConfigPage} />
+          <Route path="/users" component={UsersPage} />
+          <Route path="/risk-management" component={RiskManagementPage} />
+          <Route path="/crisis-management" component={CrisisManagementPage} />
+          <Route path="/advanced-analytics" component={AdvancedAnalyticsPage} />
+          <Route
+            path="/predictive-analytics"
+            component={PredictiveAnalyticsPage}
+          />
+          <Route
+            path="/compliance-reporting"
+            component={ComplianceReportingPage}
+          />
+          <Route path="/vault" component={VaultPage} />
+          <Route path="/audit" component={AuditPage} />
+          <Route path="/threats" component={ThreatsPage} />
+          <Route path="/data" component={DataPage} />
+          <Route path="/verification-2257" component={Verification2257} />
+          <Route path="/verification-dashboard" component={VerificationDashboard} />
+          <Route path="/costar-verification" component={CoStarVerificationPage} />
+          <Route path="/creator-verification" component={ContentCreatorVerificationPage} />
+          <Route path="/chat-system" component={ChatSystem} />
+          <Route path="/stream-management" component={StreamManagement} />
+          <Route path="/payment-management" component={PaymentManagement} />
+          <Route
+            path="/payment-processors"
+            component={PaymentProcessorManagement}
+          />
+          <Route path="/tax-management" component={TaxManagement} />
+          <Route path="/advertising" component={AdvertisingManagement} />
+          <Route path="/audio-calls" component={AudioCallSettings} />
+          <Route path="/radio-broadcasting" component={RadioBroadcastingPage} />
+          <Route path="/podcast-management" component={PodcastManagementPage} />
+          <Route
+            path="/content-moderation-hub"
+            component={ContentModerationHub}
+          />
+          <Route path="/plugin-management" component={PluginManagement} />
+          <Route
+            path="/api-integration-management"
+            component={APIIntegrationManagement}
+          />
+          <Route path="/platform-moderation" component={PlatformModeration} />
+          <Route
+            path="/compliance-monitoring"
+            component={ComplianceMonitoring}
+          />
+          <Route
+            path="/intelligent-moderation"
+            component={IntelligentModerationPage}
+          />
+          <Route path="/vr-rendering" component={VRRenderingEngine} />
+          <Route path="/future-tech" component={FutureTechManager} />
+          <Route path="/ai-cfo" component={AICFODashboard} />
+          <Route path="/starz-studio" component={StarzStudioAdmin} />
+          <Route path="/compliance-center" component={ComplianceCenter} />
+          <Route path="/legal-library" component={LegalLibrary} />
+          <Route path="/wiki" component={WikiPage} />
+          <Route path="/quantum-war-room" component={QuantumWarRoomSimple} />
+          <Route path="/quantum-war-room-full" component={QuantumWarRoom} />
+          <Route path="/blog" component={BlogManagement} />
+          <Route path="/blog/create" component={BlogCreate} />
+          <Route path="/blog/edit/:id" component={BlogEdit} />
+          <Route path="/deposits" component={DepositsManagement} />
+          <Route path="/deposits/:id" component={DepositView} />
+          <Route path="/locations" component={LocationManagement} />
+          <Route path="/cron-jobs" component={CronManagement} />
+          <Route path="/shop-management" component={ShopManagement} />
+          <Route path="/stories-management" component={StoriesManagement} />
+          <Route
+            path="/social-login-settings"
+            component={SocialLoginSettings}
+          />
+          <Route path="/storage-settings" component={StorageSettings} />
+          <Route path="/tax-rate-management" component={TaxRateManagement} />
+          <Route path="/theme-settings" component={ThemeSettings} />
+          <Route
+            path="/withdrawal-management"
+            component={WithdrawalManagement}
+          />
+          <Route path="/withdrawal-view/:id" component={WithdrawalView} />
+          <Route path="/email-management" component={EmailManagement} />
+          <Route path="/user-management" component={UserManagement} />
+          <Route path="/contact-management" component={ContactManagement} />
+          <Route path="/video-encoding" component={VideoEncodingPage} />
+          <Route
+            path="/stickers-management"
+            component={StickersManagementPage}
+          />
+          <Route path="/websocket-settings" component={WebSocketSettingsPage} />
+          <Route
+            path="/transaction-management"
+            component={TransactionManagementPage}
+          />
+          <Route
+            path="/verification-management"
+            component={VerificationManagementPage}
+          />
+          <Route
+            path="/subscription-management"
+            component={SubscriptionManagementPage}
+          />
+          <Route path="/theme-generator" component={ThemeGeneratorPage} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/password/reset" component={PasswordReset} />
+          <Route path="/auth/callback" component={AuthCallback} />
+          <Route path="/auth/device-verification" component={DeviceVerification} />
+          <Route path="/error/404" component={NotFound404} />
+          <Route path="/error/500" component={ServerError500} />
+          <Route path="/error/503" component={Maintenance503} />
+          <Route path="/error/profile-disabled" component={ProfileDisabled} />
+          <Route path="/demo-ui" component={DemoUIShowcase} />
+          <Route path="/seo-configuration" component={SEOConfiguration} />
+          <Route path="/aeo-configuration" component={AEOConfiguration} />
+          <Route path="/settings" component={SettingsPage} />
+          <Route path="/platform-manager" component={PlatformManager} />
+          <Route path="/microservices" component={MicroservicesDashboard} />
+          <Route path="/ecosystem-security" component={EcosystemSecurityManagement} />
+          <Route path="/creator-management" component={CreatorManagement} />
+          <Route path="/tube-management" component={TubeManagement} />
+          <Route path="/fanzroulette-management" component={FanzRouletteManagement} />
+          <Route path="/universal-2257" component={Universal2257System} />
+          <Route path="/logo-favicon-management" component={LogoFaviconManagement} />
+          <Route path="/legal-hold-management" component={LegalHoldManagement} />
+          <Route path="/schedule-management" component={ScheduleManagement} />
+          <Route path="/hr-management" component={HRManagement} />
+          <Route path="/crm-system" component={CRMSystem} />
+          <Route path="/erp-system" component={ERPSystem} />
+          <Route path="/email-marketing" component={EmailMarketing} />
+          <Route path="/social-media-automation" component={SocialMediaAutomation} />
+          <Route path="/document-management" component={DocumentManagement} />
+          <Route path="/esign-workflow" component={ESignWorkflow} />
+          <Route path="/audit-trail" component={AuditTrail} />
+          <Route path="/data-loss-prevention" component={DataLossPrevention} />
+          <Route path="/file-security-dashboard" component={FileSecurityDashboard} />
+          <Route path="/blacklist-management" component={BlacklistManagement} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Router />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;

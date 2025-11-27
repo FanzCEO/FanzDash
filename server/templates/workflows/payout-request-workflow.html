@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>FANZ Payout Request Workflow</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;background:#f5f5f5;padding:20px}
+.workflow{max-width:1000px;margin:0 auto;background:white;border-radius:12px;padding:40px}
+.header{border-bottom:3px solid #e91e63;padding-bottom:20px;margin-bottom:30px}
+h1{font-size:24px;margin-bottom:10px}
+.payout-summary{background:linear-gradient(135deg,#e91e63,#c2185b);color:white;padding:25px;border-radius:8px;margin:20px 0}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;margin-top:15px}
+.summary-item{text-align:center}
+.summary-label{font-size:12px;opacity:0.9;margin-bottom:5px}
+.summary-value{font-size:28px;font-weight:700}
+.workflow-stage{background:#f9f9f9;border-left:4px solid #e91e63;padding:20px;margin:15px 0;border-radius:8px;position:relative}
+.stage-number{position:absolute;top:-10px;left:20px;background:#e91e63;color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.stage-completed .stage-number{background:#4caf50}
+.stage-title{font-size:16px;font-weight:700;margin-bottom:10px;padding-top:10px}
+.stage-status{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;margin-left:10px}
+.status-pending{background:#fff3e0;color:#e65100}
+.status-processing{background:#e3f2fd;color:#1976d2}
+.status-completed{background:#e8f5e9;color:#2e7d32}
+.status-failed{background:#ffebee;color:#c62828}
+.info-box{background:white;border:1px solid #e0e0e0;border-radius:6px;padding:15px;margin:10px 0}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.info-row:last-child{border-bottom:none}
+.info-label{color:#666;font-size:13px}
+.info-value{font-weight:600;font-size:14px}
+.warning-box{background:#fff3e0;border-left:4px solid #ff9800;padding:15px;border-radius:6px;margin:15px 0}
+.warning-title{font-weight:700;color:#e65100;margin-bottom:5px}
+.success-box{background:#e8f5e9;border-left:4px solid #4caf50;padding:15px;border-radius:6px;margin:15px 0}
+.success-title{font-weight:700;color:#2e7d32;margin-bottom:5px}
+.timeline{margin:20px 0}
+.timeline-item{display:flex;margin:12px 0;padding-left:30px;position:relative}
+.timeline-dot{position:absolute;left:0;width:12px;height:12px;background:#e91e63;border-radius:50%;top:5px}
+.timeline-dot.completed{background:#4caf50}
+.timeline-content{flex:1}
+.timeline-time{font-size:12px;color:#666}
+.timeline-action{font-weight:600;margin:3px 0;font-size:14px}
+.earnings-breakdown{margin:15px 0}
+.earnings-table{width:100%;border-collapse:collapse}
+.earnings-table th{background:#f5f5f5;padding:10px;text-align:left;font-size:12px;text-transform:uppercase;color:#666;font-weight:600}
+.earnings-table td{padding:12px 10px;border-bottom:1px solid #eee}
+.platform-badge{display:inline-block;background:#e91e63;color:white;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="workflow">
+<div class="header">
+<h1>Payout Request Workflow</h1>
+<div style="color:#666;margin-top:10px">Request ID: {{request.id}} • Creator: {{creator.name}}</div>
+</div>
+
+<div class="payout-summary">
+<h2 style="font-size:18px;margin-bottom:15px">Payout Summary</h2>
+<div class="summary-grid">
+<div class="summary-item">
+<div class="summary-label">Gross Earnings</div>
+<div class="summary-value">{{earnings.gross}}</div>
+</div>
+<div class="summary-item">
+<div class="summary-label">Platform Fee (20%)</div>
+<div class="summary-value">-{{earnings.platformFee}}</div>
+</div>
+<div class="summary-item">
+<div class="summary-label">Net Payout</div>
+<div class="summary-value">{{earnings.net}}</div>
+</div>
+<div class="summary-item">
+<div class="summary-label">Payout Method</div>
+<div class="summary-value" style="font-size:16px">{{payout.method}}</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.eligibility.completed}}stage-completed{{/if}}">
+<div class="stage-number">1</div>
+<div class="stage-title">Eligibility Verification <span class="stage-status status-{{stages.eligibility.status}}">{{stages.eligibility.statusText}}</span></div>
+<div class="info-box">
+<div class="info-row">
+<div class="info-label">Minimum balance requirement ($50)</div>
+<div class="info-value" style="color:{{#if stages.eligibility.checks.minimumBalance}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.eligibility.checks.minimumBalance}}✓ Met{{else}}✗ Not met{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Identity verification status</div>
+<div class="info-value" style="color:{{#if stages.eligibility.checks.verified}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.eligibility.checks.verified}}✓ Verified{{else}}✗ Pending{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Payment method configured</div>
+<div class="info-value" style="color:{{#if stages.eligibility.checks.paymentMethod}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.eligibility.checks.paymentMethod}}✓ {{payout.method}}{{else}}✗ Not configured{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Tax forms submitted</div>
+<div class="info-value" style="color:{{#if stages.eligibility.checks.taxForms}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.eligibility.checks.taxForms}}✓ Complete{{else}}✗ Missing{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Account in good standing</div>
+<div class="info-value" style="color:{{#if stages.eligibility.checks.goodStanding}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.eligibility.checks.goodStanding}}✓ Yes{{else}}✗ Issues found{{/if}}</div>
+</div>
+</div>
+{{#if stages.eligibility.notes}}
+<div class="warning-box">
+<div class="warning-title">⚠️ Action Required</div>
+<div>{{stages.eligibility.notes}}</div>
+</div>
+{{/if}}
+</div>
+
+<div class="workflow-stage {{#if stages.calculation.completed}}stage-completed{{/if}}">
+<div class="stage-number">2</div>
+<div class="stage-title">Earnings Calculation <span class="stage-status status-{{stages.calculation.status}}">{{stages.calculation.statusText}}</span></div>
+<div class="earnings-breakdown">
+<table class="earnings-table">
+<thead>
+<tr><th>Platform</th><th>Subscribers</th><th>Tips</th><th>PPV Sales</th><th>Total</th></tr>
+</thead>
+<tbody>
+{{#each platformEarnings}}
+<tr>
+<td><span class="platform-badge">{{this.name}}</span></td>
+<td>${{this.subscriptions}}</td>
+<td>${{this.tips}}</td>
+<td>${{this.ppv}}</td>
+<td style="font-weight:700">${{this.total}}</td>
+</tr>
+{{/each}}
+</tbody>
+</table>
+</div>
+<div class="info-box" style="margin-top:15px">
+<div class="info-row">
+<div class="info-label">Total Gross Earnings</div>
+<div class="info-value">{{earnings.gross}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Platform Fee (20%)</div>
+<div class="info-value" style="color:#e91e63">-{{earnings.platformFee}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Chargebacks/Refunds</div>
+<div class="info-value" style="color:#f44336">-{{earnings.chargebacks}}</div>
+</div>
+<div class="info-row" style="background:#f9f9f9;font-weight:700">
+<div class="info-label">Net Payout Amount</div>
+<div class="info-value" style="color:#4caf50;font-size:18px">{{earnings.net}}</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.review.completed}}stage-completed{{/if}}">
+<div class="stage-number">3</div>
+<div class="stage-title">Finance Team Review <span class="stage-status status-{{stages.review.status}}">{{stages.review.statusText}}</span></div>
+<div class="info-box">
+<div class="info-row">
+<div class="info-label">Earnings verification</div>
+<div class="info-value" style="color:{{#if stages.review.checks.earningsVerified}}#4caf50{{else}}#ff9800{{/if}}">{{stages.review.checks.earningsVerified}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Payment information validation</div>
+<div class="info-value" style="color:{{#if stages.review.checks.paymentValidated}}#4caf50{{else}}#ff9800{{/if}}">{{stages.review.checks.paymentValidated}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Fraud check</div>
+<div class="info-value" style="color:{{#if stages.review.checks.fraudCheck}}#4caf50{{else}}#ff9800{{/if}}">{{stages.review.checks.fraudCheck}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Compliance review</div>
+<div class="info-value" style="color:{{#if stages.review.checks.compliance}}#4caf50{{else}}#ff9800{{/if}}">{{stages.review.checks.compliance}}</div>
+</div>
+</div>
+{{#if stages.review.notes}}
+<div class="info-box">
+<div style="font-weight:600;margin-bottom:8px">Reviewer Notes:</div>
+<div style="color:#666;font-size:14px">{{stages.review.notes}}</div>
+<div style="margin-top:8px;font-size:13px;color:#666">Reviewed by: {{stages.review.reviewer}} on {{stages.review.reviewDate}}</div>
+</div>
+{{/if}}
+</div>
+
+<div class="workflow-stage {{#if stages.processing.completed}}stage-completed{{/if}}">
+<div class="stage-number">4</div>
+<div class="stage-title">Payment Processing <span class="stage-status status-{{stages.processing.status}}">{{stages.processing.statusText}}</span></div>
+<div class="info-box">
+<div class="info-row">
+<div class="info-label">Payout Method</div>
+<div class="info-value">{{payout.method}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Account Details</div>
+<div class="info-value">{{payout.accountDetails}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Processing Date</div>
+<div class="info-value">{{payout.processingDate}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Estimated Arrival</div>
+<div class="info-value">{{payout.estimatedArrival}}</div>
+</div>
+{{#if payout.transactionId}}
+<div class="info-row">
+<div class="info-label">Transaction ID</div>
+<div class="info-value">{{payout.transactionId}}</div>
+</div>
+{{/if}}
+</div>
+{{#if stages.processing.inProgress}}
+<div class="warning-box">
+<div class="warning-title">⏳ Processing Payment</div>
+<div>Your payout is being processed. This typically takes 3-5 business days depending on your payout method.</div>
+</div>
+{{/if}}
+</div>
+
+<div class="workflow-stage {{#if stages.completion.completed}}stage-completed{{/if}}">
+<div class="stage-number">5</div>
+<div class="stage-title">Payout Completion <span class="stage-status status-{{stages.completion.status}}">{{stages.completion.statusText}}</span></div>
+{{#if stages.completion.completed}}
+<div class="success-box">
+<div class="success-title">✓ Payout Successful!</div>
+<div>{{earnings.net}} has been sent to your {{payout.method}} account ending in {{payout.lastFour}}.</div>
+</div>
+<div class="info-box">
+<div class="info-row">
+<div class="info-label">Completion Date</div>
+<div class="info-value">{{payout.completionDate}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Transaction Reference</div>
+<div class="info-value">{{payout.transactionId}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Payout Statement</div>
+<div class="info-value"><a href="{{payout.statementUrl}}" style="color:#e91e63;text-decoration:none">Download PDF</a></div>
+</div>
+</div>
+{{else}}
+<div class="info-box">
+<div style="color:#666;font-size:14px">Payout will be marked as complete once funds are confirmed delivered to your account.</div>
+</div>
+{{/if}}
+</div>
+
+<div style="margin-top:30px;padding:20px;background:#f9f9f9;border-radius:8px">
+<div style="font-weight:700;margin-bottom:15px">Payout Timeline</div>
+<div class="timeline">
+{{#each timeline}}
+<div class="timeline-item">
+<div class="timeline-dot {{#if this.completed}}completed{{/if}}"></div>
+<div class="timeline-content">
+<div class="timeline-time">{{this.timestamp}}</div>
+<div class="timeline-action">{{this.action}}</div>
+</div>
+</div>
+{{/each}}
+</div>
+</div>
+
+<div style="text-align:center;margin-top:30px;padding:20px;background:#fff3e0;border-radius:8px">
+<div style="font-weight:700;margin-bottom:5px">Next Payout Cycle</div>
+<div style="color:#666;font-size:14px">Payouts are processed weekly every Friday. Your next eligible payout will be processed on {{nextPayoutDate}}.</div>
+</div>
+
+</div>
+</body>
+</html>

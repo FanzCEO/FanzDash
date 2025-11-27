@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>FANZ Content Approval Workflow</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;background:#f5f5f5;padding:20px}
+.workflow{max-width:1000px;margin:0 auto;background:white;border-radius:12px;padding:40px}
+.header{border-bottom:3px solid #e91e63;padding-bottom:20px;margin-bottom:30px}
+h1{font-size:24px;margin-bottom:10px}
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:15px}
+.meta-item{font-size:14px}
+.meta-label{color:#666;font-size:12px}
+.meta-value{font-weight:600;margin-top:3px}
+.status-badge{display:inline-block;padding:5px 15px;border-radius:20px;font-size:12px;font-weight:600;margin-top:5px}
+.status-pending{background:#fff3e0;color:#e65100}
+.status-reviewing{background:#e3f2fd;color:#1976d2}
+.status-approved{background:#e8f5e9;color:#2e7d32}
+.status-rejected{background:#ffebee;color:#c62828}
+.content-preview{background:#f9f9f9;padding:20px;border-radius:8px;margin:20px 0}
+.preview-title{font-weight:700;margin-bottom:10px}
+.preview-image{width:100%;max-width:400px;border-radius:8px;margin:10px 0}
+.approval-stage{background:#f9f9f9;border-left:4px solid #e91e63;padding:20px;margin:15px 0;border-radius:8px}
+.stage-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.stage-title{font-size:16px;font-weight:700}
+.stage-reviewer{font-size:13px;color:#666}
+.review-checklist{margin:15px 0}
+.check-item{display:flex;align-items:center;padding:10px;margin:8px 0;background:white;border-radius:6px;border:1px solid #e0e0e0}
+.check-result{width:24px;height:24px;border-radius:50%;margin-right:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.check-pass{background:#4caf50;color:white}
+.check-fail{background:#f44336;color:white}
+.check-pending{background:#ff9800;color:white}
+.review-notes{background:white;border:1px solid #e0e0e0;border-radius:6px;padding:15px;margin:10px 0}
+.notes-label{font-weight:600;margin-bottom:8px;font-size:13px}
+.notes-text{color:#666;font-size:14px;line-height:1.6}
+.action-buttons{display:flex;gap:10px;margin-top:15px}
+.btn{padding:10px 20px;border-radius:6px;font-weight:600;border:none;cursor:pointer;font-size:14px}
+.btn-approve{background:#4caf50;color:white}
+.btn-reject{background:#f44336;color:white}
+.btn-revise{background:#ff9800;color:white}
+.timeline-item{display:flex;margin:15px 0;padding-left:30px;position:relative}
+.timeline-dot{position:absolute;left:0;width:12px;height:12px;background:#e91e63;border-radius:50%;top:5px}
+.timeline-content{flex:1}
+.timeline-time{font-size:12px;color:#666}
+.timeline-action{font-weight:600;margin:3px 0}
+.timeline-user{font-size:13px;color:#e91e63}
+</style>
+</head>
+<body>
+<div class="workflow">
+<div class="header">
+<h1>Content Approval Workflow</h1>
+<div class="meta-grid">
+<div class="meta-item">
+<div class="meta-label">Content ID</div>
+<div class="meta-value">{{content.id}}</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Creator</div>
+<div class="meta-value">{{creator.name}}</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Content Type</div>
+<div class="meta-value">{{content.type}}</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Submitted</div>
+<div class="meta-value">{{content.submittedDate}}</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Status</div>
+<div class="meta-value"><span class="status-badge status-{{approval.status}}">{{approval.statusText}}</span></div>
+</div>
+</div>
+</div>
+
+<div class="content-preview">
+<div class="preview-title">Content Preview</div>
+<div><strong>Title:</strong> {{content.title}}</div>
+<div style="margin:5px 0"><strong>Description:</strong> {{content.description}}</div>
+<div style="margin:5px 0"><strong>Tags:</strong> {{#each content.tags}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+{{#if content.previewUrl}}
+<img src="{{content.previewUrl}}" alt="Content preview" class="preview-image">
+{{/if}}
+</div>
+
+<div class="approval-stage">
+<div class="stage-header">
+<div class="stage-title">🔍 Stage 1: Automated Compliance Check</div>
+<div class="stage-reviewer">FANZ AI System</div>
+</div>
+<div class="review-checklist">
+<div class="check-item">
+<div class="check-result check-{{stages.automated.checks.imageAnalysis}}">{{#if stages.automated.checks.imageAnalysis}}✓{{else}}{{#if stages.automated.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Image/video content analysis - No prohibited content detected</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.automated.checks.metadata}}">{{#if stages.automated.checks.metadata}}✓{{else}}{{#if stages.automated.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Metadata validation - Title, description, and tags complete</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.automated.checks.watermark}}">{{#if stages.automated.checks.watermark}}✓{{else}}{{#if stages.automated.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Watermark detection - FANZ protection applied</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.automated.checks.duplicates}}">{{#if stages.automated.checks.duplicates}}✓{{else}}{{#if stages.automated.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Duplicate check - No existing content matches found</div>
+</div>
+</div>
+{{#if stages.automated.notes}}
+<div class="review-notes">
+<div class="notes-label">AI Analysis Notes:</div>
+<div class="notes-text">{{stages.automated.notes}}</div>
+</div>
+{{/if}}
+</div>
+
+<div class="approval-stage">
+<div class="stage-header">
+<div class="stage-title">📋 Stage 2: Legal Compliance Review</div>
+<div class="stage-reviewer">{{stages.legal.reviewer}} • Legal Team</div>
+</div>
+<div class="review-checklist">
+<div class="check-item">
+<div class="check-result check-{{stages.legal.checks.ageVerification}}">{{#if stages.legal.checks.ageVerification}}✓{{else}}{{#if stages.legal.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Age verification - All participants 18+ verified</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.legal.checks.form2257}}">{{#if stages.legal.checks.form2257}}✓{{else}}{{#if stages.legal.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>2257 compliance - Records custodian documentation complete</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.legal.checks.consent}}">{{#if stages.legal.checks.consent}}✓{{else}}{{#if stages.legal.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Performer consent - Model releases on file for all participants</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.legal.checks.copyright}}">{{#if stages.legal.checks.copyright}}✓{{else}}{{#if stages.legal.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Copyright verification - Original content or licensed music</div>
+</div>
+</div>
+{{#if stages.legal.notes}}
+<div class="review-notes">
+<div class="notes-label">Legal Review Notes:</div>
+<div class="notes-text">{{stages.legal.notes}}</div>
+</div>
+{{/if}}
+{{#if stages.legal.canAction}}
+<div class="action-buttons">
+<button class="btn btn-approve">Approve Legal Compliance</button>
+<button class="btn btn-revise">Request Documentation</button>
+<button class="btn btn-reject">Reject Content</button>
+</div>
+{{/if}}
+</div>
+
+<div class="approval-stage">
+<div class="stage-header">
+<div class="stage-title">✅ Stage 3: Content Policy Review</div>
+<div class="stage-reviewer">{{stages.policy.reviewer}} • Compliance Team</div>
+</div>
+<div class="review-checklist">
+<div class="check-item">
+<div class="check-result check-{{stages.policy.checks.guidelines}}">{{#if stages.policy.checks.guidelines}}✓{{else}}{{#if stages.policy.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Content guidelines - Adheres to FANZ community standards</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.policy.checks.prohibited}}">{{#if stages.policy.checks.prohibited}}✓{{else}}{{#if stages.policy.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Prohibited content - No banned activities or themes</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.policy.checks.quality}}">{{#if stages.policy.checks.quality}}✓{{else}}{{#if stages.policy.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Quality standards - Meets minimum resolution and production quality</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.policy.checks.pricing}}">{{#if stages.policy.checks.pricing}}✓{{else}}{{#if stages.policy.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Pricing appropriateness - Fair value for content type</div>
+</div>
+</div>
+{{#if stages.policy.notes}}
+<div class="review-notes">
+<div class="notes-label">Policy Review Notes:</div>
+<div class="notes-text">{{stages.policy.notes}}</div>
+</div>
+{{/if}}
+{{#if stages.policy.canAction}}
+<div class="action-buttons">
+<button class="btn btn-approve">Approve for Publishing</button>
+<button class="btn btn-revise">Request Revisions</button>
+<button class="btn btn-reject">Reject Content</button>
+</div>
+{{/if}}
+</div>
+
+<div class="approval-stage">
+<div class="stage-header">
+<div class="stage-title">🚀 Stage 4: Final Approval & Publishing</div>
+<div class="stage-reviewer">{{stages.final.reviewer}} • Platform Manager</div>
+</div>
+<div class="review-checklist">
+<div class="check-item">
+<div class="check-result check-{{stages.final.checks.platforms}}">{{#if stages.final.checks.platforms}}✓{{else}}{{#if stages.final.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Platform selection - Appropriate platforms selected for content</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.final.checks.scheduling}}">{{#if stages.final.checks.scheduling}}✓{{else}}{{#if stages.final.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Publishing schedule - Optimal time slots configured</div>
+</div>
+<div class="check-item">
+<div class="check-result check-{{stages.final.checks.notifications}}">{{#if stages.final.checks.notifications}}✓{{else}}{{#if stages.final.pending}}...{{else}}✗{{/if}}{{/if}}</div>
+<div>Subscriber notifications - Notification preferences configured</div>
+</div>
+</div>
+{{#if stages.final.notes}}
+<div class="review-notes">
+<div class="notes-label">Final Review Notes:</div>
+<div class="notes-text">{{stages.final.notes}}</div>
+</div>
+{{/if}}
+{{#if stages.final.canAction}}
+<div class="action-buttons">
+<button class="btn btn-approve">Publish Content Now</button>
+<button class="btn btn-revise">Schedule for Later</button>
+</div>
+{{/if}}
+</div>
+
+<div style="margin-top:30px;padding:20px;background:#f9f9f9;border-radius:8px">
+<div style="font-weight:700;margin-bottom:15px">Approval Timeline</div>
+{{#each timeline}}
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+<div class="timeline-content">
+<div class="timeline-time">{{this.timestamp}}</div>
+<div class="timeline-action">{{this.action}}</div>
+<div class="timeline-user">{{this.user}}</div>
+</div>
+</div>
+{{/each}}
+</div>
+
+</div>
+</body>
+</html>

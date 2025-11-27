@@ -1,0 +1,60 @@
+Got it — this new drop adds even more depth to the Sponzy v6.8 admin suite. Here’s what these Blade templates reveal:
+
+⸻
+
+🛠️ New Admin Features (from latest uploads)
+	•	Dashboard (dashboard.blade.php)
+	•	Central hub with KPIs, charts, quick links.
+	•	Likely shows revenue, active creators, pending verifications, reports queue.
+	•	Deposits (deposits.blade.php & deposits-view.blade.php)
+	•	Admin views of user deposits.
+	•	Handles balance top-ups, probably tied to crypto/card gateways.
+	•	Reconciliation of pending/confirmed transactions.
+	•	Advertising Edit (edit-advertising.blade.php)
+	•	Update or pause running ad campaigns.
+	•	Metrics like impressions, clicks, spend.
+	•	Blog Edit (edit-blog.blade.php)
+	•	Admin can revise community/SEO posts.
+	•	Confirms CMS is not just static, but a full editorial workflow.
+	•	Categories / Country / Languages Edit (edit-categories.blade.php, edit-country.blade.php, edit-languages.blade.php)
+	•	CRUD flows for taxonomy and localization.
+	•	Admin has granular control over discovery filters and geo rules.
+	•	Gift Edit (edit-gift.blade.php)
+	•	Manage fan → creator gifting items.
+	•	Update pricing, availability, descriptions.
+	•	Member Edit (edit-member.blade.php)
+	•	Admin-level override of user/creator accounts.
+	•	Likely includes status (active, suspended, verified), roles, balance resets.
+
+⸻
+
+🔑 Implications for Polyglot Migration
+	1.	Dashboard → analytics-svc + admin-ui
+	•	Needs real-time metrics aggregation across services.
+	•	Should pull from commerce-svc, payout-svc, moderation-svc.
+	2.	Deposits → commerce-svc (extended)
+	•	Add deposits table + flows for top-ups (crypto or card).
+	•	Events: deposit.initiated, deposit.confirmed, deposit.failed.
+	3.	Advertising (Edit) → ads-svc
+	•	Full CRUD campaigns (create/edit/pause/delete).
+	•	Extend with metrics pipeline (impression.logged).
+	4.	Blog (Edit) → cms-svc
+	•	Editorial workflow (draft, published, revised).
+	•	Events: blog.post.updated.
+	5.	Categories/Country/Languages (Edit) → policy-svc
+	•	Granular taxonomy and localization updates.
+	•	Events: policy.category.updated, policy.geo.updated.
+	6.	Gifts (Edit) → commerce-svc
+	•	Treat gifts as special products.
+	•	Events: gift.updated, gift.redeemed.
+	7.	Member (Edit) → users-svc
+	•	Admin override of user roles and status.
+	•	Must emit user.updated, user.suspended.
+
+⸻
+
+⚡ Bottom line: BoyFanz’s v6.8 admin is a full CRM + CMS + Ads Manager + Finance system. To migrate properly, we’ll need to ensure dashboard, deposits, gifts, ads, and editorial tools all have their own microservice slots or extensions (ads-svc, cms-svc, commerce-svc, analytics-svc).
+
+⸻
+
+Josh — do you want me to patch the migration canvas doc now with these new modules (deposits, ads edit, gifts edit, blog edit, dashboard, member edit) so Replit sees exactly where each maps into polyglot services? That way the canvas becomes the living “single source of truth” for the rebuild.

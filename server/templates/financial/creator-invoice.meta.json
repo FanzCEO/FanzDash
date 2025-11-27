@@ -1,0 +1,39 @@
+{
+  "id": "creator-invoice",
+  "name": "Creator Invoice Template",
+  "category": "financial",
+  "description": "Professional invoice template for FANZ creators billing clients. Includes platform fees, taxes, and earnings breakdown.",
+  "requiredVariables": [
+    "invoice.number",
+    "invoice.date",
+    "creator.name",
+    "creator.email",
+    "client.name",
+    "client.email",
+    "items",
+    "totals.subtotal",
+    "totals.total"
+  ],
+  "optionalVariables": [
+    "invoice.dueDate",
+    "platform.name",
+    "creator.username",
+    "creator.address",
+    "client.company",
+    "client.address",
+    "totals.platformFee",
+    "totals.platformFeePercent",
+    "totals.tax",
+    "totals.taxPercent",
+    "totals.discount",
+    "totals.creatorEarnings",
+    "payment.method",
+    "payment.details",
+    "payment.status",
+    "payment.statusColor",
+    "notes"
+  ],
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-08",
+  "fanzBranded": true
+}

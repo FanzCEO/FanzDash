@@ -1,0 +1,110 @@
+Highlighted Features:
+
+Complete CPA-Based Affiliate Network
+Connect advertisers and affiliates under a performance-driven model where you only pay when results are delivered.
+
+Advanced Campaign & Tracking System
+Create, manage, and monitor affiliate campaigns with real-time conversion tracking and activity logs.
+
+Dual Dashboard for Advertisers & Affiliates
+Separate control panels tailored for advertisers and publishers with campaign tools, analytics, and earnings insights.
+
+Accept Payments Globally
+Accept payments globally via cards, wallets, mobile money, crypto, or bank transfers with full flexibility.
+
+Secure Payouts & Commission Management
+Automate affiliate commissions, track payouts, and configure withdrawal settings with ease.
+
+Identity Verification & KYC Modules
+Protect your platform with layered verification, 2FA, and dynamic KYC for advertisers and affiliates.
+
+LiveChat, Notifications & Support Desk
+Built-in ticket system, real-time notifications, and chat support for uninterrupted communication.
+
+Modern Frontend & SEO-Ready Backend
+Includes blog, policy, and custom pages with full SEO tools and frontend content management.
+
+No Monthly Fees, No Encryption Locks
+One-time purchase with lifetime access, unlimited customization, and 100% source code ownership.
+Affiliate’s Features:
+
+- Check Campaign Detail.
+- Enroll to Campaign.
+- Conversion Log.
+- Withdraw Management.
+- Transactions Management.
+- Support Ticket Management.
+- Profile Setting.
+- 2FA Security.
+- Campaign Activity.
+- Total Earned.
+- Email Notifications.
+- SMS Notifications.
+- Identity Verification System.
+- Social Login System included.
+- Multiple Languages.
+- Email And SMS verifications.
+- And More…
+
+
+
+Advertiser’s Features:
+
+- Campaigns Management.
+- Tracking Snippets.
+- Deposit Management.
+- Transactions Management.
+- Support Ticket Desk.
+- Profile Setting.
+- 2FA Security.
+- Multiple Languages.
+- Site LiveChat.
+- ReCaptcha, Blog, Easy to Contact.
+- 30+ Payment Gateways Intrigation.
+- KYC Verification System.
+- Affiliate Payout Setup.
+- Conversion Limit Config.
+- Traffic Types Selection.
+- And more…
+
+
+Admin Features:
+
+- Categories Management.
+- Traffic Types Management.
+- Campaigns Management.
+- Commission Logs.
+- Users Management.
+- Advertisers Management.
+- Deposits Management.
+- Withdrawals Management.
+- Support Ticket Management.
+- Report Management.
+- Advertiser Reports.
+- Subscribers Management.
+- System Setting.
+- General Setting.
+- Logo and Favicon Management.
+- System Configuration.
+- Notification Setting.
+- Payment Gateways Management.
+- Withdrawal Methods.
+- SEO Configuration.
+- Manage Frontend.
+- Manage Pages.
+- KYC Setting.
+- Advertiser KYC Setting.
+- Social Login Setting.
+- Language Management.
+- Extensions Management.
+- Cron Job Setting.
+- Policy Pages Management.
+- Maintenance Mode Management.
+- GDPR Cookie Management.
+- Custom CSS Management.
+- Sitemap XML Management.
+- Robots txt Management.
+- And More…
+
+
+Built for the future

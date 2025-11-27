@@ -1,0 +1,34 @@
+{
+  "name": "Content Creation Workflow",
+  "description": "End-to-end workflow for creating, reviewing, and publishing content across FANZ platforms",
+  "category": "workflows",
+  "requiredVariables": [
+    "creator.name",
+    "content.type",
+    "platforms",
+    "workflow.status",
+    "workflow.statusText",
+    "stages.ideation.status",
+    "stages.ideation.statusText",
+    "stages.production.status",
+    "stages.production.statusText",
+    "stages.editing.status",
+    "stages.editing.statusText",
+    "stages.compliance.status",
+    "stages.compliance.statusText",
+    "stages.publishing.status",
+    "stages.publishing.statusText",
+    "stages.tracking.status",
+    "stages.tracking.statusText",
+    "editor.name",
+    "timeline.started",
+    "timeline.currentStage",
+    "timeline.daysElapsed",
+    "timeline.estimatedCompletion"
+  ],
+  "optionalVariables": [
+    "coStar.name"
+  ],
+  "tags": ["content", "workflow", "automation", "creator"],
+  "version": "1.0.0"
+}

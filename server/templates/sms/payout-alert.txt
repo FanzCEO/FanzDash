@@ -1,0 +1,3 @@
+💰 Payout processed! {{amount}} sent via {{method}}. Expected arrival: {{date}}. Transaction: {{txId}}
+
+- FANZ Payments

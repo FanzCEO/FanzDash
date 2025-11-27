@@ -1,0 +1,33 @@
+{
+  "id": "payout-statement",
+  "name": "Creator Payout Statement",
+  "category": "financial",
+  "description": "Detailed payout statement showing creator earnings across all platforms with breakdowns, deductions, and payout information. Modeled after OnlyFans/FanCentro style.",
+  "requiredVariables": [
+    "statementId",
+    "period",
+    "creator.name",
+    "creator.username",
+    "creator.id",
+    "totalEarnings",
+    "platformFees",
+    "platformFeePercent",
+    "netPayout",
+    "stats.totalSubscribers",
+    "stats.newSubscribers",
+    "platformEarnings",
+    "deductions",
+    "payoutMethod.type",
+    "payoutMethod.details",
+    "payoutStatus",
+    "payoutStatusText",
+    "generatedDate"
+  ],
+  "optionalVariables": [
+    "payoutDate",
+    "transactionId"
+  ],
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-08",
+  "fanzBranded": true
+}

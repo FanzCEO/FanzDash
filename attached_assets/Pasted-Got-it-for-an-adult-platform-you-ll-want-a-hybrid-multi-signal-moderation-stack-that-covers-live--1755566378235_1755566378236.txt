@@ -1,0 +1,136 @@
+Got it — for an adult platform you’ll want a hybrid, multi‑signal moderation stack that covers live streams, VOD, images, and text, with machine checks first and human review on all edge cases. Here’s a zero‑cost-first plan that you can implement today.
+
+What to use (free/open‑source first)
+
+Images & video (nudity/sexual content)
+	•	NudeNet (object & region detection) — flags exposed body parts and gives bounding boxes you can blur/blackout automatically. Runs on CPU/GPU and has Node/TFJS ports.  ￼
+	•	LAION Safety / CLIP NSFW (fast NSFW classifier) — lightweight classifier using CLIP embeddings; good for quick triage or frame sampling on live streams.  ￼
+	•	OpenNSFW2 (classic Yahoo model, Keras) — simple image/video classifier; good as a second opinion in an ensemble.  ￼
+	•	PDQ perceptual hashing (Meta’s open algorithm) — generate hashes of known banned images and catch near‑duplicates at upload; Python bindings available. (Do not store illegal content; only store hashes).  ￼
+
+Text (DMs, chats, comments, titles)
+	•	Detoxify (open‑source toxicity model: toxicity, hate, insult, etc.).  ￼
+	•	Perspective API (free quota; TOXICITY, SEXUALLY_EXPLICIT, INSULT, THREAT, etc.). Use as a second signal or fallback.  ￼
+
+Audio in live/video
+	•	Whisper (open ASR) to get captions, then run text moderation on the transcript. Keep a human‑in‑the‑loop because Whisper can hallucinate—especially in noisy streams.  ￼ ￼ ￼
+
+Optional paid fallback (easy swap‑in)
+	•	Google Video Intelligence (Explicit Content Detection) and AWS Rekognition Moderation APIs — useful as a belt‑and‑suspenders check or when your infra is overloaded.  ￼ ￼
+
+How to wire it (reference architecture)
+
+Flow A — Uploads (images & videos)
+	1.	Pre‑ingest gate
+	•	Compute PDQ hash → compare with your “blocked” hash set.
+	•	If clean, run NudeNet (region detection). Auto‑blur/redact flagged regions server‑side.
+	•	Run a secondary classifier (LAION Safety or OpenNSFW2) to raise/lowers confidence.
+	2.	Decision
+	•	Score merge (e.g., weighted average).
+	•	> threshold → auto‑block or age‑gate. Borderline → human review queue. Clean → publish.
+	3.	Store minimal metadata (scores, model versions, PDQ hash), not the content itself if it’s illegal.
+
+Flow B — Live streaming
+	1.	From your WebRTC SFU (Janus/Mediasoup/LiveKit), sample frames (e.g., 2–4 fps) + low‑bitrate audio.
+	2.	Run NudeNet on frames, CLIP NSFW for quick triage. Escalate frame rate when scores spike.
+	3.	Pipe audio through Whisper → Detoxify/Perspective on rolling transcript.
+	4.	If risk > threshold → auto‑mask video (blur box/pixelate) or soft‑mute audio while pinging a human mod.
+	5.	Keep a mod console that shows last N seconds of frames, bounding boxes, and transcript.
+
+Flow C — Chats/DMs/comments
+	•	Synchronous call to Detoxify (local) + Perspective (cloud) → action: allow, warn, shadow‑hide, or mod‑review.
+
+Quickstart code (free stack)
+
+1) Image PDQ hash + NudeNet (Python / FastAPI)
+
+# requirements: fastapi uvicorn pillow pdqhash nudenet==3.5.2
+from fastapi import FastAPI, UploadFile
+from PIL import Image
+from pdqhash import pdqhash
+from nudenet import NudeDetector
+
+app = FastAPI()
+detector = NudeDetector()  # downloads model on first run
+
+BLOCKLIST = set(open("blocked_pdq_hashes.txt").read().splitlines())
+
+@app.post("/moderate/image")
+async def moderate_image(file: UploadFile):
+    img = Image.open(file.file).convert("RGB")
+    # PDQ hash check
+    h, q = pdqhash(img)  # h is hash, q is quality
+    if h in BLOCKLIST:
+        return {"action":"block","reason":"hash_match","pdq_quality":q}
+
+    # NudeNet detection
+    results = detector.detect(img)  # [{'label':'EXPOSED_BREAST_F','score':0.93,'box':[x1,y1,x2,y2]}, ...]
+    nudity_score = max([r["score"] for r in results], default=0.0)
+    labels = [r["label"] for r in results]
+    if nudity_score >= 0.85:
+        return {"action":"blur","score":nudity_score,"labels":labels}
+    elif nudity_score >= 0.60:
+        return {"action":"review","score":nudity_score,"labels":labels}
+    else:
+        return {"action":"allow","score":nudity_score}
+
+NudeNet/PDQ references:  ￼
+
+2) Live video frame sampling (FFmpeg → HTTP)
+
+# Sample 3 fps from an RTMP/WebRTC restream and POST PNG frames to your API
+ffmpeg -i rtmp://your-sfu/live/streamKey -vf fps=3 -f image2pipe -vcodec png - \
+  | while IFS= read -r -d '' frame; do
+      curl -s -X POST -F "file=@-" http://moderator.local/moderate/image
+    done
+
+3) Text moderation (Detoxify + optional Perspective)
+
+# pip install detoxify requests
+from detoxify import Detoxify
+import requests, os
+
+tox = Detoxify('original')  # or multilingual
+PERSPECTIVE_KEY = os.getenv("PERSPECTIVE_API_KEY")
+
+def score_text(txt):
+    s = tox.predict(txt)  # {'toxicity':0.12,'insult':0.03,...}
+    persp = {}
+    if PERSPECTIVE_KEY:
+        persp = requests.post(
+          "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze",
+          params={"key":PERSPECTIVE_KEY},
+          json={"comment":{"text":txt},"requestedAttributes":{"TOXICITY":{},"SEXUALLY_EXPLICIT":{}}}
+        ).json()
+    return s, persp
+
+Detoxify/Perspective references:  ￼ ￼
+
+Policies & safety you should enforce
+	•	Zero tolerance for suspected CSAM: never store; immediately block, preserve minimal logs, and report to NCMEC (if US) per applicable law. Use PDQ (and industry hash lists where legally accessible) to catch re‑uploads.  ￼
+	•	No automated “minor detection” approvals: age estimation is error‑prone; force human review whenever youth cues are detected, and require verified age of performers off‑platform.
+	•	Appeals & auditability: log model version + thresholds per decision; give creators a path to appeal.
+	•	Whisper caveat: transcripts can fabricate; never auto‑enforce severe actions from ASR alone without corroborating signals (vision or human).  ￼ ￼ ￼
+
+Thresholds (starter defaults)
+	•	Images/Video:
+	•	>=0.85 (high confidence) → block or auto‑blur + review.
+	•	0.60–0.85 → human review.
+	•	<0.60 → allow.
+	•	Text (Detoxify toxicity or Perspective TOXICITY):
+	•	>=0.80 → block; 0.50–0.80 → warn or shadow‑hide + review; <0.50 → allow.
+
+Deploy it for $0 (or close)
+	•	Inference: host the FastAPI service on a small VM (your own server) or free credits; convert models to ONNX and run with ONNX Runtime for CPU if no GPU.
+	•	Edge request firewall: Cloudflare Workers (free tier) as your public gateway; route uploads/frames/chats to your FastAPI.
+	•	Queuing & bursts: Redis (free tier) or MQTT for jobs; fall back to Google Video Intelligence/AWS Rekognition when your node is saturated (bill only when burst happens).  ￼ ￼
+	•	Dashboard: a minimal Next.js app showing frame thumbnails, bounding boxes, transcripts, and one‑click actions (allow/blur/ban).
+
+How this scales
+	•	Start with 1–4 fps frame sampling; dynamically raise to 8–12 fps only when risk spikes to conserve compute.
+	•	Use batching: send frames in batches to the detector.
+	•	Periodically re‑score popular uploads when models update.
+
+⸻
+
+If you want, I can package this as a plug‑and‑play repo (FastAPI service + Docker + example Next.js mod console), configured with NudeNet, LAION Safety, PDQ, Detoxify, and optional Perspective.

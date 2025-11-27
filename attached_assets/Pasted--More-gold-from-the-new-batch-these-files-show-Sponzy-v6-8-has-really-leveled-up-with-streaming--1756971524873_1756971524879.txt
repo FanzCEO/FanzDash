@@ -1,0 +1,72 @@
+🔥 More gold from the new batch — these files show Sponzy v6.8 has really leveled up with streaming, payments, and system controls. Here’s what I see:
+
+⸻
+
+🛠️ Features in this drop
+	•	Instamojo Settings (instamojo-settings.blade.php)
+	•	Adds Instamojo as a payment gateway (India/regional).
+	•	Expands global processor coverage.
+	•	Languages (languages.blade.php)
+	•	Full language management (add/remove/update).
+	•	Admin can localize the entire platform UI.
+	•	Layout (layout.blade.php)
+	•	Global admin panel theme/layout template.
+	•	Likely used for consistent UI + branding overrides.
+	•	Limits (limits.blade.php)
+	•	Admin can define platform limits: file upload size, post length, follower caps, etc.
+	•	Key for performance + compliance.
+	•	Live Streaming (live_streaming.blade.php)
+	•	Core live streaming module.
+	•	Enable/disable, configure pricing (per minute, ticketed).
+	•	Likely integrates with WebRTC/RTMP.
+	•	Live Streaming Private Requests (live-streaming-private-requests.blade.php)
+	•	One-on-one or private show request system.
+	•	Admin oversight + pricing control.
+	•	Maintenance Mode (maintenance_mode.blade.php)
+	•	Toggle site-wide maintenance lock.
+	•	Useful for upgrades or compliance lockouts.
+	•	Members (members.blade.php)
+	•	Directory of all users/creators.
+	•	Filters by role, status, verification, activity.
+	•	Central CRM-like function.
+	•	MercadoPago Settings (mercadopago-settings.blade.php)
+	•	Adds MercadoPago as payment processor (LatAm).
+	•	Expands regional coverage.
+	•	Messages (messages.blade.php)
+	•	Admin inbox for DMs (fan ↔ creator).
+	•	Moderation, keyword filters, blocklists.
+
+⸻
+
+🔑 Polyglot Migration Mapping
+	1.	Instamojo & MercadoPago → commerce-svc
+	•	Add as allowlisted adult-friendly processors.
+	•	ENV: INSTAMOJO_*, MERCADOPAGO_*.
+	•	Events: order.paid, payment.failed.
+	2.	Languages & Layout → system-svc
+	•	Manage platform languages & theming.
+	•	Store in system_settings.
+	3.	Limits → policy-svc
+	•	Define + enforce upload/post/follower rules.
+	•	Events: policy.limits.updated.
+	4.	Live Streaming & Private Requests → live-svc (new)
+	•	WebRTC/RTMP powered shows (group + private).
+	•	Events: stream.started, stream.ended, stream.charged.
+	•	Private requests → request.accepted, request.rejected.
+	5.	Maintenance Mode → system-svc
+	•	Global toggle.
+	•	Event: system.maintenance.enabled.
+	6.	Members → users-svc + admin-ui
+	•	Central directory.
+	•	Must pull data from all connected services.
+	7.	Messages → chat-svc
+	•	DM moderation dashboard.
+	•	Events: message.flagged, message.removed.
+
+⸻
+
+⚡ Bottom line: Now we’ve got live streaming + private shows, regional payments (Instamojo, MercadoPago), limits, maintenance mode, and language/theming — all of which need to be first-class services or extensions in the polyglot design.
+
+⸻
+
+Josh — do you want me to roll all of these (live streaming, private requests, Instamojo, MercadoPago, maintenance mode, limits, languages, members, messages) into the migration canvas doc so your Replit team has the complete service blueprint? This way, we’re not just tracking modules — we’re building the single source of truth for BoyFanz v6.8 → Polyglot OS.

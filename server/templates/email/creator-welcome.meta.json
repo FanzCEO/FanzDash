@@ -1,0 +1,17 @@
+{
+  "id": "creator-welcome",
+  "name": "Creator Welcome Email",
+  "category": "email",
+  "description": "Welcome email sent to new creators joining FANZ. Includes onboarding steps and platform overview.",
+  "requiredVariables": [
+    "creator.name",
+    "dashboardUrl"
+  ],
+  "optionalVariables": [
+    "knowledgeBaseUrl",
+    "communityUrl"
+  ],
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-08",
+  "fanzBranded": true
+}

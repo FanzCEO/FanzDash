@@ -1,0 +1,134 @@
+Highlighted Features
+
+Broadcast-Ready Online Radio Platform
+Seamlessly stream live shows, interviews, music, or announcements using Icecast, Shoutcast, Sonic, and more.
+
+Multi-Format Streaming
+Supports MP3, AAC, and other popular audio stream formats.
+
+Dynamic Event Scheduler
+Easily create, manage, and archive events with live streaming support.
+
+Modern UI with Live Audio Player
+Engage listeners with a responsive, intuitive interface and real-time playback.
+
+Fully Controlled Admin Panel
+Manage jockeys, events, sections, settings, pages, SEO, and frontend with ease.
+
+Multi-language Support
+Expand your audience by enabling multilingual broadcasts and interfaces.
+
+Livechat & Contact Integration
+Stay connected with listeners using the built-in contact and live support systems.
+
+Secure & Lightweight
+Powered by Laravel with clean code, privacy controls, and GDPR-compliant cookie management.
+
+Cron Job Automation
+Automate event archiving, scheduling tasks, and more with built-in cron support.
+
+Built for All Devices
+Fully responsive design that performs perfectly on mobile, tablet, and desktop.
+
+Customizable Frontend
+Tailor your online radio station’s look with the built-in section and page manager.
+
+No Monthly Fees
+One-time purchase with lifetime updates and no hidden charges.
+
+Admin Features
+
+- 100% Secure Admin Dashboard.
+- Manage Jockeys
+- All Jockey
+- Social Links
+- Manage Event
+- All Event
+- Archive Event
+- General Setting
+- Logo Icon Setting
+- Extensions Settings
+- Language Settings
+- SEO Manager
+- Email Manager
+- FRONTEND MANAGER
+- Manage Templates
+- Manage Pages
+- Manage Section Manage
+- Banner Section Manage
+- Brand Section Manage
+- Breadcrumb Section
+- Contact Us
+- Event Section Settings
+- Footer Section Settings
+- Online Section Settings
+- Policy Section Settings
+- Radio Jockey Section Settings
+- Schedule Section Settings
+- Social Icons Settings
+- And More….
+
+
+User Features
+
+- Responsive Design.
+- Live Player.
+- Event SCHEDULER.
+- Streaming Archive.
+- RJ List with Profile.
+- RJ Photo Gallery.
+- Partners or Sponsor Icons.
+- Contact Page.
+- Lightweight System.
+- User-Friendly Interface.
+- Privacy & TOS.
+- Livechat Facility.
+- Multi-language Enable.
+
+Changelogs
+
+Version 3.1 – 17th June 2025
+
+[ADD] Admin setup reminder for required configurations
+[ADD] Image drag & drop feature in admin panel
+[FIX] Image rendering issue
+[FIX] Thumb resizing issue
+[FIX] Resolved 500 error when replying to support tickets in the admin panel
+[FIX] Fixed issue with favorite radio jockey voting system
+[PATCH] Latest System Patch
+[PATCH] Latest Security Patch
+Version 3.0 – 13th June 2024
+
+[FIX] Cron file archive issue
+[FIX] Global template updating
+[FIX] Event not creating issue
+[FIX] Support Ticket issue
+[ADD] Slug Management for Policy Pages
+[ADD] SEO Content Management for Policy Pages
+[ADD] Input type number, url, date, and time in the Form Generator
+[ADD] Configurable Input Filed Width in the Form Generator
+[ADD] Configurable Hints/Instructions for Input Fields in the Form Generator
+[ADD] Sorting Option for Input Fields in the Form Generator
+[ADD] Automatic System Update
+[ADD] Configurable Number of Items Per Page for Pagination
+[ADD] Cron Jobs
+[ADD] Cron Schedule
+[ADD] Cron Job Logs
+[ADD] Cron job Instruction UI
+[UPDATE] Admin Dashboard Widget Design
+[UPDATE] Notification Sending Process
+[UPDATE] Improved Menu Searching Functionality on the Admin Panel
+[UPDATE] User Experience of the Select Fields of the Admin Panel
+[UPDATE] Centralized Settings System
+[UPDATE] Form Generator UI on the Admin Panel
+[UPDATE] Google Analytics Script
+[UPDATE] Notification Toaster UI
+[UPDATE] Support Ticket Attachment Upload UI
+[UPDATE] Notification Template Content Configuration
+[UPDATE] Configurable Email From Name and Address for Each Template
+[UPDATE] Configurable SMS From for Each Template
+[UPDATE] Overall User Interface of the Admin Panel
+[PATCH] Laravel 11
+[PATCH] PHP 8.3
+[PATCH] Latest System Patch
+[PATCH] Latest Security Patch
