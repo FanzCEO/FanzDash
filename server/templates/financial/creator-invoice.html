@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FANZ Invoice #{{invoice.number}}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; color: #1a1a1a; line-height: 1.6; }
+        .invoice-container { max-width: 800px; margin: 40px auto; padding: 40px; background: #fff; }
+        .header { border-bottom: 4px solid #e91e63; padding-bottom: 30px; margin-bottom: 30px; }
+        .header-top { display: flex; justify-content: space-between; align-items: start; }
+        .logo { font-size: 32px; font-weight: 800; color: #e91e63; letter-spacing: -1px; }
+        .logo-tagline { font-size: 12px; color: #666; margin-top: 5px; }
+        .invoice-meta { text-align: right; }
+        .invoice-number { font-size: 24px; font-weight: 700; color: #1a1a1a; }
+        .invoice-date { color: #666; font-size: 14px; margin-top: 5px; }
+        .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 30px 0; }
+        .party h3 { font-size: 14px; text-transform: uppercase; color: #666; margin-bottom: 10px; }
+        .party-info { font-size: 14px; }
+        .party-name { font-weight: 600; font-size: 16px; color: #1a1a1a; margin-bottom: 5px; }
+        .items-table { width: 100%; border-collapse: collapse; margin: 30px 0; }
+        .items-table th { background: #f5f5f5; padding: 12px; text-align: left; font-size: 12px; text-transform: uppercase; color: #666; font-weight: 600; }
+        .items-table td { padding: 15px 12px; border-bottom: 1px solid #eee; }
+        .item-desc { font-weight: 500; }
+        .item-meta { font-size: 13px; color: #666; margin-top: 3px; }
+        .amount { text-align: right; font-weight: 600; }
+        .totals { margin-top: 30px; }
+        .totals-grid { display: grid; grid-template-columns: 1fr auto; gap: 15px; max-width: 300px; margin-left: auto; }
+        .total-label { text-align: right; font-size: 14px; color: #666; }
+        .total-amount { text-align: right; font-weight: 600; }
+        .grand-total { font-size: 20px; color: #e91e63; padding-top: 15px; border-top: 2px solid #eee; margin-top: 15px; }
+        .payment-info { background: #f9f9f9; padding: 20px; margin: 30px 0; border-radius: 8px; }
+        .payment-info h3 { font-size: 14px; text-transform: uppercase; color: #666; margin-bottom: 10px; }
+        .payment-method { display: flex; align-items: center; gap: 10px; padding: 10px; background: #fff; border-radius: 6px; margin-top: 10px; }
+        .payment-badge { background: #e91e63; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .notes { margin: 30px 0; padding: 20px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; }
+        .notes h3 { font-size: 14px; color: #e65100; margin-bottom: 10px; }
+        .notes p { font-size: 13px; color: #666; }
+        .footer { margin-top: 50px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px; }
+        .footer-links { margin-top: 15px; }
+        .footer-links a { color: #e91e63; text-decoration: none; margin: 0 10px; }
+        .platform-badge { display: inline-block; background: #f0f0f0; padding: 4px 10px; border-radius: 4px; font-size: 11px; color: #666; margin-top: 5px; }
+        @media print { body { background: white; } .invoice-container { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <div class="logo">FANZ™</div>
+                    <div class="logo-tagline">Premium Content Platform Network</div>
+                    {{#if platform.name}}
+                    <div class="platform-badge">{{platform.name}}</div>
+                    {{/if}}
+                </div>
+                <div class="invoice-meta">
+                    <div class="invoice-number">Invoice #{{invoice.number}}</div>
+                    <div class="invoice-date">{{invoice.date}}</div>
+                    {{#if invoice.dueDate}}
+                    <div class="invoice-date">Due: {{invoice.dueDate}}</div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
+        <div class="parties">
+            <div class="party">
+                <h3>From</h3>
+                <div class="party-info">
+                    <div class="party-name">{{creator.name}}</div>
+                    <div>{{creator.email}}</div>
+                    {{#if creator.username}}
+                    <div>@{{creator.username}}</div>
+                    {{/if}}
+                    {{#if creator.address}}
+                    <div style="margin-top: 10px;">{{creator.address}}</div>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="party">
+                <h3>Bill To</h3>
+                <div class="party-info">
+                    <div class="party-name">{{client.name}}</div>
+                    <div>{{client.email}}</div>
+                    {{#if client.company}}
+                    <div>{{client.company}}</div>
+                    {{/if}}
+                    {{#if client.address}}
+                    <div style="margin-top: 10px;">{{client.address}}</div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th style="width: 100px;">Quantity</th>
+                    <th style="width: 120px;">Rate</th>
+                    <th style="width: 120px;" class="amount">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each items}}
+                <tr>
+                    <td>
+                        <div class="item-desc">{{this.description}}</div>
+                        {{#if this.details}}
+                        <div class="item-meta">{{this.details}}</div>
+                        {{/if}}
+                    </td>
+                    <td>{{this.quantity}}</td>
+                    <td>{{this.rate}}</td>
+                    <td class="amount">{{this.amount}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <div class="totals-grid">
+                <div class="total-label">Subtotal:</div>
+                <div class="total-amount">{{totals.subtotal}}</div>
+
+                {{#if totals.platformFee}}
+                <div class="total-label">Platform Fee ({{totals.platformFeePercent}}%):</div>
+                <div class="total-amount">-{{totals.platformFee}}</div>
+                {{/if}}
+
+                {{#if totals.tax}}
+                <div class="total-label">Tax ({{totals.taxPercent}}%):</div>
+                <div class="total-amount">{{totals.tax}}</div>
+                {{/if}}
+
+                {{#if totals.discount}}
+                <div class="total-label">Discount:</div>
+                <div class="total-amount">-{{totals.discount}}</div>
+                {{/if}}
+
+                <div class="total-label grand-total">Total Amount:</div>
+                <div class="total-amount grand-total">{{totals.total}}</div>
+
+                {{#if totals.creatorEarnings}}
+                <div class="total-label" style="color: #4caf50;">Your Earnings:</div>
+                <div class="total-amount" style="color: #4caf50;">{{totals.creatorEarnings}}</div>
+                {{/if}}
+            </div>
+        </div>
+
+        {{#if payment}}
+        <div class="payment-info">
+            <h3>Payment Information</h3>
+            <div class="payment-method">
+                <span class="payment-badge">{{payment.method}}</span>
+                <span>{{payment.details}}</span>
+            </div>
+            {{#if payment.status}}
+            <div style="margin-top: 10px; font-size: 13px; color: #666;">
+                Status: <strong style="color: {{payment.statusColor}};">{{payment.status}}</strong>
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        {{#if notes}}
+        <div class="notes">
+            <h3>Important Notes</h3>
+            <p>{{notes}}</p>
+        </div>
+        {{/if}}
+
+        <div class="footer">
+            <div>FANZ Unlimited Network - Premium Content Platform</div>
+            <div style="margin-top: 10px;">All 94 FANZ Platforms - One Unified Ecosystem</div>
+            <div class="footer-links">
+                <a href="https://fanzunlimited.com">fanzunlimited.com</a>
+                <a href="mailto:support@fanzunlimited.com">support@fanzunlimited.com</a>
+            </div>
+            <div style="margin-top: 15px; font-size: 11px;">
+                This invoice was generated automatically by the FANZ financial system.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

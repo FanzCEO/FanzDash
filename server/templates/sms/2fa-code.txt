@@ -1,0 +1,5 @@
+Your FANZ verification code is: {{code}}
+
+Valid for 10 minutes. Don't share this code.
+
+- FANZ Security

@@ -1,0 +1,78 @@
+🔥 These new Blade files show that Sponzy v6.8’s admin stack is even richer than we thought. Here’s the fresh breakdown:
+
+⸻
+
+🛠️ Features from the latest uploads
+	•	Edit Page (edit-page.blade.php)
+	•	Full CMS page editor for static/custom pages.
+	•	Extends the cms-svc scope (with versioning + SEO meta).
+	•	Edit Shop Categories (edit-shop-categories.blade.php)
+	•	Marketplace/merch taxonomy editor.
+	•	Ties to commerce-svc (merch cluster).
+	•	Edit State (edit-state.blade.php)
+	•	Geo granularity beyond countries (state/province).
+	•	Supports compliance rules at sub-country level.
+	•	Edit Tax (edit-tax.blade.php)
+	•	Manage tax rules dynamically.
+	•	Extends commerce-svc tax engine.
+	•	Email Settings (email-settings.blade.php)
+	•	Config mail servers, templates, sender domains.
+	•	Fits in notifier-svc.
+	•	FFmpeg Settings (ffmpeg.blade.php)
+	•	Admin panel for encoding config.
+	•	Codec profiles, resolutions, thumbnail rules.
+	•	Tied to media-svc.
+	•	Flutterwave Settings (flutterwave-settings.blade.php)
+	•	Payment processor integration (Africa/regional).
+	•	Extends commerce-svc.
+	•	Gifts (gifts.blade.php)
+	•	List/manage all fan → creator gifts.
+	•	Extends commerce “virtual products.”
+	•	Giphy API (giphy-api.blade.php)
+	•	Config API key for Giphy integration.
+	•	Fans/creators can use GIFs in chat/comments.
+	•	Managed via chat-svc.
+	•	Google Settings (google.blade.php)
+	•	Likely OAuth + reCAPTCHA config.
+	•	Ties into users-svc (SSO login) + policy-svc (anti-bot).
+
+⸻
+
+🔑 Polyglot Migration Mapping
+	1.	CMS & Pages → cms-svc
+	•	CRUD for pages, SEO meta, blog posts.
+	•	Admin workflow + versioning.
+	2.	Shop Categories → commerce-svc (merch module)
+	•	Category tree for physical/virtual goods.
+	3.	Geo (State/Country) → policy-svc
+	•	Granular geo-block + localization rules.
+	•	Emit policy.geo.updated.
+	4.	Tax → commerce-svc tax engine
+	•	Dynamic rates by country/state.
+	•	Apply per ledger entry.
+	5.	Email Settings → notifier-svc
+	•	SMTP/SES/API configs.
+	•	Template overrides.
+	6.	FFmpeg → media-svc
+	•	Encoding job presets.
+	•	Should sit alongside Coconut integration.
+	7.	Flutterwave → commerce-svc
+	•	Payment rails extension.
+	•	ENV: FLUTTERWAVE_*.
+	8.	Gifts → commerce-svc
+	•	Gift catalog & redemptions.
+	•	Event: gift.redeemed.
+	9.	Giphy API → chat-svc
+	•	Fun overlays for DMs/comments.
+	•	ENV: GIPHY_API_KEY.
+	10.	Google → users-svc
+	•	OAuth login, Google reCAPTCHA.
+	•	ENV: GOOGLE_CLIENT_ID, GOOGLE_SECRET.
+
+⸻
+
+⚡ Bottom line: BoyFanz’s Sponzy v6.8 is basically a super-app: CMS, ads, gifts, crypto, banking, tax, geo, payments (CCBill, Cardinity, Flutterwave, Coinbase, CoinPayments, Binance), FFmpeg, chat (GetStream + Giphy), and notifications.
+
+⸻
+
+Josh — do you want me to update the migration canvas doc again so your Replit team sees exactly how these new modules (tax, FFmpeg, Flutterwave, Giphy, Google, shop categories, CMS pages) map into the polyglot services? That way the canvas blueprint stays the authoritative “single source of truth.”

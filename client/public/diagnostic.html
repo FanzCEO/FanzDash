@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FanzDash Diagnostic</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { color: #ff00ff; }
+        .test {
+            margin: 20px 0;
+            padding: 15px;
+            background: #1a1a1a;
+            border-left: 4px solid #00ff00;
+        }
+        .error { border-color: #ff0000; color: #ff6666; }
+        .success { border-color: #00ff00; color: #00ff00; }
+        button {
+            background: #ff00ff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover { background: #00ffff; }
+        pre {
+            background: #000;
+            padding: 10px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 FanzDash System Diagnostic</h1>
+    <p>This page tests if the React app and API are working correctly.</p>
+
+    <div class="test">
+        <h3>1. Frontend Access Test</h3>
+        <p id="frontend-test">✅ You can see this page, so Vite is serving files correctly!</p>
+    </div>
+
+    <div class="test" id="react-test">
+        <h3>2. React Dependencies Test</h3>
+        <p>Testing if React libraries load...</p>
+        <button onclick="testReact()">Test React</button>
+        <pre id="react-result"></pre>
+    </div>
+
+    <div class="test" id="api-test">
+        <h3>3. Backend API Test</h3>
+        <p>Testing connection to backend at localhost:3000...</p>
+        <button onclick="testBackend()">Test Backend API</button>
+        <pre id="api-result"></pre>
+    </div>
+
+    <div class="test" id="main-test">
+        <h3>4. Main App Test</h3>
+        <p>Testing if main app loads...</p>
+        <button onclick="testMainApp()">Test Main App</button>
+        <pre id="main-result"></pre>
+    </div>
+
+    <div class="test">
+        <h3>5. Browser Console Errors</h3>
+        <p>Open your browser's Developer Tools (F12) and check the Console tab for JavaScript errors.</p>
+        <p>Common issues:</p>
+        <ul>
+            <li>CORS errors - API not accessible</li>
+            <li>Module not found - Missing dependencies</li>
+            <li>Syntax errors - Code compilation issues</li>
+        </ul>
+    </div>
+
+    <script>
+        async function testReact() {
+            const result = document.getElementById('react-result');
+            try {
+                const module = await import('/node_modules/.vite/deps/react.js?v=70ce1fa1');
+                result.textContent = '✅ React loaded successfully!\n' + JSON.stringify(Object.keys(module), null, 2);
+                document.getElementById('react-test').classList.add('success');
+            } catch (error) {
+                result.textContent = '❌ React failed to load:\n' + error.message;
+                document.getElementById('react-test').classList.add('error');
+            }
+        }
+
+        async function testBackend() {
+            const result = document.getElementById('api-result');
+            try {
+                const response = await fetch('http://localhost:3000/api/admin/plugins/store');
+                const data = await response.json();
+                result.textContent = '✅ Backend API working!\n' +
+                    'Status: ' + response.status + '\n' +
+                    'Plugins: ' + data.length + ' available';
+                document.getElementById('api-test').classList.add('success');
+            } catch (error) {
+                result.textContent = '❌ Backend API failed:\n' + error.message;
+                document.getElementById('api-test').classList.add('error');
+            }
+        }
+
+        async function testMainApp() {
+            const result = document.getElementById('main-result');
+            try {
+                const module = await import('/src/main.tsx');
+                result.textContent = '✅ Main app module loaded!\nApp should be mounting...';
+                document.getElementById('main-test').classList.add('success');
+                setTimeout(() => {
+                    const root = document.getElementById('root');
+                    if (root && root.innerHTML.trim() !== '') {
+                        result.textContent += '\n✅ React app has rendered content!';
+                    } else {
+                        result.textContent += '\n⚠️ React app loaded but no content rendered. Check console for errors.';
+                    }
+                }, 1000);
+            } catch (error) {
+                result.textContent = '❌ Main app failed to load:\n' + error.message + '\n\nStack:\n' + error.stack;
+                document.getElementById('main-test').classList.add('error');
+            }
+        }
+
+        // Auto-run basic tests
+        setTimeout(() => {
+            console.log('=== FanzDash Diagnostic Started ===');
+        }, 100);
+    </script>
+</body>
+</html>

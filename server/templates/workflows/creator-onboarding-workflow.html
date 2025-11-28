@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>FANZ Creator Onboarding Workflow</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;background:#f5f5f5;padding:20px}
+.workflow{max-width:1000px;margin:0 auto;background:white;border-radius:12px;padding:40px}
+.header{border-bottom:3px solid #e91e63;padding-bottom:20px;margin-bottom:30px}
+h1{font-size:28px;margin-bottom:10px;color:#1a1a1a}
+.welcome-message{background:linear-gradient(135deg,#e91e63,#c2185b);color:white;padding:25px;border-radius:8px;margin:20px 0}
+.welcome-message h2{font-size:20px;margin-bottom:8px}
+.progress-bar-container{background:#f0f0f0;height:8px;border-radius:4px;margin:20px 0;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#e91e63,#c2185b);width:{{progress}}%;transition:width 0.3s}
+.progress-text{text-align:center;font-size:14px;color:#666;margin-bottom:15px}
+.workflow-stage{background:#f9f9f9;border-left:4px solid #e91e63;padding:20px;margin:20px 0;border-radius:8px;position:relative}
+.stage-number{position:absolute;top:-10px;left:20px;background:#e91e63;color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.stage-completed .stage-number{background:#4caf50}
+.stage-title{font-size:18px;font-weight:700;margin-bottom:10px;padding-top:10px}
+.stage-description{color:#666;margin-bottom:15px;font-size:14px}
+.checklist{margin-top:15px}
+.checklist-item{display:flex;align-items:flex-start;padding:12px;background:white;border-radius:6px;margin:8px 0;border:1px solid #e0e0e0}
+.check-icon{width:20px;height:20px;border:2px solid #e91e63;border-radius:50%;margin-right:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#4caf50;font-weight:700}
+.checklist-item.completed{background:#f1f8f4;border-color:#4caf50}
+.checklist-item.completed .check-icon{background:#4caf50;border-color:#4caf50;color:white}
+.item-text{flex:1}
+.item-label{font-weight:600;margin-bottom:3px}
+.item-hint{font-size:12px;color:#666}
+.cta-button{display:inline-block;background:#e91e63;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:10px}
+.info-box{background:#e3f2fd;border-left:4px solid#1976d2;padding:15px;border-radius:6px;margin:15px 0}
+.info-box-title{font-weight:700;color:#1976d2;margin-bottom:5px}
+</style>
+</head>
+<body>
+<div class="workflow">
+<div class="header">
+<h1>Welcome to FANZ Creator Network!</h1>
+<div style="color:#666;margin-top:10px">Creator: {{creator.name}} • Email: {{creator.email}}</div>
+</div>
+
+<div class="welcome-message">
+<h2>🎉 You're joining 94 premium content platforms!</h2>
+<p>Complete the steps below to activate your creator account and start earning.</p>
+</div>
+
+<div class="progress-text">Overall Progress: {{completedSteps}} of {{totalSteps}} steps completed ({{progress}}%)</div>
+<div class="progress-bar-container">
+<div class="progress-bar-fill"></div>
+</div>
+
+<div class="workflow-stage {{#if stages.account.completed}}stage-completed{{/if}}">
+<div class="stage-number">1</div>
+<div class="stage-title">Account Setup</div>
+<div class="stage-description">Create your FANZ creator profile</div>
+<div class="checklist">
+<div class="checklist-item {{#if stages.account.items.email}}completed{{/if}}">
+<div class="check-icon">{{#if stages.account.items.email}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Verify email address</div>
+<div class="item-hint">Check {{creator.email}} for verification link</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.account.items.phone}}completed{{/if}}">
+<div class="check-icon">{{#if stages.account.items.phone}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Add phone number for 2FA</div>
+<div class="item-hint">Required for security and payout notifications</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.account.items.profile}}completed{{/if}}">
+<div class="check-icon">{{#if stages.account.items.profile}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Complete profile information</div>
+<div class="item-hint">Display name, bio, profile photo, and banner</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.account.items.platforms}}completed{{/if}}">
+<div class="check-icon">{{#if stages.account.items.platforms}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Select platforms to join</div>
+<div class="item-hint">Choose from 94 FANZ platforms based on your niche</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.verification.completed}}stage-completed{{/if}}">
+<div class="stage-number">2</div>
+<div class="stage-title">Identity Verification</div>
+<div class="stage-description">Verify your identity and age (18+ required)</div>
+<div class="info-box">
+<div class="info-box-title">🔒 Your information is secure</div>
+<div>All documents are encrypted and verified by our trusted partner. We comply with 2257 regulations.</div>
+</div>
+<div class="checklist">
+<div class="checklist-item {{#if stages.verification.items.id}}completed{{/if}}">
+<div class="check-icon">{{#if stages.verification.items.id}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Upload government-issued ID</div>
+<div class="item-hint">Driver's license, passport, or state ID</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.verification.items.selfie}}completed{{/if}}">
+<div class="check-icon">{{#if stages.verification.items.selfie}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Take selfie verification photo</div>
+<div class="item-hint">Hold your ID next to your face</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.verification.items.form2257}}completed{{/if}}">
+<div class="check-icon">{{#if stages.verification.items.form2257}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Complete 2257 compliance form</div>
+<div class="item-hint">Required for adult content creation</div>
+</div>
+</div>
+</div>
+{{#unless stages.verification.completed}}
+<a href="{{dashboardUrl}}/creator-verification" class="cta-button">Start Verification →</a>
+{{/unless}}
+</div>
+
+<div class="workflow-stage {{#if stages.payment.completed}}stage-completed{{/if}}">
+<div class="stage-number">3</div>
+<div class="stage-title">Payment Setup</div>
+<div class="stage-description">Configure how you'll receive payouts</div>
+<div class="checklist">
+<div class="checklist-item {{#if stages.payment.items.method}}completed{{/if}}">
+<div class="check-icon">{{#if stages.payment.items.method}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Select payout method</div>
+<div class="item-hint">Paxum, Cosmo Payment, or ACH transfer</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.payment.items.tax}}completed{{/if}}">
+<div class="check-icon">{{#if stages.payment.items.tax}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Submit W-9 or W-8BEN tax form</div>
+<div class="item-hint">Required for tax reporting</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.payment.items.pricing}}completed{{/if}}">
+<div class="check-icon">{{#if stages.payment.items.pricing}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Set subscription pricing</div>
+<div class="item-hint">Recommended: $9.99-$29.99/month</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.content.completed}}stage-completed{{/if}}">
+<div class="stage-number">4</div>
+<div class="stage-title">First Content Upload</div>
+<div class="stage-description">Publish your first content to attract subscribers</div>
+<div class="checklist">
+<div class="checklist-item {{#if stages.content.items.welcome}}completed{{/if}}">
+<div class="check-icon">{{#if stages.content.items.welcome}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Create welcome post</div>
+<div class="item-hint">Introduce yourself to potential subscribers</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.content.items.preview}}completed{{/if}}">
+<div class="check-icon">{{#if stages.content.items.preview}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Upload 3-5 preview posts</div>
+<div class="item-hint">Free/teaser content to showcase your style</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.content.items.premium}}completed{{/if}}">
+<div class="check-icon">{{#if stages.content.items.premium}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Add premium subscription content</div>
+<div class="item-hint">At least 10 posts for subscribers</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.promotion.completed}}stage-completed{{/if}}">
+<div class="stage-number">5</div>
+<div class="stage-title">Profile Promotion</div>
+<div class="stage-description">Market your FANZ profile to grow your audience</div>
+<div class="checklist">
+<div class="checklist-item {{#if stages.promotion.items.social}}completed{{/if}}">
+<div class="check-icon">{{#if stages.promotion.items.social}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Link social media accounts</div>
+<div class="item-hint">Twitter, Instagram, TikTok for cross-promotion</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.promotion.items.bio}}completed{{/if}}">
+<div class="check-icon">{{#if stages.promotion.items.bio}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Update social media bios with FANZ link</div>
+<div class="item-hint">Use your custom link: {{creator.profileUrl}}</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.promotion.items.promo}}completed{{/if}}">
+<div class="check-icon">{{#if stages.promotion.items.promo}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Create promotional discount (optional)</div>
+<div class="item-hint">First-month discount to attract subscribers</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.training.completed}}stage-completed{{/if}}">
+<div class="stage-number">6</div>
+<div class="stage-title">Creator Training</div>
+<div class="stage-description">Learn best practices and platform features</div>
+<div class="checklist">
+<div class="checklist-item {{#if stages.training.items.dashboard}}completed{{/if}}">
+<div class="check-icon">{{#if stages.training.items.dashboard}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Watch dashboard tour video</div>
+<div class="item-hint">5-minute overview of key features</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.training.items.guidelines}}completed{{/if}}">
+<div class="check-icon">{{#if stages.training.items.guidelines}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Review content guidelines</div>
+<div class="item-hint">Understand what's allowed and prohibited</div>
+</div>
+</div>
+<div class="checklist-item {{#if stages.training.items.tips}}completed{{/if}}">
+<div class="check-icon">{{#if stages.training.items.tips}}✓{{/if}}</div>
+<div class="item-text">
+<div class="item-label">Read success tips from top creators</div>
+<div class="item-hint">Learn strategies to maximize earnings</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="info-box" style="background:#e8f5e9;border-color:#4caf50;margin-top:30px">
+<div class="info-box-title" style="color:#2e7d32">💰 Earning Potential</div>
+<div>FANZ creators keep <strong>80% of all earnings</strong>. Top creators earn $10,000+ per month across our 94 platforms!</div>
+</div>
+
+<div style="text-align:center;margin-top:30px;padding:20px;background:#f9f9f9;border-radius:8px">
+<div style="font-size:14px;color:#666;margin-bottom:10px">Need help? Our creator support team is here for you.</div>
+<a href="mailto:{{supportEmail}}" class="cta-button">Contact Support</a>
+<a href="{{dashboardUrl}}" class="cta-button" style="background:#666;margin-left:10px">Go to Dashboard</a>
+</div>
+</div>
+</body>
+</html>

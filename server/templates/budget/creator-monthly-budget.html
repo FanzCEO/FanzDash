@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>FANZ Creator Budget - {{month}}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;padding:20px;background:#f5f5f5}
+.budget{max-width:1000px;margin:0 auto;background:white;border-radius:12px;padding:40px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+.header{border-bottom:3px solid #e91e63;padding-bottom:20px;margin-bottom:30px}
+.header h1{font-size:28px;color:#1a1a1a;margin-bottom:5px}
+.header .period{font-size:16px;color:#666}
+.section{margin:30px 0}
+.section-title{font-size:18px;font-weight:700;margin-bottom:20px;color:#1a1a1a}
+.budget-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.budget-card{background:#f9f9f9;padding:20px;border-radius:8px;border-left:4px solid #e91e63}
+.budget-label{font-size:12px;text-transform:uppercase;color:#666;margin-bottom:8px}
+.budget-value{font-size:32px;font-weight:700;color:#1a1a1a}
+.budget-subtext{font-size:13px;color:#666;margin-top:5px}
+.category-list{list-style:none}
+.category-item{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid #eee}
+.category-name{font-weight:600}
+.category-amount{font-weight:700;color:#e91e63}
+.progress-bar{height:8px;background:#eee;border-radius:4px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,#e91e63,#c2185b);transition:width 0.3s}
+.total-row{background:#e91e63;color:white;padding:20px;border-radius:8px;margin-top:20px;display:flex;justify-content:space-between;align-items:center}
+.total-label{font-size:18px}
+.total-amount{font-size:32px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="budget">
+<div class="header">
+<h1>Creator Budget</h1>
+<div class="period">{{creator.name}} - {{month}}</div>
+</div>
+
+<div class="section">
+<div class="budget-grid">
+<div class="budget-card">
+<div class="budget-label">Projected Income</div>
+<div class="budget-value">${{income.projected}}</div>
+<div class="budget-subtext">{{income.subscribers}} subscribers</div>
+</div>
+<div class="budget-card">
+<div class="budget-label">Total Expenses</div>
+<div class="budget-value">${{expenses.total}}</div>
+<div class="budget-subtext">{{expenses.categories}} categories</div>
+</div>
+<div class="budget-card">
+<div class="budget-label">Net Profit</div>
+<div class="budget-value">${{profit.net}}</div>
+<div class="budget-subtext">{{profit.margin}}% margin</div>
+</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">Income Breakdown</div>
+<ul class="category-list">
+{{#each incomeCategories}}
+<li class="category-item">
+<span class="category-name">{{this.name}}</span>
+<span class="category-amount">${{this.amount}}</span>
+</li>
+{{/each}}
+</ul>
+</div>
+
+<div class="section">
+<div class="section-title">Expense Categories</div>
+<ul class="category-list">
+{{#each expenseCategories}}
+<li class="category-item">
+<div style="flex:1">
+<div class="category-name">{{this.name}}</div>
+<div class="progress-bar"><div class="progress-fill" style="width:{{this.percent}}%"></div></div>
+</div>
+<span class="category-amount">${{this.amount}}</span>
+</li>
+{{/each}}
+</ul>
+</div>
+
+<div class="total-row">
+<span class="total-label">Projected Savings</span>
+<span class="total-amount">${{savings.total}}</span>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+/* data tables  */
+.datatable-top {
+    @apply flex flex-row items-center justify-between mb-4
+  }
+  
+  .datatable-bottom {
+    @apply mt-6 flex max-sm:flex-col sm:flex-row gap-4 items-center justify-between mb-4
+  }
+  
+  .datatable-search {
+    @apply order-1 max-sm:w-full
+  }
+  
+  .datatable-search input, .datatable-selector {
+    @apply max-sm:w-full px-4 py-2 bg-primary-950 border border-primary-600 focus:shadow-xs focus:border-primary-300 focus:text-primary-300 placeholder-primary-800 focus:outline-hidden focus:ring-0
+  }
+  
+  .datatable-selector {
+    @apply min-w-20
+  }
+  
+  .datatable-dropdown {
+    @apply order-2 max-sm:hidden
+  }
+  
+  .datatable-dropdown select {
+    @apply me-2
+  }
+  
+  .datatable-pagination-list {
+    @apply flex flex-row items-center rounded
+  }
+  
+  .datatable-pagination-list li.datatable-active button {
+    @apply bg-primary-300 text-black
+  }
+  
+  .datatable-pagination-list li button {
+    @apply relative inline-flex items-center justify-center px-4 h-10 leading-tight hover:bg-primary-300 hover:text-black bg-primary-950 border border-primary-600 -me-px
+  }
+  
+  .datatable-pagination-list li:first-child button {
+    @apply rounded-s
+  }
+  
+  .datatable-pagination-list li:last-child button {
+    @apply rounded-e-sm me-0
+  }
+  
+  .table-sorter-inside .datatable-top, .table-sorter-inside .datatable-bottom {
+    @apply px-8
+  }
+  
+  .datatable-sorter {
+    padding-right: 1.25rem;
+    position: relative;
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .datatable-sorter::before,
+  .datatable-sorter::after {
+    content: "";
+    position: absolute;
+    top: .875rem;
+    height: 0px;
+    width: 0px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    opacity: 0.2;
+    inset-inline-end: 4px;
+  }
+  
+  .datatable-sorter::before {
+    border-top: 4px solid #02fafc;
+    bottom: 0px;
+  }
+  
+  .datatable-sorter::after {
+    border-bottom: 4px solid #02fafc;
+    border-top: 4px solid transparent;
+    top: 0px;
+  }
+  
+  .datatable-ascending .datatable-sorter::after,
+  .datatable-descending .datatable-sorter::before {
+    opacity: 0.6;
+  }
+  
+  .datatables-empty {
+    text-align: center;
+  }

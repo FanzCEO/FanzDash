@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Payout Processed - FANZ</title></head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:20px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:white;border-radius:12px;overflow:hidden;">
+<tr><td style="background:linear-gradient(135deg,#4caf50 0%,#388e3c 100%);padding:30px;text-align:center;">
+<h1 style="color:white;font-size:28px;margin:0;">💰 Payout Processed!</h1>
+</td></tr>
+<tr><td style="padding:40px;">
+<p style="font-size:16px;color:#333;margin:0 0 20px;">Hey {{creator.name}},</p>
+<p style="font-size:16px;color:#666;line-height:1.6;margin:0 0 20px;">Great news! Your payout for <strong>{{period}}</strong> has been processed.</p>
+<table width="100%" cellpadding="20" style="background:#f9f9f9;border-radius:8px;margin:20px 0;">
+<tr><td style="text-align:center;">
+<div style="font-size:14px;color:#666;margin-bottom:10px;">Amount Paid</div>
+<div style="font-size:36px;font-weight:700;color:#4caf50;">{{amount}}</div>
+<div style="font-size:14px;color:#666;margin-top:10px;">via {{paymentMethod}}</div>
+</td></tr>
+</table>
+<p style="font-size:14px;color:#666;margin:20px 0;">
+<strong>Transaction ID:</strong> {{transactionId}}<br>
+<strong>Payment Date:</strong> {{paymentDate}}<br>
+<strong>Expected Arrival:</strong> {{expectedArrival}}
+</p>
+<div style="text-align:center;margin:30px 0;">
+<a href="{{statementUrl}}" style="display:inline-block;background:#e91e63;color:white;padding:14px 30px;border-radius:8px;text-decoration:none;font-weight:600;">View Full Statement</a>
+</div>
+</td></tr>
+<tr><td style="padding:20px;background:#f9f9f9;text-align:center;font-size:12px;color:#999;">
+FANZ Unlimited Network - Creator Payments
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>FANZ Content Creation Workflow</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;background:#f5f5f5;padding:20px}
+.workflow{max-width:1000px;margin:0 auto;background:white;border-radius:12px;padding:40px}
+.header{border-bottom:3px solid #e91e63;padding-bottom:20px;margin-bottom:30px}
+h1{font-size:28px;margin-bottom:10px}
+.workflow-meta{display:flex;gap:20px;font-size:14px;color:#666}
+.workflow-stage{background:#f9f9f9;border-left:4px solid #e91e63;padding:20px;margin:20px 0;border-radius:8px;position:relative}
+.stage-number{position:absolute;top:-10px;left:20px;background:#e91e63;color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.stage-title{font-size:18px;font-weight:700;margin-bottom:10px;padding-top:10px}
+.stage-description{color:#666;margin-bottom:15px}
+.stage-actions{margin-top:15px}
+.action-item{display:flex;align-items:center;padding:10px;background:white;border-radius:6px;margin:8px 0;border:1px solid #e0e0e0}
+.action-checkbox{width:20px;height:20px;border:2px solid #e91e63;border-radius:4px;margin-right:12px;flex-shrink:0}
+.action-text{flex:1}
+.action-assignee{color:#e91e63;font-size:12px;font-weight:600;margin-left:10px}
+.stage-status{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;margin-left:10px}
+.status-pending{background:#fff3e0;color:#e65100}
+.status-active{background:#e3f2fd;color:#1976d2}
+.status-completed{background:#e8f5e9;color:#2e7d32}
+.workflow-arrow{text-align:center;color:#e91e63;font-size:24px;margin:10px 0}
+.timeline{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:2px solid #f0f0f0}
+.timeline-item{text-align:center}
+.timeline-label{font-size:12px;color:#666;margin-top:5px}
+.timeline-value{font-size:18px;font-weight:700;color:#e91e63}
+</style>
+</head>
+<body>
+<div class="workflow">
+<div class="header">
+<h1>Content Creation Workflow</h1>
+<div class="workflow-meta">
+<div><strong>Creator:</strong> {{creator.name}}</div>
+<div><strong>Content Type:</strong> {{content.type}}</div>
+<div><strong>Platforms:</strong> {{#each platforms}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+<div><strong>Status:</strong> <span class="stage-status status-{{workflow.status}}">{{workflow.statusText}}</span></div>
+</div>
+</div>
+
+<div class="workflow-stage">
+<div class="stage-number">1</div>
+<div class="stage-title">Content Ideation <span class="stage-status status-{{stages.ideation.status}}">{{stages.ideation.statusText}}</span></div>
+<div class="stage-description">Brainstorm and plan your content concept</div>
+<div class="stage-actions">
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Define content theme and target audience</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Research trending topics and keywords</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Select platforms for distribution</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Create content outline or storyboard</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-arrow">↓</div>
+
+<div class="workflow-stage">
+<div class="stage-number">2</div>
+<div class="stage-title">Production <span class="stage-status status-{{stages.production.status}}">{{stages.production.statusText}}</span></div>
+<div class="stage-description">Create and capture your content</div>
+<div class="stage-actions">
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Set up equipment and location</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Record/photograph content</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+{{#if coStar}}
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Obtain co-star consent and model releases</div>
+<div class="action-assignee">{{coStar.name}}</div>
+</div>
+{{/if}}
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Upload raw files to FANZ MediaHub</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-arrow">↓</div>
+
+<div class="workflow-stage">
+<div class="stage-number">3</div>
+<div class="stage-title">Editing <span class="stage-status status-{{stages.editing.status}}">{{stages.editing.statusText}}</span></div>
+<div class="stage-description">Refine and polish your content</div>
+<div class="stage-actions">
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Edit video/photos (color grading, effects)</div>
+<div class="action-assignee">{{editor.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Add watermarks and FANZ branding</div>
+<div class="action-assignee">{{editor.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Write captions and descriptions</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Add tags and metadata</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-arrow">↓</div>
+
+<div class="workflow-stage">
+<div class="stage-number">4</div>
+<div class="stage-title">Compliance Review <span class="stage-status status-{{stages.compliance.status}}">{{stages.compliance.statusText}}</span></div>
+<div class="stage-description">Ensure content meets FANZ and legal guidelines</div>
+<div class="stage-actions">
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Age verification and consent checks</div>
+<div class="action-assignee">FANZ Compliance</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Content policy compliance review</div>
+<div class="action-assignee">FANZ Compliance</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">2257 compliance verification</div>
+<div class="action-assignee">FANZ Legal</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Approve or request revisions</div>
+<div class="action-assignee">FANZ Compliance</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-arrow">↓</div>
+
+<div class="workflow-stage">
+<div class="stage-number">5</div>
+<div class="stage-title">Publishing <span class="stage-status status-{{stages.publishing.status}}">{{stages.publishing.statusText}}</span></div>
+<div class="stage-description">Schedule and distribute your content</div>
+<div class="stage-actions">
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Set pricing and access tiers</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Schedule publication time</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Publish to selected platforms</div>
+<div class="action-assignee">FANZ System</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Send subscriber notifications</div>
+<div class="action-assignee">FANZ System</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-arrow">↓</div>
+
+<div class="workflow-stage">
+<div class="stage-number">6</div>
+<div class="stage-title">Performance Tracking <span class="stage-status status-{{stages.tracking.status}}">{{stages.tracking.statusText}}</span></div>
+<div class="stage-description">Monitor and analyze content performance</div>
+<div class="stage-actions">
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Track views, likes, and engagement</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Monitor revenue and conversion rates</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Respond to fan comments and messages</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+<div class="action-item">
+<div class="action-checkbox"></div>
+<div class="action-text">Analyze insights for future content</div>
+<div class="action-assignee">{{creator.name}}</div>
+</div>
+</div>
+</div>
+
+<div class="timeline">
+<div class="timeline-item">
+<div class="timeline-value">{{timeline.started}}</div>
+<div class="timeline-label">Started</div>
+</div>
+<div class="timeline-item">
+<div class="timeline-value">{{timeline.currentStage}}</div>
+<div class="timeline-label">Current Stage</div>
+</div>
+<div class="timeline-item">
+<div class="timeline-value">{{timeline.daysElapsed}}</div>
+<div class="timeline-label">Days Elapsed</div>
+</div>
+<div class="timeline-item">
+<div class="timeline-value">{{timeline.estimatedCompletion}}</div>
+<div class="timeline-label">Est. Completion</div>
+</div>
+</div>
+</div>
+</body>
+</html>

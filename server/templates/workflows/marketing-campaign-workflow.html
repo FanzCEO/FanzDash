@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>FANZ Marketing Campaign Workflow</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;background:#f5f5f5;padding:20px}
+.workflow{max-width:1000px;margin:0 auto;background:white;border-radius:12px;padding:40px}
+.header{border-bottom:3px solid #e91e63;padding-bottom:20px;margin-bottom:30px}
+h1{font-size:24px;margin-bottom:10px}
+.campaign-header{background:linear-gradient(135deg,#e91e63,#c2185b);color:white;padding:25px;border-radius:8px;margin:20px 0}
+.campaign-title{font-size:20px;font-weight:700;margin-bottom:5px}
+.campaign-meta{display:flex;gap:20px;font-size:13px;opacity:0.9;margin-top:10px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-top:15px}
+.stat-box{background:rgba(255,255,255,0.2);padding:15px;border-radius:6px;text-align:center}
+.stat-value{font-size:24px;font-weight:700}
+.stat-label{font-size:11px;margin-top:5px;opacity:0.9}
+.workflow-stage{background:#f9f9f9;border-left:4px solid #e91e63;padding:20px;margin:15px 0;border-radius:8px;position:relative}
+.stage-number{position:absolute;top:-10px;left:20px;background:#e91e63;color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.stage-title{font-size:16px;font-weight:700;margin-bottom:10px;padding-top:10px}
+.stage-status{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;margin-left:10px}
+.status-pending{background:#fff3e0;color:#e65100}
+.status-active{background:#e3f2fd;color:#1976d2}
+.status-completed{background:#e8f5e9;color:#2e7d32}
+.checklist{margin:15px 0}
+.checklist-item{display:flex;align-items:center;padding:12px;background:white;border-radius:6px;margin:8px 0;border:1px solid #e0e0e0}
+.checkbox{width:20px;height:20px;border:2px solid #e91e63;border-radius:4px;margin-right:12px;flex-shrink:0}
+.checkbox.checked{background:#4caf50;border-color:#4caf50;display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+.item-text{flex:1}
+.item-assignee{color:#e91e63;font-size:12px;font-weight:600}
+.content-box{background:white;border:1px solid #e0e0e0;border-radius:6px;padding:15px;margin:10px 0}
+.content-box-title{font-weight:600;margin-bottom:10px}
+.social-channel{display:inline-block;background:#e91e63;color:white;padding:4px 12px;border-radius:20px;font-size:11px;margin:4px;font-weight:600}
+.promo-preview{background:#f9f9f9;padding:15px;border-radius:6px;border-left:4px solid #e91e63;margin:10px 0}
+.metrics-table{width:100%;border-collapse:collapse;margin:15px 0}
+.metrics-table th{background:#f5f5f5;padding:10px;text-align:left;font-size:12px;text-transform:uppercase;color:#666;font-weight:600}
+.metrics-table td{padding:12px 10px;border-bottom:1px solid #eee}
+.progress-bar{background:#e0e0e0;height:8px;border-radius:4px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,#e91e63,#c2185b)}
+</style>
+</head>
+<body>
+<div class="workflow">
+<div class="header">
+<h1>Marketing Campaign Workflow</h1>
+<div style="color:#666;margin-top:10px">Campaign ID: {{campaign.id}} • Creator: {{creator.name}}</div>
+</div>
+
+<div class="campaign-header">
+<div class="campaign-title">{{campaign.name}}</div>
+<div>{{campaign.description}}</div>
+<div class="campaign-meta">
+<div>Type: {{campaign.type}}</div>
+<div>Start: {{campaign.startDate}}</div>
+<div>End: {{campaign.endDate}}</div>
+<div>Budget: {{campaign.budget}}</div>
+</div>
+<div class="stats-grid">
+<div class="stat-box">
+<div class="stat-value">{{metrics.reach}}</div>
+<div class="stat-label">Total Reach</div>
+</div>
+<div class="stat-box">
+<div class="stat-value">{{metrics.conversions}}</div>
+<div class="stat-label">Conversions</div>
+</div>
+<div class="stat-box">
+<div class="stat-value">{{metrics.revenue}}</div>
+<div class="stat-label">Revenue</div>
+</div>
+<div class="stat-box">
+<div class="stat-value">{{metrics.roi}}%</div>
+<div class="stat-label">ROI</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage">
+<div class="stage-number">1</div>
+<div class="stage-title">Campaign Planning <span class="stage-status status-{{stages.planning.status}}">{{stages.planning.statusText}}</span></div>
+<div class="checklist">
+<div class="checklist-item">
+<div class="checkbox {{#if stages.planning.items.goals}}checked{{/if}}">{{#if stages.planning.items.goals}}✓{{/if}}</div>
+<div class="item-text">Define campaign goals and KPIs</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.planning.items.audience}}checked{{/if}}">{{#if stages.planning.items.audience}}✓{{/if}}</div>
+<div class="item-text">Identify target audience and segments</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.planning.items.budget}}checked{{/if}}">{{#if stages.planning.items.budget}}✓{{/if}}</div>
+<div class="item-text">Set campaign budget and timeline</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.planning.items.channels}}checked{{/if}}">{{#if stages.planning.items.channels}}✓{{/if}}</div>
+<div class="item-text">Select marketing channels</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+</div>
+<div class="content-box">
+<div class="content-box-title">Selected Channels:</div>
+<div>
+{{#each campaign.channels}}
+<span class="social-channel">{{this}}</span>
+{{/each}}
+</div>
+</div>
+</div>
+
+<div class="workflow-stage">
+<div class="stage-number">2</div>
+<div class="stage-title">Content Creation <span class="stage-status status-{{stages.content.status}}">{{stages.content.statusText}}</span></div>
+<div class="checklist">
+<div class="checklist-item">
+<div class="checkbox {{#if stages.content.items.copywriting}}checked{{/if}}">{{#if stages.content.items.copywriting}}✓{{/if}}</div>
+<div class="item-text">Write promotional copy and captions</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.content.items.graphics}}checked{{/if}}">{{#if stages.content.items.graphics}}✓{{/if}}</div>
+<div class="item-text">Design promotional graphics and banners</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.content.items.teaser}}checked{{/if}}">{{#if stages.content.items.teaser}}✓{{/if}}</div>
+<div class="item-text">Create teaser video/photos</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.content.items.landing}}checked{{/if}}">{{#if stages.content.items.landing}}✓{{/if}}</div>
+<div class="item-text">Set up landing page or promo link</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+</div>
+{{#if stages.content.preview}}
+<div class="promo-preview">
+<div style="font-weight:600;margin-bottom:8px">Campaign Preview:</div>
+<div style="font-size:14px;color:#666">{{stages.content.preview}}</div>
+</div>
+{{/if}}
+</div>
+
+<div class="workflow-stage">
+<div class="stage-number">3</div>
+<div class="stage-title">Promotion Setup <span class="stage-status status-{{stages.setup.status}}">{{stages.setup.statusText}}</span></div>
+<div class="checklist">
+<div class="checklist-item">
+<div class="checkbox {{#if stages.setup.items.discount}}checked{{/if}}">{{#if stages.setup.items.discount}}✓{{/if}}</div>
+<div class="item-text">Configure discount codes or special offers</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.setup.items.tracking}}checked{{/if}}">{{#if stages.setup.items.tracking}}✓{{/if}}</div>
+<div class="item-text">Set up UTM tracking and analytics</div>
+<div class="item-assignee">FANZ Marketing</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.setup.items.schedule}}checked{{/if}}">{{#if stages.setup.items.schedule}}✓{{/if}}</div>
+<div class="item-text">Schedule posts across platforms</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.setup.items.email}}checked{{/if}}">{{#if stages.setup.items.email}}✓{{/if}}</div>
+<div class="item-text">Prepare email campaign to subscribers</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+</div>
+{{#if campaign.discountCode}}
+<div class="content-box">
+<div class="content-box-title">Promo Code Details:</div>
+<div style="display:flex;justify-content:space-between;margin:5px 0">
+<div>Code: <strong>{{campaign.discountCode}}</strong></div>
+<div>Discount: <strong>{{campaign.discountAmount}}</strong></div>
+<div>Expires: <strong>{{campaign.discountExpiry}}</strong></div>
+</div>
+</div>
+{{/if}}
+</div>
+
+<div class="workflow-stage">
+<div class="stage-number">4</div>
+<div class="stage-title">Campaign Launch <span class="stage-status status-{{stages.launch.status}}">{{stages.launch.statusText}}</span></div>
+<div class="checklist">
+<div class="checklist-item">
+<div class="checkbox {{#if stages.launch.items.social}}checked{{/if}}">{{#if stages.launch.items.social}}✓{{/if}}</div>
+<div class="item-text">Publish social media posts</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.launch.items.email}}checked{{/if}}">{{#if stages.launch.items.email}}✓{{/if}}</div>
+<div class="item-text">Send promotional emails</div>
+<div class="item-assignee">FANZ System</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.launch.items.notifications}}checked{{/if}}">{{#if stages.launch.items.notifications}}✓{{/if}}</div>
+<div class="item-text">Send push notifications to followers</div>
+<div class="item-assignee">FANZ System</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.launch.items.ads}}checked{{/if}}">{{#if stages.launch.items.ads}}✓{{/if}}</div>
+<div class="item-text">Launch paid ads (if applicable)</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage">
+<div class="stage-number">5</div>
+<div class="stage-title">Active Monitoring <span class="stage-status status-{{stages.monitoring.status}}">{{stages.monitoring.statusText}}</span></div>
+<div class="checklist">
+<div class="checklist-item">
+<div class="checkbox {{#if stages.monitoring.items.engagement}}checked{{/if}}">{{#if stages.monitoring.items.engagement}}✓{{/if}}</div>
+<div class="item-text">Track engagement metrics daily</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.monitoring.items.respond}}checked{{/if}}">{{#if stages.monitoring.items.respond}}✓{{/if}}</div>
+<div class="item-text">Respond to comments and messages</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.monitoring.items.optimize}}checked{{/if}}">{{#if stages.monitoring.items.optimize}}✓{{/if}}</div>
+<div class="item-text">Optimize underperforming content</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.monitoring.items.budget}}checked{{/if}}">{{#if stages.monitoring.items.budget}}✓{{/if}}</div>
+<div class="item-text">Monitor budget and adjust spend</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+</div>
+<div class="content-box">
+<div class="content-box-title">Real-Time Performance:</div>
+<table class="metrics-table">
+<thead><tr><th>Metric</th><th>Current</th><th>Goal</th><th>Progress</th></tr></thead>
+<tbody>
+{{#each performanceMetrics}}
+<tr>
+<td>{{this.name}}</td>
+<td><strong>{{this.current}}</strong></td>
+<td>{{this.goal}}</td>
+<td>
+<div class="progress-bar"><div class="progress-fill" style="width:{{this.progress}}%"></div></div>
+<div style="font-size:11px;color:#666">{{this.progress}}%</div>
+</td>
+</tr>
+{{/each}}
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="workflow-stage">
+<div class="stage-number">6</div>
+<div class="stage-title">Analysis & Reporting <span class="stage-status status-{{stages.analysis.status}}">{{stages.analysis.statusText}}</span></div>
+<div class="checklist">
+<div class="checklist-item">
+<div class="checkbox {{#if stages.analysis.items.collect}}checked{{/if}}">{{#if stages.analysis.items.collect}}✓{{/if}}</div>
+<div class="item-text">Collect all campaign data</div>
+<div class="item-assignee">FANZ Analytics</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.analysis.items.analyze}}checked{{/if}}">{{#if stages.analysis.items.analyze}}✓{{/if}}</div>
+<div class="item-text">Analyze performance vs goals</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.analysis.items.insights}}checked{{/if}}">{{#if stages.analysis.items.insights}}✓{{/if}}</div>
+<div class="item-text">Document key insights and learnings</div>
+<div class="item-assignee">{{creator.name}}</div>
+</div>
+<div class="checklist-item">
+<div class="checkbox {{#if stages.analysis.items.report}}checked{{/if}}">{{#if stages.analysis.items.report}}✓{{/if}}</div>
+<div class="item-text">Generate campaign report</div>
+<div class="item-assignee">FANZ Analytics</div>
+</div>
+</div>
+{{#if stages.analysis.completed}}
+<div class="content-box">
+<div class="content-box-title">Campaign Results Summary:</div>
+<div style="color:#666;font-size:14px;line-height:1.6">{{stages.analysis.summary}}</div>
+<div style="margin-top:10px">
+<a href="{{reportUrl}}" style="color:#e91e63;text-decoration:none;font-weight:600">Download Full Report →</a>
+</div>
+</div>
+{{/if}}
+</div>
+
+<div style="margin-top:30px;padding:20px;background:#e8f5e9;border-radius:8px;border-left:4px solid #4caf50">
+<div style="font-weight:700;color:#2e7d32;margin-bottom:8px">💡 Marketing Tips</div>
+<ul style="margin-left:20px;color:#666;line-height:1.8">
+<li>Best posting times: {{#each bestTimes}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</li>
+<li>Most engaged platform: {{topPlatform}}</li>
+<li>Recommended discount: {{recommendedDiscount}} for first-time subscribers</li>
+<li>Average campaign ROI: {{averageROI}}% for {{campaign.type}} campaigns</li>
+</ul>
+</div>
+
+</div>
+</body>
+</html>

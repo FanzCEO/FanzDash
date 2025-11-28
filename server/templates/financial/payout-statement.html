@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FANZ Payout Statement - {{period}}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; color: #1a1a1a; line-height: 1.6; background: #f5f5f5; padding: 20px; }
+        .statement-container { max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .header { background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%); color: white; padding: 40px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logo { font-size: 36px; font-weight: 800; letter-spacing: -1px; }
+        .statement-type { font-size: 14px; opacity: 0.9; }
+        .period-info { font-size: 24px; font-weight: 600; margin-bottom: 10px; }
+        .creator-info { font-size: 14px; opacity: 0.9; }
+        .summary-section { padding: 40px; background: #fafafa; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .summary-card { background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #e91e63; }
+        .summary-label { font-size: 12px; text-transform: uppercase; color: #666; margin-bottom: 8px; }
+        .summary-value { font-size: 28px; font-weight: 700; color: #1a1a1a; }
+        .summary-subtext { font-size: 13px; color: #666; margin-top: 5px; }
+        .earnings-breakdown { padding: 40px; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: #1a1a1a; }
+        .earnings-table { width: 100%; border-collapse: collapse; }
+        .earnings-table th { background: #f5f5f5; padding: 12px; text-align: left; font-size: 12px; text-transform: uppercase; color: #666; font-weight: 600; border-bottom: 2px solid #e91e63; }
+        .earnings-table td { padding: 15px 12px; border-bottom: 1px solid #eee; }
+        .platform-cell { display: flex; align-items: center; gap: 10px; }
+        .platform-icon { width: 32px; height: 32px; background: #e91e63; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; }
+        .amount-cell { text-align: right; font-weight: 600; }
+        .positive { color: #4caf50; }
+        .negative { color: #f44336; }
+        .payout-details { padding: 40px; background: #f9f9f9; }
+        .payout-method-card { background: white; padding: 20px; border-radius: 8px; margin-top: 15px; border: 1px solid #e0e0e0; }
+        .payout-status { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .status-pending { background: #fff3e0; color: #e65100; }
+        .status-processing { background: #e3f2fd; color: #1976d2; }
+        .status-completed { background: #e8f5e9; color: #2e7d32; }
+        .status-failed { background: #ffebee; color: #c62828; }
+        .deductions-section { padding: 40px; }
+        .deduction-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .deduction-label { color: #666; }
+        .deduction-amount { font-weight: 600; }
+        .total-payout { background: #e91e63; color: white; padding: 30px 40px; margin-top: 20px; }
+        .total-payout-grid { display: flex; justify-content: space-between; align-items: center; }
+        .total-label { font-size: 18px; }
+        .total-amount { font-size: 36px; font-weight: 700; }
+        .footer { padding: 30px 40px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; }
+        @media print { body { background: white; padding: 0; } .statement-container { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="statement-container">
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <div class="logo">FANZ™</div>
+                    <div class="statement-type">Creator Payout Statement</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="statement-type">Statement ID</div>
+                    <div style="font-size: 16px; font-weight: 600; margin-top: 5px;">{{statementId}}</div>
+                </div>
+            </div>
+            <div class="period-info">{{period}}</div>
+            <div class="creator-info">
+                <strong>{{creator.name}}</strong> (@{{creator.username}})<br>
+                Creator ID: {{creator.id}}
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Total Earnings</div>
+                    <div class="summary-value positive">{{totalEarnings}}</div>
+                    <div class="summary-subtext">Before deductions</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Platform Fees</div>
+                    <div class="summary-value negative">{{platformFees}}</div>
+                    <div class="summary-subtext">{{platformFeePercent}}% commission</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Net Payout</div>
+                    <div class="summary-value">{{netPayout}}</div>
+                    <div class="summary-subtext">Your earnings</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Subscribers</div>
+                    <div class="summary-value">{{stats.totalSubscribers}}</div>
+                    <div class="summary-subtext">{{stats.newSubscribers}} new this period</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="earnings-breakdown">
+            <div class="section-title">Earnings by Platform</div>
+            <table class="earnings-table">
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th style="width: 120px; text-align: right;">Subscribers</th>
+                        <th style="width: 120px; text-align: right;">Tips</th>
+                        <th style="width: 120px; text-align: right;">Content Sales</th>
+                        <th style="width: 150px; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each platformEarnings}}
+                    <tr>
+                        <td>
+                            <div class="platform-cell">
+                                <div class="platform-icon">{{this.initial}}</div>
+                                <div>
+                                    <div style="font-weight: 600;">{{this.name}}</div>
+                                    <div style="font-size: 12px; color: #666;">{{this.subscribers}} subscribers</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="amount-cell">{{this.subscriptionRevenue}}</td>
+                        <td class="amount-cell">{{this.tipsRevenue}}</td>
+                        <td class="amount-cell">{{this.contentSales}}</td>
+                        <td class="amount-cell" style="font-weight: 700; color: #4caf50;">{{this.total}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="deductions-section">
+            <div class="section-title">Deductions & Fees</div>
+            {{#each deductions}}
+            <div class="deduction-item">
+                <div>
+                    <div class="deduction-label">{{this.description}}</div>
+                    {{#if this.details}}
+                    <div style="font-size: 12px; color: #999; margin-top: 3px;">{{this.details}}</div>
+                    {{/if}}
+                </div>
+                <div class="deduction-amount negative">-{{this.amount}}</div>
+            </div>
+            {{/each}}
+        </div>
+
+        <div class="payout-details">
+            <div class="section-title">Payout Information</div>
+            <div class="payout-method-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">Payment Method</div>
+                        <div style="font-size: 14px; color: #666;">{{payoutMethod.type}} - {{payoutMethod.details}}</div>
+                    </div>
+                    <span class="payout-status status-{{payoutStatus}}">{{payoutStatusText}}</span>
+                </div>
+                {{#if payoutDate}}
+                <div style="font-size: 13px; color: #666;">
+                    <strong>Expected Date:</strong> {{payoutDate}}
+                </div>
+                {{/if}}
+                {{#if transactionId}}
+                <div style="font-size: 13px; color: #666; margin-top: 5px;">
+                    <strong>Transaction ID:</strong> {{transactionId}}
+                </div>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="total-payout">
+            <div class="total-payout-grid">
+                <div class="total-label">Total Amount to be Paid</div>
+                <div class="total-amount">{{netPayout}}</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div style="margin-bottom: 10px;">FANZ Unlimited Network - Creator Earnings Statement</div>
+            <div>Questions about your payout? Contact creator-support@fanzunlimited.com</div>
+            <div style="margin-top: 15px; opacity: 0.7;">
+                This statement was generated on {{generatedDate}}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

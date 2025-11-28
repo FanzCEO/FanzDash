@@ -1,0 +1,3 @@
+🎉 New subscriber on {{platform}}! @{{username}} just subscribed. You've earned {{amount}}. View: {{url}}
+
+- FANZ

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>FANZ Collaboration Agreement Workflow</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;background:#f5f5f5;padding:20px}
+.workflow{max-width:1000px;margin:0 auto;background:white;border-radius:12px;padding:40px}
+.header{border-bottom:3px solid #e91e63;padding-bottom:20px;margin-bottom:30px}
+h1{font-size:24px;margin-bottom:10px}
+.collab-header{background:linear-gradient(135deg,#e91e63,#c2185b);color:white;padding:25px;border-radius:8px;margin:20px 0}
+.creators-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;margin-top:15px}
+.creator-box{background:rgba(255,255,255,0.2);padding:15px;border-radius:6px;text-align:center}
+.creator-name{font-size:18px;font-weight:700;margin-bottom:5px}
+.creator-info{font-size:13px;opacity:0.9}
+.plus-icon{font-size:32px;font-weight:700}
+.workflow-stage{background:#f9f9f9;border-left:4px solid #e91e63;padding:20px;margin:15px 0;border-radius:8px;position:relative}
+.stage-number{position:absolute;top:-10px;left:20px;background:#e91e63;color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.stage-completed .stage-number{background:#4caf50}
+.stage-title{font-size:16px;font-weight:700;margin-bottom:10px;padding-top:10px}
+.stage-status{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;margin-left:10px}
+.status-pending{background:#fff3e0;color:#e65100}
+.status-active{background:#e3f2fd;color:#1976d2}
+.status-completed{background:#e8f5e9;color:#2e7d32}
+.status-signed{background:#e8f5e9;color:#2e7d32}
+.info-box{background:white;border:1px solid #e0e0e0;border-radius:6px;padding:15px;margin:10px 0}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.info-row:last-child{border-bottom:none}
+.info-label{color:#666;font-size:13px}
+.info-value{font-weight:600;font-size:14px}
+.terms-list{margin:15px 0}
+.term-item{background:white;border:1px solid #e0e0e0;border-radius:6px;padding:12px;margin:8px 0;display:flex;align-items:flex-start}
+.term-icon{width:20px;height:20px;background:#e91e63;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;margin-right:12px;flex-shrink:0}
+.signature-box{background:#f9f9f9;border:2px dashed #e0e0e0;border-radius:8px;padding:20px;margin:15px 0;text-align:center}
+.signature-box.signed{background:#e8f5e9;border-color:#4caf50}
+.signature-name{font-family:'Brush Script MT',cursive;font-size:28px;color:#1a1a1a;margin:10px 0}
+.signature-date{font-size:12px;color:#666}
+.warning-box{background:#fff3e0;border-left:4px solid #ff9800;padding:15px;border-radius:6px;margin:15px 0}
+.warning-title{font-weight:700;color:#e65100;margin-bottom:5px}
+.btn{display:inline-block;background:#e91e63;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;border:none;cursor:pointer}
+.btn-secondary{background:#666}
+.split-breakdown{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin:15px 0}
+.split-card{background:white;border:1px solid #e0e0e0;border-radius:8px;padding:15px;text-align:center}
+.split-creator{font-weight:600;margin-bottom:8px}
+.split-percentage{font-size:32px;font-weight:700;color:#e91e63}
+.split-label{font-size:12px;color:#666;margin-top:5px}
+</style>
+</head>
+<body>
+<div class="workflow">
+<div class="header">
+<h1>Collaboration Agreement Workflow</h1>
+<div style="color:#666;margin-top:10px">Agreement ID: {{agreement.id}} • Created: {{agreement.createdDate}}</div>
+</div>
+
+<div class="collab-header">
+<h2 style="font-size:18px;margin-bottom:15px">{{agreement.title}}</h2>
+<div class="creators-grid">
+<div class="creator-box">
+<div class="creator-name">{{creator1.name}}</div>
+<div class="creator-info">@{{creator1.username}}</div>
+<div class="creator-info">{{creator1.email}}</div>
+</div>
+<div class="plus-icon">+</div>
+<div class="creator-box">
+<div class="creator-name">{{creator2.name}}</div>
+<div class="creator-info">@{{creator2.username}}</div>
+<div class="creator-info">{{creator2.email}}</div>
+</div>
+</div>
+<div style="margin-top:15px;text-align:center;font-size:14px;opacity:0.9">
+Content Type: {{agreement.contentType}} • Shoot Date: {{agreement.shootDate}}
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.terms.completed}}stage-completed{{/if}}">
+<div class="stage-number">1</div>
+<div class="stage-title">Agreement Terms <span class="stage-status status-{{stages.terms.status}}">{{stages.terms.statusText}}</span></div>
+<div class="info-box">
+<div class="info-row">
+<div class="info-label">Collaboration Type</div>
+<div class="info-value">{{agreement.contentType}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Shoot Location</div>
+<div class="info-value">{{agreement.location}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Production Date</div>
+<div class="info-value">{{agreement.shootDate}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Content Delivery</div>
+<div class="info-value">{{agreement.deliveryDate}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Distribution Platforms</div>
+<div class="info-value">{{#each agreement.platforms}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+</div>
+</div>
+
+<div style="margin-top:15px">
+<div style="font-weight:600;margin-bottom:10px">Revenue Split:</div>
+<div class="split-breakdown">
+<div class="split-card">
+<div class="split-creator">{{creator1.name}}</div>
+<div class="split-percentage">{{agreement.split.creator1}}%</div>
+<div class="split-label">of net earnings</div>
+</div>
+<div class="split-card">
+<div class="split-creator">{{creator2.name}}</div>
+<div class="split-percentage">{{agreement.split.creator2}}%</div>
+<div class="split-label">of net earnings</div>
+</div>
+</div>
+<div style="font-size:13px;color:#666;text-align:center;margin-top:10px">
+After FANZ platform fee (20%), remaining earnings will be split as shown above
+</div>
+</div>
+
+<div style="margin-top:15px">
+<div style="font-weight:600;margin-bottom:10px">Key Terms & Conditions:</div>
+<div class="terms-list">
+<div class="term-item">
+<div class="term-icon">1</div>
+<div><strong>Content Ownership:</strong> {{agreement.terms.ownership}}</div>
+</div>
+<div class="term-item">
+<div class="term-icon">2</div>
+<div><strong>Usage Rights:</strong> {{agreement.terms.rights}}</div>
+</div>
+<div class="term-item">
+<div class="term-icon">3</div>
+<div><strong>Exclusivity:</strong> {{agreement.terms.exclusivity}}</div>
+</div>
+<div class="term-item">
+<div class="term-icon">4</div>
+<div><strong>Content Removal:</strong> {{agreement.terms.removal}}</div>
+</div>
+<div class="term-item">
+<div class="term-icon">5</div>
+<div><strong>Dispute Resolution:</strong> {{agreement.terms.disputes}}</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.consent.completed}}stage-completed{{/if}}">
+<div class="stage-number">2</div>
+<div class="stage-title">Legal Compliance & Consent <span class="stage-status status-{{stages.consent.status}}">{{stages.consent.statusText}}</span></div>
+<div class="info-box">
+<div class="info-row">
+<div class="info-label">{{creator1.name}} - Age Verification (18+)</div>
+<div class="info-value" style="color:{{#if stages.consent.creator1.ageVerified}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.consent.creator1.ageVerified}}✓ Verified{{else}}✗ Pending{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">{{creator1.name}} - 2257 Compliance</div>
+<div class="info-value" style="color:{{#if stages.consent.creator1.form2257}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.consent.creator1.form2257}}✓ Complete{{else}}✗ Pending{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">{{creator2.name}} - Age Verification (18+)</div>
+<div class="info-value" style="color:{{#if stages.consent.creator2.ageVerified}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.consent.creator2.ageVerified}}✓ Verified{{else}}✗ Pending{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">{{creator2.name}} - 2257 Compliance</div>
+<div class="info-value" style="color:{{#if stages.consent.creator2.form2257}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.consent.creator2.form2257}}✓ Complete{{else}}✗ Pending{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Model Release Forms</div>
+<div class="info-value" style="color:{{#if stages.consent.modelReleases}}#4caf50{{else}}#f44336{{/if}}">{{#if stages.consent.modelReleases}}✓ Signed{{else}}✗ Pending{{/if}}</div>
+</div>
+</div>
+<div class="warning-box">
+<div class="warning-title">⚠️ Legal Requirements</div>
+<div>All performers must be 18+ and provide valid government ID. 2257 compliance documentation is required by law for adult content.</div>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.review.completed}}stage-completed{{/if}}">
+<div class="stage-number">3</div>
+<div class="stage-title">Agreement Review <span class="stage-status status-{{stages.review.status}}">{{stages.review.statusText}}</span></div>
+<div class="info-box">
+<div class="info-row">
+<div class="info-label">{{creator1.name}} Reviewed Agreement</div>
+<div class="info-value" style="color:{{#if stages.review.creator1.reviewed}}#4caf50{{else}}#ff9800{{/if}}">{{#if stages.review.creator1.reviewed}}✓ {{stages.review.creator1.reviewDate}}{{else}}⏳ Pending{{/if}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">{{creator2.name}} Reviewed Agreement</div>
+<div class="info-value" style="color:{{#if stages.review.creator2.reviewed}}#4caf50{{else}}#ff9800{{/if}}">{{#if stages.review.creator2.reviewed}}✓ {{stages.review.creator2.reviewDate}}{{else}}⏳ Pending{{/if}}</div>
+</div>
+</div>
+{{#if stages.review.comments}}
+<div class="info-box">
+<div style="font-weight:600;margin-bottom:8px">Review Comments:</div>
+{{#each stages.review.comments}}
+<div style="margin:8px 0;padding:8px;background:#f9f9f9;border-radius:4px">
+<div style="font-size:12px;color:#e91e63;font-weight:600">{{this.creator}}</div>
+<div style="font-size:14px;color:#666;margin-top:3px">{{this.comment}}</div>
+</div>
+{{/each}}
+</div>
+{{/if}}
+</div>
+
+<div class="workflow-stage {{#if stages.signatures.completed}}stage-completed{{/if}}">
+<div class="stage-number">4</div>
+<div class="stage-title">Electronic Signatures <span class="stage-status status-{{stages.signatures.status}}">{{stages.signatures.statusText}}</span></div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div>
+<div style="font-weight:600;margin-bottom:10px">{{creator1.name}}</div>
+<div class="signature-box {{#if stages.signatures.creator1.signed}}signed{{/if}}">
+{{#if stages.signatures.creator1.signed}}
+<div style="color:#2e7d32;font-weight:600;margin-bottom:10px">✓ Signed</div>
+<div class="signature-name">{{creator1.name}}</div>
+<div class="signature-date">{{stages.signatures.creator1.signedDate}}</div>
+<div style="font-size:11px;color:#666;margin-top:5px">IP: {{stages.signatures.creator1.ipAddress}}</div>
+{{else}}
+<div style="color:#666;font-size:14px">Awaiting signature</div>
+<button class="btn" style="margin-top:10px">Sign Agreement</button>
+{{/if}}
+</div>
+</div>
+
+<div>
+<div style="font-weight:600;margin-bottom:10px">{{creator2.name}}</div>
+<div class="signature-box {{#if stages.signatures.creator2.signed}}signed{{/if}}">
+{{#if stages.signatures.creator2.signed}}
+<div style="color:#2e7d32;font-weight:600;margin-bottom:10px">✓ Signed</div>
+<div class="signature-name">{{creator2.name}}</div>
+<div class="signature-date">{{stages.signatures.creator2.signedDate}}</div>
+<div style="font-size:11px;color:#666;margin-top:5px">IP: {{stages.signatures.creator2.ipAddress}}</div>
+{{else}}
+<div style="color:#666;font-size:14px">Awaiting signature</div>
+<button class="btn" style="margin-top:10px">Sign Agreement</button>
+{{/if}}
+</div>
+</div>
+</div>
+
+<div class="info-box" style="margin-top:20px">
+<div style="font-weight:600;margin-bottom:8px">By signing this agreement:</div>
+<ul style="margin-left:20px;color:#666;line-height:1.8;font-size:14px">
+<li>You confirm you are 18+ years of age</li>
+<li>You agree to the revenue split and terms outlined above</li>
+<li>You grant necessary rights for content distribution</li>
+<li>You acknowledge compliance with all applicable laws</li>
+</ul>
+</div>
+</div>
+
+<div class="workflow-stage {{#if stages.finalization.completed}}stage-completed{{/if}}">
+<div class="stage-number">5</div>
+<div class="stage-title">Agreement Finalization <span class="stage-status status-{{stages.finalization.status}}">{{stages.finalization.statusText}}</span></div>
+{{#if stages.finalization.completed}}
+<div style="background:#e8f5e9;border-left:4px solid #4caf50;padding:15px;border-radius:6px">
+<div style="font-weight:700;color:#2e7d32;margin-bottom:5px">✓ Agreement Executed</div>
+<div style="font-size:14px;color:#666">This collaboration agreement is now legally binding and in effect.</div>
+</div>
+<div class="info-box" style="margin-top:15px">
+<div class="info-row">
+<div class="info-label">Agreement Status</div>
+<div class="info-value" style="color:#4caf50">Active</div>
+</div>
+<div class="info-row">
+<div class="info-label">Execution Date</div>
+<div class="info-value">{{stages.finalization.executionDate}}</div>
+</div>
+<div class="info-row">
+<div class="info-label">Agreement Document</div>
+<div class="info-value"><a href="{{agreement.documentUrl}}" style="color:#e91e63;text-decoration:none">Download PDF</a></div>
+</div>
+<div class="info-row">
+<div class="info-label">Blockchain Verification</div>
+<div class="info-value">{{stages.finalization.blockchainHash}}</div>
+</div>
+</div>
+<div style="text-align:center;margin-top:20px">
+<button class="btn">Proceed to Content Production</button>
+<button class="btn btn-secondary" style="margin-left:10px">Email Copy to Both Parties</button>
+</div>
+{{else}}
+<div class="info-box">
+<div style="color:#666;font-size:14px">Agreement will be finalized once both parties have signed.</div>
+</div>
+{{/if}}
+</div>
+
+<div style="margin-top:30px;padding:15px;background:#f9f9f9;border-radius:8px;border:1px solid #e0e0e0">
+<div style="font-size:12px;color:#666;line-height:1.6">
+<strong>Legal Notice:</strong> This is a binding legal agreement. Both parties should review all terms carefully before signing. FANZ provides this collaboration platform as a service but is not a party to this agreement. For questions, contact legal@fanz.com.
+</div>
+</div>
+
+</div>
+</body>
+</html>
