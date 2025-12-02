@@ -334,7 +334,7 @@ router.post(
   },
 );
 
-router.post("/auth/verify-mfa", validateTOTP, async (req, res) => {
+router.post("/auth/verify-mfa", authRateLimit, validateTOTP, async (req, res) => {
   try {
     const { token, tempToken } = req.body;
 
