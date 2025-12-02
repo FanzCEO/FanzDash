@@ -95,7 +95,21 @@ export class DeepFakeDetectionEngine {
       if (request.mediaBuffer) {
         base64Image = request.mediaBuffer.toString('base64');
       } else {
-        // Fetch image from URL
+        // SSRF mitigation: Only allow mediaUrl to target known safe domains
+        const allowedHostnames = [
+          "cdn.yourdomain.com",
+          "media.example.com",
+          "assets.example.net"
+        ];
+        let url: URL;
+        try {
+          url = new URL(request.mediaUrl);
+        } catch (e) {
+          throw new Error("Invalid mediaUrl");
+        }
+        if (!allowedHostnames.includes(url.hostname)) {
+          throw new Error("mediaUrl domain is not allowed");
+        }
         const response = await fetch(request.mediaUrl);
         const buffer = Buffer.from(await response.arrayBuffer());
         base64Image = buffer.toString('base64');
