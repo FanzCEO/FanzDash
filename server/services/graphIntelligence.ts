@@ -204,12 +204,18 @@ export class GraphIntelligenceEngine {
 
   // Expand network from a specific user
   private static async expandFromUser(userId: string, depth: number): Promise<string[]> {
+    // Validate that userId is a string and not a crafted object
+    if (typeof userId !== "string") {
+      throw new Error("Invalid userId: must be a string");
+    }
     const visited = new Set<string>();
     const toVisit = [userId];
     let currentDepth = 0;
+    const MAX_LOOP = 1000; // Defensive cap on iterations per depth
 
     while (toVisit.length > 0 && currentDepth < depth) {
-      const currentLevelSize = toVisit.length;
+      // Defensive: cap currentLevelSize to MAX_LOOP
+      const currentLevelSize = Math.min(toVisit.length, MAX_LOOP);
       
       for (let i = 0; i < currentLevelSize; i++) {
         const currentUser = toVisit.shift()!;
@@ -230,7 +236,10 @@ export class GraphIntelligenceEngine {
           .limit(50); // Limit to prevent explosion
         
         for (const conn of connections) {
-          if (!visited.has(conn.targetUserId)) {
+          if (
+            typeof conn.targetUserId === "string" &&
+            !visited.has(conn.targetUserId)
+          ) {
             toVisit.push(conn.targetUserId);
           }
         }
