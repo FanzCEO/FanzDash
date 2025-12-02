@@ -474,7 +474,19 @@ export class DeepFakeDetectionEngine {
         /^192\.168\.\d{1,3}\.\d{1,3}$/             // 192.168.0.0 – 192.168.255.255
       ];
       if (privateIpRanges.some(rx => rx.test(url.hostname))) return false;
-      // Optionally: check against a domain allowlist here
+      // Domain allowlist -- ONLY allow trusted media hosts
+      const allowedDomains = [
+        "trusted-media.example.com",
+        "cdn.yourapp.com",
+        "media-storage.yourdomain.com"
+        // Add more domains as required
+      ];
+      // Check if hostname matches any domain in allowlist (exact match or subdomain)
+      if (
+        !allowedDomains.some(allowed => url.hostname === allowed || url.hostname.endsWith(`.${allowed}`))
+      ) {
+        return false;
+      }
       return true;
     } catch {
       return false;
